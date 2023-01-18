@@ -6,9 +6,9 @@ import (
 	"github.com/gogf/gf/v2/errors/gerror"
 	"github.com/gogf/gf/v2/net/ghttp"
 	"github.com/gogf/gf/v2/os/gcache"
-	"he3-bot/internal/model"
-	"he3-bot/internal/service"
 	"net/http"
+	"qq-bot-backend/internal/model"
+	"qq-bot-backend/internal/service"
 	"time"
 )
 

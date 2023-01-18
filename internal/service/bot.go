@@ -13,7 +13,25 @@ import (
 
 type (
 	IBot interface {
-		Parse(ctx context.Context, ws *ghttp.WebSocket, msg []byte)
+		CtxWithWebSocket(parent context.Context, ws *ghttp.WebSocket) context.Context
+		WebSocketFromCtx(ctx context.Context) *ghttp.WebSocket
+		Process(ctx context.Context, rawJson []byte)
+		GetEcho(ctx context.Context) string
+		GetPostType(ctx context.Context) string
+		GetMsgType(ctx context.Context) string
+		GetRequestType(ctx context.Context) string
+		GetNoticeType(ctx context.Context) string
+		GetSubType(ctx context.Context) string
+		GetMessage(ctx context.Context) string
+		GetUserId(ctx context.Context) int64
+		GetGroupId(ctx context.Context) int64
+		GetComment(ctx context.Context) string
+		GetFlag(ctx context.Context) string
+		IsGroupOwnerOrAdmin(ctx context.Context) (yes bool)
+		SendMsg(ctx context.Context, msg string)
+		SendMessage(ctx context.Context, messageType string, uid, gid int64, msg string)
+		ApproveAddGroup(ctx context.Context, flag, subType string, approve bool, reason string)
+		SetModel(ctx context.Context, model string)
 	}
 )
 

@@ -12,7 +12,8 @@ import (
 
 type (
 	ICfg interface {
-		GetAuthToken(ctx context.Context) string
+		IsDebugEnabled(ctx context.Context) bool
+		GetDebugToken(ctx context.Context) string
 		GetRetryIntervalMilliseconds(ctx context.Context) time.Duration
 		GetMiddlewareAccessIntervalMilliseconds(ctx context.Context) time.Duration
 	}

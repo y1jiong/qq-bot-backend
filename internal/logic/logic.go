@@ -5,7 +5,15 @@
 package logic
 
 import (
-	_ "he3-bot/internal/logic/bot"
-	_ "he3-bot/internal/logic/cfg"
-	_ "he3-bot/internal/logic/middleware"
+	_ "qq-bot-backend/internal/logic/bot"
+	_ "qq-bot-backend/internal/logic/cfg"
+	_ "qq-bot-backend/internal/logic/command"
+	_ "qq-bot-backend/internal/logic/group"
+	_ "qq-bot-backend/internal/logic/middleware"
+	_ "qq-bot-backend/internal/logic/module"
+	_ "qq-bot-backend/internal/logic/namespace"
+	_ "qq-bot-backend/internal/logic/state"
+	_ "qq-bot-backend/internal/logic/third-party"
+	_ "qq-bot-backend/internal/logic/token"
+	_ "qq-bot-backend/internal/logic/user"
 )

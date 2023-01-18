@@ -1,20 +1,33 @@
-package bot
+package third_party
 
 import (
 	"context"
 	sj "github.com/bitly/go-simplejson"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/net/gclient"
-	"he3-bot/internal/service"
 	"io"
 	"net/http"
+	"qq-bot-backend/internal/service"
+	"regexp"
 	"time"
 )
 
-func (s *sBot) queryMinecraftGenuineUser(ctx context.Context, id string) (genuine bool, realName, uuid string, err error) {
-	get := func() (*gclient.Response, error) {
-		return g.Client().Get(ctx, "https://api.mojang.com/users/profiles/minecraft/"+id)
+var (
+	// 匹配 Minecraft 玩家名称
+	legalMinecraftNameRe = regexp.MustCompile(`\w{3,16}$`)
+)
+
+func (s *sThirdParty) QueryMinecraftGenuineUser(ctx context.Context, name string) (genuine bool, realName, uuid string, err error) {
+	// 全字匹配
+	name = legalMinecraftNameRe.FindString(name)
+	if name == "" {
+		return
 	}
+	// GET 请求 mojang api
+	get := func() (*gclient.Response, error) {
+		return g.Client().Get(ctx, "https://api.mojang.com/users/profiles/minecraft/"+name)
+	}
+	// 第一次请求
 	res, err := get()
 	// 失败重试
 	if err != nil {
@@ -30,9 +43,11 @@ func (s *sBot) queryMinecraftGenuineUser(ctx context.Context, id string) (genuin
 		}
 	}
 	defer res.Body.Close()
+	// 判断是否正版
 	if res.StatusCode != http.StatusOK {
 		return
 	}
+	// 解析响应
 	rawJson, err := io.ReadAll(res.Body)
 	if err != nil {
 		return
@@ -44,6 +59,7 @@ func (s *sBot) queryMinecraftGenuineUser(ctx context.Context, id string) (genuin
 	// 导出正确的 name 和 uuid
 	realName = resJson.Get("name").MustString()
 	uuid = resJson.Get("id").MustString()
+	// 判断正版
 	if uuid != "" {
 		genuine = true
 	}
