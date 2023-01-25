@@ -8,19 +8,19 @@ import (
 	"qq-bot-backend/internal/dao/internal"
 )
 
-// internalWhitelistDao is internal type for wrapping internal DAO implements.
-type internalWhitelistDao = *internal.WhitelistDao
+// internalListDao is internal type for wrapping internal DAO implements.
+type internalListDao = *internal.ListDao
 
-// whitelistDao is the data access object for table whitelist.
+// listDao is the data access object for table list.
 // You can define custom methods on it to extend its functionality as you wish.
-type whitelistDao struct {
-	internalWhitelistDao
+type listDao struct {
+	internalListDao
 }
 
 var (
-	// Whitelist is globally public accessible object for table whitelist operations.
-	Whitelist = whitelistDao{
-		internal.NewWhitelistDao(),
+	// List is globally public accessible object for table list operations.
+	List = listDao{
+		internal.NewListDao(),
 	}
 )
 

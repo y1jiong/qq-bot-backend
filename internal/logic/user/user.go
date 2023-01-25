@@ -50,9 +50,7 @@ func (s *sUser) IsSystemTrustUser(ctx context.Context, userId int64) (yes bool) 
 		g.Log().Error(ctx, err)
 		return
 	}
-	if r, ok := settingJson.CheckGet(trustKey); ok {
-		yes = r.MustBool()
-	}
+	yes = settingJson.Get(trustKey).MustBool()
 	return
 }
 
@@ -120,7 +118,7 @@ func (s *sUser) SystemDistrustUser(ctx context.Context, userId int64) {
 		g.Log().Error(ctx, err)
 		return
 	}
-	settingJson.Set(trustKey, false)
+	settingJson.Del(trustKey)
 	settingBytes, err := settingJson.Encode()
 	if err != nil {
 		g.Log().Error(ctx, err)
@@ -155,9 +153,7 @@ func (s *sUser) CouldOperateNamespace(ctx context.Context, userId int64) (yes bo
 		g.Log().Error(ctx, err)
 		return
 	}
-	if r, ok := settingJson.CheckGet(namespaceKey); ok {
-		yes = r.MustBool()
-	}
+	yes = settingJson.Get(namespaceKey).MustBool()
 	return
 }
 
@@ -225,7 +221,7 @@ func (s *sUser) RevokeOperateNamespace(ctx context.Context, userId int64) {
 		g.Log().Error(ctx, err)
 		return
 	}
-	settingJson.Set(namespaceKey, false)
+	settingJson.Del(namespaceKey)
 	settingBytes, err := settingJson.Encode()
 	if err != nil {
 		g.Log().Error(ctx, err)

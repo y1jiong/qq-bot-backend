@@ -9,9 +9,9 @@ import (
 	"github.com/gogf/gf/v2/os/gtime"
 )
 
-// Whitelist is the golang structure of table whitelist for DAO operations like Where/Data.
-type Whitelist struct {
-	g.Meta    `orm:"table:whitelist, do:true"`
+// List is the golang structure of table list for DAO operations like Where/Data.
+type List struct {
+	g.Meta    `orm:"table:list, do:true"`
 	ListName  interface{} //
 	Namespace interface{} //
 	ListJson  interface{} //

@@ -11,15 +11,15 @@ import (
 	"github.com/gogf/gf/v2/frame/g"
 )
 
-// WhitelistDao is the data access object for table whitelist.
-type WhitelistDao struct {
-	table   string           // table is the underlying table name of the DAO.
-	group   string           // group is the database configuration group name of current DAO.
-	columns WhitelistColumns // columns contains all the column names of Table for convenient usage.
+// ListDao is the data access object for table list.
+type ListDao struct {
+	table   string      // table is the underlying table name of the DAO.
+	group   string      // group is the database configuration group name of current DAO.
+	columns ListColumns // columns contains all the column names of Table for convenient usage.
 }
 
-// WhitelistColumns defines and stores column names for table whitelist.
-type WhitelistColumns struct {
+// ListColumns defines and stores column names for table list.
+type ListColumns struct {
 	ListName  string //
 	Namespace string //
 	ListJson  string //
@@ -28,8 +28,8 @@ type WhitelistColumns struct {
 	DeletedAt string //
 }
 
-// whitelistColumns holds the columns for table whitelist.
-var whitelistColumns = WhitelistColumns{
+// listColumns holds the columns for table list.
+var listColumns = ListColumns{
 	ListName:  "list_name",
 	Namespace: "namespace",
 	ListJson:  "list_json",
@@ -38,37 +38,37 @@ var whitelistColumns = WhitelistColumns{
 	DeletedAt: "deleted_at",
 }
 
-// NewWhitelistDao creates and returns a new DAO object for table data access.
-func NewWhitelistDao() *WhitelistDao {
-	return &WhitelistDao{
+// NewListDao creates and returns a new DAO object for table data access.
+func NewListDao() *ListDao {
+	return &ListDao{
 		group:   "default",
-		table:   "whitelist",
-		columns: whitelistColumns,
+		table:   "list",
+		columns: listColumns,
 	}
 }
 
 // DB retrieves and returns the underlying raw database management object of current DAO.
-func (dao *WhitelistDao) DB() gdb.DB {
+func (dao *ListDao) DB() gdb.DB {
 	return g.DB(dao.group)
 }
 
 // Table returns the table name of current dao.
-func (dao *WhitelistDao) Table() string {
+func (dao *ListDao) Table() string {
 	return dao.table
 }
 
 // Columns returns all column names of current dao.
-func (dao *WhitelistDao) Columns() WhitelistColumns {
+func (dao *ListDao) Columns() ListColumns {
 	return dao.columns
 }
 
 // Group returns the configuration group name of database of current dao.
-func (dao *WhitelistDao) Group() string {
+func (dao *ListDao) Group() string {
 	return dao.group
 }
 
 // Ctx creates and returns the Model for current DAO, It automatically sets the context for current operation.
-func (dao *WhitelistDao) Ctx(ctx context.Context) *gdb.Model {
+func (dao *ListDao) Ctx(ctx context.Context) *gdb.Model {
 	return dao.DB().Model(dao.table).Safe().Ctx(ctx)
 }
 
@@ -78,6 +78,6 @@ func (dao *WhitelistDao) Ctx(ctx context.Context) *gdb.Model {
 //
 // Note that, you should not Commit or Rollback the transaction in function f
 // as it is automatically handled by this function.
-func (dao *WhitelistDao) Transaction(ctx context.Context, f func(ctx context.Context, tx gdb.TX) error) (err error) {
+func (dao *ListDao) Transaction(ctx context.Context, f func(ctx context.Context, tx gdb.TX) error) (err error) {
 	return dao.Ctx(ctx).Transaction(ctx, f)
 }

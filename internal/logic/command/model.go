@@ -11,7 +11,6 @@ func tryModelSet(ctx context.Context, cmd string) (catch bool) {
 		return
 	}
 	// 继续处理
-	catch = true
 	// /model set <model>
 	if !nextBranchRe.MatchString(cmd) {
 		return
@@ -21,5 +20,6 @@ func tryModelSet(ctx context.Context, cmd string) (catch bool) {
 		return
 	}
 	service.Bot().SetModel(ctx, next[2])
+	catch = true
 	return
 }

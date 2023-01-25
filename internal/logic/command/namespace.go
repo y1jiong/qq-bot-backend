@@ -32,16 +32,16 @@ func tryNamespace(ctx context.Context, cmd string) (catch bool) {
 			// /namespace <namespace> <>
 			catch = tryNamespaceSet(ctx, next[1], next[2])
 		}
-	case singleValueCmdEndRe.MatchString(cmd):
-		v := singleValueCmdEndRe.FindString(cmd)
-		switch v {
+	case endBranchRe.MatchString(cmd):
+		eb := endBranchRe.FindString(cmd)
+		switch eb {
 		case "query":
 			// /namespace query
 			service.Namespace().QueryOwnNamespace(ctx, service.Bot().GetUserId(ctx))
 			catch = true
 		default:
 			// /namespace <namespace>
-			service.Namespace().QueryNamespace(ctx, v)
+			service.Namespace().QueryNamespace(ctx, eb)
 			catch = true
 		}
 	}
@@ -57,9 +57,8 @@ func tryNamespaceSet(ctx context.Context, namespace, cmd string) (catch bool) {
 			// /namespace <namespace> reset <>
 			catch = tryNamespaceReset(ctx, namespace, next[2])
 		}
-	case singleValueCmdEndRe.MatchString(cmd):
-		end := singleValueCmdEndRe.FindString(cmd)
-		switch end {
+	case endBranchRe.MatchString(cmd):
+		switch endBranchRe.FindString(cmd) {
 		case "reset":
 			// /namespace <namespace> reset
 			service.Namespace().ResetNamespace(ctx, namespace, "all")

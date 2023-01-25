@@ -28,8 +28,11 @@ var (
 
 // setting json key
 const (
-	adminArrKey     = "admins"
-	whitelistArrKey = "whitelists"
+	adminMapKey = "admins"
+	listMapKey  = "lists"
+	adminCmd    = "admin"
+	listCmd     = "list"
+	allCmd      = "all"
 )
 
 func getNamespace(ctx context.Context, namespace string) (nEntity *entity.Namespace) {
@@ -43,8 +46,7 @@ func getNamespace(ctx context.Context, namespace string) (nEntity *entity.Namesp
 	}
 	// 没找到
 	if nEntity == nil {
-		service.Bot().SendMsg(ctx, "没找到 namespace "+namespace)
-		return
+		service.Bot().SendMsg(ctx, "没找到 namespace("+namespace+")")
 	}
 	return
 }
@@ -70,41 +72,35 @@ func isNamespaceOwnerOrAdmin(ctx context.Context, userId int64, nEntity *entity.
 		g.Log().Error(ctx, err)
 		return
 	}
-	// 获取 admin array
-	var adminArr []any
-	if adminJson, ok := settingJson.CheckGet(adminArrKey); ok {
-		adminArr = adminJson.MustArray()
-	} else {
-		return
-	}
+	// 获取 admin map
+	admins := settingJson.Get(adminMapKey).MustMap(make(map[string]any))
 	// 判断 admin
-	for _, v := range adminArr {
-		if userId == gconv.Int64(v) {
-			yes = true
-		}
+	if _, ok := admins[gconv.String(userId)]; ok {
+		yes = true
 	}
 	return
 }
 
-func (s *sNamespace) IsNamespaceExist(ctx context.Context, namespace string) (yes bool) {
-	// 参数合法性校验
-	if !legalNamespaceNameRe.MatchString(namespace) {
-		return
-	}
-	// 过程
-	n, err := dao.Namespace.Ctx(ctx).
-		Where(dao.Namespace.Columns().Namespace, namespace).
-		Count()
-	if err != nil {
-		g.Log().Error(ctx, err)
-		return
-	}
-	return n > 0
-}
+// 备用 若要 public 请首字母大写
+//func (s *sNamespace) isNamespaceExist(ctx context.Context, namespace string) (yes bool) {
+//	// 参数合法性校验
+//	if !legalNamespaceNameRe.MatchString(namespace) {
+//		return
+//	}
+//	// 过程
+//	n, err := dao.Namespace.Ctx(ctx).
+//		Where(dao.Namespace.Columns().Namespace, namespace).
+//		Count()
+//	if err != nil {
+//		g.Log().Error(ctx, err)
+//		return
+//	}
+//	return n > 0
+//}
 
 func (s *sNamespace) IsNamespaceOwnerOrAdmin(ctx context.Context, namespace string, userId int64) (yes bool) {
 	// 参数合法性校验
-	if userId < 1 {
+	if userId < 1 || !legalNamespaceNameRe.MatchString(namespace) {
 		return
 	}
 	// 过程
@@ -120,22 +116,15 @@ func (s *sNamespace) AddNewNamespace(ctx context.Context, namespace string) {
 	if !legalNamespaceNameRe.MatchString(namespace) {
 		return
 	}
-	// 初始化 setting json
-	settingJson := sj.New()
-	settingBytes, err := settingJson.Encode()
-	if err != nil {
-		g.Log().Error(ctx, err)
-		return
-	}
 	// 初始化 namespace 对象
-	namespaceEntity := entity.Namespace{
+	nEntity := entity.Namespace{
 		Namespace:   namespace,
 		OwnerId:     service.Bot().GetUserId(ctx),
-		SettingJson: string(settingBytes),
+		SettingJson: "{}",
 	}
 	// 数据库插入
-	_, err = dao.Namespace.Ctx(ctx).
-		Data(namespaceEntity).
+	_, err := dao.Namespace.Ctx(ctx).
+		Data(nEntity).
 		OmitEmpty().
 		Insert()
 	if err != nil {
@@ -191,7 +180,8 @@ func (s *sNamespace) QueryNamespace(ctx context.Context, namespace string) {
 	// 回执
 	msg := dao.Namespace.Columns().Namespace + ": " + nEntity.Namespace + "\n" +
 		dao.Namespace.Columns().OwnerId + ": " + gconv.String(nEntity.OwnerId) + "\n" +
-		dao.Namespace.Columns().SettingJson + ": " + nEntity.SettingJson
+		dao.Namespace.Columns().SettingJson + ": " + nEntity.SettingJson + "\n" +
+		dao.Namespace.Columns().UpdatedAt + ": " + nEntity.UpdatedAt.String()
 	service.Bot().SendMsg(ctx, msg)
 }
 
@@ -231,10 +221,7 @@ func (s *sNamespace) QueryOwnNamespace(ctx context.Context, userId int64) {
 
 func (s *sNamespace) AddNamespaceAdmin(ctx context.Context, namespace string, userId int64) {
 	// 参数合法性校验
-	if !legalNamespaceNameRe.MatchString(namespace) {
-		return
-	}
-	if userId < 1 {
+	if userId < 1 || !legalNamespaceNameRe.MatchString(namespace) {
 		return
 	}
 	// 获取 namespace 对象
@@ -252,14 +239,12 @@ func (s *sNamespace) AddNamespaceAdmin(ctx context.Context, namespace string, us
 		g.Log().Error(ctx, err)
 		return
 	}
-	// 获取 admin array
-	var adminArr []any
-	if adminJson, ok := settingJson.CheckGet(adminArrKey); ok {
-		adminArr = adminJson.MustArray()
-	}
+	// 获取 admin map
+	admins := settingJson.Get(adminMapKey).MustMap(make(map[string]any))
 	// 添加 userId 的 admin 权限
-	adminArr = append(adminArr, userId)
-	settingJson.Set(adminArrKey, adminArr)
+	admins[gconv.String(userId)] = nil
+	// 保存数据
+	settingJson.Set(adminMapKey, admins)
 	settingBytes, err := settingJson.Encode()
 	if err != nil {
 		g.Log().Error(ctx, err)
@@ -280,7 +265,7 @@ func (s *sNamespace) AddNamespaceAdmin(ctx context.Context, namespace string, us
 
 func (s *sNamespace) RemoveNamespaceAdmin(ctx context.Context, namespace string, userId int64) {
 	// 参数合法性校验
-	if !legalNamespaceNameRe.MatchString(namespace) {
+	if userId < 1 || !legalNamespaceNameRe.MatchString(namespace) {
 		return
 	}
 	// 数据库查询
@@ -307,44 +292,23 @@ func (s *sNamespace) RemoveNamespaceAdmin(ctx context.Context, namespace string,
 		g.Log().Error(ctx, err)
 		return
 	}
-	// 获取 admin array
-	var adminArr []any
-	if adminJson, ok := settingJson.CheckGet(adminArrKey); ok {
-		adminArr = adminJson.MustArray()
-	}
-	// 判断空
-	lengthOfAdminArr := len(adminArr)
-	if lengthOfAdminArr < 1 {
-		service.Bot().SendMsg(ctx, "admin 数组为空")
-		return
-	}
-	// 查找 userId 是否拥有 admin 权限
-	exist, position := false, -1
-	for i, v := range adminArr {
-		adminId := gconv.Int64(v)
-		if userId == adminId {
-			exist = true
-			position = i
-			break
-		}
-	}
-	if !exist {
+	// 获取 admin map
+	admins := settingJson.Get(adminMapKey).MustMap(make(map[string]any))
+	// 删除 userId 的 admin 权限
+	if _, ok := admins[gconv.String(userId)]; ok {
+		delete(admins, gconv.String(userId))
+	} else {
 		service.Bot().SendMsg(ctx, gconv.String(userId)+"不存在")
 		return
 	}
-	// 删除 userId 的 admin 权限
-	if position == lengthOfAdminArr-1 {
-		adminArr = adminArr[:position]
-	} else {
-		adminArr = append(adminArr[:position], adminArr[position+1:]...)
-	}
-	settingJson.Set(adminArrKey, adminArr)
+	// 保存数据
+	settingJson.Set(adminMapKey, admins)
 	settingBytes, err := settingJson.Encode()
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return
 	}
-	// 数据库更新 移除 admin 权限
+	// 数据库更新
 	_, err = dao.Namespace.Ctx(ctx).
 		Data(dao.Namespace.Columns().SettingJson, string(settingBytes)).
 		Where(dao.Namespace.Columns().Namespace, namespace).
@@ -379,11 +343,11 @@ func (s *sNamespace) ResetNamespace(ctx context.Context, namespace, option strin
 	}
 	// 选择重置
 	switch option {
-	case "admin":
-		settingJson.Set(adminArrKey, []any{})
-	case "whitelist":
-		settingJson.Set(whitelistArrKey, []any{})
-	case "all":
+	case adminCmd:
+		settingJson.Del(adminMapKey)
+	case listCmd:
+		settingJson.Del(listMapKey)
+	case allCmd:
 		settingJson = sj.New()
 	}
 	settingBytes, err := settingJson.Encode()
@@ -402,4 +366,98 @@ func (s *sNamespace) ResetNamespace(ctx context.Context, namespace, option strin
 	}
 	// 回执
 	service.Bot().SendMsg(ctx, "已重置 namespace("+namespace+") 的 "+option)
+}
+
+func (s *sNamespace) AddNamespaceList(ctx context.Context, namespace, listName string) {
+	// 参数合法性校验
+	if !legalNamespaceNameRe.MatchString(namespace) {
+		return
+	}
+	// 获取 namespace
+	nEntity := getNamespace(ctx, namespace)
+	if nEntity == nil {
+		return
+	}
+	// 数据处理
+	settingJson, err := sj.NewJson([]byte(nEntity.SettingJson))
+	if err != nil {
+		g.Log().Error(ctx, err)
+		return
+	}
+	listMap := settingJson.Get(listMapKey).MustMap(make(map[string]any))
+	listMap[listName] = nil
+	// 保存数据
+	settingJson.Set(listMapKey, listMap)
+	settingBytes, err := settingJson.Encode()
+	if err != nil {
+		g.Log().Error(ctx, err)
+		return
+	}
+	// 数据库更新
+	_, err = dao.Namespace.Ctx(ctx).
+		Where(dao.Namespace.Columns().Namespace, namespace).
+		Data(dao.Namespace.Columns().SettingJson, string(settingBytes)).
+		Update()
+	if err != nil {
+		g.Log().Error(ctx, err)
+	}
+}
+
+func (s *sNamespace) RemoveNamespaceList(ctx context.Context, namespace, listName string) {
+	// 参数合法性校验
+	if !legalNamespaceNameRe.MatchString(namespace) {
+		return
+	}
+	// 获取 namespace
+	nEntity := getNamespace(ctx, namespace)
+	if nEntity == nil {
+		return
+	}
+	// 数据处理
+	settingJson, err := sj.NewJson([]byte(nEntity.SettingJson))
+	if err != nil {
+		g.Log().Error(ctx, err)
+		return
+	}
+	lists := settingJson.Get(listMapKey).MustMap(make(map[string]any))
+	if _, ok := lists[listName]; ok {
+		delete(lists, listName)
+	} else {
+		return
+	}
+	// 保存数据
+	settingJson.Set(listMapKey, lists)
+	settingBytes, err := settingJson.Encode()
+	if err != nil {
+		g.Log().Error(ctx, err)
+		return
+	}
+	// 数据库更新
+	_, err = dao.Namespace.Ctx(ctx).
+		Where(dao.Namespace.Columns().Namespace, namespace).
+		Data(dao.Namespace.Columns().SettingJson, string(settingBytes)).
+		Update()
+	if err != nil {
+		g.Log().Error(ctx, err)
+	}
+}
+
+func (s *sNamespace) GetNamespaceList(ctx context.Context, namespace string) (lists map[string]any) {
+	// 参数合法性校验
+	if !legalNamespaceNameRe.MatchString(namespace) {
+		return
+	}
+	// 获取 namespace
+	nEntity := getNamespace(ctx, namespace)
+	if nEntity == nil {
+		return
+	}
+	// 数据处理
+	settingJson, err := sj.NewJson([]byte(nEntity.SettingJson))
+	if err != nil {
+		g.Log().Error(ctx, err)
+		return
+	}
+	lists = settingJson.Get(listMapKey).MustMap(make(map[string]any))
+	return
 }

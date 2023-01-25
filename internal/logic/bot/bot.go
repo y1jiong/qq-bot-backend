@@ -34,11 +34,11 @@ var (
 	echoPool = make(map[string]echoModel)
 )
 
-func (s *sBot) CtxWithWebSocket(parent context.Context, ws *ghttp.WebSocket) context.Context {
+func (s *sBot) ctxWithWebSocket(parent context.Context, ws *ghttp.WebSocket) context.Context {
 	return context.WithValue(parent, ctxKeyForWebSocket, ws)
 }
 
-func (s *sBot) WebSocketFromCtx(ctx context.Context) *ghttp.WebSocket {
+func (s *sBot) webSocketFromCtx(ctx context.Context) *ghttp.WebSocket {
 	if v := ctx.Value(ctxKeyForWebSocket); v != nil {
 		return v.(*ghttp.WebSocket)
 	}
@@ -56,42 +56,26 @@ func (s *sBot) reqJsonFromCtx(ctx context.Context) *sj.Json {
 	return nil
 }
 
-func (s *sBot) Process(ctx context.Context, rawJson []byte) {
-	sj.New()
+func (s *sBot) Process(ctx context.Context, ws *ghttp.WebSocket, rawJson []byte, nextProcess func(ctx context.Context)) {
 	reqJson, err := sj.NewJson(rawJson)
 	if err != nil {
 		return
 	}
+	// ctx 携带 websocket
+	ctx = s.ctxWithWebSocket(ctx, ws)
 	// ctx 携带 reqJson
 	ctx = s.ctxWithReqJson(ctx, reqJson)
-	postType := s.GetPostType(ctx)
 	// debug mode
+	postType := s.GetPostType(ctx)
 	if service.Cfg().IsDebugEnabled(ctx) && postType != "meta_event" {
 		g.Log().Info(ctx, "\n", rawJson)
 	}
-	// 优先处理命令
-	service.Command().TryCommand(ctx)
-	// 是否暂停处理
-	if !service.State().IsBotProcess() {
-		return
-	}
-	// 捕捉 echo
-	if s.catchEcho(ctx) {
-		return
-	}
-	// 处理分支
-	switch postType {
-	case "message":
-		processMessage(ctx)
-	case "request":
-		processRequest(ctx)
-	case "notice":
-		processNotice(ctx)
-	}
+	// 下一步执行
+	nextProcess(ctx)
 }
 
-func (s *sBot) catchEcho(ctx context.Context) (catch bool) {
-	if echo := s.GetEcho(ctx); echo != "" {
+func (s *sBot) CatchEcho(ctx context.Context) (catch bool) {
+	if echo := s.getEcho(ctx); echo != "" {
 		if lastReq, ok := echoPool[echo]; ok {
 			switch s.getEchoStatus(ctx) {
 			case "ok":
@@ -110,7 +94,7 @@ func (s *sBot) catchEcho(ctx context.Context) (catch bool) {
 	return
 }
 
-func (s *sBot) GetEcho(ctx context.Context) string {
+func (s *sBot) getEcho(ctx context.Context) string {
 	return s.reqJsonFromCtx(ctx).Get("echo").MustString()
 }
 
@@ -198,7 +182,7 @@ func (s *sBot) SendMessage(ctx context.Context, messageType string, uid, gid int
 		g.Log().Warning(ctx, err)
 		return
 	}
-	err = s.WebSocketFromCtx(ctx).WriteMessage(websocket.TextMessage, res)
+	err = s.webSocketFromCtx(ctx).WriteMessage(websocket.TextMessage, res)
 	if err != nil {
 		g.Log().Warning(ctx, err)
 	}
@@ -225,7 +209,7 @@ func (s *sBot) ApproveAddGroup(ctx context.Context, flag, subType string, approv
 		return
 	}
 	// 发送响应
-	err = s.WebSocketFromCtx(ctx).WriteMessage(websocket.TextMessage, res)
+	err = s.webSocketFromCtx(ctx).WriteMessage(websocket.TextMessage, res)
 	if err != nil {
 		g.Log().Warning(ctx, err)
 	}
@@ -250,7 +234,7 @@ func (s *sBot) SetModel(ctx context.Context, model string) {
 		return
 	}
 	// 发送响应
-	err = s.WebSocketFromCtx(ctx).WriteMessage(websocket.TextMessage, res)
+	err = s.webSocketFromCtx(ctx).WriteMessage(websocket.TextMessage, res)
 	if err != nil {
 		g.Log().Warning(ctx, err)
 	}

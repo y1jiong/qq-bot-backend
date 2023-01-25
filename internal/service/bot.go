@@ -13,10 +13,8 @@ import (
 
 type (
 	IBot interface {
-		CtxWithWebSocket(parent context.Context, ws *ghttp.WebSocket) context.Context
-		WebSocketFromCtx(ctx context.Context) *ghttp.WebSocket
-		Process(ctx context.Context, rawJson []byte)
-		GetEcho(ctx context.Context) string
+		Process(ctx context.Context, ws *ghttp.WebSocket, rawJson []byte, nextProcess func(ctx context.Context))
+		CatchEcho(ctx context.Context) (catch bool)
 		GetPostType(ctx context.Context) string
 		GetMsgType(ctx context.Context) string
 		GetRequestType(ctx context.Context) string

@@ -14,15 +14,15 @@ import (
 
 var (
 	// 匹配 Minecraft 玩家名称
-	legalMinecraftNameRe = regexp.MustCompile(`\w{3,16}$`)
+	legalMinecraftNameRe = regexp.MustCompile(`(?:^|[^\w#])(\w{3,16})$`)
 )
 
 func (s *sThirdParty) QueryMinecraftGenuineUser(ctx context.Context, name string) (genuine bool, realName, uuid string, err error) {
 	// 全字匹配
-	name = legalMinecraftNameRe.FindString(name)
-	if name == "" {
+	if !legalMinecraftNameRe.MatchString(name) {
 		return
 	}
+	name = legalMinecraftNameRe.FindStringSubmatch(name)[1]
 	// GET 请求 mojang api
 	get := func() (*gclient.Response, error) {
 		return g.Client().Get(ctx, "https://api.mojang.com/users/profiles/minecraft/"+name)

@@ -51,6 +51,6 @@ func (c *cConnectClient) Connect(r *ghttp.Request) {
 		}
 		// 异步处理 WebSocket 请求
 		// ctx 携带 WebSocket 对象
-		go service.Bot().Process(service.Bot().CtxWithWebSocket(ctx, ws), wsReq)
+		go service.Bot().Process(ctx, ws, wsReq, service.Process().Process)
 	}
 }

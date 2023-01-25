@@ -8,8 +8,8 @@ import (
 
 func queryProcessState(ctx context.Context) (catch bool) {
 	catch = true
-	
-	if service.State().IsBotProcess() {
+	// 继续处理
+	if service.Process().IsBotProcess() {
 		service.Bot().SendMsg(ctx, "处于正常处理所有信息的状态")
 	} else {
 		service.Bot().SendMsg(ctx, "处于暂停处理所有信息的状态")
@@ -19,14 +19,14 @@ func queryProcessState(ctx context.Context) (catch bool) {
 
 func pauseProcess(ctx context.Context) (catch bool) {
 	catch = true
-
-	if !service.State().IsBotProcess() {
+	// 继续处理
+	if !service.Process().IsBotProcess() {
 		service.Bot().SendMsg(ctx, "已处于暂停处理所有信息的状态")
 		return
 	}
-	if service.State().PauseBotProcess() {
+	if service.Process().PauseBotProcess() {
 		service.Bot().SendMsg(ctx, "已暂停处理所有信息")
-		g.Log().Info(ctx, "Pause parse")
+		g.Log().Info(ctx, "Pause process")
 	} else {
 		service.Bot().SendMsg(ctx, "暂停处理所有信息失败")
 	}
@@ -35,14 +35,14 @@ func pauseProcess(ctx context.Context) (catch bool) {
 
 func continueProcess(ctx context.Context) (catch bool) {
 	catch = true
-
-	if service.State().IsBotProcess() {
+	// 继续处理
+	if service.Process().IsBotProcess() {
 		service.Bot().SendMsg(ctx, "已处于正常处理所有信息的状态")
 		return
 	}
-	if service.State().ContinueBotProcess() {
+	if service.Process().ContinueBotProcess() {
 		service.Bot().SendMsg(ctx, "已恢复处理所有信息")
-		g.Log().Info(ctx, "Continue parse")
+		g.Log().Info(ctx, "Continue process")
 	} else {
 		service.Bot().SendMsg(ctx, "恢复处理所有信息失败")
 	}

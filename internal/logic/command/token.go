@@ -20,19 +20,20 @@ func tryToken(ctx context.Context, cmd string) (catch bool) {
 			catch = tryTokenAdd(ctx, next[2])
 		case "rm":
 			// /token rm <>
-			catch = tryTokenRemove(ctx, next[2])
+			service.Token().RemoveToken(ctx, next[2])
+			catch = true
 		}
-	case singleValueCmdEndRe.MatchString(cmd):
-		if singleValueCmdEndRe.FindString(cmd) == "query" {
+	case endBranchRe.MatchString(cmd):
+		if endBranchRe.FindString(cmd) == "query" {
 			// /token query
-			catch = tryTokenQuery(ctx)
+			service.Token().QueryToken(ctx)
+			catch = true
 		}
 	}
 	return
 }
 
 func tryTokenAdd(ctx context.Context, cmd string) (catch bool) {
-	catch = true
 	if !doubleValueCmdEndRe.MatchString(cmd) {
 		return
 	}
@@ -40,25 +41,6 @@ func tryTokenAdd(ctx context.Context, cmd string) (catch bool) {
 	dv := doubleValueCmdEndRe.FindStringSubmatch(cmd)
 	// 执行
 	service.Token().AddNewToken(ctx, dv[1], dv[2], service.Bot().GetUserId(ctx))
-	return
-}
-
-func tryTokenRemove(ctx context.Context, cmd string) (catch bool) {
 	catch = true
-	if !singleValueCmdEndRe.MatchString(cmd) {
-		return
-	}
-	// /token rm <name>
-	name := singleValueCmdEndRe.FindString(cmd)
-	// 执行
-	service.Token().RemoveToken(ctx, name)
-	return
-}
-
-func tryTokenQuery(ctx context.Context) (catch bool) {
-	catch = true
-	// /token query
-	// 执行
-	service.Token().QueryToken(ctx)
 	return
 }

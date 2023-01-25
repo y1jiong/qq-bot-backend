@@ -5,25 +5,30 @@
 
 package service
 
+import (
+	"context"
+)
+
 type (
-	IState interface {
+	IProcess interface {
 		IsBotProcess() bool
 		PauseBotProcess() bool
 		ContinueBotProcess() bool
+		Process(ctx context.Context)
 	}
 )
 
 var (
-	localState IState
+	localProcess IProcess
 )
 
-func State() IState {
-	if localState == nil {
-		panic("implement not found for interface IState, forgot register?")
+func Process() IProcess {
+	if localProcess == nil {
+		panic("implement not found for interface IProcess, forgot register?")
 	}
-	return localState
+	return localProcess
 }
 
-func RegisterState(i IState) {
-	localState = i
+func RegisterProcess(i IProcess) {
+	localProcess = i
 }

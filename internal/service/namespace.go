@@ -11,7 +11,6 @@ import (
 
 type (
 	INamespace interface {
-		IsNamespaceExist(ctx context.Context, namespace string) (yes bool)
 		IsNamespaceOwnerOrAdmin(ctx context.Context, namespace string, userId int64) (yes bool)
 		AddNewNamespace(ctx context.Context, namespace string)
 		RemoveNamespace(ctx context.Context, namespace string)
@@ -20,6 +19,9 @@ type (
 		AddNamespaceAdmin(ctx context.Context, namespace string, userId int64)
 		RemoveNamespaceAdmin(ctx context.Context, namespace string, userId int64)
 		ResetNamespace(ctx context.Context, namespace, option string)
+		AddNamespaceList(ctx context.Context, namespace, listName string)
+		RemoveNamespaceList(ctx context.Context, namespace, listName string)
+		GetNamespaceList(ctx context.Context, namespace string) (lists map[string]any)
 	}
 )
 

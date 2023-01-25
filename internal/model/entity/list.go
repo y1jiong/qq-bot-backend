@@ -8,8 +8,8 @@ import (
 	"github.com/gogf/gf/v2/os/gtime"
 )
 
-// Whitelist is the golang structure for table whitelist.
-type Whitelist struct {
+// List is the golang structure for table list.
+type List struct {
 	ListName  string      `json:"list_name"  ` //
 	Namespace string      `json:"namespace"  ` //
 	ListJson  string      `json:"list_json"  ` //

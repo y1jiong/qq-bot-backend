@@ -2,6 +2,8 @@ package command
 
 import (
 	"context"
+	"github.com/gogf/gf/v2/frame/g"
+	"github.com/gogf/gf/v2/util/gconv"
 	"qq-bot-backend/internal/service"
 	"regexp"
 )
@@ -19,7 +21,7 @@ func init() {
 var (
 	commandPrefixRe     = regexp.MustCompile(`^/(.+)$`)
 	nextBranchRe        = regexp.MustCompile(`^(\S+) (.+)$`)
-	singleValueCmdEndRe = regexp.MustCompile(`^\S+$`)
+	endBranchRe         = regexp.MustCompile(`^\S+$`)
 	doubleValueCmdEndRe = regexp.MustCompile(`^(\S+) (\S+)$`)
 )
 
@@ -28,17 +30,29 @@ func (s *sCommand) TryCommand(ctx context.Context) (catch bool) {
 	if !commandPrefixRe.MatchString(msg) {
 		return
 	}
+	// 暂停状态时的权限校验
+	userId := service.Bot().GetUserId(ctx)
+	if !service.Process().IsBotProcess() &&
+		!service.User().IsSystemTrustUser(ctx, userId) {
+		return
+	}
+	// 命令 log
+	g.Log().Info(ctx, "user("+gconv.String(userId)+") send cmd "+msg)
+	// 继续处理
 	cmd := commandPrefixRe.FindStringSubmatch(msg)[1]
 	switch {
 	case nextBranchRe.MatchString(cmd):
 		next := nextBranchRe.FindStringSubmatch(cmd)
 		switch next[1] {
-		case "user":
-			// /user <>
-			catch = tryUser(ctx, next[2])
+		case "list":
+			// /list <>
+			catch = tryList(ctx, next[2])
 		case "group":
 			// /group <>
 			catch = tryGroup(ctx, next[2])
+		case "user":
+			// /user <>
+			catch = tryUser(ctx, next[2])
 		case "namespace":
 			// /namespace <>
 			catch = tryNamespace(ctx, next[2])
@@ -52,21 +66,21 @@ func (s *sCommand) TryCommand(ctx context.Context) (catch bool) {
 			// /sys <>
 			catch = trySys(ctx, next[2])
 		}
-	case singleValueCmdEndRe.MatchString(cmd):
+	case endBranchRe.MatchString(cmd):
 		// 权限校验
 		if !service.User().IsSystemTrustUser(ctx, service.Bot().GetUserId(ctx)) {
 			return
 		}
-		switch singleValueCmdEndRe.FindString(cmd) {
+		switch endBranchRe.FindString(cmd) {
+		case "state":
+			// /state
+			catch = queryProcessState(ctx)
 		case "continue":
 			// /continue
 			catch = continueProcess(ctx)
 		case "pause":
 			// /pause
 			catch = pauseProcess(ctx)
-		case "state":
-			// /state
-			catch = queryProcessState(ctx)
 		}
 	}
 	return
