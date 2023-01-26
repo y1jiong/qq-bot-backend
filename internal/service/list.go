@@ -17,6 +17,7 @@ type (
 		GetList(ctx context.Context, listName string) (list map[string]any)
 		AddListData(ctx context.Context, listName, key string, value ...string)
 		RemoveListData(ctx context.Context, listName, key string)
+		ResetListData(ctx context.Context, listName string)
 	}
 )
 

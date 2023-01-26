@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/util/gconv"
+	"qq-bot-backend/internal/consts"
 	"qq-bot-backend/internal/service"
 	"regexp"
 )
@@ -75,6 +76,10 @@ func (s *sCommand) TryCommand(ctx context.Context) (catch bool) {
 		case "state":
 			// /state
 			catch = queryProcessState(ctx)
+		case "version":
+			// /version
+			service.Bot().SendPlainMsg(ctx, consts.Description)
+			catch = true
 		case "continue":
 			// /continue
 			catch = continueProcess(ctx)

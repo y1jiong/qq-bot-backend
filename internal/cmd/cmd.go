@@ -13,11 +13,9 @@ import (
 
 var (
 	Main = gcmd.Command{
-		Name: "qq-bot-backend",
-		Description: "Version: " + consts.Version +
-			"\nBuild Time: " + consts.BuildTime +
-			"\nCommit Hash: " + consts.CommitHash,
-		Brief: "start bot",
+		Name:        "qq-bot-backend",
+		Description: consts.Description,
+		Brief:       "start bot",
 		Func: func(ctx context.Context, parser *gcmd.Parser) (err error) {
 			s := g.Server()
 			s.Group("/v1/ws", func(group *ghttp.RouterGroup) {

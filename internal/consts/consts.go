@@ -1,10 +1,13 @@
 package consts
 
 const (
-	Version = "v1.0.1"
+	Version = "v1.0.2"
 )
 
 var (
-	BuildTime  = ""
-	CommitHash = ""
+	BuildTime   = ""
+	CommitHash  = ""
+	Description = "Version: " + Version +
+		"\nBuild Time: " + BuildTime +
+		"\nCommit Hash: " + CommitHash
 )

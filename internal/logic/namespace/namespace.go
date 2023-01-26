@@ -41,10 +41,6 @@ func getNamespace(ctx context.Context, namespace string) (nEntity *entity.Namesp
 		g.Log().Error(ctx, err)
 		return
 	}
-	// 没找到
-	if nEntity == nil {
-		service.Bot().SendPlainMsg(ctx, "没找到 namespace("+namespace+")")
-	}
 	return
 }
 
@@ -230,7 +226,7 @@ func (s *sNamespace) AddNamespaceAdmin(ctx context.Context, namespace string, us
 		g.Log().Error(ctx, err)
 		return
 	}
-	// 数据库更新 添加 admin 权限
+	// 数据库更新
 	_, err = dao.Namespace.Ctx(ctx).
 		Data(dao.Namespace.Columns().SettingJson, string(settingBytes)).
 		Where(dao.Namespace.Columns().Namespace, namespace).
@@ -248,18 +244,9 @@ func (s *sNamespace) RemoveNamespaceAdmin(ctx context.Context, namespace string,
 	if userId < 1 || !legalNamespaceNameRe.MatchString(namespace) {
 		return
 	}
-	// 数据库查询
-	var nEntity *entity.Namespace
-	err := dao.Namespace.Ctx(ctx).
-		Where(dao.Namespace.Columns().Namespace, namespace).
-		Scan(&nEntity)
-	if err != nil {
-		g.Log().Error(ctx, err)
-		return
-	}
-	// 没找到
+	// 获取 namespace
+	nEntity := getNamespace(ctx, namespace)
 	if nEntity == nil {
-		service.Bot().SendPlainMsg(ctx, "没找到 namespace "+namespace)
 		return
 	}
 	// 判断是否是 owner
@@ -306,7 +293,7 @@ func (s *sNamespace) ResetNamespaceAdmin(ctx context.Context, namespace string) 
 	if !legalNamespaceNameRe.MatchString(namespace) {
 		return
 	}
-	// 数据库查询
+	// 获取 namespace
 	nEntity := getNamespace(ctx, namespace)
 	if nEntity == nil {
 		return

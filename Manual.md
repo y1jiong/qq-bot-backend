@@ -12,6 +12,7 @@ v1.0
 | /list leave {list_name} {key}        | 将 key 从 list_name 中移除         | 同上                                             |
 | /list query {list_name}              | 查询 list_name                     | 同上                                             |
 | /list add {list_name} {namespace}    | 在 namespace 下新增 list_name      | 同上                                             |
+| /list reset {list_name}              | 重置 list_name 的数据              | 同上                                             |
 | /list rm {list_name}                 | 删除 list_name                     | 同上                                             |
 
 ## Group

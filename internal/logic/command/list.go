@@ -20,6 +20,10 @@ func tryList(ctx context.Context, cmd string) (catch bool) {
 		case "leave":
 			// /list leave <>
 			catch = tryListLeave(ctx, next[2])
+		case "reset":
+			// /list reset <list_name>
+			service.List().ResetListData(ctx, next[2])
+			catch = true
 		case "add":
 			if !doubleValueCmdEndRe.MatchString(next[2]) {
 				break

@@ -33,10 +33,6 @@ func getList(ctx context.Context, listName string) (lEntity *entity.List) {
 		g.Log().Error(ctx, err)
 		return
 	}
-	// 没找到
-	if lEntity == nil {
-		service.Bot().SendPlainMsg(ctx, "没找到 list("+listName+")")
-	}
 	return
 }
 
@@ -241,4 +237,31 @@ func (s *sList) RemoveListData(ctx context.Context, listName, key string) {
 	}
 	// 回执
 	service.Bot().SendPlainMsg(ctx, "已删除 key("+key+") 从 list("+listName+")")
+}
+
+func (s *sList) ResetListData(ctx context.Context, listName string) {
+	// 参数合法性校验
+	if !legalListNameRe.MatchString(listName) {
+		return
+	}
+	// 获取 list
+	lEntity := getList(ctx, listName)
+	if lEntity == nil {
+		return
+	}
+	// 权限校验
+	if !service.Namespace().IsNamespaceOwnerOrAdmin(ctx, lEntity.Namespace, service.Bot().GetUserId(ctx)) {
+		return
+	}
+	// 数据库更新
+	_, err := dao.List.Ctx(ctx).
+		Where(dao.List.Columns().ListName, listName).
+		Data(dao.List.Columns().ListJson, "{}").
+		Update()
+	if err != nil {
+		g.Log().Error(ctx, err)
+		return
+	}
+	// 回执
+	service.Bot().SendPlainMsg(ctx, "已重置 list("+listName+") 的数据")
 }
