@@ -27,7 +27,7 @@ func (s *sModule) TryApproveAddGroup(ctx context.Context) (catch bool) {
 	// 处理流程
 	if _, ok := process[consts.RegexpCmd]; ok && pass {
 		// 正则表达式
-		pass = isMatchRegexp(ctx, groupId, comment)
+		pass, extra = isMatchRegexp(ctx, groupId, comment)
 	}
 	if _, ok := process[consts.McCmd]; ok && pass {
 		// mc 正版验证
@@ -58,12 +58,24 @@ func (s *sModule) TryApproveAddGroup(ctx context.Context) (catch bool) {
 	return
 }
 
-func isMatchRegexp(ctx context.Context, groupId int64, comment string) (yes bool) {
-	re := service.Group().GetRegexp(ctx, groupId)
+func isMatchRegexp(ctx context.Context, groupId int64, comment string) (yes bool, matched string) {
+	exp := service.Group().GetRegexp(ctx, groupId)
 	// 匹配正则
-	yes, err := regexp.MatchString(re, comment)
+	re, err := regexp.Compile(exp)
 	if err != nil {
 		g.Log().Warning(ctx, err)
+		return
+	}
+	ans := re.FindStringSubmatch(comment)
+	switch len(ans) {
+	case 0:
+	case 1:
+		matched = ans[0]
+		yes = true
+	default:
+		// 读取第一个子表达式
+		matched = ans[1]
+		yes = true
 	}
 	return
 }

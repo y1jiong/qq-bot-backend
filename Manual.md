@@ -1,6 +1,6 @@
 # Manual
 
-v1.0.0-rc1
+v1.0.0
 
 {required} [optional]
 
@@ -25,7 +25,7 @@ v1.0.0-rc1
 | /group approval enable regexp             | 入群审批流程启用正则表达式                                   | 同上                                           |
 | /group approval enable whitelist          | 入群审批流程启用白名单                                       | 同上                                           |
 | /group approval enable blacklist          | 入群审批流程启用黑名单                                       | 同上                                           |
-| /group approval set regexp {regexp}       | 指定入群审批流程的正则表达式                                 | 同上                                           |
+| /group approval set regexp {regexp}       | 指定入群审批流程的正则表达式（若有子表达式，则会采用第一个子表达式） | 同上                                           |
 | /group approval add whitelist {list_name} | 新增入群审批流程白名单 list_name（可以多次指定不同的 list_name 最终采用并集查找） | 同上                                           |
 | /group approval add blacklist {list_name} | 新增入群审批流程黑名单 list_name（可以多次指定不同的 list_name 最终采用并集查找） | 同上                                           |
 | /group approval disable mc                | 入群审批流程禁用 mc 正版用户名验证                           | 同上                                           |
