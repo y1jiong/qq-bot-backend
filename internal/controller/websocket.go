@@ -23,15 +23,22 @@ func (c *cConnectClient) Connect(r *ghttp.Request) {
 		return
 	}
 	token := authorizations[1]
-	// token 验证模式
+	var tokenName string
 	if service.Cfg().IsDebugEnabled(ctx) {
+		// token debug 验证模式
+		var pass bool
+		tokenName = "debug"
+		pass, tokenName = service.Token().IsCorrectToken(ctx, token)
 		// debug mode
-		if token != service.Cfg().GetDebugToken(ctx) && !service.Token().IsCorrectToken(ctx, token) {
+		if token != service.Cfg().GetDebugToken(ctx) && !pass {
 			r.Response.WriteHeader(http.StatusForbidden)
 			return
 		}
 	} else {
-		if !service.Token().IsCorrectToken(ctx, token) {
+		// token 正常验证模式
+		var pass bool
+		pass, tokenName = service.Token().IsCorrectToken(ctx, token)
+		if !pass {
 			r.Response.WriteHeader(http.StatusForbidden)
 			return
 		}
@@ -41,7 +48,7 @@ func (c *cConnectClient) Connect(r *ghttp.Request) {
 	if err != nil {
 		return
 	}
-	g.Log().Info(ctx, "Connected")
+	g.Log().Info(ctx, tokenName+" Connected")
 	for {
 		var wsReq []byte
 		_, wsReq, err = ws.ReadMessage()

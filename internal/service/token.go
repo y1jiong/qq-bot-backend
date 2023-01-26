@@ -11,7 +11,7 @@ import (
 
 type (
 	IToken interface {
-		IsCorrectToken(ctx context.Context, token string) (yes bool)
+		IsCorrectToken(ctx context.Context, token string) (yes bool, name string)
 		AddNewToken(ctx context.Context, name, token string, owner int64)
 		RemoveToken(ctx context.Context, name string)
 		QueryToken(ctx context.Context)
