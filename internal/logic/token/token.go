@@ -65,7 +65,7 @@ func (s *sToken) AddNewToken(ctx context.Context, name, token string, owner int6
 		return
 	}
 	// 回执
-	service.Bot().SendMsg(ctx, "已新增 token "+name)
+	service.Bot().SendPlainMsg(ctx, "已新增 token "+name)
 }
 
 func (s *sToken) RemoveToken(ctx context.Context, name string) {
@@ -82,7 +82,7 @@ func (s *sToken) RemoveToken(ctx context.Context, name string) {
 		return
 	}
 	if n < 1 {
-		service.Bot().SendMsg(ctx, "不存在该 token")
+		service.Bot().SendPlainMsg(ctx, "不存在该 token")
 	}
 	// 数据库软删除
 	_, err = dao.Token.Ctx(ctx).
@@ -93,7 +93,7 @@ func (s *sToken) RemoveToken(ctx context.Context, name string) {
 		return
 	}
 	// 回执
-	service.Bot().SendMsg(ctx, "已删除 token "+name)
+	service.Bot().SendPlainMsg(ctx, "已删除 token "+name)
 }
 
 func (s *sToken) QueryToken(ctx context.Context) {
@@ -122,5 +122,5 @@ func (s *sToken) QueryToken(ctx context.Context) {
 		msg.WriteString(v.CreatedAt.String())
 		msg.WriteString("\n---\n")
 	}
-	service.Bot().SendMsg(ctx, msg.String())
+	service.Bot().SendPlainMsg(ctx, msg.String())
 }

@@ -1,7 +1,7 @@
 package consts
 
 const (
-	Version = "v0.3.0"
+	Version = "v1.0.0-rc1"
 )
 
 var (

@@ -99,7 +99,7 @@ func (s *sUser) SystemTrustUser(ctx context.Context, userId int64) {
 		return
 	}
 	// 回执
-	service.Bot().SendMsg(ctx, "系统已信任 user("+gconv.String(userId)+")")
+	service.Bot().SendPlainMsg(ctx, "系统已信任 user("+gconv.String(userId)+")")
 }
 
 func (s *sUser) SystemDistrustUser(ctx context.Context, userId int64) {
@@ -134,7 +134,7 @@ func (s *sUser) SystemDistrustUser(ctx context.Context, userId int64) {
 		return
 	}
 	// 回执
-	service.Bot().SendMsg(ctx, "系统已拒绝信任 user("+gconv.String(userId)+")")
+	service.Bot().SendPlainMsg(ctx, "系统已拒绝信任 user("+gconv.String(userId)+")")
 }
 
 func (s *sUser) CouldOperateNamespace(ctx context.Context, userId int64) (yes bool) {
@@ -202,7 +202,7 @@ func (s *sUser) GrantOperateNamespace(ctx context.Context, userId int64) {
 		return
 	}
 	// 回执
-	service.Bot().SendMsg(ctx, "系统已授予 user("+gconv.String(userId)+") 操作 namespace 的权限")
+	service.Bot().SendPlainMsg(ctx, "系统已授予 user("+gconv.String(userId)+") 操作 namespace 的权限")
 }
 
 func (s *sUser) RevokeOperateNamespace(ctx context.Context, userId int64) {
@@ -237,5 +237,5 @@ func (s *sUser) RevokeOperateNamespace(ctx context.Context, userId int64) {
 		return
 	}
 	// 回执
-	service.Bot().SendMsg(ctx, "系统已撤销 user("+gconv.String(userId)+") 操作 namespace 的权限")
+	service.Bot().SendPlainMsg(ctx, "系统已撤销 user("+gconv.String(userId)+") 操作 namespace 的权限")
 }

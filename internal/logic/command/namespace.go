@@ -11,57 +11,41 @@ func tryNamespace(ctx context.Context, cmd string) (catch bool) {
 		next := nextBranchRe.FindStringSubmatch(cmd)
 		switch next[1] {
 		case "add":
-			// /namespace add <>
 			// 权限校验
 			if !service.User().CouldOperateNamespace(ctx, service.Bot().GetUserId(ctx)) {
 				return
 			}
+			// /namespace add <namespace>
 			// 继续处理
 			service.Namespace().AddNewNamespace(ctx, next[2])
 			catch = true
 		case "rm":
-			// /namespace rm <>
 			// 权限校验
 			if !service.User().CouldOperateNamespace(ctx, service.Bot().GetUserId(ctx)) {
 				return
 			}
+			// /namespace rm <namespace>
 			// 继续处理
 			service.Namespace().RemoveNamespace(ctx, next[2])
 			catch = true
 		default:
 			// /namespace <namespace> <>
-			catch = tryNamespaceSet(ctx, next[1], next[2])
+			catch = tryNamespaceReset(ctx, next[1], next[2])
 		}
 	case endBranchRe.MatchString(cmd):
-		eb := endBranchRe.FindString(cmd)
-		switch eb {
+		end := endBranchRe.FindString(cmd)
+		switch end {
 		case "query":
+			// 权限校验
+			if !service.User().CouldOperateNamespace(ctx, service.Bot().GetUserId(ctx)) {
+				return
+			}
 			// /namespace query
 			service.Namespace().QueryOwnNamespace(ctx, service.Bot().GetUserId(ctx))
 			catch = true
 		default:
 			// /namespace <namespace>
-			service.Namespace().QueryNamespace(ctx, eb)
-			catch = true
-		}
-	}
-	return
-}
-
-func tryNamespaceSet(ctx context.Context, namespace, cmd string) (catch bool) {
-	switch {
-	case nextBranchRe.MatchString(cmd):
-		next := nextBranchRe.FindStringSubmatch(cmd)
-		switch next[1] {
-		case "reset":
-			// /namespace <namespace> reset <>
-			catch = tryNamespaceReset(ctx, namespace, next[2])
-		}
-	case endBranchRe.MatchString(cmd):
-		switch endBranchRe.FindString(cmd) {
-		case "reset":
-			// /namespace <namespace> reset
-			service.Namespace().ResetNamespace(ctx, namespace, "all")
+			service.Namespace().QueryNamespace(ctx, end)
 			catch = true
 		}
 	}
@@ -69,15 +53,13 @@ func tryNamespaceSet(ctx context.Context, namespace, cmd string) (catch bool) {
 }
 
 func tryNamespaceReset(ctx context.Context, namespace, cmd string) (catch bool) {
-	switch cmd {
-	case "admin":
-		// /namespace <namespace> reset admin
-		service.Namespace().ResetNamespace(ctx, namespace, cmd)
-		catch = true
-	case "whitelist":
-		// /namespace <namespace> reset whitelist
-		service.Namespace().ResetNamespace(ctx, namespace, cmd)
-		catch = true
+	if endBranchRe.MatchString(cmd) {
+		switch endBranchRe.FindString(cmd) {
+		case "reset":
+			// /namespace <namespace> reset
+			service.Namespace().ResetNamespaceAdmin(ctx, namespace)
+			catch = true
+		}
 	}
 	return
 }

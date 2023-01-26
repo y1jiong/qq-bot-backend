@@ -12,6 +12,9 @@ import (
 type (
 	IModule interface {
 		TryApproveAddGroup(ctx context.Context) (catch bool)
+		DecodeCqCode(src string) (dst string)
+		EncodeCqCode(src string) (dst string)
+		IsIncludeCqCode(str string) (yes bool)
 	}
 )
 

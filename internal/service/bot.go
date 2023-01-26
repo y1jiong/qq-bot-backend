@@ -26,8 +26,9 @@ type (
 		GetComment(ctx context.Context) string
 		GetFlag(ctx context.Context) string
 		IsGroupOwnerOrAdmin(ctx context.Context) (yes bool)
+		SendPlainMsg(ctx context.Context, msg string)
 		SendMsg(ctx context.Context, msg string)
-		SendMessage(ctx context.Context, messageType string, uid, gid int64, msg string)
+		SendMessage(ctx context.Context, messageType string, uid, gid int64, msg string, plain bool)
 		ApproveAddGroup(ctx context.Context, flag, subType string, approve bool, reason string)
 		SetModel(ctx context.Context, model string)
 	}

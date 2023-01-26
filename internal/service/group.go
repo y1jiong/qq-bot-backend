@@ -18,8 +18,9 @@ type (
 		GetApprovalProcess(ctx context.Context, groupId int64) (process map[string]any)
 		AddApprovalProcess(ctx context.Context, groupId int64, processName string, args ...string)
 		RemoveApprovalProcess(ctx context.Context, groupId int64, processName string, args ...string)
-		GetWhitelist(ctx context.Context, groupId int64) (whitelists map[string]any)
-		GetBlacklist(ctx context.Context, groupId int64) (blacklists map[string]any)
+		GetWhitelists(ctx context.Context, groupId int64) (whitelists map[string]any)
+		GetBlacklists(ctx context.Context, groupId int64) (blacklists map[string]any)
+		GetRegexp(ctx context.Context, groupId int64) (re string)
 	}
 )
 

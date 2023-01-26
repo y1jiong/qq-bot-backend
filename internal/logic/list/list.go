@@ -35,7 +35,7 @@ func getList(ctx context.Context, listName string) (lEntity *entity.List) {
 	}
 	// 没找到
 	if lEntity == nil {
-		service.Bot().SendMsg(ctx, "没找到 list("+listName+")")
+		service.Bot().SendPlainMsg(ctx, "没找到 list("+listName+")")
 	}
 	return
 }
@@ -62,13 +62,13 @@ func (s *sList) AddList(ctx context.Context, listName, namespace string) {
 		Insert()
 	if err != nil {
 		g.Log().Error(ctx, err)
-		service.Bot().SendMsg(ctx, "新增 list 失败")
+		service.Bot().SendPlainMsg(ctx, "新增 list 失败")
 		return
 	}
 	// 同步写入
 	service.Namespace().AddNamespaceList(ctx, namespace, listName)
 	// 回执
-	service.Bot().SendMsg(ctx, "已新增 list("+listName+")")
+	service.Bot().SendPlainMsg(ctx, "已新增 list("+listName+")")
 }
 
 func (s *sList) RemoveList(ctx context.Context, listName string) {
@@ -96,7 +96,7 @@ func (s *sList) RemoveList(ctx context.Context, listName string) {
 	// 同步删除
 	service.Namespace().RemoveNamespaceList(ctx, lEntity.Namespace, listName)
 	// 回执
-	service.Bot().SendMsg(ctx, "已删除 list("+listName+")")
+	service.Bot().SendPlainMsg(ctx, "已删除 list("+listName+")")
 }
 
 func (s *sList) QueryList(ctx context.Context, listName string) {
@@ -114,11 +114,25 @@ func (s *sList) QueryList(ctx context.Context, listName string) {
 		return
 	}
 	// 数据处理
-	msg := dao.List.Columns().Namespace + ": " + lEntity.Namespace + "\n" +
-		dao.List.Columns().ListJson + ": " + lEntity.ListJson + "\n" +
-		dao.List.Columns().UpdatedAt + ": " + lEntity.UpdatedAt.String()
+	listJson, err := sj.NewJson([]byte(lEntity.ListJson))
+	if err != nil {
+		g.Log().Error(ctx, err)
+		return
+	}
+	listM := listJson.MustMap(make(map[string]any))
+	var msg string
+	if len(listM) > 25 {
+		// 数据超出展示范围
+		msg = dao.List.Columns().Namespace + ": " + lEntity.Namespace + "\n" +
+			dao.List.Columns().ListJson + ": 数据超出展示范围，请联系数据库导出\n" +
+			dao.List.Columns().UpdatedAt + ": " + lEntity.UpdatedAt.String()
+	} else {
+		msg = dao.List.Columns().Namespace + ": " + lEntity.Namespace + "\n" +
+			dao.List.Columns().ListJson + ": " + lEntity.ListJson + "\n" +
+			dao.List.Columns().UpdatedAt + ": " + lEntity.UpdatedAt.String()
+	}
 	// 回执
-	service.Bot().SendMsg(ctx, msg)
+	service.Bot().SendPlainMsg(ctx, msg)
 }
 
 func (s *sList) GetList(ctx context.Context, listName string) (list map[string]any) {
@@ -183,9 +197,9 @@ func (s *sList) AddListData(ctx context.Context, listName, key string, value ...
 	}
 	// 回执
 	if len(value) > 0 {
-		service.Bot().SendMsg(ctx, "已添加 key("+key+") value("+value[0]+") 到 list("+listName+")")
+		service.Bot().SendPlainMsg(ctx, "已添加 key("+key+") value("+value[0]+") 到 list("+listName+")")
 	} else {
-		service.Bot().SendMsg(ctx, "已添加 key("+key+") 到 list("+listName+")")
+		service.Bot().SendPlainMsg(ctx, "已添加 key("+key+") 到 list("+listName+")")
 	}
 }
 
@@ -226,5 +240,5 @@ func (s *sList) RemoveListData(ctx context.Context, listName, key string) {
 		return
 	}
 	// 回执
-	service.Bot().SendMsg(ctx, "已删除 key("+key+") 从 list("+listName+")")
+	service.Bot().SendPlainMsg(ctx, "已删除 key("+key+") 从 list("+listName+")")
 }

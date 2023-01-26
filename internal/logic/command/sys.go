@@ -39,10 +39,10 @@ func trySysGrant(ctx context.Context, cmd string) (catch bool) {
 	switch {
 	case doubleValueCmdEndRe.MatchString(cmd):
 		dv := doubleValueCmdEndRe.FindStringSubmatch(cmd)
-		switch dv[1] {
+		switch dv[2] {
 		case "namespace":
-			// /sys grant namespace <user_id>
-			service.User().GrantOperateNamespace(ctx, gconv.Int64(dv[2]))
+			// /sys grant <user_id> namespace
+			service.User().GrantOperateNamespace(ctx, gconv.Int64(dv[1]))
 			catch = true
 		}
 	}
@@ -53,10 +53,10 @@ func trySysRevoke(ctx context.Context, cmd string) (catch bool) {
 	switch {
 	case doubleValueCmdEndRe.MatchString(cmd):
 		dv := doubleValueCmdEndRe.FindStringSubmatch(cmd)
-		switch dv[1] {
+		switch dv[2] {
 		case "namespace":
-			// /sys revoke namespace <user_id>
-			service.User().RevokeOperateNamespace(ctx, gconv.Int64(dv[2]))
+			// /sys revoke <user_id> namespace
+			service.User().RevokeOperateNamespace(ctx, gconv.Int64(dv[1]))
 			catch = true
 		}
 	}

@@ -79,11 +79,11 @@ func (s *sBot) CatchEcho(ctx context.Context) (catch bool) {
 		if lastReq, ok := echoPool[echo]; ok {
 			switch s.getEchoStatus(ctx) {
 			case "ok":
-				s.SendMsg(lastReq.Context, lastReq.SuccessMsg)
+				s.SendPlainMsg(lastReq.Context, lastReq.SuccessMsg)
 			case "async":
-				s.SendMsg(lastReq.Context, "已提交 async 处理")
+				s.SendPlainMsg(lastReq.Context, "已提交 async 处理")
 			case "failed":
-				s.SendMsg(lastReq.Context, s.getEchoFailedMsg(ctx))
+				s.SendPlainMsg(lastReq.Context, s.getEchoFailedMsg(ctx))
 			}
 			// 用后即删，以防内存泄露
 			delete(echoPool, echo)
@@ -154,11 +154,15 @@ func (s *sBot) IsGroupOwnerOrAdmin(ctx context.Context) (yes bool) {
 	return
 }
 
-func (s *sBot) SendMsg(ctx context.Context, msg string) {
-	s.SendMessage(ctx, s.GetMsgType(ctx), s.GetUserId(ctx), s.GetGroupId(ctx), msg)
+func (s *sBot) SendPlainMsg(ctx context.Context, msg string) {
+	s.SendMessage(ctx, s.GetMsgType(ctx), s.GetUserId(ctx), s.GetGroupId(ctx), msg, true)
 }
 
-func (s *sBot) SendMessage(ctx context.Context, messageType string, uid, gid int64, msg string) {
+func (s *sBot) SendMsg(ctx context.Context, msg string) {
+	s.SendMessage(ctx, s.GetMsgType(ctx), s.GetUserId(ctx), s.GetGroupId(ctx), msg, false)
+}
+
+func (s *sBot) SendMessage(ctx context.Context, messageType string, uid, gid int64, msg string, plain bool) {
 	// 初始化响应
 	resJson := sj.New()
 	resJson.Set("action", "send_msg")
@@ -166,6 +170,10 @@ func (s *sBot) SendMessage(ctx context.Context, messageType string, uid, gid int
 	params := make(map[string]any)
 	params["message_type"] = messageType
 	params["message"] = msg
+	if plain {
+		// 以纯文本方式发送
+		params["auto_escape"] = true
+	}
 	if uid == 0 && gid == 0 {
 		return
 	}

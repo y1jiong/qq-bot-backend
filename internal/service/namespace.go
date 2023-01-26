@@ -18,7 +18,7 @@ type (
 		QueryOwnNamespace(ctx context.Context, userId int64)
 		AddNamespaceAdmin(ctx context.Context, namespace string, userId int64)
 		RemoveNamespaceAdmin(ctx context.Context, namespace string, userId int64)
-		ResetNamespace(ctx context.Context, namespace, option string)
+		ResetNamespaceAdmin(ctx context.Context, namespace string)
 		AddNamespaceList(ctx context.Context, namespace, listName string)
 		RemoveNamespaceList(ctx context.Context, namespace, listName string)
 		GetNamespaceList(ctx context.Context, namespace string) (lists map[string]any)

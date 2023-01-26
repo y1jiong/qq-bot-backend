@@ -19,7 +19,7 @@ func tryToken(ctx context.Context, cmd string) (catch bool) {
 			// /token add <>
 			catch = tryTokenAdd(ctx, next[2])
 		case "rm":
-			// /token rm <>
+			// /token rm <name>
 			service.Token().RemoveToken(ctx, next[2])
 			catch = true
 		}

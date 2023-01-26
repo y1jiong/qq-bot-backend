@@ -4,7 +4,9 @@ import (
 	"context"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/util/gconv"
+	"qq-bot-backend/internal/consts"
 	"qq-bot-backend/internal/service"
+	"regexp"
 )
 
 func (s *sModule) TryApproveAddGroup(ctx context.Context) (catch bool) {
@@ -23,13 +25,20 @@ func (s *sModule) TryApproveAddGroup(ctx context.Context) (catch bool) {
 	userId := service.Bot().GetUserId(ctx)
 	var mcUuid string
 	// 处理流程
-	if _, ok := process["mc"]; ok && pass {
+	if _, ok := process[consts.RegexpCmd]; ok && pass {
+		// 正则表达式
+		pass = isMatchRegexp(ctx, groupId, comment)
+	}
+	if _, ok := process[consts.McCmd]; ok && pass {
+		// mc 正版验证
 		pass, mcUuid = verifyMinecraftGenuine(ctx, comment)
 	}
-	if _, ok := process["whitelist"]; ok && pass {
+	if _, ok := process[consts.WhitelistCmd]; ok && pass {
+		// 白名单
 		pass = isInWhitelist(ctx, groupId, userId, mcUuid)
 	}
-	if _, ok := process["blacklist"]; ok && pass {
+	if _, ok := process[consts.BlacklistCmd]; ok && pass {
+		// 黑名单
 		pass = isNotInBlacklist(ctx, groupId, userId, mcUuid)
 	}
 	// 审批请求回执
@@ -37,7 +46,7 @@ func (s *sModule) TryApproveAddGroup(ctx context.Context) (catch bool) {
 		service.Bot().GetFlag(ctx),
 		service.Bot().GetSubType(ctx),
 		pass,
-		"reject")
+		"auto reject")
 	// 打印通过的日志
 	if pass {
 		g.Log().Infof(ctx, "approve user(%v) join group(%v) with %v",
@@ -46,6 +55,16 @@ func (s *sModule) TryApproveAddGroup(ctx context.Context) (catch bool) {
 			comment)
 	}
 	catch = true
+	return
+}
+
+func isMatchRegexp(ctx context.Context, groupId int64, comment string) (yes bool) {
+	re := service.Group().GetRegexp(ctx, groupId)
+	// 匹配正则
+	yes, err := regexp.MatchString(re, comment)
+	if err != nil {
+		g.Log().Warning(ctx, err)
+	}
 	return
 }
 
@@ -60,7 +79,7 @@ func verifyMinecraftGenuine(ctx context.Context, comment string) (genuine bool, 
 
 func isInWhitelist(ctx context.Context, groupId, userId int64, extra string) (yes bool) {
 	// 获取白名单组
-	whitelists := service.Group().GetWhitelist(ctx, groupId)
+	whitelists := service.Group().GetWhitelists(ctx, groupId)
 	for k := range whitelists {
 		// 获取其中一个白名单
 		whitelist := service.List().GetList(ctx, k)
@@ -99,7 +118,7 @@ func isNotInBlacklist(ctx context.Context, groupId, userId int64, extra string) 
 	// 默认不在黑名单内
 	yes = true
 	// 获取黑名单组
-	blacklists := service.Group().GetBlacklist(ctx, groupId)
+	blacklists := service.Group().GetBlacklists(ctx, groupId)
 	for k := range blacklists {
 		// 获取其中一个黑名单
 		blacklist := service.List().GetList(ctx, k)
