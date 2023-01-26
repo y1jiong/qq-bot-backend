@@ -53,7 +53,7 @@ func (c *cConnectClient) Connect(r *ghttp.Request) {
 		var wsReq []byte
 		_, wsReq, err = ws.ReadMessage()
 		if err != nil {
-			g.Log().Info(ctx, "Disconnected")
+			g.Log().Info(ctx, tokenName+" Disconnected")
 			return
 		}
 		// 异步处理 WebSocket 请求
