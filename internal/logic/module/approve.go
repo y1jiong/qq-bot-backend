@@ -23,7 +23,7 @@ func (s *sModule) TryApproveAddGroup(ctx context.Context) (catch bool) {
 	pass := true
 	// 局部变量
 	userId := service.Bot().GetUserId(ctx)
-	var mcUuid string
+	var extra string
 	// 处理流程
 	if _, ok := process[consts.RegexpCmd]; ok && pass {
 		// 正则表达式
@@ -31,15 +31,15 @@ func (s *sModule) TryApproveAddGroup(ctx context.Context) (catch bool) {
 	}
 	if _, ok := process[consts.McCmd]; ok && pass {
 		// mc 正版验证
-		pass, mcUuid = verifyMinecraftGenuine(ctx, comment)
+		pass, extra = verifyMinecraftGenuine(ctx, comment)
 	}
 	if _, ok := process[consts.WhitelistCmd]; ok && pass {
 		// 白名单
-		pass = isInWhitelist(ctx, groupId, userId, mcUuid)
+		pass = isInWhitelist(ctx, groupId, userId, extra)
 	}
 	if _, ok := process[consts.BlacklistCmd]; ok && pass {
 		// 黑名单
-		pass = isNotInBlacklist(ctx, groupId, userId, mcUuid)
+		pass = isNotInBlacklist(ctx, groupId, userId, extra)
 	}
 	// 审批请求回执
 	service.Bot().ApproveAddGroup(ctx,
