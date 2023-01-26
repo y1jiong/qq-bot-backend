@@ -50,17 +50,29 @@ func (s *sGroup) BindNamespace(ctx context.Context, groupId int64, namespace str
 		!service.Namespace().IsNamespaceOwnerOrAdmin(ctx, namespace, service.Bot().GetUserId(ctx)) {
 		return
 	}
-	// 数据库计数
-	n, err := dao.Group.Ctx(ctx).
-		Where(dao.Group.Columns().GroupId, groupId).
-		Count()
-	if err != nil {
-		g.Log().Error(ctx, err)
-		return
-	}
-	if n > 0 {
+	// 获取 group
+	gEntity := getGroup(ctx, groupId)
+	var err error
+	if gEntity == nil {
+		// 初始化 group 对象
+		gEntity = &entity.Group{
+			GroupId:     groupId,
+			Namespace:   namespace,
+			SettingJson: "{}",
+		}
+		// 数据库插入
+		_, err = dao.Group.Ctx(ctx).
+			Data(gEntity).
+			OmitEmpty().
+			Insert()
+	} else {
+		if gEntity.Namespace != "" {
+			service.Bot().SendPlainMsg(ctx,
+				"当前 group("+gconv.String(groupId)+") 已经绑定了 namespace("+gEntity.Namespace+")")
+			return
+		}
 		// 重置 setting
-		gEntity := entity.Group{
+		gEntity = &entity.Group{
 			Namespace:   namespace,
 			SettingJson: "{}",
 		}
@@ -70,17 +82,6 @@ func (s *sGroup) BindNamespace(ctx context.Context, groupId int64, namespace str
 			Data(gEntity).
 			OmitEmpty().
 			Update()
-	} else {
-		// 数据库插入
-		gEntity := entity.Group{
-			GroupId:     groupId,
-			Namespace:   namespace,
-			SettingJson: "{}",
-		}
-		_, err = dao.Group.Ctx(ctx).
-			Data(gEntity).
-			OmitEmpty().
-			Insert()
 	}
 	if err != nil {
 		g.Log().Error(ctx, err)
@@ -96,21 +97,24 @@ func (s *sGroup) Unbind(ctx context.Context, groupId int64) {
 		return
 	}
 	// 权限校验
-	if !service.Bot().IsGroupOwnerOrAdmin(ctx) ||
-		!s.IsGroupBindNamespaceOwnerOrAdmin(ctx, groupId, service.Bot().GetUserId(ctx)) {
+	if !service.Bot().IsGroupOwnerOrAdmin(ctx) {
 		return
 	}
-	// 过程
-	n, err := dao.Group.Ctx(ctx).Where(dao.Group.Columns().GroupId, groupId).Count()
-	if err != nil {
-		g.Log().Error(ctx, err)
+	// 获取 group
+	gEntity := getGroup(ctx, groupId)
+	if gEntity == nil {
 		return
 	}
-	if n < 1 {
+	// 权限校验
+	if !service.Namespace().IsNamespaceOwnerOrAdmin(ctx, gEntity.Namespace, service.Bot().GetUserId(ctx)) {
+		return
+	}
+	// 数据处理
+	if gEntity.Namespace == "" {
 		return
 	}
 	// 数据库更新
-	_, err = dao.Group.Ctx(ctx).
+	_, err := dao.Group.Ctx(ctx).
 		Where(dao.Group.Columns().GroupId, groupId).
 		Data(dao.Group.Columns().Namespace, "").
 		Update()
@@ -127,14 +131,13 @@ func (s *sGroup) QueryGroup(ctx context.Context, groupId int64) {
 	if groupId < 1 {
 		return
 	}
-	// 权限校验
-	if !s.IsGroupBindNamespaceOwnerOrAdmin(ctx, groupId, service.Bot().GetUserId(ctx)) {
-		return
-	}
-	// 过程
+	// 获取 group
 	gEntity := getGroup(ctx, groupId)
 	if gEntity == nil {
-		service.Bot().SendPlainMsg(ctx, "没有任何数据")
+		return
+	}
+	// 权限校验
+	if !service.Namespace().IsNamespaceOwnerOrAdmin(ctx, gEntity.Namespace, service.Bot().GetUserId(ctx)) {
 		return
 	}
 	// 回执
@@ -142,20 +145,6 @@ func (s *sGroup) QueryGroup(ctx context.Context, groupId int64) {
 		dao.Group.Columns().SettingJson + ": " + gEntity.SettingJson + "\n" +
 		dao.Group.Columns().UpdatedAt + ": " + gEntity.UpdatedAt.String()
 	service.Bot().SendPlainMsg(ctx, msg)
-}
-
-func (s *sGroup) IsGroupBindNamespaceOwnerOrAdmin(ctx context.Context, groupId, userId int64) (yes bool) {
-	// 参数合法性校验
-	if groupId < 1 || userId < 1 {
-		return
-	}
-	// 获取 group 绑定的 namespace
-	gEntity := getGroup(ctx, groupId)
-	if gEntity == nil {
-		return
-	}
-	// 过程
-	return service.Namespace().IsNamespaceOwnerOrAdmin(ctx, gEntity.Namespace, userId)
 }
 
 func (s *sGroup) GetApprovalProcess(ctx context.Context, groupId int64) (process map[string]any) {
@@ -183,14 +172,17 @@ func (s *sGroup) AddApprovalProcess(ctx context.Context, groupId int64, processN
 	if groupId < 1 {
 		return
 	}
+	// 权限校验
+	if !service.Bot().IsGroupOwnerOrAdmin(ctx) {
+		return
+	}
 	// 获取 group
 	gEntity := getGroup(ctx, groupId)
 	if gEntity == nil {
 		return
 	}
 	// 权限校验
-	if !service.Bot().IsGroupOwnerOrAdmin(ctx) ||
-		!service.Namespace().IsNamespaceOwnerOrAdmin(ctx, gEntity.Namespace, service.Bot().GetUserId(ctx)) {
+	if !service.Namespace().IsNamespaceOwnerOrAdmin(ctx, gEntity.Namespace, service.Bot().GetUserId(ctx)) {
 		return
 	}
 	// 数据处理
@@ -277,14 +269,17 @@ func (s *sGroup) RemoveApprovalProcess(ctx context.Context, groupId int64, proce
 	if groupId < 1 {
 		return
 	}
+	// 权限校验
+	if !service.Bot().IsGroupOwnerOrAdmin(ctx) {
+		return
+	}
 	// 获取 group
 	gEntity := getGroup(ctx, groupId)
 	if gEntity == nil {
 		return
 	}
 	// 权限校验
-	if !service.Bot().IsGroupOwnerOrAdmin(ctx) ||
-		!service.Namespace().IsNamespaceOwnerOrAdmin(ctx, gEntity.Namespace, service.Bot().GetUserId(ctx)) {
+	if !service.Namespace().IsNamespaceOwnerOrAdmin(ctx, gEntity.Namespace, service.Bot().GetUserId(ctx)) {
 		return
 	}
 	// 数据处理
