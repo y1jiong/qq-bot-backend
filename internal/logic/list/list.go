@@ -4,6 +4,7 @@ import (
 	"context"
 	sj "github.com/bitly/go-simplejson"
 	"github.com/gogf/gf/v2/frame/g"
+	"github.com/gogf/gf/v2/util/gconv"
 	"qq-bot-backend/internal/dao"
 	"qq-bot-backend/internal/model/entity"
 	"qq-bot-backend/internal/service"
@@ -110,23 +111,9 @@ func (s *sList) QueryList(ctx context.Context, listName string) {
 		return
 	}
 	// 数据处理
-	listJson, err := sj.NewJson([]byte(lEntity.ListJson))
-	if err != nil {
-		g.Log().Error(ctx, err)
-		return
-	}
-	listM := listJson.MustMap(make(map[string]any))
-	var msg string
-	if len(listM) > 25 {
-		// 数据超出展示范围
-		msg = dao.List.Columns().Namespace + ": " + lEntity.Namespace + "\n" +
-			dao.List.Columns().ListJson + ": 数据超出展示范围，请联系数据库导出\n" +
-			dao.List.Columns().UpdatedAt + ": " + lEntity.UpdatedAt.String()
-	} else {
-		msg = dao.List.Columns().Namespace + ": " + lEntity.Namespace + "\n" +
-			dao.List.Columns().ListJson + ": " + lEntity.ListJson + "\n" +
-			dao.List.Columns().UpdatedAt + ": " + lEntity.UpdatedAt.String()
-	}
+	msg := dao.List.Columns().Namespace + ": " + lEntity.Namespace + "\n" +
+		dao.List.Columns().ListJson + ": " + lEntity.ListJson + "\n" +
+		dao.List.Columns().UpdatedAt + ": " + lEntity.UpdatedAt.String()
 	// 回执
 	service.Bot().SendPlainMsg(ctx, msg)
 }
@@ -219,6 +206,11 @@ func (s *sList) RemoveListData(ctx context.Context, listName, key string) {
 		g.Log().Error(ctx, err)
 		return
 	}
+	if _, ok := listJson.CheckGet(key); !ok {
+		// 不存在 key
+		service.Bot().SendPlainMsg(ctx, key+" 不存在")
+		return
+	}
 	listJson.Del(key)
 	// 保存数据
 	listBytes, err := listJson.Encode()
@@ -264,4 +256,49 @@ func (s *sList) ResetListData(ctx context.Context, listName string) {
 	}
 	// 回执
 	service.Bot().SendPlainMsg(ctx, "已重置 list("+listName+") 的数据")
+}
+
+func (s *sList) SetListData(ctx context.Context, listName, newListBytes string) {
+	// 参数合法性校验
+	if !legalListNameRe.MatchString(listName) {
+		return
+	}
+	// 获取 list
+	lEntity := getList(ctx, listName)
+	if lEntity == nil {
+		return
+	}
+	// 权限校验
+	if !service.Namespace().IsNamespaceOwnerOrAdmin(ctx, lEntity.Namespace, service.Bot().GetUserId(ctx)) {
+		return
+	}
+	// 数据处理
+	listJson, err := sj.NewJson([]byte(newListBytes))
+	if err != nil {
+		service.Bot().SendPlainMsg(ctx, "反序列化 json 失败")
+		return
+	}
+	listM := listJson.MustMap(make(map[string]any))
+	length := len(listM)
+	if length < 1 {
+		service.Bot().SendPlainMsg(ctx, "无效数据")
+		return
+	}
+	// 保存数据
+	listBytes, err := listJson.Encode()
+	if err != nil {
+		g.Log().Error(ctx, err)
+		return
+	}
+	// 数据库更新
+	_, err = dao.List.Ctx(ctx).
+		Where(dao.List.Columns().ListName, listName).
+		Data(dao.List.Columns().ListJson, string(listBytes)).
+		Update()
+	if err != nil {
+		g.Log().Error(ctx, err)
+		return
+	}
+	// 回执
+	service.Bot().SendPlainMsg(ctx, "已覆盖 list("+listName+") 的数据\n共有 "+gconv.String(length)+" 条")
 }

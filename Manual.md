@@ -8,20 +8,27 @@ v1.0
 
 | Command                              | Description                        | Comment                                          |
 | ------------------------------------ | ---------------------------------- | ------------------------------------------------ |
-| /list join {list_name} {key} [value] | 将 key[:value] 添加到 list_name 中 | 需要 list_name 对应的 namespace admin 及以上权限 |
+| /list add {list_name} {namespace}    | 在 namespace 下新增 list_name      | 需要 list_name 对应的 namespace admin 及以上权限 |
+| /list join {list_name} {key} [value] | 将 key[:value] 添加到 list_name 中 | 同上                                             |
 | /list leave {list_name} {key}        | 将 key 从 list_name 中移除         | 同上                                             |
 | /list query {list_name}              | 查询 list_name                     | 同上                                             |
-| /list add {list_name} {namespace}    | 在 namespace 下新增 list_name      | 同上                                             |
+| /list set {list_name} {json}         | 用 json 覆盖 list_name 的数据      | 同上                                             |
 | /list reset {list_name}              | 重置 list_name 的数据              | 同上                                             |
 | /list rm {list_name}                 | 删除 list_name                     | 同上                                             |
 
 ## Group
 
+| Command                 | Description                                                  | Comment                                        |
+| ----------------------- | ------------------------------------------------------------ | ---------------------------------------------- |
+| /group bind {namespace} | 将当前 group 绑定到 namespace 中（会重置当前 group 的所有配置） | 需要 group admin 和 namespace admin 及以上权限 |
+| /group unbind           | 解除当前 group 的绑定                                        | 同上                                           |
+| /group query            | 查询当前 group 的配置                                        | 需要 namespace admin 及以上权限                |
+
+
+## Group Approval
+
 | Command                                   | Description                                                  | Comment                                        |
 | ----------------------------------------- | ------------------------------------------------------------ | ---------------------------------------------- |
-| /group bind {namespace}                   | 将当前 group 绑定到 namespace 中（会重置当前 group 的所有配置） | 需要 group admin 和 namespace admin 及以上权限 |
-| /group unbind                             | 解除当前 group 的绑定                                        | 同上                                           |
-| /group query                              | 查询当前 group 的配置                                        | 需要 namespace admin 及以上权限                |
 | /group approval enable mc                 | 入群审批流程启用 mc 正版用户名验证                           | 需要 group admin 和 namespace admin 及以上权限 |
 | /group approval enable regexp             | 入群审批流程启用正则表达式                                   | 同上                                           |
 | /group approval enable whitelist          | 入群审批流程启用白名单                                       | 同上                                           |

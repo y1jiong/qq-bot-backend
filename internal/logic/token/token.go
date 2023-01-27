@@ -85,7 +85,7 @@ func (s *sToken) RemoveToken(ctx context.Context, name string) {
 		return
 	}
 	if n < 1 {
-		service.Bot().SendPlainMsg(ctx, "不存在该 token")
+		service.Bot().SendPlainMsg(ctx, name+" 不存在")
 	}
 	// 数据库软删除
 	_, err = dao.Token.Ctx(ctx).

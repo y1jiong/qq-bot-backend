@@ -261,13 +261,12 @@ func (s *sNamespace) RemoveNamespaceAdmin(ctx context.Context, namespace string,
 	}
 	// 获取 admin map
 	admins := settingJson.Get(adminMapKey).MustMap(make(map[string]any))
-	// 删除 userId 的 admin 权限
-	if _, ok := admins[gconv.String(userId)]; ok {
-		delete(admins, gconv.String(userId))
-	} else {
-		service.Bot().SendPlainMsg(ctx, gconv.String(userId)+"不存在")
+	if _, ok := admins[gconv.String(userId)]; !ok {
+		service.Bot().SendPlainMsg(ctx, gconv.String(userId)+" 不存在")
 		return
 	}
+	// 删除 userId 的 admin 权限
+	delete(admins, gconv.String(userId))
 	// 保存数据
 	settingJson.Set(adminMapKey, admins)
 	settingBytes, err := settingJson.Encode()
@@ -380,11 +379,10 @@ func (s *sNamespace) RemoveNamespaceList(ctx context.Context, namespace, listNam
 		return
 	}
 	lists := settingJson.Get(listMapKey).MustMap(make(map[string]any))
-	if _, ok := lists[listName]; ok {
-		delete(lists, listName)
-	} else {
+	if _, ok := lists[listName]; !ok {
 		return
 	}
+	delete(lists, listName)
 	// 保存数据
 	settingJson.Set(listMapKey, lists)
 	settingBytes, err := settingJson.Encode()

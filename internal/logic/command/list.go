@@ -17,6 +17,9 @@ func tryList(ctx context.Context, cmd string) (catch bool) {
 			// /list query <list_name>
 			service.List().QueryList(ctx, next[2])
 			catch = true
+		case "set":
+			// /list set <>
+			catch = tryListSet(ctx, next[2])
 		case "leave":
 			// /list leave <>
 			catch = tryListLeave(ctx, next[2])
@@ -54,6 +57,17 @@ func tryListJoin(ctx context.Context, cmd string) (catch bool) {
 			service.List().AddListData(ctx, next[1], next[2])
 			catch = true
 		}
+	}
+	return
+}
+
+func tryListSet(ctx context.Context, cmd string) (catch bool) {
+	switch {
+	case nextBranchRe.MatchString(cmd):
+		next := nextBranchRe.FindStringSubmatch(cmd)
+		// /list set <list_name> <json>
+		service.List().SetListData(ctx, next[1], next[2])
+		catch = true
 	}
 	return
 }

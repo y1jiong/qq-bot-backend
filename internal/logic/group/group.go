@@ -295,32 +295,29 @@ func (s *sGroup) RemoveApprovalProcess(ctx context.Context, groupId int64, proce
 		case consts.WhitelistCmd:
 			// 处理白名单
 			whitelists := settingJson.Get(approvalWhitelistMapKey).MustMap(make(map[string]any))
-			if _, ok := whitelists[args[0]]; ok {
-				delete(whitelists, args[0])
-			} else {
+			if _, ok := whitelists[args[0]]; !ok {
 				service.Bot().SendPlainMsg(ctx, args[0]+" 不存在")
 				return
 			}
+			delete(whitelists, args[0])
 			settingJson.Set(approvalWhitelistMapKey, whitelists)
 		case consts.BlacklistCmd:
 			// 处理黑名单
 			blacklists := settingJson.Get(approvalBlacklistMapKey).MustMap(make(map[string]any))
-			if _, ok := blacklists[args[0]]; ok {
-				delete(blacklists, args[0])
-			} else {
+			if _, ok := blacklists[args[0]]; !ok {
 				service.Bot().SendPlainMsg(ctx, args[0]+" 不存在")
 				return
 			}
+			delete(blacklists, args[0])
 			settingJson.Set(approvalBlacklistMapKey, blacklists)
 		}
 	} else {
 		// 删除 processName
-		if _, ok := approvalProcessMap[processName]; ok {
-			delete(approvalProcessMap, processName)
-		} else {
+		if _, ok := approvalProcessMap[processName]; !ok {
 			service.Bot().SendPlainMsg(ctx, processName+" 不存在")
 			return
 		}
+		delete(approvalProcessMap, processName)
 	}
 	// 保存数据
 	settingJson.Set(approvalProcessMapKey, approvalProcessMap)

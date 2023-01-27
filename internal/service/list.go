@@ -18,6 +18,7 @@ type (
 		AddListData(ctx context.Context, listName, key string, value ...string)
 		RemoveListData(ctx context.Context, listName, key string)
 		ResetListData(ctx context.Context, listName string)
+		SetListData(ctx context.Context, listName, newListBytes string)
 	}
 )
 
