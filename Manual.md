@@ -33,7 +33,7 @@ v1.0
 | /group approval enable regexp             | 入群审批流程启用正则表达式                                   | 同上                                           |
 | /group approval enable whitelist          | 入群审批流程启用白名单                                       | 同上                                           |
 | /group approval enable blacklist          | 入群审批流程启用黑名单                                       | 同上                                           |
-| /group approval set regexp {regexp}       | 指定入群审批流程的正则表达式（若有子表达式，则会采用第一个子表达式） | 同上                                           |
+| /group approval set regexp {regexp}       | 指定入群审批流程的正则表达式（若有子表达式，则会使用第一个子表达式的匹配结果） | 同上                                           |
 | /group approval add whitelist {list_name} | 新增入群审批流程白名单 list_name（可以多次指定不同的 list_name 最终采用并集查找） | 同上                                           |
 | /group approval add blacklist {list_name} | 新增入群审批流程黑名单 list_name（可以多次指定不同的 list_name 最终采用并集查找） | 同上                                           |
 | /group approval disable mc                | 入群审批流程禁用 mc 正版用户名验证                           | 同上                                           |
@@ -48,7 +48,7 @@ v1.0
 | Command                           | Description                            | Comment                   |
 | --------------------------------- | -------------------------------------- | ------------------------- |
 | /user join {namespace} {user_id}  | 将 user_id 添加到 namespace admin 名单 | 需要 namespace owner 权限 |
-| /user leave {namespace} {user_id} | 将 user_id 移除到 namespace admin 名单 | 同上                      |
+| /user leave {namespace} {user_id} | 将 user_id 从 namespace admin 名单移除 | 同上                      |
 
 ## Namespace
 
