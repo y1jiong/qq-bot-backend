@@ -35,11 +35,11 @@ func (s *sModule) TryApproveAddGroup(ctx context.Context) (catch bool) {
 	}
 	if _, ok := process[consts.WhitelistCmd]; ok && pass {
 		// 白名单
-		pass = isInWhitelist(ctx, groupId, userId, extra)
+		pass = isInApprovalWhitelist(ctx, groupId, userId, extra)
 	}
 	if _, ok := process[consts.BlacklistCmd]; ok && pass {
 		// 黑名单
-		pass = isNotInBlacklist(ctx, groupId, userId, extra)
+		pass = isNotInApprovalBlacklist(ctx, groupId, userId, extra)
 	}
 	// 审批请求回执
 	service.Bot().ApproveAddGroup(ctx,
@@ -59,7 +59,7 @@ func (s *sModule) TryApproveAddGroup(ctx context.Context) (catch bool) {
 }
 
 func isMatchRegexp(ctx context.Context, groupId int64, comment string) (yes bool, matched string) {
-	exp := service.Group().GetRegexp(ctx, groupId)
+	exp := service.Group().GetApprovalRegexp(ctx, groupId)
 	// 匹配正则
 	re, err := regexp.Compile(exp)
 	if err != nil {
@@ -89,9 +89,9 @@ func verifyMinecraftGenuine(ctx context.Context, comment string) (genuine bool, 
 	return
 }
 
-func isInWhitelist(ctx context.Context, groupId, userId int64, extra string) (yes bool) {
+func isInApprovalWhitelist(ctx context.Context, groupId, userId int64, extra string) (yes bool) {
 	// 获取白名单组
-	whitelists := service.Group().GetWhitelists(ctx, groupId)
+	whitelists := service.Group().GetApprovalWhitelists(ctx, groupId)
 	for k := range whitelists {
 		// 获取其中一个白名单
 		whitelist := service.List().GetList(ctx, k)
@@ -126,11 +126,11 @@ func isInWhitelist(ctx context.Context, groupId, userId int64, extra string) (ye
 	return
 }
 
-func isNotInBlacklist(ctx context.Context, groupId, userId int64, extra string) (yes bool) {
+func isNotInApprovalBlacklist(ctx context.Context, groupId, userId int64, extra string) (yes bool) {
 	// 默认不在黑名单内
 	yes = true
 	// 获取黑名单组
-	blacklists := service.Group().GetBlacklists(ctx, groupId)
+	blacklists := service.Group().GetApprovalBlacklists(ctx, groupId)
 	for k := range blacklists {
 		// 获取其中一个黑名单
 		blacklist := service.List().GetList(ctx, k)

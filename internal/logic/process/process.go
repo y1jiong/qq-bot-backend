@@ -39,6 +39,10 @@ func (s *sProcess) ContinueBotProcess() bool {
 }
 
 func (s *sProcess) Process(ctx context.Context) {
+	if service.Bot().GetPostType(ctx) == "meta_event" {
+		// 跳过处理元事件 心跳包 生命周期
+		return
+	}
 	// 优先处理命令
 	if service.Command().TryCommand(ctx) {
 		// 处理成功放弃后续逻辑

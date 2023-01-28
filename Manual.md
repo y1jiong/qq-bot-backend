@@ -1,20 +1,20 @@
 # Manual
 
-v1.0
+v1.1
 
 {required} [optional]
 
 ## List
 
-| Command                              | Description                        | Comment                                          |
-| ------------------------------------ | ---------------------------------- | ------------------------------------------------ |
-| /list add {list_name} {namespace}    | 在 namespace 下新增 list_name      | 需要 list_name 对应的 namespace admin 及以上权限 |
-| /list join {list_name} {key} [value] | 将 key[:value] 添加到 list_name 中 | 同上                                             |
-| /list leave {list_name} {key}        | 将 key 从 list_name 中移除         | 同上                                             |
-| /list query {list_name}              | 查询 list_name                     | 同上                                             |
-| /list set {list_name} {json}         | 用 json 覆盖 list_name 的数据      | 同上                                             |
-| /list reset {list_name}              | 重置 list_name 的数据              | 同上                                             |
-| /list rm {list_name}                 | 删除 list_name                     | 同上                                             |
+| Command                              | Description                                                  | Comment                                          |
+| ------------------------------------ | ------------------------------------------------------------ | ------------------------------------------------ |
+| /list add {list_name} {namespace}    | 在 namespace 下新增 list_name                                | 需要 list_name 对应的 namespace admin 及以上权限 |
+| /list join {list_name} {key} [value] | 将 key[:value] 添加到 list_name 中（key value 可作为双因子认证使用） | 同上                                             |
+| /list leave {list_name} {key}        | 将 key 从 list_name 中移除                                   | 同上                                             |
+| /list query {list_name}              | 查询 list_name                                               | 同上                                             |
+| /list set {list_name} {json}         | 用 json 覆盖 list_name 的数据                                | 同上                                             |
+| /list reset {list_name}              | 重置 list_name 的数据                                        | 同上                                             |
+| /list rm {list_name}                 | 删除 list_name（删除后原 list_name 不可使用）                | 同上                                             |
 
 ## Group
 
@@ -29,19 +29,34 @@ v1.0
 
 | Command                                   | Description                                                  | Comment                                        |
 | ----------------------------------------- | ------------------------------------------------------------ | ---------------------------------------------- |
-| /group approval enable mc                 | 入群审批流程启用 mc 正版用户名验证                           | 需要 group admin 和 namespace admin 及以上权限 |
-| /group approval enable regexp             | 入群审批流程启用正则表达式                                   | 同上                                           |
+| /group approval enable mc                 | 入群审批流程启用 mc 正版用户名验证（将使用正版 UUID 作为双因子认证的输入） | 需要 group admin 和 namespace admin 及以上权限 |
+| /group approval enable regexp             | 入群审批流程启用正则表达式（将使用匹配结果作为双因子认证的输入） | 同上                                           |
 | /group approval enable whitelist          | 入群审批流程启用白名单                                       | 同上                                           |
 | /group approval enable blacklist          | 入群审批流程启用黑名单                                       | 同上                                           |
 | /group approval set regexp {regexp}       | 指定入群审批流程的正则表达式（若有子表达式，则会使用第一个子表达式的匹配结果） | 同上                                           |
 | /group approval add whitelist {list_name} | 新增入群审批流程白名单 list_name（可以多次指定不同的 list_name 最终采用并集查找） | 同上                                           |
 | /group approval add blacklist {list_name} | 新增入群审批流程黑名单 list_name（可以多次指定不同的 list_name 最终采用并集查找） | 同上                                           |
+| /group approval rm whitelist {list_name}  | 移除入群审批流程白名单 list_name                             | 同上                                           |
+| /group approval rm blacklist {list_name}  | 移除入群审批流程黑名单 list_name                             | 同上                                           |
 | /group approval disable mc                | 入群审批流程禁用 mc 正版用户名验证                           | 同上                                           |
 | /group approval disable regexp            | 入群审批流程禁用正则表达式                                   | 同上                                           |
 | /group approval disable whitelist         | 入群审批流程禁用白名单                                       | 同上                                           |
 | /group approval disable blacklist         | 入群审批流程禁用黑名单                                       | 同上                                           |
-| /group approval rm whitelist {list_name}  | 移除入群审批流程白名单 list_name                             | 同上                                           |
-| /group approval rm blacklist {list_name}  | 移除入群审批流程黑名单 list_name                             | 同上                                           |
+
+## Group Keyword
+
+| Command                                  | Description                                                  | Comment                                        |
+| ---------------------------------------- | ------------------------------------------------------------ | ---------------------------------------------- |
+| /group keyword enable blacklist          | 关键词检查流程启用黑名单                                     | 需要 group admin 和 namespace admin 及以上权限 |
+| /group keyword enable whitelist          | 关键词检查流程启用白名单                                     | 同上                                           |
+| /group keyword add blacklist {list_name} | 新增关键词检查流程黑名单 list_name（可以多次指定不同的 list_name 最终采用并集查找） | 同上                                           |
+| /group keyword add whitelist {list_name} | 新增关键词检查流程白名单 list_name（可以多次指定不同的 list_name 最终采用并集查找） | 同上                                           |
+| /group keyword rm blacklist {list_name}  | 移除关键词检查流程黑名单 list_name                           | 同上                                           |
+| /group keyword rm whitelist {list_name}  | 移除关键词检查流程白名单 list_name                           | 同上                                           |
+| /group keyword disable blacklist         | 关键词检查流程禁用黑名单                                     | 同上                                           |
+| /group keyword disable whitelist         | 关键词检查流程禁用白名单                                     | 同上                                           |
+
+
 
 ## User
 

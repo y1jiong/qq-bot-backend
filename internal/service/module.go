@@ -15,6 +15,7 @@ type (
 		DecodeCqCode(src string) (dst string)
 		EncodeCqCode(src string) (dst string)
 		IsIncludeCqCode(str string) (yes bool)
+		TryKeywordRevoke(ctx context.Context) (catch bool)
 	}
 )
 
