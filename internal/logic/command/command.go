@@ -38,7 +38,8 @@ func (s *sCommand) TryCommand(ctx context.Context) (catch bool) {
 		return
 	}
 	// 命令 log
-	g.Log().Info(ctx, "user("+gconv.String(userId)+") send cmd "+msg)
+	g.Log().Info(ctx,
+		"user("+gconv.String(userId)+") in group("+gconv.String(service.Bot().GetGroupId(ctx))+") send cmd "+msg)
 	// 继续处理
 	cmd := commandPrefixRe.FindStringSubmatch(msg)[1]
 	switch {
