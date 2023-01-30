@@ -8,14 +8,6 @@ import (
 	"github.com/gorilla/websocket"
 )
 
-func (s *sBot) SendPlainMsg(ctx context.Context, msg string) {
-	s.SendMessage(ctx, s.GetMsgType(ctx), s.GetUserId(ctx), s.GetGroupId(ctx), msg, true)
-}
-
-func (s *sBot) SendMsg(ctx context.Context, msg string) {
-	s.SendMessage(ctx, s.GetMsgType(ctx), s.GetUserId(ctx), s.GetGroupId(ctx), msg, false)
-}
-
 func (s *sBot) SendMessage(ctx context.Context, messageType string, uid, gid int64, msg string, plain bool) {
 	// 初始化响应
 	resJson := sj.New()
@@ -48,6 +40,14 @@ func (s *sBot) SendMessage(ctx context.Context, messageType string, uid, gid int
 	if err != nil {
 		g.Log().Warning(ctx, err)
 	}
+}
+
+func (s *sBot) SendPlainMsg(ctx context.Context, msg string) {
+	s.SendMessage(ctx, s.GetMsgType(ctx), s.GetUserId(ctx), s.GetGroupId(ctx), msg, true)
+}
+
+func (s *sBot) SendMsg(ctx context.Context, msg string) {
+	s.SendMessage(ctx, s.GetMsgType(ctx), s.GetUserId(ctx), s.GetGroupId(ctx), msg, false)
 }
 
 func (s *sBot) ApproveAddGroup(ctx context.Context, flag, subType string, approve bool, reason string) {
@@ -125,4 +125,30 @@ func (s *sBot) RevokeMessage(ctx context.Context, msgId int64) {
 	if err != nil {
 		g.Log().Warning(ctx, err)
 	}
+}
+
+func (s *sBot) MutePrototype(ctx context.Context, groupId, userId int64, seconds int) {
+	// 初始化响应
+	resJson := sj.New()
+	resJson.Set("action", "set_group_ban")
+	// 参数
+	params := make(map[string]any)
+	params["group_id"] = groupId
+	params["user_id"] = userId
+	params["duration"] = seconds
+	// 参数打包
+	resJson.Set("params", params)
+	res, err := resJson.Encode()
+	if err != nil {
+		g.Log().Warning(ctx, err)
+		return
+	}
+	err = s.webSocketFromCtx(ctx).WriteMessage(websocket.TextMessage, res)
+	if err != nil {
+		g.Log().Warning(ctx, err)
+	}
+}
+
+func (s *sBot) Mute(ctx context.Context, seconds int) {
+	s.MutePrototype(ctx, s.GetGroupId(ctx), s.GetUserId(ctx), seconds)
 }

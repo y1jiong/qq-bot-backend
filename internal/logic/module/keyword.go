@@ -2,9 +2,13 @@ package module
 
 import (
 	"context"
+	"github.com/gogf/gf/v2/frame/g"
+	"github.com/gogf/gf/v2/os/gcache"
+	"github.com/gogf/gf/v2/util/gconv"
 	"qq-bot-backend/internal/consts"
 	"qq-bot-backend/internal/service"
 	"strings"
+	"time"
 )
 
 func (s *sModule) TryKeywordRevoke(ctx context.Context) (catch bool) {
@@ -37,6 +41,8 @@ func (s *sModule) TryKeywordRevoke(ctx context.Context) (catch bool) {
 	}
 	// 撤回
 	service.Bot().RevokeMessage(ctx, service.Bot().GetMsgId(ctx))
+	// 禁言
+	doMute(ctx)
 	catch = true
 	return
 }
@@ -69,4 +75,35 @@ func isNotInKeywordWhitelist(ctx context.Context, groupId int64, msg string) (ye
 		}
 	}
 	return
+}
+
+func doMute(ctx context.Context) {
+	userId := service.Bot().GetUserId(ctx)
+	// 缓存键名
+	cacheKey := "RevokeTimes.QQ=" + gconv.String(userId)
+	// 过期时间
+	expirationDuration := 16 * time.Hour
+	timesVar, err := gcache.Get(ctx, cacheKey)
+	if err != nil {
+		g.Log().Warning(ctx, err)
+		return
+	}
+	if timesVar == nil {
+		// 第一次撤回不禁言
+		gcache.Set(ctx, cacheKey, 1, expirationDuration)
+		return
+	}
+	times := timesVar.Int()
+	// 多次撤回
+	gcache.Set(ctx, cacheKey, times+1, expirationDuration)
+	// 基数
+	baseMinutes := 5
+	// 最终禁言分钟数
+	muteMinutes := 1
+	// 执行幂次运算
+	for i := 0; i < times; i++ {
+		muteMinutes *= baseMinutes
+	}
+	// 禁言 baseMinutes^times 分钟
+	service.Bot().Mute(ctx, muteMinutes*60)
 }
