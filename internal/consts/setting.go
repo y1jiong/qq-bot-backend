@@ -5,4 +5,6 @@ const (
 	WhitelistCmd = "whitelist"
 	BlacklistCmd = "blacklist"
 	McCmd        = "mc"
+
+	BaseMuteMinutes = 5
 )

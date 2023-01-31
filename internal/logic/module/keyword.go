@@ -96,14 +96,12 @@ func doMute(ctx context.Context) {
 	times := timesVar.Int()
 	// 多次撤回
 	gcache.Set(ctx, cacheKey, times+1, expirationDuration)
-	// 基数
-	baseMinutes := 5
 	// 最终禁言分钟数
 	muteMinutes := 1
 	// 执行幂次运算
 	for i := 0; i < times; i++ {
-		muteMinutes *= baseMinutes
+		muteMinutes *= consts.BaseMuteMinutes
 	}
-	// 禁言 baseMinutes^times 分钟
+	// 禁言 BaseMuteMinutes^times 分钟
 	service.Bot().Mute(ctx, muteMinutes*60)
 }
