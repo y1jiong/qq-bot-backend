@@ -56,8 +56,6 @@ v1.1
 | /group keyword disable blacklist         | 关键词检查流程禁用黑名单                                     | 同上                                           |
 | /group keyword disable whitelist         | 关键词检查流程禁用白名单                                     | 同上                                           |
 
-
-
 ## User
 
 | Command                           | Description                            | Comment                   |
@@ -75,19 +73,15 @@ v1.1
 | /namespace {namespace}       | 查询 namespace 配置      | 需要 namespace admin 及以上权限   |
 | /namespace {namespace} reset | 重置 namespace 的 admin  | 需要 namespace owner 权限         |
 
-## Model
+## Extra
 
-| Command            | Description | Comment        |
-| ------------------ | ----------- | -------------- |
-| /model set {model} | 设置机型    | 需要受系统信任 |
-
-## Token
-
-| Command                   | Description                    | Comment        |
-| ------------------------- | ------------------------------ | -------------- |
-| /token add {name} {token} | 添加可让 user 接入本系统的令牌 | 需要受系统信任 |
-| /token rm {name}          | 删除令牌                       | 需要受系统信任 |
-| /token query              | 查询自己所有的令牌             | 需要受系统信任 |
+| Command                   | Description                    | Comment                       |
+| ------------------------- | ------------------------------ | ----------------------------- |
+| /raw {message}            | 获取 message 的原始信息        | 需要系统授予的获取 raw 的权限 |
+| /model set {model}        | 设置机型                       | 需要受系统信任                |
+| /token add {name} {token} | 添加可让 user 接入本系统的令牌 | 需要受系统信任                |
+| /token rm {name}          | 删除令牌                       | 需要受系统信任                |
+| /token query              | 查询自己所有的令牌             | 需要受系统信任                |
 
 ## System
 
