@@ -1,6 +1,6 @@
 # Manual
 
-v1.1
+v1.2
 
 {required} [optional]
 
@@ -55,6 +55,19 @@ v1.1
 | /group keyword rm whitelist {list_name}  | 移除关键词检查流程白名单 list_name                           | 同上                                           |
 | /group keyword disable blacklist         | 关键词检查流程禁用黑名单                                     | 同上                                           |
 | /group keyword disable whitelist         | 关键词检查流程禁用白名单                                     | 同上                                           |
+
+## Group Log
+
+| Command                          | Description            | Comment                                        |
+| -------------------------------- | ---------------------- | ---------------------------------------------- |
+| /group log leave set {list_name} | 设置离群记录 list_name | 需要 group admin 和 namespace admin 及以上权限 |
+| /group log leave rm              | 移除离群记录 list_name | 同上                                           |
+
+## Group Export
+
+| Command                          | Description                    | Comment                                        |
+| -------------------------------- | ------------------------------ | ---------------------------------------------- |
+| /group export member {list_name} | 导出 group member 到 list_name | 需要 group admin 和 namespace admin 及以上权限 |
 
 ## User
 

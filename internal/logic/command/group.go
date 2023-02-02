@@ -17,6 +17,12 @@ func tryGroup(ctx context.Context, cmd string) (catch bool) {
 		case "keyword":
 			// /group keyword <>
 			catch = tryGroupKeyword(ctx, next[2])
+		case "log":
+			// /group log <>
+			catch = tryGroupLog(ctx, next[2])
+		case "export":
+			// /group export <>
+			catch = tryGroupExport(ctx, next[2])
 		case "bind":
 			// /group bind <namespace>
 			service.Group().BindNamespace(ctx, service.Bot().GetGroupId(ctx), next[2])
@@ -252,6 +258,54 @@ func tryGroupKeywordDisable(ctx context.Context, cmd string) (catch bool) {
 		case consts.BlacklistCmd:
 			// /group keyword disable blacklist
 			service.Group().RemoveKeywordProcess(ctx, service.Bot().GetGroupId(ctx), end)
+			catch = true
+		}
+	}
+	return
+}
+
+func tryGroupLog(ctx context.Context, cmd string) (catch bool) {
+	switch {
+	case nextBranchRe.MatchString(cmd):
+		next := nextBranchRe.FindStringSubmatch(cmd)
+		switch next[1] {
+		case "leave":
+			// /group log leave <>
+			catch = tryGroupLogLeave(ctx, next[2])
+		}
+	}
+	return
+}
+
+func tryGroupLogLeave(ctx context.Context, cmd string) (catch bool) {
+	switch {
+	case nextBranchRe.MatchString(cmd):
+		next := nextBranchRe.FindStringSubmatch(cmd)
+		switch next[1] {
+		case "set":
+			// /group log leave set <list_name>
+			service.Group().SetLogLeaveList(ctx, service.Bot().GetGroupId(ctx), next[2])
+			catch = true
+		}
+	case endBranchRe.MatchString(cmd):
+		switch endBranchRe.FindString(cmd) {
+		case "rm":
+			// /group log leave rm
+			service.Group().RemoveLogLeaveList(ctx, service.Bot().GetGroupId(ctx))
+			catch = true
+		}
+	}
+	return
+}
+
+func tryGroupExport(ctx context.Context, cmd string) (catch bool) {
+	switch {
+	case nextBranchRe.MatchString(cmd):
+		next := nextBranchRe.FindStringSubmatch(cmd)
+		switch next[1] {
+		case "member":
+			// /group export member <list_name>
+			service.Group().ExportGroupMemberList(ctx, service.Bot().GetGroupId(ctx), next[2])
 			catch = true
 		}
 	}

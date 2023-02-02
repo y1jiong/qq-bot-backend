@@ -14,11 +14,12 @@ type (
 		AddList(ctx context.Context, listName, namespace string)
 		RemoveList(ctx context.Context, listName string)
 		QueryList(ctx context.Context, listName string)
-		GetList(ctx context.Context, listName string) (list map[string]any)
+		GetListData(ctx context.Context, listName string) (listMap map[string]any)
 		AddListData(ctx context.Context, listName, key string, value ...string)
 		RemoveListData(ctx context.Context, listName, key string)
 		ResetListData(ctx context.Context, listName string)
 		SetListData(ctx context.Context, listName, newListBytes string)
+		AppendListData(ctx context.Context, listName string, newMap map[string]any) (err error)
 	}
 )
 

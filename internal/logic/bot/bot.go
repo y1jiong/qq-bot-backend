@@ -24,8 +24,8 @@ const (
 )
 
 type echoModel struct {
-	Context    context.Context
-	SuccessMsg string
+	LastContext  context.Context
+	CallbackFunc func(ctx context.Context, rsyncCtx context.Context)
 }
 
 var (
@@ -67,28 +67,34 @@ func (s *sBot) Process(ctx context.Context, ws *ghttp.WebSocket, rawJson []byte,
 	if service.Cfg().IsDebugEnabled(ctx) && s.GetPostType(ctx) != "meta_event" {
 		g.Log().Info(ctx, "\n", rawJson)
 	}
+	// 捕捉 echo
+	if s.catchEcho(ctx) {
+		return
+	}
 	// 下一步执行
 	nextProcess(ctx)
 }
 
-func (s *sBot) CatchEcho(ctx context.Context) (catch bool) {
-	if echo := s.getEcho(ctx); echo != "" {
-		if lastReq, ok := echoPool[echo]; ok {
-			switch s.getEchoStatus(ctx) {
-			case "ok":
-				s.SendPlainMsg(lastReq.Context, lastReq.SuccessMsg)
-			case "async":
-				s.SendPlainMsg(lastReq.Context, "已提交 async 处理")
-			case "failed":
-				s.SendPlainMsg(lastReq.Context, s.getEchoFailedMsg(ctx))
-			}
+func (s *sBot) catchEcho(ctx context.Context) (catch bool) {
+	if echoSign := s.getEcho(ctx); echoSign != "" {
+		if echo, ok := echoPool[echoSign]; ok {
+			echo.CallbackFunc(echo.LastContext, ctx)
 			// 用后即删，以防内存泄露
-			delete(echoPool, echo)
+			delete(echoPool, echoSign)
 			catch = true
 			return
 		}
 	}
 	return
+}
+
+func (s *sBot) DefaultEchoProcess(ctx context.Context, rsyncCtx context.Context) {
+	switch s.GetEchoStatus(rsyncCtx) {
+	case "async":
+		s.SendPlainMsg(ctx, "已提交 async 处理")
+	case "failed":
+		s.SendPlainMsg(ctx, s.GetEchoFailedMsg(rsyncCtx))
+	}
 }
 
 func (s *sBot) IsGroupOwnerOrAdmin(ctx context.Context) (yes bool) {

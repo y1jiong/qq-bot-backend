@@ -8,14 +8,17 @@ package service
 import (
 	"context"
 
+	sj "github.com/bitly/go-simplejson"
 	"github.com/gogf/gf/v2/net/ghttp"
 )
 
 type (
 	IBot interface {
 		Process(ctx context.Context, ws *ghttp.WebSocket, rawJson []byte, nextProcess func(ctx context.Context))
-		CatchEcho(ctx context.Context) (catch bool)
+		DefaultEchoProcess(ctx context.Context, rsyncCtx context.Context)
 		IsGroupOwnerOrAdmin(ctx context.Context) (yes bool)
+		GetEchoStatus(ctx context.Context) string
+		GetEchoFailedMsg(ctx context.Context) string
 		GetPostType(ctx context.Context) string
 		GetMsgType(ctx context.Context) string
 		GetRequestType(ctx context.Context) string
@@ -27,6 +30,9 @@ type (
 		GetGroupId(ctx context.Context) int64
 		GetComment(ctx context.Context) string
 		GetFlag(ctx context.Context) string
+		GetTimestamp(ctx context.Context) int64
+		GetGroupMemberList(ctx context.Context, groupId int64, callback func(ctx context.Context, lastCtx context.Context))
+		GetData(ctx context.Context) *sj.Json
 		SendMessage(ctx context.Context, messageType string, uid, gid int64, msg string, plain bool)
 		SendPlainMsg(ctx context.Context, msg string)
 		SendMsg(ctx context.Context, msg string)

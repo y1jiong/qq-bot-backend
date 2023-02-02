@@ -11,20 +11,24 @@ import (
 
 type (
 	IGroup interface {
-		BindNamespace(ctx context.Context, groupId int64, namespace string)
-		Unbind(ctx context.Context, groupId int64)
-		QueryGroup(ctx context.Context, groupId int64)
 		AddApprovalProcess(ctx context.Context, groupId int64, processName string, args ...string)
 		RemoveApprovalProcess(ctx context.Context, groupId int64, processName string, args ...string)
 		GetApprovalProcess(ctx context.Context, groupId int64) (process map[string]any)
 		GetApprovalWhitelists(ctx context.Context, groupId int64) (whitelists map[string]any)
 		GetApprovalBlacklists(ctx context.Context, groupId int64) (blacklists map[string]any)
 		GetApprovalRegexp(ctx context.Context, groupId int64) (exp string)
+		BindNamespace(ctx context.Context, groupId int64, namespace string)
+		Unbind(ctx context.Context, groupId int64)
+		QueryGroup(ctx context.Context, groupId int64)
+		ExportGroupMemberList(ctx context.Context, groupId int64, listName string)
 		AddKeywordProcess(ctx context.Context, groupId int64, processName string, args ...string)
 		RemoveKeywordProcess(ctx context.Context, groupId int64, processName string, args ...string)
 		GetKeywordProcess(ctx context.Context, groupId int64) (process map[string]any)
 		GetKeywordWhitelists(ctx context.Context, groupId int64) (whitelists map[string]any)
 		GetKeywordBlacklists(ctx context.Context, groupId int64) (blacklists map[string]any)
+		SetLogLeaveList(ctx context.Context, groupId int64, listName string)
+		RemoveLogLeaveList(ctx context.Context, groupId int64)
+		GetLogLeaveList(ctx context.Context, groupId int64) (listName string)
 	}
 )
 

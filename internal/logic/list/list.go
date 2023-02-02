@@ -2,6 +2,8 @@ package list
 
 import (
 	"context"
+	"encoding/json"
+	"errors"
 	sj "github.com/bitly/go-simplejson"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/util/gconv"
@@ -118,7 +120,7 @@ func (s *sList) QueryList(ctx context.Context, listName string) {
 	service.Bot().SendPlainMsg(ctx, msg)
 }
 
-func (s *sList) GetList(ctx context.Context, listName string) (list map[string]any) {
+func (s *sList) GetListData(ctx context.Context, listName string) (listMap map[string]any) {
 	// 参数合法性校验
 	if !legalListNameRe.MatchString(listName) {
 		return
@@ -134,7 +136,7 @@ func (s *sList) GetList(ctx context.Context, listName string) (list map[string]a
 		g.Log().Error(ctx, err)
 		return
 	}
-	list = listJson.MustMap(make(map[string]any))
+	listMap = listJson.MustMap(make(map[string]any))
 	return
 }
 
@@ -301,4 +303,27 @@ func (s *sList) SetListData(ctx context.Context, listName, newListBytes string) 
 	}
 	// 回执
 	service.Bot().SendPlainMsg(ctx, "已覆盖 list("+listName+") 的数据\n共有 "+gconv.String(length)+" 条")
+}
+
+func (s *sList) AppendListData(ctx context.Context, listName string, newMap map[string]any) (err error) {
+	listMap := s.GetListData(ctx, listName)
+	if listMap == nil {
+		err = errors.New("未找到 list(" + listName + ")")
+		return
+	}
+	// 追加数据
+	for k, v := range newMap {
+		listMap[k] = v
+	}
+	// 保存数据
+	listBytes, err := json.Marshal(listMap)
+	if err != nil {
+		return
+	}
+	// 数据库更新
+	_, err = dao.List.Ctx(ctx).
+		Where(dao.List.Columns().ListName, listName).
+		Data(dao.List.Columns().ListJson, string(listBytes)).
+		Update()
+	return
 }

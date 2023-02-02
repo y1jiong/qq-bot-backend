@@ -1,16 +1,23 @@
 package bot
 
-import "context"
+import (
+	"context"
+	sj "github.com/bitly/go-simplejson"
+	"github.com/gogf/gf/v2/frame/g"
+	"github.com/gogf/gf/v2/util/gconv"
+	"github.com/gogf/gf/v2/util/guid"
+	"github.com/gorilla/websocket"
+)
 
 func (s *sBot) getEcho(ctx context.Context) string {
 	return s.reqJsonFromCtx(ctx).Get("echo").MustString()
 }
 
-func (s *sBot) getEchoStatus(ctx context.Context) string {
+func (s *sBot) GetEchoStatus(ctx context.Context) string {
 	return s.reqJsonFromCtx(ctx).Get("status").MustString()
 }
 
-func (s *sBot) getEchoFailedMsg(ctx context.Context) string {
+func (s *sBot) GetEchoFailedMsg(ctx context.Context) string {
 	return s.reqJsonFromCtx(ctx).Get("wording").MustString()
 }
 
@@ -56,4 +63,41 @@ func (s *sBot) GetComment(ctx context.Context) string {
 
 func (s *sBot) GetFlag(ctx context.Context) string {
 	return s.reqJsonFromCtx(ctx).Get("flag").MustString()
+}
+
+func (s *sBot) GetTimestamp(ctx context.Context) int64 {
+	return s.reqJsonFromCtx(ctx).Get("time").MustInt64()
+}
+
+func (s *sBot) GetGroupMemberList(ctx context.Context, groupId int64, callback func(ctx context.Context, lastCtx context.Context)) {
+	// 初始化响应
+	resJson := sj.New()
+	resJson.Set("action", "get_group_member_list")
+	// echo sign
+	echoSign := guid.S()
+	resJson.Set("echo", echoSign)
+	// 参数
+	params := make(map[string]any)
+	params["group_id"] = gconv.String(groupId)
+	// 参数打包
+	resJson.Set("params", params)
+	res, err := resJson.Encode()
+	if err != nil {
+		g.Log().Warning(ctx, err)
+		return
+	}
+	// echo
+	echoPool[echoSign] = echoModel{
+		LastContext:  ctx,
+		CallbackFunc: callback,
+	}
+	// 发送响应
+	err = s.webSocketFromCtx(ctx).WriteMessage(websocket.TextMessage, res)
+	if err != nil {
+		g.Log().Warning(ctx, err)
+	}
+}
+
+func (s *sBot) GetData(ctx context.Context) *sj.Json {
+	return s.reqJsonFromCtx(ctx).Get("data")
 }

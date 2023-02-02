@@ -13,6 +13,7 @@ func processNotice(ctx context.Context) {
 		// 群管理员变更
 	case "group_decrease":
 		// 群成员减少
+		service.Module().TryLogLeave(ctx)
 	case "group_increase":
 		// 群成员增加
 	case "group_ban":

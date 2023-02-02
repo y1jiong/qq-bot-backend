@@ -50,7 +50,7 @@ func (s *sModule) TryKeywordRevoke(ctx context.Context) (catch bool) {
 func isInKeywordBlacklist(ctx context.Context, groupId int64, msg string) (yes bool) {
 	blacklists := service.Group().GetKeywordBlacklists(ctx, groupId)
 	for k := range blacklists {
-		blacklist := service.List().GetList(ctx, k)
+		blacklist := service.List().GetListData(ctx, k)
 		for kk := range blacklist {
 			if strings.Contains(msg, kk) {
 				yes = true
@@ -66,7 +66,7 @@ func isNotInKeywordWhitelist(ctx context.Context, groupId int64, msg string) (ye
 	yes = true
 	whitelists := service.Group().GetKeywordWhitelists(ctx, groupId)
 	for k := range whitelists {
-		whitelist := service.List().GetList(ctx, k)
+		whitelist := service.List().GetListData(ctx, k)
 		for kk := range whitelist {
 			if strings.Contains(msg, kk) {
 				yes = false

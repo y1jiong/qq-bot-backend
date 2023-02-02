@@ -52,10 +52,6 @@ func (s *sProcess) Process(ctx context.Context) {
 	if !s.IsBotProcess() {
 		return
 	}
-	// 捕捉 echo
-	if service.Bot().CatchEcho(ctx) {
-		return
-	}
 	// 处理分支
 	switch service.Bot().GetPostType(ctx) {
 	case "message":

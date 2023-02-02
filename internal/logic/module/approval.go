@@ -10,7 +10,6 @@ import (
 )
 
 func (s *sModule) TryApproveAddGroup(ctx context.Context) (catch bool) {
-	comment := service.Bot().GetComment(ctx)
 	// 获取当前 group approval 策略
 	groupId := service.Bot().GetGroupId(ctx)
 	process := service.Group().GetApprovalProcess(ctx, groupId)
@@ -19,6 +18,7 @@ func (s *sModule) TryApproveAddGroup(ctx context.Context) (catch bool) {
 		// 没有入群审批策略，跳过审批功能
 		return
 	}
+	comment := service.Bot().GetComment(ctx)
 	// 默认通过审批
 	pass := true
 	// 局部变量
@@ -94,7 +94,7 @@ func isInApprovalWhitelist(ctx context.Context, groupId, userId int64, extra str
 	whitelists := service.Group().GetApprovalWhitelists(ctx, groupId)
 	for k := range whitelists {
 		// 获取其中一个白名单
-		whitelist := service.List().GetList(ctx, k)
+		whitelist := service.List().GetListData(ctx, k)
 		if v, ok := whitelist[gconv.String(userId)]; ok {
 			// userId 在白名单中
 			if vv, okay := v.(string); okay {
@@ -133,7 +133,7 @@ func isNotInApprovalBlacklist(ctx context.Context, groupId, userId int64, extra 
 	blacklists := service.Group().GetApprovalBlacklists(ctx, groupId)
 	for k := range blacklists {
 		// 获取其中一个黑名单
-		blacklist := service.List().GetList(ctx, k)
+		blacklist := service.List().GetListData(ctx, k)
 		if v, ok := blacklist[gconv.String(userId)]; ok {
 			// userId 在黑名单中
 			if vv, okay := v.(string); okay {

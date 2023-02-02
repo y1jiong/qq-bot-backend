@@ -81,9 +81,9 @@ func (s *sBot) SetModel(ctx context.Context, model string) {
 	// 初始化响应
 	resJson := sj.New()
 	resJson.Set("action", "_set_model_show")
-	// echo beacon
-	echoBeacon := guid.S()
-	resJson.Set("echo", echoBeacon)
+	// echo sign
+	echoSign := guid.S()
+	resJson.Set("echo", echoSign)
 	// 参数
 	params := make(map[string]any)
 	params["model"] = model
@@ -95,15 +95,23 @@ func (s *sBot) SetModel(ctx context.Context, model string) {
 		g.Log().Warning(ctx, err)
 		return
 	}
+	// callback
+	f := func(ctx context.Context, rsyncCtx context.Context) {
+		if s.GetEchoStatus(rsyncCtx) != "ok" {
+			s.DefaultEchoProcess(ctx, rsyncCtx)
+			return
+		}
+		s.SendPlainMsg(ctx, "已更改机型为 '"+model+"'")
+	}
+	// echo
+	echoPool[echoSign] = echoModel{
+		LastContext:  ctx,
+		CallbackFunc: f,
+	}
 	// 发送响应
 	err = s.webSocketFromCtx(ctx).WriteMessage(websocket.TextMessage, res)
 	if err != nil {
 		g.Log().Warning(ctx, err)
-	}
-	// echo
-	echoPool[echoBeacon] = echoModel{
-		Context:    ctx,
-		SuccessMsg: "已更改机型为 '" + model + "'",
 	}
 }
 
