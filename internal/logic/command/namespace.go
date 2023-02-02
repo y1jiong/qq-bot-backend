@@ -12,7 +12,7 @@ func tryNamespace(ctx context.Context, cmd string) (catch bool) {
 		switch next[1] {
 		case "add":
 			// 权限校验
-			if !service.User().CouldOperateNamespace(ctx, service.Bot().GetUserId(ctx)) {
+			if !service.User().CouldOpNamespace(ctx, service.Bot().GetUserId(ctx)) {
 				return
 			}
 			// /namespace add <namespace>
@@ -21,7 +21,7 @@ func tryNamespace(ctx context.Context, cmd string) (catch bool) {
 			catch = true
 		case "rm":
 			// 权限校验
-			if !service.User().CouldOperateNamespace(ctx, service.Bot().GetUserId(ctx)) {
+			if !service.User().CouldOpNamespace(ctx, service.Bot().GetUserId(ctx)) {
 				return
 			}
 			// /namespace rm <namespace>
@@ -37,7 +37,7 @@ func tryNamespace(ctx context.Context, cmd string) (catch bool) {
 		switch end {
 		case "query":
 			// 权限校验
-			if !service.User().CouldOperateNamespace(ctx, service.Bot().GetUserId(ctx)) {
+			if !service.User().CouldOpNamespace(ctx, service.Bot().GetUserId(ctx)) {
 				return
 			}
 			// /namespace query

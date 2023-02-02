@@ -13,13 +13,13 @@ func tryList(ctx context.Context, cmd string) (catch bool) {
 		case "join":
 			// /list join <>
 			catch = tryListJoin(ctx, next[2])
+		case "set":
+			// /list set <>
+			catch = tryListSet(ctx, next[2])
 		case "query":
 			// /list query <list_name>
 			service.List().QueryList(ctx, next[2])
 			catch = true
-		case "set":
-			// /list set <>
-			catch = tryListSet(ctx, next[2])
 		case "leave":
 			// /list leave <>
 			catch = tryListLeave(ctx, next[2])

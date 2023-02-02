@@ -16,6 +16,12 @@ func trySys(ctx context.Context, cmd string) (catch bool) {
 	case nextBranchRe.MatchString(cmd):
 		next := nextBranchRe.FindStringSubmatch(cmd)
 		switch next[1] {
+		case "grant":
+			// /sys grant <>
+			catch = trySysGrant(ctx, next[2])
+		case "revoke":
+			// /sys revoke <>
+			catch = trySysRevoke(ctx, next[2])
 		case "trust":
 			// /sys trust <user_id>
 			service.User().SystemTrustUser(ctx, gconv.Int64(next[2]))
@@ -24,12 +30,6 @@ func trySys(ctx context.Context, cmd string) (catch bool) {
 			// /sys distrust <user_id>
 			service.User().SystemDistrustUser(ctx, gconv.Int64(next[2]))
 			catch = true
-		case "grant":
-			// /sys grant <>
-			catch = trySysGrant(ctx, next[2])
-		case "revoke":
-			// /sys revoke <>
-			catch = trySysRevoke(ctx, next[2])
 		}
 	}
 	return
@@ -40,9 +40,13 @@ func trySysGrant(ctx context.Context, cmd string) (catch bool) {
 	case doubleValueCmdEndRe.MatchString(cmd):
 		dv := doubleValueCmdEndRe.FindStringSubmatch(cmd)
 		switch dv[2] {
+		case "raw":
+			// /sys grant <user_id> raw
+			service.User().GrantGetRawMsg(ctx, gconv.Int64(dv[1]))
+			catch = true
 		case "namespace":
 			// /sys grant <user_id> namespace
-			service.User().GrantOperateNamespace(ctx, gconv.Int64(dv[1]))
+			service.User().GrantOpNamespace(ctx, gconv.Int64(dv[1]))
 			catch = true
 		}
 	}
@@ -54,9 +58,13 @@ func trySysRevoke(ctx context.Context, cmd string) (catch bool) {
 	case doubleValueCmdEndRe.MatchString(cmd):
 		dv := doubleValueCmdEndRe.FindStringSubmatch(cmd)
 		switch dv[2] {
+		case "raw":
+			// /sys revoke <user_id> raw
+			service.User().RevokeGetRawMsg(ctx, gconv.Int64(dv[1]))
+			catch = true
 		case "namespace":
 			// /sys revoke <user_id> namespace
-			service.User().RevokeOperateNamespace(ctx, gconv.Int64(dv[1]))
+			service.User().RevokeOpNamespace(ctx, gconv.Int64(dv[1]))
 			catch = true
 		}
 	}

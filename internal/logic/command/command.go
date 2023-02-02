@@ -52,12 +52,15 @@ func (s *sCommand) TryCommand(ctx context.Context) (catch bool) {
 		case "group":
 			// /group <>
 			catch = tryGroup(ctx, next[2])
-		case "user":
-			// /user <>
-			catch = tryUser(ctx, next[2])
 		case "namespace":
 			// /namespace <>
 			catch = tryNamespace(ctx, next[2])
+		case "user":
+			// /user <>
+			catch = tryUser(ctx, next[2])
+		case "raw":
+			// /raw <>
+			catch = tryRaw(ctx, next[2])
 		case "model":
 			// /model <>
 			catch = tryModelSet(ctx, next[2])
