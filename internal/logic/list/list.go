@@ -302,7 +302,7 @@ func (s *sList) SetListData(ctx context.Context, listName, newListBytes string) 
 		return
 	}
 	// 回执
-	service.Bot().SendPlainMsg(ctx, "已覆盖 list("+listName+") 的数据\n共有 "+gconv.String(length)+" 条")
+	service.Bot().SendPlainMsg(ctx, "已覆盖 list("+listName+") 的数据\n共 "+gconv.String(length)+" 条")
 }
 
 func (s *sList) AppendListData(ctx context.Context, listName string, newMap map[string]any) (err error) {

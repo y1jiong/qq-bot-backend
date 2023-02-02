@@ -198,7 +198,8 @@ func (s *sGroup) ExportGroupMemberList(ctx context.Context, groupId int64, listN
 		}
 		// 回执
 		service.Bot().SendPlainMsg(ctx,
-			"已将 group("+gconv.String(groupId)+") 的 member 导出到 list("+listName+")")
+			"已将 group("+gconv.String(groupId)+") 的 member 导出到 list("+listName+")"+
+				"\n共 "+gconv.String(len(membersMap))+" 条")
 	}
 	// 异步获取群成员列表
 	service.Bot().GetGroupMemberList(ctx, groupId, f)
