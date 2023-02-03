@@ -28,7 +28,7 @@ func (s *sModule) TryKeywordRevoke(ctx context.Context) (catch bool) {
 	msg := service.Bot().GetMessage(ctx)
 	shouldRevoke := false
 	// 处理流程
-	if _, ok := process[consts.BlacklistCmd]; ok && !shouldRevoke {
+	if _, ok := process[consts.BlacklistCmd]; ok {
 		shouldRevoke = isInKeywordBlacklist(ctx, groupId, msg)
 	}
 	if _, ok := process[consts.WhitelistCmd]; ok && !shouldRevoke {
@@ -41,6 +41,11 @@ func (s *sModule) TryKeywordRevoke(ctx context.Context) (catch bool) {
 	}
 	// 撤回
 	service.Bot().RevokeMessage(ctx, service.Bot().GetMsgId(ctx))
+	// 打印撤回日志
+	g.Log().Infof(ctx, "revoke group(%v) user(%v) because %v",
+		groupId,
+		service.Bot().GetUserId(ctx),
+		msg)
 	// 禁言
 	doMute(ctx)
 	catch = true
@@ -101,6 +106,11 @@ func doMute(ctx context.Context) {
 	// 执行幂次运算
 	for i := 0; i < times; i++ {
 		muteMinutes *= consts.BaseMuteMinutes
+		// 不超过 30 天 30*24*60=43200
+		if muteMinutes > 43199 {
+			muteMinutes = 43199
+			break
+		}
 	}
 	// 禁言 BaseMuteMinutes^times 分钟
 	service.Bot().Mute(ctx, muteMinutes*60)

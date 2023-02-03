@@ -17,21 +17,29 @@ func (s *sModule) TryLogLeave(ctx context.Context) (catch bool) {
 		// 没有设置离群记录 list
 		return
 	}
+	action := service.Bot().GetSubType(ctx)
+	userId := service.Bot().GetUserId(ctx)
 	// 初始化数据
 	one := struct {
 		SubType string `json:"subType"`
 		Time    string `json:"time"`
 	}{
-		SubType: service.Bot().GetSubType(ctx),
+		SubType: action,
 		Time:    gtime.New(service.Bot().GetTimestamp(ctx)).String(),
 	}
 	listMap := make(map[string]any)
-	listMap[gconv.String(service.Bot().GetUserId(ctx))] = one
+	listMap[gconv.String(userId)] = one
 	// 保存数据
 	err := service.List().AppendListData(ctx, listName, listMap)
 	if err != nil {
 		g.Log().Error(ctx, err)
+		return
 	}
+	// 打印离群日志
+	g.Log().Infof(ctx, "%v user(%v) from group(%v)",
+		action,
+		userId,
+		groupId)
 	catch = true
 	return
 }
