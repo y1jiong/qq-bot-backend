@@ -32,5 +32,6 @@ func (s *sModule) TryLogLeave(ctx context.Context) (catch bool) {
 	if err != nil {
 		g.Log().Error(ctx, err)
 	}
+	catch = true
 	return
 }
