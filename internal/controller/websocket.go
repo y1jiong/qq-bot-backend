@@ -30,7 +30,7 @@ func (c *cConnectClient) Connect(r *ghttp.Request) {
 		tokenName = "debug"
 		pass, tokenName = service.Token().IsCorrectToken(ctx, token)
 		// debug mode
-		if token != service.Cfg().GetDebugToken(ctx) && !pass {
+		if !pass && token != service.Cfg().GetDebugToken(ctx) {
 			r.Response.WriteHeader(http.StatusForbidden)
 			return
 		}
@@ -57,7 +57,6 @@ func (c *cConnectClient) Connect(r *ghttp.Request) {
 			return
 		}
 		// 异步处理 WebSocket 请求
-		// ctx 携带 WebSocket 对象
 		go service.Bot().Process(ctx, ws, wsReq, service.Process().Process)
 	}
 }
