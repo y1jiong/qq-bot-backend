@@ -143,6 +143,11 @@ func (s *sBot) MutePrototype(ctx context.Context, groupId, userId int64, seconds
 	params := make(map[string]any)
 	params["group_id"] = groupId
 	params["user_id"] = userId
+	if seconds > 2591940 {
+		// 不大于 29 天 23 小时 59 分钟
+		// (30*24*60-1)*60=2591940 秒
+		seconds = 2591940
+	}
 	params["duration"] = seconds
 	// 参数打包
 	resJson.Set("params", params)
