@@ -69,6 +69,10 @@ func (s *sBot) GetTimestamp(ctx context.Context) int64 {
 	return s.reqJsonFromCtx(ctx).Get("time").MustInt64()
 }
 
+func (s *sBot) GetOperatorId(ctx context.Context) int64 {
+	return s.reqJsonFromCtx(ctx).Get("operator_id").MustInt64()
+}
+
 func (s *sBot) GetGroupMemberList(ctx context.Context, groupId int64, callback func(ctx context.Context, lastCtx context.Context)) {
 	// 初始化响应
 	resJson := sj.New()

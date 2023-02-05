@@ -36,10 +36,11 @@ func (s *sModule) TryLogLeave(ctx context.Context) (catch bool) {
 		return
 	}
 	// 打印离群日志
-	g.Log().Infof(ctx, "%v user(%v) from group(%v)",
+	g.Log().Infof(ctx, "%v user(%v) from group(%v) by user(%v)",
 		action,
 		userId,
-		groupId)
+		groupId,
+		service.Bot().GetOperatorId(ctx))
 	catch = true
 	return
 }

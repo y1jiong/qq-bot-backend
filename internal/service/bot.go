@@ -31,6 +31,7 @@ type (
 		GetComment(ctx context.Context) string
 		GetFlag(ctx context.Context) string
 		GetTimestamp(ctx context.Context) int64
+		GetOperatorId(ctx context.Context) int64
 		GetGroupMemberList(ctx context.Context, groupId int64, callback func(ctx context.Context, lastCtx context.Context))
 		GetData(ctx context.Context) *sj.Json
 		SendMessage(ctx context.Context, messageType string, uid, gid int64, msg string, plain bool)
