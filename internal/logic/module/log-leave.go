@@ -19,13 +19,16 @@ func (s *sModule) TryLogLeave(ctx context.Context) (catch bool) {
 	}
 	action := service.Bot().GetSubType(ctx)
 	userId := service.Bot().GetUserId(ctx)
+	operatorId := service.Bot().GetOperatorId(ctx)
 	// 初始化数据
 	one := struct {
-		SubType string `json:"subType"`
-		Time    string `json:"time"`
+		SubType    string `json:"subType"`
+		Time       string `json:"time"`
+		OperatorId string `json:"operatorId"`
 	}{
-		SubType: action,
-		Time:    gtime.New(service.Bot().GetTimestamp(ctx)).String(),
+		SubType:    action,
+		Time:       gtime.New(service.Bot().GetTimestamp(ctx)).String(),
+		OperatorId: gconv.String(operatorId),
 	}
 	listMap := make(map[string]any)
 	listMap[gconv.String(userId)] = one
@@ -40,7 +43,7 @@ func (s *sModule) TryLogLeave(ctx context.Context) (catch bool) {
 		action,
 		userId,
 		groupId,
-		service.Bot().GetOperatorId(ctx))
+		operatorId)
 	catch = true
 	return
 }
