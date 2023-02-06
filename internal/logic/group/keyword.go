@@ -14,6 +14,7 @@ const (
 	keywordProcessMapKey    = "keywordProcess"
 	keywordWhitelistsMapKey = "keywordWhitelists"
 	keywordBlacklistsMapKey = "keywordBlacklists"
+	keywordReplyListKey     = "keywordReplyList"
 )
 
 func (s *sGroup) AddKeywordProcess(ctx context.Context, groupId int64, processName string, args ...string) {
@@ -44,7 +45,7 @@ func (s *sGroup) AddKeywordProcess(ctx context.Context, groupId int64, processNa
 		// 处理 args
 		switch processName {
 		case consts.BlacklistCmd:
-			// 处理黑名单
+			// 添加一个黑名单
 			// 是否存在 list
 			lists := service.Namespace().GetNamespaceList(ctx, gEntity.Namespace)
 			if _, ok := lists[args[0]]; !ok {
@@ -55,8 +56,18 @@ func (s *sGroup) AddKeywordProcess(ctx context.Context, groupId int64, processNa
 			blacklists := settingJson.Get(keywordBlacklistsMapKey).MustMap(make(map[string]any))
 			blacklists[args[0]] = nil
 			settingJson.Set(keywordBlacklistsMapKey, blacklists)
+		case consts.ReplyCmd:
+			// 添加回复列表
+			// 是否存在 list
+			lists := service.Namespace().GetNamespaceList(ctx, gEntity.Namespace)
+			if _, ok := lists[args[0]]; !ok {
+				service.Bot().SendPlainMsg(ctx, args[0]+" 不存在")
+				return
+			}
+			// 继续处理
+			settingJson.Set(keywordReplyListKey, args[0])
 		case consts.WhitelistCmd:
-			// 处理白名单
+			// 添加一个白名单
 			// 是否存在 list
 			lists := service.Namespace().GetNamespaceList(ctx, gEntity.Namespace)
 			if _, ok := lists[args[0]]; !ok {
@@ -126,7 +137,7 @@ func (s *sGroup) RemoveKeywordProcess(ctx context.Context, groupId int64, proces
 		// 处理 args
 		switch processName {
 		case consts.BlacklistCmd:
-			// 处理黑名单
+			// 移除某个黑名单
 			blacklists := settingJson.Get(keywordBlacklistsMapKey).MustMap(make(map[string]any))
 			if _, ok := blacklists[args[0]]; !ok {
 				service.Bot().SendPlainMsg(ctx, args[0]+" 不存在")
@@ -135,7 +146,7 @@ func (s *sGroup) RemoveKeywordProcess(ctx context.Context, groupId int64, proces
 			delete(blacklists, args[0])
 			settingJson.Set(keywordBlacklistsMapKey, blacklists)
 		case consts.WhitelistCmd:
-			// 处理白名单
+			// 移除某个白名单
 			whitelists := settingJson.Get(keywordWhitelistsMapKey).MustMap(make(map[string]any))
 			if _, ok := whitelists[args[0]]; !ok {
 				service.Bot().SendPlainMsg(ctx, args[0]+" 不存在")
@@ -145,14 +156,24 @@ func (s *sGroup) RemoveKeywordProcess(ctx context.Context, groupId int64, proces
 			settingJson.Set(keywordWhitelistsMapKey, whitelists)
 		}
 	} else {
-		// 删除 processName
-		processMap := settingJson.Get(keywordProcessMapKey).MustMap(make(map[string]any))
-		if _, ok := processMap[processName]; !ok {
-			service.Bot().SendPlainMsg(ctx, processName+" 不存在")
-			return
+		switch processName {
+		case consts.ReplyCmd:
+			// 移除回复列表
+			if _, ok := settingJson.CheckGet(keywordReplyListKey); !ok {
+				service.Bot().SendPlainMsg(ctx, "重复移除")
+				return
+			}
+			settingJson.Del(keywordReplyListKey)
+		default:
+			// 删除 processName
+			processMap := settingJson.Get(keywordProcessMapKey).MustMap(make(map[string]any))
+			if _, ok := processMap[processName]; !ok {
+				service.Bot().SendPlainMsg(ctx, processName+" 不存在")
+				return
+			}
+			delete(processMap, processName)
+			settingJson.Set(keywordProcessMapKey, processMap)
 		}
-		delete(processMap, processName)
-		settingJson.Set(keywordProcessMapKey, processMap)
 	}
 	// 保存数据
 	settingBytes, err := settingJson.Encode()
@@ -235,5 +256,25 @@ func (s *sGroup) GetKeywordBlacklists(ctx context.Context, groupId int64) (black
 		return
 	}
 	blacklists = settingJson.Get(keywordBlacklistsMapKey).MustMap(make(map[string]any))
+	return
+}
+
+func (s *sGroup) GetKeywordReplyList(ctx context.Context, groupId int64) (listName string) {
+	// 参数合法性校验
+	if groupId < 1 {
+		return
+	}
+	// 获取 group
+	gEntity := getGroup(ctx, groupId)
+	if gEntity == nil {
+		return
+	}
+	// 数据处理
+	settingJson, err := sj.NewJson([]byte(gEntity.SettingJson))
+	if err != nil {
+		g.Log().Error(ctx, err)
+		return
+	}
+	listName = settingJson.Get(keywordReplyListKey).MustString()
 	return
 }

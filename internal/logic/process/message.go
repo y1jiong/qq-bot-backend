@@ -14,6 +14,7 @@ func processMessage(ctx context.Context) {
 		case "normal":
 			// 群聊
 			service.Module().TryKeywordRevoke(ctx)
+			service.Module().TryKeywordReply(ctx)
 		case "anonymous":
 			// 匿名
 		case "notice":

@@ -33,8 +33,7 @@ func tryNamespace(ctx context.Context, cmd string) (catch bool) {
 			catch = tryNamespaceReset(ctx, next[1], next[2])
 		}
 	case endBranchRe.MatchString(cmd):
-		end := endBranchRe.FindString(cmd)
-		switch end {
+		switch cmd {
 		case "query":
 			// 权限校验
 			if !service.User().CouldOpNamespace(ctx, service.Bot().GetUserId(ctx)) {
@@ -45,7 +44,7 @@ func tryNamespace(ctx context.Context, cmd string) (catch bool) {
 			catch = true
 		default:
 			// /namespace <namespace>
-			service.Namespace().QueryNamespace(ctx, end)
+			service.Namespace().QueryNamespace(ctx, cmd)
 			catch = true
 		}
 	}
@@ -54,7 +53,7 @@ func tryNamespace(ctx context.Context, cmd string) (catch bool) {
 
 func tryNamespaceReset(ctx context.Context, namespace, cmd string) (catch bool) {
 	if endBranchRe.MatchString(cmd) {
-		switch endBranchRe.FindString(cmd) {
+		switch cmd {
 		case "reset":
 			// /namespace <namespace> reset
 			service.Namespace().ResetNamespaceAdmin(ctx, namespace)

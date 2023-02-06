@@ -51,8 +51,10 @@ v1.2
 | /group keyword enable whitelist          | 关键词检查流程启用白名单                                     | 同上                                           |
 | /group keyword add blacklist {list_name} | 新增关键词检查流程黑名单 list_name（可以多次指定不同的 list_name 最终采用并集查找） | 同上                                           |
 | /group keyword add whitelist {list_name} | 新增关键词检查流程白名单 list_name（可以多次指定不同的 list_name 最终采用并集查找） | 同上                                           |
+| /group keyword set reply {list_name}     | 设置关键词回复列表 list_name                                 | 同上                                           |
 | /group keyword rm blacklist {list_name}  | 移除关键词检查流程黑名单 list_name                           | 同上                                           |
 | /group keyword rm whitelist {list_name}  | 移除关键词检查流程白名单 list_name                           | 同上                                           |
+| /group keyword rm reply                  | 移除关键词回复列表                                           | 同上                                           |
 | /group keyword disable blacklist         | 关键词检查流程禁用黑名单                                     | 同上                                           |
 | /group keyword disable whitelist         | 关键词检查流程禁用白名单                                     | 同上                                           |
 

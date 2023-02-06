@@ -29,7 +29,7 @@ func tryGroup(ctx context.Context, cmd string) (catch bool) {
 			catch = true
 		}
 	case endBranchRe.MatchString(cmd):
-		switch endBranchRe.FindString(cmd) {
+		switch cmd {
 		case "query":
 			// /group query
 			service.Group().QueryGroup(ctx, service.Bot().GetGroupId(ctx))
@@ -103,23 +103,22 @@ func tryGroupApprovalAdd(ctx context.Context, cmd string) (catch bool) {
 func tryGroupApprovalEnable(ctx context.Context, cmd string) (catch bool) {
 	switch {
 	case endBranchRe.MatchString(cmd):
-		end := endBranchRe.FindString(cmd)
-		switch end {
+		switch cmd {
 		case consts.WhitelistCmd:
 			// /group approval enable whitelist
-			service.Group().AddApprovalProcess(ctx, service.Bot().GetGroupId(ctx), end)
+			service.Group().AddApprovalProcess(ctx, service.Bot().GetGroupId(ctx), cmd)
 			catch = true
 		case consts.BlacklistCmd:
 			// /group approval enable blacklist
-			service.Group().AddApprovalProcess(ctx, service.Bot().GetGroupId(ctx), end)
+			service.Group().AddApprovalProcess(ctx, service.Bot().GetGroupId(ctx), cmd)
 			catch = true
 		case consts.RegexpCmd:
 			// /group approval enable regexp
-			service.Group().AddApprovalProcess(ctx, service.Bot().GetGroupId(ctx), end)
+			service.Group().AddApprovalProcess(ctx, service.Bot().GetGroupId(ctx), cmd)
 			catch = true
 		case consts.McCmd:
 			// /group approval enable mc
-			service.Group().AddApprovalProcess(ctx, service.Bot().GetGroupId(ctx), end)
+			service.Group().AddApprovalProcess(ctx, service.Bot().GetGroupId(ctx), cmd)
 			catch = true
 		}
 	}
@@ -147,23 +146,22 @@ func tryGroupApprovalRemove(ctx context.Context, cmd string) (catch bool) {
 func tryGroupApprovalDisable(ctx context.Context, cmd string) (catch bool) {
 	switch {
 	case endBranchRe.MatchString(cmd):
-		end := endBranchRe.FindString(cmd)
-		switch end {
+		switch cmd {
 		case consts.WhitelistCmd:
 			// /group approval disable whitelist
-			service.Group().RemoveApprovalProcess(ctx, service.Bot().GetGroupId(ctx), end)
+			service.Group().RemoveApprovalProcess(ctx, service.Bot().GetGroupId(ctx), cmd)
 			catch = true
 		case consts.BlacklistCmd:
 			// /group approval disable blacklist
-			service.Group().RemoveApprovalProcess(ctx, service.Bot().GetGroupId(ctx), end)
+			service.Group().RemoveApprovalProcess(ctx, service.Bot().GetGroupId(ctx), cmd)
 			catch = true
 		case consts.RegexpCmd:
 			// /group approval disable regexp
-			service.Group().RemoveApprovalProcess(ctx, service.Bot().GetGroupId(ctx), end)
+			service.Group().RemoveApprovalProcess(ctx, service.Bot().GetGroupId(ctx), cmd)
 			catch = true
 		case consts.McCmd:
 			// /group approval disable mc
-			service.Group().RemoveApprovalProcess(ctx, service.Bot().GetGroupId(ctx), end)
+			service.Group().RemoveApprovalProcess(ctx, service.Bot().GetGroupId(ctx), cmd)
 			catch = true
 		}
 	}
@@ -178,6 +176,9 @@ func tryGroupKeyword(ctx context.Context, cmd string) (catch bool) {
 		case "add":
 			// /group keyword add <>
 			catch = tryGroupKeywordAdd(ctx, next[2])
+		case "set":
+			// /group keyword set <>
+			catch = tryGroupKeywordSet(ctx, next[2])
 		case "enable":
 			// /group keyword enable <>
 			catch = tryGroupKeywordEnable(ctx, next[2])
@@ -210,18 +211,31 @@ func tryGroupKeywordAdd(ctx context.Context, cmd string) (catch bool) {
 	return
 }
 
+func tryGroupKeywordSet(ctx context.Context, cmd string) (catch bool) {
+	switch {
+	case nextBranchRe.MatchString(cmd):
+		next := nextBranchRe.FindStringSubmatch(cmd)
+		switch next[1] {
+		case consts.ReplyCmd:
+			// /group keyword set reply <list_name>
+			service.Group().AddKeywordProcess(ctx, service.Bot().GetGroupId(ctx), next[1], next[2])
+			catch = true
+		}
+	}
+	return
+}
+
 func tryGroupKeywordEnable(ctx context.Context, cmd string) (catch bool) {
 	switch {
 	case endBranchRe.MatchString(cmd):
-		end := endBranchRe.FindString(cmd)
-		switch end {
+		switch cmd {
 		case consts.BlacklistCmd:
 			// /group keyword enable blacklist
-			service.Group().AddKeywordProcess(ctx, service.Bot().GetGroupId(ctx), end)
+			service.Group().AddKeywordProcess(ctx, service.Bot().GetGroupId(ctx), cmd)
 			catch = true
 		case consts.WhitelistCmd:
 			// /group keyword enable whitelist
-			service.Group().AddKeywordProcess(ctx, service.Bot().GetGroupId(ctx), end)
+			service.Group().AddKeywordProcess(ctx, service.Bot().GetGroupId(ctx), cmd)
 			catch = true
 		}
 	}
@@ -242,6 +256,13 @@ func tryGroupKeywordRemove(ctx context.Context, cmd string) (catch bool) {
 			service.Group().RemoveKeywordProcess(ctx, service.Bot().GetGroupId(ctx), next[1], next[2])
 			catch = true
 		}
+	case endBranchRe.MatchString(cmd):
+		switch cmd {
+		case consts.ReplyCmd:
+			// /group keyword rm reply
+			service.Group().RemoveKeywordProcess(ctx, service.Bot().GetGroupId(ctx), cmd)
+			catch = true
+		}
 	}
 	return
 }
@@ -249,15 +270,14 @@ func tryGroupKeywordRemove(ctx context.Context, cmd string) (catch bool) {
 func tryGroupKeywordDisable(ctx context.Context, cmd string) (catch bool) {
 	switch {
 	case endBranchRe.MatchString(cmd):
-		end := endBranchRe.FindString(cmd)
-		switch end {
+		switch cmd {
 		case consts.WhitelistCmd:
 			// /group keyword disable whitelist
-			service.Group().RemoveKeywordProcess(ctx, service.Bot().GetGroupId(ctx), end)
+			service.Group().RemoveKeywordProcess(ctx, service.Bot().GetGroupId(ctx), cmd)
 			catch = true
 		case consts.BlacklistCmd:
 			// /group keyword disable blacklist
-			service.Group().RemoveKeywordProcess(ctx, service.Bot().GetGroupId(ctx), end)
+			service.Group().RemoveKeywordProcess(ctx, service.Bot().GetGroupId(ctx), cmd)
 			catch = true
 		}
 	}
@@ -288,7 +308,7 @@ func tryGroupLogLeave(ctx context.Context, cmd string) (catch bool) {
 			catch = true
 		}
 	case endBranchRe.MatchString(cmd):
-		switch endBranchRe.FindString(cmd) {
+		switch cmd {
 		case "rm":
 			// /group log leave rm
 			service.Group().RemoveLogLeaveList(ctx, service.Bot().GetGroupId(ctx))

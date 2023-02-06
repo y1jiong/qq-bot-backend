@@ -115,3 +115,28 @@ func doMute(ctx context.Context) {
 	// 禁言 BaseMuteMinutes^times 分钟
 	service.Bot().Mute(ctx, muteMinutes*60)
 }
+
+func (s *sModule) TryKeywordReply(ctx context.Context) (catch bool) {
+	// 获取当前 group reply list
+	groupId := service.Bot().GetGroupId(ctx)
+	listName := service.Group().GetKeywordReplyList(ctx, groupId)
+	if listName == "" {
+		// 没有设置回复列表，跳过回复功能
+		return
+	}
+	// 获取 list
+	list := service.List().GetListData(ctx, listName)
+	// 获取聊天信息
+	msg := service.Bot().GetMessage(ctx)
+	// 匹配关键字
+	for k, v := range list {
+		if vv, ok := v.(string); ok && strings.Contains(msg, k) {
+			// 匹配成功，回复
+			pre := "[CQ:at,qq=" + gconv.String(service.Bot().GetUserId(ctx)) + "]" + vv
+			service.Bot().SendMsg(ctx, pre)
+			return
+		}
+	}
+	catch = true
+	return
+}

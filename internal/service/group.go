@@ -26,6 +26,7 @@ type (
 		GetKeywordProcess(ctx context.Context, groupId int64) (process map[string]any)
 		GetKeywordWhitelists(ctx context.Context, groupId int64) (whitelists map[string]any)
 		GetKeywordBlacklists(ctx context.Context, groupId int64) (blacklists map[string]any)
+		GetKeywordReplyList(ctx context.Context, groupId int64) (listName string)
 		SetLogLeaveList(ctx context.Context, groupId int64, listName string)
 		RemoveLogLeaveList(ctx context.Context, groupId int64)
 		GetLogLeaveList(ctx context.Context, groupId int64) (listName string)

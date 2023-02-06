@@ -76,7 +76,7 @@ func (s *sCommand) TryCommand(ctx context.Context) (catch bool) {
 		if !service.User().IsSystemTrustUser(ctx, service.Bot().GetUserId(ctx)) {
 			return
 		}
-		switch endBranchRe.FindString(cmd) {
+		switch cmd {
 		case "state":
 			// /state
 			catch = queryProcessState(ctx)

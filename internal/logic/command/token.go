@@ -24,7 +24,8 @@ func tryToken(ctx context.Context, cmd string) (catch bool) {
 			catch = true
 		}
 	case endBranchRe.MatchString(cmd):
-		if endBranchRe.FindString(cmd) == "query" {
+		switch cmd {
+		case "query":
 			// /token query
 			service.Token().QueryToken(ctx)
 			catch = true
