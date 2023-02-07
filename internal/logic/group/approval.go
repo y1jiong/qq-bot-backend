@@ -70,13 +70,13 @@ func (s *sGroup) AddApprovalProcess(ctx context.Context, groupId int64, processN
 			blacklists[args[0]] = nil
 			settingJson.Set(approvalBlacklistsMapKey, blacklists)
 		case consts.RegexpCmd:
-			if service.Module().IsIncludeCqCode(args[0]) {
+			if service.Codec().IsIncludeCqCode(args[0]) {
 				// 包含 CQ Code 时发送表情 gun
 				service.Bot().SendMsg(ctx, "[CQ:face,id=288]")
 				return
 			}
 			// 解码被 CQ Code 转义的字符
-			args[0] = service.Module().DecodeCqCode(args[0])
+			args[0] = service.Codec().DecodeCqCode(args[0])
 			// 处理正则表达式
 			_, err = regexp.Compile(args[0])
 			if err != nil {

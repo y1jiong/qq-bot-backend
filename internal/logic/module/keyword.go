@@ -21,7 +21,7 @@ func (s *sModule) TryKeywordRevoke(ctx context.Context) (catch bool) {
 	process := service.Group().GetKeywordProcess(ctx, groupId)
 	// 预处理
 	if len(process) < 1 {
-		// 没有关键字检查流程，跳过撤回功能
+		// 没有关键词检查流程，跳过撤回功能
 		return
 	}
 	// 获取聊天信息
@@ -128,7 +128,7 @@ func (s *sModule) TryKeywordReply(ctx context.Context) (catch bool) {
 	list := service.List().GetListData(ctx, listName)
 	// 获取聊天信息
 	msg := service.Bot().GetMessage(ctx)
-	// 匹配关键字
+	// 匹配关键词
 	for k, v := range list {
 		if vv, ok := v.(string); ok && strings.Contains(msg, k) {
 			// 匹配成功，回复

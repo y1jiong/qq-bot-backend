@@ -45,14 +45,16 @@ func tryList(ctx context.Context, cmd string) (catch bool) {
 }
 
 func tryListJoin(ctx context.Context, cmd string) (catch bool) {
-	if nextBranchRe.MatchString(cmd) {
+	switch {
+	case nextBranchRe.MatchString(cmd):
 		next := nextBranchRe.FindStringSubmatch(cmd)
-		if doubleValueCmdEndRe.MatchString(next[2]) {
+		switch {
+		case doubleValueCmdEndRe.MatchString(next[2]):
 			// /list join <list_name> <key> [value]
 			dv := doubleValueCmdEndRe.FindStringSubmatch(next[2])
 			service.List().AddListData(ctx, next[1], dv[1], dv[2])
 			catch = true
-		} else {
+		case endBranchRe.MatchString(next[2]):
 			// /list join <list_name> <key>
 			service.List().AddListData(ctx, next[1], next[2])
 			catch = true
@@ -65,9 +67,11 @@ func tryListSet(ctx context.Context, cmd string) (catch bool) {
 	switch {
 	case nextBranchRe.MatchString(cmd):
 		next := nextBranchRe.FindStringSubmatch(cmd)
-		// /list set <list_name> <json>
-		service.List().SetListData(ctx, next[1], next[2])
-		catch = true
+		if endBranchRe.MatchString(next[2]) {
+			// /list set <list_name> <json>
+			service.List().SetListData(ctx, next[1], next[2])
+			catch = true
+		}
 	}
 	return
 }

@@ -160,7 +160,11 @@ func (s *sList) AddListData(ctx context.Context, listName, key string, value ...
 		g.Log().Error(ctx, err)
 		return
 	}
+	// 按照 url escape 解码空格和 %
+	key = service.Codec().DecodeBlank(key)
 	if len(value) > 0 {
+		// 按照 url escape 解码空格和 %
+		value[0] = service.Codec().DecodeBlank(value[0])
 		listJson.Set(key, value[0])
 	} else {
 		listJson.Set(key, nil)
@@ -208,6 +212,8 @@ func (s *sList) RemoveListData(ctx context.Context, listName, key string) {
 		g.Log().Error(ctx, err)
 		return
 	}
+	// 按照 url escape 解码空格和 %
+	key = service.Codec().DecodeBlank(key)
 	if _, ok := listJson.CheckGet(key); !ok {
 		// 不存在 key
 		service.Bot().SendPlainMsg(ctx, key+" 不存在")
