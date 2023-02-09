@@ -9,7 +9,7 @@ v1.2
 | Command                              | Description                                                  | Comment                                          |
 | ------------------------------------ | ------------------------------------------------------------ | ------------------------------------------------ |
 | /list add {list_name} {namespace}    | 在 namespace 下新增 list_name                                | 需要 list_name 对应的 namespace admin 及以上权限 |
-| /list join {list_name} {key} [value] | 将 key[:value] 添加到 list_name 中（key value 可作为双因子认证使用）（key value 包含**空格**请用`%20`转义替换，包含**%**请用`%25`转义替换） | 同上                                             |
+| /list join {list_name} {key} [value] | 将 key[:value] 添加到 list_name 中（key value 可作为双因子认证使用）（key 包含**空格**请用`%20`转义替换，包含**%**请用`%25`转义替换） | 同上                                             |
 | /list leave {list_name} {key}        | 将 key 从 list_name 中移除（key 包含**空格**请用`%20`转义替换，包含**%**请用`%25`转义替换） | 同上                                             |
 | /list query {list_name}              | 查询 list_name                                               | 同上                                             |
 | /list set {list_name} {json}         | 用 json 覆盖 list_name 的数据                                | 同上                                             |

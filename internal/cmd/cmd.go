@@ -13,17 +13,16 @@ import (
 
 var (
 	Main = gcmd.Command{
-		Name:        "qq-bot-backend",
-		Description: consts.Description,
-		Brief:       "start bot",
+		Name:          consts.ProjName,
+		CaseSensitive: true,
 		Func: func(ctx context.Context, parser *gcmd.Parser) (err error) {
 			s := g.Server()
 			s.Group("/v1/ws", func(group *ghttp.RouterGroup) {
 				group.Middleware(service.Middleware().Common)
-				group.Bind(controller.ConnectClient.Connect)
+				group.Bind(controller.Bot.Websocket)
 			})
 			s.Run()
-			return nil
+			return
 		},
 	}
 )

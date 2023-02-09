@@ -9,12 +9,12 @@ import (
 )
 
 var (
-	ConnectClient = cConnectClient{}
+	Bot = cBot{}
 )
 
-type cConnectClient struct{}
+type cBot struct{}
 
-func (c *cConnectClient) Connect(r *ghttp.Request) {
+func (c *cBot) Websocket(r *ghttp.Request) {
 	ctx := r.Context()
 	// 忽视前置的 Bearer 或 Token 进行鉴权
 	authorizations := strings.Fields(r.Header.Get("Authorization"))

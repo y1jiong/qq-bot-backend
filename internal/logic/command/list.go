@@ -49,10 +49,10 @@ func tryListJoin(ctx context.Context, cmd string) (catch bool) {
 	case nextBranchRe.MatchString(cmd):
 		next := nextBranchRe.FindStringSubmatch(cmd)
 		switch {
-		case doubleValueCmdEndRe.MatchString(next[2]):
+		case nextBranchRe.MatchString(next[2]):
 			// /list join <list_name> <key> [value]
-			dv := doubleValueCmdEndRe.FindStringSubmatch(next[2])
-			service.List().AddListData(ctx, next[1], dv[1], dv[2])
+			ne := nextBranchRe.FindStringSubmatch(next[2])
+			service.List().AddListData(ctx, next[1], ne[1], ne[2])
 			catch = true
 		case endBranchRe.MatchString(next[2]):
 			// /list join <list_name> <key>

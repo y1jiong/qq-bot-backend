@@ -1,13 +1,17 @@
 package consts
 
+import "runtime"
+
 const (
-	Version = "v1.2.2"
+	ProjName = "qq-bot-backend"
+	Version  = "v1.2.3"
 )
 
 var (
 	BuildTime   = ""
 	CommitHash  = ""
-	Description = "Version: " + Version +
+	Description = "Go Version: " + runtime.Version() +
+		"\nVersion: " + Version +
 		"\nBuild Time: " + BuildTime +
 		"\nCommit Hash: " + CommitHash
 )
