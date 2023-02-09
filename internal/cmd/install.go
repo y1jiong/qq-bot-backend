@@ -36,7 +36,7 @@ var (
 					"[Service]\n" +
 					"Type=simple\n" +
 					"WorkingDirectory=" + wd +
-					"\nExecStart=" + wd + "/" + consts.ProjName +
+					"\nExecStart=" + wd + "/" + consts.ProjName + " --gf.gerror.brief=true" +
 					"\nRestart=on-failure\n" +
 					"RestartSec=2\n\n" +
 					"[Install]\n" +
