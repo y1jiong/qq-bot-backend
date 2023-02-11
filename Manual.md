@@ -33,7 +33,7 @@ v1.2
 | /group approval enable regexp             | 入群审批启用正则表达式（将使用匹配结果作为双因子认证的输入） | 同上                                           |
 | /group approval enable whitelist          | 入群审批启用白名单                                           | 同上                                           |
 | /group approval enable blacklist          | 入群审批启用黑名单                                           | 同上                                           |
-| /group approval enable autopass           | 入群审批启用自动通过策略（默认启用）                         | 同上                                           |
+| /group approval enable autopass           | 入群审批启用自动通过（默认启用）                             | 同上                                           |
 | /group approval set regexp {regexp}       | 指定入群审批的正则表达式（若有子表达式，则会使用第一个子表达式的匹配结果） | 同上                                           |
 | /group approval add whitelist {list_name} | 新增入群审批白名单 list_name（可以多次指定不同的 list_name 最终采用并集查找） | 同上                                           |
 | /group approval add blacklist {list_name} | 新增入群审批黑名单 list_name（可以多次指定不同的 list_name 最终采用并集查找） | 同上                                           |
