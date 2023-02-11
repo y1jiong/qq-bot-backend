@@ -17,6 +17,7 @@ type (
 		GetApprovalWhitelists(ctx context.Context, groupId int64) (whitelists map[string]any)
 		GetApprovalBlacklists(ctx context.Context, groupId int64) (blacklists map[string]any)
 		GetApprovalRegexp(ctx context.Context, groupId int64) (exp string)
+		GetApprovalIsAutoPass(ctx context.Context, groupId int64) (yes bool)
 		BindNamespace(ctx context.Context, groupId int64, namespace string)
 		Unbind(ctx context.Context, groupId int64)
 		QueryGroup(ctx context.Context, groupId int64)

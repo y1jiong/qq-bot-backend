@@ -103,9 +103,9 @@ func (s *sGroup) AddKeywordProcess(ctx context.Context, groupId int64, processNa
 	// 回执
 	if len(args) > 0 {
 		service.Bot().SendPlainMsg(ctx,
-			"已添加 group("+gconv.String(groupId)+") 关键词检查流程 "+processName+"("+args[0]+")")
+			"已添加 group("+gconv.String(groupId)+") 关键词检查 "+processName+"("+args[0]+")")
 	} else {
-		service.Bot().SendPlainMsg(ctx, "已启用 group("+gconv.String(groupId)+") 关键词检查流程 "+processName)
+		service.Bot().SendPlainMsg(ctx, "已启用 group("+gconv.String(groupId)+") 关键词检查 "+processName)
 	}
 }
 
@@ -193,9 +193,9 @@ func (s *sGroup) RemoveKeywordProcess(ctx context.Context, groupId int64, proces
 	// 回执
 	if len(args) > 0 {
 		service.Bot().SendPlainMsg(ctx,
-			"已移除 group("+gconv.String(groupId)+") 关键词检查流程 "+processName+"("+args[0]+")")
+			"已移除 group("+gconv.String(groupId)+") 关键词检查 "+processName+"("+args[0]+")")
 	} else {
-		service.Bot().SendPlainMsg(ctx, "已禁用 group("+gconv.String(groupId)+") 关键词检查流程 "+processName)
+		service.Bot().SendPlainMsg(ctx, "已禁用 group("+gconv.String(groupId)+") 关键词检查 "+processName)
 	}
 }
 

@@ -12,10 +12,11 @@ import (
 )
 
 const (
-	approvalProcessMapKey    = "approvalProcess"
-	approvalRegexpKey        = "approvalRegexp"
-	approvalWhitelistsMapKey = "approvalWhitelists"
-	approvalBlacklistsMapKey = "approvalBlacklists"
+	approvalProcessMapKey       = "approvalProcess"
+	approvalRegexpKey           = "approvalRegexp"
+	approvalWhitelistsMapKey    = "approvalWhitelists"
+	approvalBlacklistsMapKey    = "approvalBlacklists"
+	approvalDisabledAutoPassKey = "approvalDisabledAutoPass"
 )
 
 func (s *sGroup) AddApprovalProcess(ctx context.Context, groupId int64, processName string, args ...string) {
@@ -86,10 +87,19 @@ func (s *sGroup) AddApprovalProcess(ctx context.Context, groupId int64, processN
 			settingJson.Set(approvalRegexpKey, args[0])
 		}
 	} else {
-		// 添加 processName
-		processMap := settingJson.Get(approvalProcessMapKey).MustMap(make(map[string]any))
-		processMap[processName] = nil
-		settingJson.Set(approvalProcessMapKey, processMap)
+		switch processName {
+		case consts.AutoPassCmd:
+			if _, ok := settingJson.CheckGet(approvalDisabledAutoPassKey); !ok {
+				service.Bot().SendPlainMsg(ctx, "并未禁用自动通过")
+				return
+			}
+			settingJson.Del(approvalDisabledAutoPassKey)
+		default:
+			// 添加 processName
+			processMap := settingJson.Get(approvalProcessMapKey).MustMap(make(map[string]any))
+			processMap[processName] = nil
+			settingJson.Set(approvalProcessMapKey, processMap)
+		}
 	}
 	// 保存数据
 	settingBytes, err := settingJson.Encode()
@@ -109,9 +119,9 @@ func (s *sGroup) AddApprovalProcess(ctx context.Context, groupId int64, processN
 	// 回执
 	if len(args) > 0 {
 		service.Bot().SendPlainMsg(ctx,
-			"已添加 group("+gconv.String(groupId)+") 入群审批流程 "+processName+"("+args[0]+")")
+			"已添加 group("+gconv.String(groupId)+") 入群审批 "+processName+"("+args[0]+")")
 	} else {
-		service.Bot().SendPlainMsg(ctx, "已启用 group("+gconv.String(groupId)+") 入群审批流程 "+processName)
+		service.Bot().SendPlainMsg(ctx, "已启用 group("+gconv.String(groupId)+") 入群审批 "+processName)
 	}
 }
 
@@ -162,14 +172,23 @@ func (s *sGroup) RemoveApprovalProcess(ctx context.Context, groupId int64, proce
 			settingJson.Set(approvalBlacklistsMapKey, blacklists)
 		}
 	} else {
-		// 删除 processName
-		processMap := settingJson.Get(approvalProcessMapKey).MustMap(make(map[string]any))
-		if _, ok := processMap[processName]; !ok {
-			service.Bot().SendPlainMsg(ctx, processName+" 不存在")
-			return
+		switch processName {
+		case consts.AutoPassCmd:
+			if _, ok := settingJson.CheckGet(approvalDisabledAutoPassKey); ok {
+				service.Bot().SendPlainMsg(ctx, "早已禁用自动通过")
+				return
+			}
+			settingJson.Set(approvalDisabledAutoPassKey, true)
+		default:
+			// 删除 processName
+			processMap := settingJson.Get(approvalProcessMapKey).MustMap(make(map[string]any))
+			if _, ok := processMap[processName]; !ok {
+				service.Bot().SendPlainMsg(ctx, processName+" 不存在")
+				return
+			}
+			delete(processMap, processName)
+			settingJson.Set(approvalProcessMapKey, processMap)
 		}
-		delete(processMap, processName)
-		settingJson.Set(approvalProcessMapKey, processMap)
 	}
 	// 保存数据
 	settingBytes, err := settingJson.Encode()
@@ -189,9 +208,9 @@ func (s *sGroup) RemoveApprovalProcess(ctx context.Context, groupId int64, proce
 	// 回执
 	if len(args) > 0 {
 		service.Bot().SendPlainMsg(ctx,
-			"已移除 group("+gconv.String(groupId)+") 入群审批流程 "+processName+"("+args[0]+")")
+			"已移除 group("+gconv.String(groupId)+") 入群审批 "+processName+"("+args[0]+")")
 	} else {
-		service.Bot().SendPlainMsg(ctx, "已禁用 group("+gconv.String(groupId)+") 入群审批流程 "+processName)
+		service.Bot().SendPlainMsg(ctx, "已禁用 group("+gconv.String(groupId)+") 入群审批 "+processName)
 	}
 }
 
@@ -272,5 +291,25 @@ func (s *sGroup) GetApprovalRegexp(ctx context.Context, groupId int64) (exp stri
 		return
 	}
 	exp = settingJson.Get(approvalRegexpKey).MustString()
+	return
+}
+
+func (s *sGroup) GetApprovalIsAutoPass(ctx context.Context, groupId int64) (yes bool) {
+	// 参数合法性校验
+	if groupId < 1 {
+		return
+	}
+	// 获取 group
+	gEntity := getGroup(ctx, groupId)
+	if gEntity == nil {
+		return
+	}
+	// 数据处理
+	settingJson, err := sj.NewJson([]byte(gEntity.SettingJson))
+	if err != nil {
+		g.Log().Error(ctx, err)
+		return
+	}
+	yes = !settingJson.Get(approvalDisabledAutoPassKey).MustBool()
 	return
 }

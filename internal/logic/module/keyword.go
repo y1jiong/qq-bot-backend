@@ -21,13 +21,13 @@ func (s *sModule) TryKeywordRevoke(ctx context.Context) (catch bool) {
 	process := service.Group().GetKeywordProcess(ctx, groupId)
 	// 预处理
 	if len(process) < 1 {
-		// 没有关键词检查流程，跳过撤回功能
+		// 没有关键词检查策略，跳过撤回功能
 		return
 	}
 	// 获取聊天信息
 	msg := service.Bot().GetMessage(ctx)
 	shouldRevoke := false
-	// 处理流程
+	// 处理
 	if _, ok := process[consts.BlacklistCmd]; ok {
 		shouldRevoke = isInKeywordBlacklist(ctx, groupId, msg)
 	}
@@ -95,12 +95,19 @@ func doMute(ctx context.Context) {
 	}
 	if timesVar == nil {
 		// 第一次撤回不禁言
-		gcache.Set(ctx, cacheKey, 1, expirationDuration)
+		err = gcache.Set(ctx, cacheKey, 1, expirationDuration)
+		if err != nil {
+			g.Log().Warning(ctx, err)
+		}
 		return
 	}
 	times := timesVar.Int()
 	// 多次撤回
-	gcache.Set(ctx, cacheKey, times+1, expirationDuration)
+	err = gcache.Set(ctx, cacheKey, times+1, expirationDuration)
+	if err != nil {
+		g.Log().Warning(ctx, err)
+		return
+	}
 	// 最终禁言分钟数
 	muteMinutes := 1
 	// 执行幂次运算

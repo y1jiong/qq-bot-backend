@@ -24,7 +24,7 @@ func (s *sModule) TryApproveAddGroup(ctx context.Context) (catch bool) {
 	// 局部变量
 	userId := service.Bot().GetUserId(ctx)
 	var extra string
-	// 处理流程
+	// 处理
 	if _, ok := process[consts.RegexpCmd]; ok {
 		// 正则表达式
 		pass, extra = isMatchRegexp(ctx, groupId, comment)
@@ -41,15 +41,29 @@ func (s *sModule) TryApproveAddGroup(ctx context.Context) (catch bool) {
 		// 黑名单
 		pass = isNotInApprovalBlacklist(ctx, groupId, userId, extra)
 	}
-	// 审批请求回执
-	service.Bot().ApproveAddGroup(ctx,
-		service.Bot().GetFlag(ctx),
-		service.Bot().GetSubType(ctx),
-		pass,
-		"auto reject")
-	// 打印通过日志
-	if pass {
-		g.Log().Infof(ctx, "approve user(%v) join group(%v) with %v",
+	if !pass || (pass && service.Group().GetApprovalIsAutoPass(ctx, groupId)) {
+		// 在不通过和启用自动通过的条件下发送审批回执
+		// 审批请求回执
+		service.Bot().ApproveAddGroup(ctx,
+			service.Bot().GetFlag(ctx),
+			service.Bot().GetSubType(ctx),
+			pass,
+			"auto reject")
+		// 打印审批日志
+		if pass {
+			g.Log().Infof(ctx, "approve user(%v) join group(%v) with %v",
+				userId,
+				groupId,
+				comment)
+		} else {
+			g.Log().Infof(ctx, "reject user(%v) join group(%v) with %v",
+				userId,
+				groupId,
+				comment)
+		}
+	} else if pass {
+		// 禁用自动通过打印跳过日志
+		g.Log().Infof(ctx, "skip processing approve user(%v) join group(%v) with %v",
 			userId,
 			groupId,
 			comment)
