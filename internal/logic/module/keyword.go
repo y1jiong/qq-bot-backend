@@ -7,7 +7,6 @@ import (
 	"github.com/gogf/gf/v2/util/gconv"
 	"qq-bot-backend/internal/consts"
 	"qq-bot-backend/internal/service"
-	"strings"
 	"time"
 )
 
@@ -56,11 +55,9 @@ func isInKeywordBlacklist(ctx context.Context, groupId int64, msg string) (yes b
 	blacklists := service.Group().GetKeywordBlacklists(ctx, groupId)
 	for k := range blacklists {
 		blacklist := service.List().GetListData(ctx, k)
-		for kk := range blacklist {
-			if strings.Contains(msg, kk) {
-				yes = true
-				return
-			}
+		if contains, _ := service.Module().MultiContains(msg, blacklist); contains {
+			yes = true
+			return
 		}
 	}
 	return
@@ -72,11 +69,9 @@ func isNotInKeywordWhitelist(ctx context.Context, groupId int64, msg string) (ye
 	whitelists := service.Group().GetKeywordWhitelists(ctx, groupId)
 	for k := range whitelists {
 		whitelist := service.List().GetListData(ctx, k)
-		for kk := range whitelist {
-			if strings.Contains(msg, kk) {
-				yes = false
-				return
-			}
+		if contains, _ := service.Module().MultiContains(msg, whitelist); contains {
+			yes = false
+			return
 		}
 	}
 	return
@@ -136,13 +131,10 @@ func (s *sModule) TryKeywordReply(ctx context.Context) (catch bool) {
 	// 获取聊天信息
 	msg := service.Bot().GetMessage(ctx)
 	// 匹配关键词
-	for k, v := range list {
-		if vv, ok := v.(string); ok && strings.Contains(msg, k) {
-			// 匹配成功，回复
-			pre := "[CQ:at,qq=" + gconv.String(service.Bot().GetUserId(ctx)) + "]" + vv
-			service.Bot().SendMsg(ctx, pre)
-			return
-		}
+	if contains, value := service.Module().MultiContains(msg, list); contains && value != "" {
+		// 匹配成功，回复
+		pre := "[CQ:at,qq=" + gconv.String(service.Bot().GetUserId(ctx)) + "]" + value
+		service.Bot().SendMsg(ctx, pre)
 	}
 	catch = true
 	return

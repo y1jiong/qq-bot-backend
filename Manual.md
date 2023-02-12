@@ -4,6 +4,8 @@ v1.2
 
 {required} [optional]
 
+[TOC]
+
 ## List
 
 | Command                              | Description                                                  | Comment                                          |
@@ -100,9 +102,8 @@ v1.2
 | /token rm {name}          | 删除令牌                       | 需要受系统信任                |
 | /token query              | 查询自己所有的令牌             | 需要受系统信任                |
 
-## System
+## Advanced features
 
-| Command               | Description           | Comment               |
-| --------------------- | --------------------- | --------------------- |
-| No permission to view | No permission to view | No permission to view |
+1. 当 group keyword 使用的 key 有**空格**（转义后为`%20`）时，会对 key 的字符串以**空格**拆分。当检查的文本全部包含拆分字符串，则匹配成功。
 
+   e.g. key: `砍 并夕夕` 文本1：`帮我并夕夕砍一刀`（匹配成功）文本2：`是兄弟就来砍我`（匹配失败）
