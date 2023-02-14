@@ -17,9 +17,8 @@ func tryList(ctx context.Context, cmd string) (catch bool) {
 			// /list set <>
 			catch = tryListSet(ctx, next[2])
 		case "query":
-			// /list query <list_name>
-			service.List().QueryList(ctx, next[2])
-			catch = true
+			// /list query <>
+			catch = tryListQuery(ctx, next[2])
 		case "leave":
 			// /list leave <>
 			catch = tryListLeave(ctx, next[2])
@@ -82,6 +81,21 @@ func tryListLeave(ctx context.Context, cmd string) (catch bool) {
 		next := nextBranchRe.FindStringSubmatch(cmd)
 		// /list leave <list_name> <key>
 		service.List().RemoveListData(ctx, next[1], next[2])
+		catch = true
+	}
+	return
+}
+
+func tryListQuery(ctx context.Context, cmd string) (catch bool) {
+	switch {
+	case nextBranchRe.MatchString(cmd):
+		// /list query <list_name> [key]
+		next := nextBranchRe.FindStringSubmatch(cmd)
+		service.List().QueryList(ctx, next[1], next[2])
+		catch = true
+	case endBranchRe.MatchString(cmd):
+		// /list query <list_name>
+		service.List().QueryList(ctx, cmd)
 		catch = true
 	}
 	return

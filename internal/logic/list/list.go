@@ -98,7 +98,7 @@ func (s *sList) RemoveList(ctx context.Context, listName string) {
 	service.Bot().SendPlainMsg(ctx, "已删除 list("+listName+")")
 }
 
-func (s *sList) QueryList(ctx context.Context, listName string) {
+func (s *sList) QueryList(ctx context.Context, listName string, keys ...string) {
 	// 参数合法性校验
 	if !legalListNameRe.MatchString(listName) {
 		return
@@ -113,9 +113,32 @@ func (s *sList) QueryList(ctx context.Context, listName string) {
 		return
 	}
 	// 数据处理
-	msg := dao.List.Columns().Namespace + ": " + lEntity.Namespace + "\n" +
-		dao.List.Columns().ListJson + ": " + lEntity.ListJson + "\n" +
-		dao.List.Columns().UpdatedAt + ": " + lEntity.UpdatedAt.String()
+	var msg string
+	if len(keys) > 0 {
+		// 查询 key
+		listJson, err := sj.NewJson([]byte(lEntity.ListJson))
+		if err != nil {
+			g.Log().Error(ctx, err)
+			return
+		}
+		keys[0] = service.Codec().DecodeBlank(keys[0])
+		if _, ok := listJson.CheckGet(keys[0]); !ok {
+			service.Bot().SendPlainMsg(ctx, "在 list("+listName+") 中未找到 key("+keys[0]+")")
+			return
+		}
+		viewJson := sj.New()
+		viewJson.Set(keys[0], listJson.Get(keys[0]))
+		msgBytes, err := viewJson.Encode()
+		if err != nil {
+			g.Log().Error(ctx, err)
+			return
+		}
+		msg = string(msgBytes)
+	} else {
+		msg = dao.List.Columns().Namespace + ": " + lEntity.Namespace + "\n" +
+			dao.List.Columns().ListJson + ": " + lEntity.ListJson + "\n" +
+			dao.List.Columns().UpdatedAt + ": " + lEntity.UpdatedAt.String()
+	}
 	// 回执
 	service.Bot().SendPlainMsg(ctx, msg)
 }
