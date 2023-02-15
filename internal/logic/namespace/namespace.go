@@ -262,7 +262,8 @@ func (s *sNamespace) RemoveNamespaceAdmin(ctx context.Context, namespace string,
 	// 获取 admin map
 	admins := settingJson.Get(adminMapKey).MustMap(make(map[string]any))
 	if _, ok := admins[gconv.String(userId)]; !ok {
-		service.Bot().SendPlainMsg(ctx, gconv.String(userId)+" 不存在")
+		service.Bot().SendPlainMsg(ctx,
+			"在 namespace("+nEntity.Namespace+") 的 "+adminMapKey+" 中未找到 user("+gconv.String(userId)+")")
 		return
 	}
 	// 删除 userId 的 admin 权限

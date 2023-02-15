@@ -111,8 +111,8 @@ func (s *sUser) SystemDistrustUser(ctx context.Context, userId int64) {
 		return
 	}
 	if _, ok := settingJson.CheckGet(trustKey); !ok {
-		// 重复撤销信任
-		service.Bot().SendPlainMsg(ctx, "重复撤销信任")
+		// 并未信任
+		service.Bot().SendPlainMsg(ctx, "并未信任")
 		return
 	}
 	settingJson.Del(trustKey)
@@ -177,7 +177,7 @@ func (s *sUser) GrantOpNamespace(ctx context.Context, userId int64) {
 		return
 	}
 	if _, ok := settingJson.CheckGet(namespaceKey); ok {
-		// 重复授权
+		// 重复授予
 		service.Bot().SendPlainMsg(ctx, "重复授予操作 namespace 的权限")
 		return
 	}
@@ -217,8 +217,8 @@ func (s *sUser) RevokeOpNamespace(ctx context.Context, userId int64) {
 		return
 	}
 	if _, ok := settingJson.CheckGet(namespaceKey); !ok {
-		// 重复撤销
-		service.Bot().SendPlainMsg(ctx, "重复撤销操作 namespace 的权限")
+		// 并未授予
+		service.Bot().SendPlainMsg(ctx, "并未授予操作 namespace 的权限")
 		return
 	}
 	settingJson.Del(namespaceKey)
@@ -283,7 +283,7 @@ func (s *sUser) GrantGetRawMsg(ctx context.Context, userId int64) {
 		return
 	}
 	if _, ok := settingJson.CheckGet(rawKey); ok {
-		// 重复授权
+		// 重复授予
 		service.Bot().SendPlainMsg(ctx, "重复授予获取 raw 的权限")
 		return
 	}
@@ -323,8 +323,8 @@ func (s *sUser) RevokeGetRawMsg(ctx context.Context, userId int64) {
 		return
 	}
 	if _, ok := settingJson.CheckGet(rawKey); !ok {
-		// 重复撤销
-		service.Bot().SendPlainMsg(ctx, "重复撤销获取 raw 的权限")
+		// 并未授予
+		service.Bot().SendPlainMsg(ctx, "并未授予获取 raw 的权限")
 		return
 	}
 	settingJson.Del(rawKey)

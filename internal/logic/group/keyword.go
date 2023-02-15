@@ -49,7 +49,7 @@ func (s *sGroup) AddKeywordProcess(ctx context.Context, groupId int64, processNa
 			// 是否存在 list
 			lists := service.Namespace().GetNamespaceList(ctx, gEntity.Namespace)
 			if _, ok := lists[args[0]]; !ok {
-				service.Bot().SendPlainMsg(ctx, args[0]+" 不存在")
+				service.Bot().SendPlainMsg(ctx, "在 namespace("+gEntity.Namespace+") 中未找到 list("+args[0]+")")
 				return
 			}
 			// 继续处理
@@ -61,7 +61,7 @@ func (s *sGroup) AddKeywordProcess(ctx context.Context, groupId int64, processNa
 			// 是否存在 list
 			lists := service.Namespace().GetNamespaceList(ctx, gEntity.Namespace)
 			if _, ok := lists[args[0]]; !ok {
-				service.Bot().SendPlainMsg(ctx, args[0]+" 不存在")
+				service.Bot().SendPlainMsg(ctx, "在 namespace("+gEntity.Namespace+") 中未找到 list("+args[0]+")")
 				return
 			}
 			// 继续处理
@@ -71,7 +71,7 @@ func (s *sGroup) AddKeywordProcess(ctx context.Context, groupId int64, processNa
 			// 是否存在 list
 			lists := service.Namespace().GetNamespaceList(ctx, gEntity.Namespace)
 			if _, ok := lists[args[0]]; !ok {
-				service.Bot().SendPlainMsg(ctx, args[0]+" 不存在")
+				service.Bot().SendPlainMsg(ctx, "在 namespace("+gEntity.Namespace+") 中未找到 list("+args[0]+")")
 				return
 			}
 			// 继续处理
@@ -140,7 +140,7 @@ func (s *sGroup) RemoveKeywordProcess(ctx context.Context, groupId int64, proces
 			// 移除某个黑名单
 			blacklists := settingJson.Get(keywordBlacklistsMapKey).MustMap(make(map[string]any))
 			if _, ok := blacklists[args[0]]; !ok {
-				service.Bot().SendPlainMsg(ctx, args[0]+" 不存在")
+				service.Bot().SendPlainMsg(ctx, "在 "+consts.BlacklistCmd+" 中未找到 list("+args[0]+")")
 				return
 			}
 			delete(blacklists, args[0])
@@ -149,7 +149,7 @@ func (s *sGroup) RemoveKeywordProcess(ctx context.Context, groupId int64, proces
 			// 移除某个白名单
 			whitelists := settingJson.Get(keywordWhitelistsMapKey).MustMap(make(map[string]any))
 			if _, ok := whitelists[args[0]]; !ok {
-				service.Bot().SendPlainMsg(ctx, args[0]+" 不存在")
+				service.Bot().SendPlainMsg(ctx, "在 "+consts.WhitelistCmd+" 中未找到 list("+args[0]+")")
 				return
 			}
 			delete(whitelists, args[0])
@@ -160,7 +160,7 @@ func (s *sGroup) RemoveKeywordProcess(ctx context.Context, groupId int64, proces
 		case consts.ReplyCmd:
 			// 移除回复列表
 			if _, ok := settingJson.CheckGet(keywordReplyListKey); !ok {
-				service.Bot().SendPlainMsg(ctx, "重复移除")
+				service.Bot().SendPlainMsg(ctx, "并未设置 "+consts.ReplyCmd+" list")
 				return
 			}
 			settingJson.Del(keywordReplyListKey)
@@ -168,7 +168,7 @@ func (s *sGroup) RemoveKeywordProcess(ctx context.Context, groupId int64, proces
 			// 删除 processName
 			processMap := settingJson.Get(keywordProcessMapKey).MustMap(make(map[string]any))
 			if _, ok := processMap[processName]; !ok {
-				service.Bot().SendPlainMsg(ctx, processName+" 不存在")
+				service.Bot().SendPlainMsg(ctx, "在 "+approvalProcessMapKey+" 中未找到 "+processName)
 				return
 			}
 			delete(processMap, processName)

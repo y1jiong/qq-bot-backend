@@ -236,8 +236,8 @@ func (s *sList) RemoveListData(ctx context.Context, listName, key string) {
 	// 按照 url escape 解码空格和 %
 	key = service.Codec().DecodeBlank(key)
 	if _, ok := listJson.CheckGet(key); !ok {
-		// 不存在 key
-		service.Bot().SendPlainMsg(ctx, key+" 不存在")
+		// 未找到 key
+		service.Bot().SendPlainMsg(ctx, "在 list("+listName+") 中未找到 key("+key+")")
 		return
 	}
 	listJson.Del(key)

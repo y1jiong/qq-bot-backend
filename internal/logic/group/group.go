@@ -92,15 +92,11 @@ func (s *sGroup) Unbind(ctx context.Context, groupId int64) {
 	}
 	// 获取 group
 	gEntity := getGroup(ctx, groupId)
-	if gEntity == nil {
+	if gEntity == nil || gEntity.Namespace == "" {
 		return
 	}
 	// 权限校验
 	if !service.Namespace().IsNamespaceOwnerOrAdmin(ctx, gEntity.Namespace, service.Bot().GetUserId(ctx)) {
-		return
-	}
-	// 数据处理
-	if gEntity.Namespace == "" {
 		return
 	}
 	// 数据库更新
@@ -158,7 +154,7 @@ func (s *sGroup) ExportGroupMemberList(ctx context.Context, groupId int64, listN
 	// 是否存在 list
 	lists := service.Namespace().GetNamespaceList(ctx, gEntity.Namespace)
 	if _, ok := lists[listName]; !ok {
-		service.Bot().SendPlainMsg(ctx, listName+" 不存在")
+		service.Bot().SendPlainMsg(ctx, "在 namespace("+gEntity.Namespace+") 中未找到 list("+listName+")")
 		return
 	}
 	// callback

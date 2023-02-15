@@ -34,7 +34,7 @@ func (s *sGroup) SetLogLeaveList(ctx context.Context, groupId int64, listName st
 	// 是否存在 list
 	lists := service.Namespace().GetNamespaceList(ctx, gEntity.Namespace)
 	if _, ok := lists[listName]; !ok {
-		service.Bot().SendPlainMsg(ctx, listName+" 不存在")
+		service.Bot().SendPlainMsg(ctx, "在 namespace("+gEntity.Namespace+") 中未找到 list("+listName+")")
 		return
 	}
 	// 数据处理
@@ -88,7 +88,7 @@ func (s *sGroup) RemoveLogLeaveList(ctx context.Context, groupId int64) {
 		return
 	}
 	if _, ok := settingJson.CheckGet(logLeaveListKey); !ok {
-		service.Bot().SendPlainMsg(ctx, "并没有设置离群记录 list")
+		service.Bot().SendPlainMsg(ctx, "并未设置离群记录 list")
 		return
 	}
 	settingJson.Del(logLeaveListKey)

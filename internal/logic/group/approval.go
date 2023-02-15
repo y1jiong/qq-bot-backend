@@ -51,7 +51,7 @@ func (s *sGroup) AddApprovalProcess(ctx context.Context, groupId int64, processN
 			// 是否存在 list
 			lists := service.Namespace().GetNamespaceList(ctx, gEntity.Namespace)
 			if _, ok := lists[args[0]]; !ok {
-				service.Bot().SendPlainMsg(ctx, args[0]+" 不存在")
+				service.Bot().SendPlainMsg(ctx, "在 namespace("+gEntity.Namespace+") 中未找到 list("+args[0]+")")
 				return
 			}
 			// 继续处理
@@ -63,7 +63,7 @@ func (s *sGroup) AddApprovalProcess(ctx context.Context, groupId int64, processN
 			// 是否存在 list
 			lists := service.Namespace().GetNamespaceList(ctx, gEntity.Namespace)
 			if _, ok := lists[args[0]]; !ok {
-				service.Bot().SendPlainMsg(ctx, args[0]+" 不存在")
+				service.Bot().SendPlainMsg(ctx, "在 namespace("+gEntity.Namespace+") 中未找到 list("+args[0]+")")
 				return
 			}
 			// 继续处理
@@ -156,7 +156,7 @@ func (s *sGroup) RemoveApprovalProcess(ctx context.Context, groupId int64, proce
 			// 处理白名单
 			whitelists := settingJson.Get(approvalWhitelistsMapKey).MustMap(make(map[string]any))
 			if _, ok := whitelists[args[0]]; !ok {
-				service.Bot().SendPlainMsg(ctx, args[0]+" 不存在")
+				service.Bot().SendPlainMsg(ctx, "在 "+consts.WhitelistCmd+" 中未找到 list("+args[0]+")")
 				return
 			}
 			delete(whitelists, args[0])
@@ -165,7 +165,7 @@ func (s *sGroup) RemoveApprovalProcess(ctx context.Context, groupId int64, proce
 			// 处理黑名单
 			blacklists := settingJson.Get(approvalBlacklistsMapKey).MustMap(make(map[string]any))
 			if _, ok := blacklists[args[0]]; !ok {
-				service.Bot().SendPlainMsg(ctx, args[0]+" 不存在")
+				service.Bot().SendPlainMsg(ctx, "在 "+consts.BlacklistCmd+" 中未找到 list("+args[0]+")")
 				return
 			}
 			delete(blacklists, args[0])
@@ -183,7 +183,7 @@ func (s *sGroup) RemoveApprovalProcess(ctx context.Context, groupId int64, proce
 			// 删除 processName
 			processMap := settingJson.Get(approvalProcessMapKey).MustMap(make(map[string]any))
 			if _, ok := processMap[processName]; !ok {
-				service.Bot().SendPlainMsg(ctx, processName+" 不存在")
+				service.Bot().SendPlainMsg(ctx, "在 "+approvalProcessMapKey+" 中未找到 "+processName)
 				return
 			}
 			delete(processMap, processName)
