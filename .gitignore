@@ -6,20 +6,11 @@
 .idea/
 .settings/
 .vscode/
-vendor/
-composer.lock
-gitpush.sh
-pkg/
 bin/
-cbuild
 **/.DS_Store
-.test/
 main
 output/
-manifest/output/
+manifest/
 temp/
 
-*.exe
-config/
 hack/config.yaml
-log/

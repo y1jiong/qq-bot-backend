@@ -1,12 +1,15 @@
 BINARY_NAME = qq-bot-backend
 CODE_FILE = ./main.go
-OUTPUT_PATH = ./bin
+OUTPUT_PATH = ./manifest/build
 BUILD_TIME = $(shell date "+%Y-%m-%d %H:%M:%S")
 COMMIT_HASH = $(shell git rev-parse HEAD)
 LDFLAGS = -w -s
 LDFLAGS += -X "$(BINARY_NAME)/internal/consts.BuildTime=$(BUILD_TIME)"
 LDFLAGS += -X "$(BINARY_NAME)/internal/consts.CommitHash=$(COMMIT_HASH)"
 
+
+.PHONY: default
+default: check linux-amd64
 
 .PHONY: all
 all: check linux windows darwin
