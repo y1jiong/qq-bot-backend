@@ -77,9 +77,9 @@ func (s *sCommand) TryCommand(ctx context.Context) (catch bool) {
 			return
 		}
 		switch cmd {
-		case "state":
-			// /state
-			catch = queryProcessState(ctx)
+		case "status":
+			// /status
+			catch = queryProcessStatus(ctx)
 		case "version":
 			// /version
 			service.Bot().SendPlainMsg(ctx, consts.Description)

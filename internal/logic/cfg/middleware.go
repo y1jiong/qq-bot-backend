@@ -17,14 +17,3 @@ func (s *sCfg) GetRetryIntervalMilliseconds(ctx context.Context) time.Duration {
 	}
 	return retryIntervalMilliseconds.Duration()
 }
-
-func (s *sCfg) GetMiddlewareAccessIntervalMilliseconds(ctx context.Context) time.Duration {
-	middlewareAccessIntervalMilliseconds, err := g.Cfg().Get(ctx, "api.middlewareAccessIntervalMilliseconds")
-	if err != nil {
-		g.Log().Warning(ctx, err)
-	}
-	if middlewareAccessIntervalMilliseconds == nil {
-		middlewareAccessIntervalMilliseconds = gvar.New(2000)
-	}
-	return middlewareAccessIntervalMilliseconds.Duration()
-}

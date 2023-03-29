@@ -11,7 +11,6 @@ import (
 	_ "qq-bot-backend/internal/logic/command"
 	_ "qq-bot-backend/internal/logic/group"
 	_ "qq-bot-backend/internal/logic/list"
-	_ "qq-bot-backend/internal/logic/middleware"
 	_ "qq-bot-backend/internal/logic/module"
 	_ "qq-bot-backend/internal/logic/namespace"
 	_ "qq-bot-backend/internal/logic/process"
