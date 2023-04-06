@@ -15,7 +15,7 @@ func init() {
 	service.RegisterModule(New())
 }
 
-func (s *sModule) MultiContains(str string, m map[string]any) (contains bool, mValue string) {
+func (s *sModule) MultiContains(str string, m map[string]any) (contains bool, hit string, mValue string) {
 	for k, v := range m {
 		fields := strings.Fields(k)
 		fieldsLen, count := len(fields), 0
@@ -26,6 +26,7 @@ func (s *sModule) MultiContains(str string, m map[string]any) (contains bool, mV
 		}
 		if count == fieldsLen {
 			contains = true
+			hit = k
 			if vv, ok := v.(string); ok {
 				mValue = vv
 			}

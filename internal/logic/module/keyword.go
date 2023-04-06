@@ -26,12 +26,14 @@ func (s *sModule) TryKeywordRevoke(ctx context.Context) (catch bool) {
 	// 获取聊天信息
 	msg := service.Bot().GetMessage(ctx)
 	shouldRevoke := false
+	// 命中规则
+	hit := ""
 	// 处理
 	if _, ok := process[consts.BlacklistCmd]; ok {
-		shouldRevoke = isInKeywordBlacklist(ctx, groupId, msg)
+		shouldRevoke, hit = isInKeywordBlacklist(ctx, groupId, msg)
 	}
 	if _, ok := process[consts.WhitelistCmd]; ok && !shouldRevoke {
-		shouldRevoke = isNotInKeywordWhitelist(ctx, groupId, msg)
+		shouldRevoke, hit = isNotInKeywordWhitelist(ctx, groupId, msg)
 	}
 	// 结果处理
 	if !shouldRevoke {
@@ -41,9 +43,10 @@ func (s *sModule) TryKeywordRevoke(ctx context.Context) (catch bool) {
 	// 撤回
 	service.Bot().RevokeMessage(ctx, service.Bot().GetMsgId(ctx))
 	// 打印撤回日志
-	g.Log().Infof(ctx, "revoke group(%v) user(%v) because %v",
+	g.Log().Infof(ctx, "revoke group(%v) user(%v) hit(%v) detail %v",
 		groupId,
 		service.Bot().GetUserId(ctx),
+		hit,
 		msg)
 	// 禁言
 	doMute(ctx)
@@ -51,26 +54,28 @@ func (s *sModule) TryKeywordRevoke(ctx context.Context) (catch bool) {
 	return
 }
 
-func isInKeywordBlacklist(ctx context.Context, groupId int64, msg string) (yes bool) {
+func isInKeywordBlacklist(ctx context.Context, groupId int64, msg string) (yes bool, hit string) {
 	blacklists := service.Group().GetKeywordBlacklists(ctx, groupId)
 	for k := range blacklists {
 		blacklist := service.List().GetListData(ctx, k)
-		if contains, _ := service.Module().MultiContains(msg, blacklist); contains {
+		if contains, hitStr, _ := service.Module().MultiContains(msg, blacklist); contains {
 			yes = true
+			hit = hitStr
 			return
 		}
 	}
 	return
 }
 
-func isNotInKeywordWhitelist(ctx context.Context, groupId int64, msg string) (yes bool) {
+func isNotInKeywordWhitelist(ctx context.Context, groupId int64, msg string) (yes bool, hit string) {
 	// 默认不在白名单内
 	yes = true
 	whitelists := service.Group().GetKeywordWhitelists(ctx, groupId)
 	for k := range whitelists {
 		whitelist := service.List().GetListData(ctx, k)
-		if contains, _ := service.Module().MultiContains(msg, whitelist); contains {
+		if contains, hitStr, _ := service.Module().MultiContains(msg, whitelist); contains {
 			yes = false
+			hit = hitStr
 			return
 		}
 	}
@@ -131,7 +136,7 @@ func (s *sModule) TryKeywordReply(ctx context.Context) (catch bool) {
 	// 获取聊天信息
 	msg := service.Bot().GetMessage(ctx)
 	// 匹配关键词
-	if contains, value := service.Module().MultiContains(msg, list); contains && value != "" {
+	if contains, _, value := service.Module().MultiContains(msg, list); contains && value != "" {
 		// 匹配成功，回复
 		pre := "[CQ:at,qq=" + gconv.String(service.Bot().GetUserId(ctx)) + "]" + value
 		service.Bot().SendMsg(ctx, pre)

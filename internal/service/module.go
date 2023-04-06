@@ -15,7 +15,7 @@ type (
 		TryKeywordRevoke(ctx context.Context) (catch bool)
 		TryKeywordReply(ctx context.Context) (catch bool)
 		TryLogLeave(ctx context.Context) (catch bool)
-		MultiContains(str string, m map[string]any) (contains bool, mValue string)
+		MultiContains(str string, m map[string]any) (contains bool, hit string, mValue string)
 	}
 )
 
