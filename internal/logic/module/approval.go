@@ -48,7 +48,7 @@ func (s *sModule) TryApproveAddGroup(ctx context.Context) (catch bool) {
 			service.Bot().GetFlag(ctx),
 			service.Bot().GetSubType(ctx),
 			pass,
-			"auto reject")
+			"Auto-rejection")
 		// 打印审批日志
 		if pass {
 			g.Log().Infof(ctx, "approve user(%v) join group(%v) with %v",

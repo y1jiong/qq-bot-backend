@@ -104,9 +104,10 @@ func (s *sBot) SetModel(ctx context.Context, model string) {
 		s.SendPlainMsg(ctx, "已更改机型为 '"+model+"'")
 	}
 	// echo
-	echoPool[echoSign] = echoModel{
-		LastContext:  ctx,
-		CallbackFunc: f,
+	err = s.pushEchoCache(ctx, echoSign, f)
+	if err != nil {
+		g.Log().Error(ctx, err)
+		return
 	}
 	// 发送响应
 	err = s.webSocketFromCtx(ctx).WriteMessage(websocket.TextMessage, res)

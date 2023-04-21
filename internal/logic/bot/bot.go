@@ -5,7 +5,9 @@ import (
 	sj "github.com/bitly/go-simplejson"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/net/ghttp"
+	"github.com/gogf/gf/v2/os/gcache"
 	"qq-bot-backend/internal/service"
+	"time"
 )
 
 type sBot struct{}
@@ -21,16 +23,15 @@ func init() {
 const (
 	ctxKeyForWebSocket = "ws"
 	ctxKeyForReqJson   = "reqJson"
+	echoPrefix         = "echo_"
+	echoDuration       = 60 * time.Second
+	echoTimeout        = echoDuration + 10*time.Second
 )
 
 type echoModel struct {
 	LastContext  context.Context
 	CallbackFunc func(ctx context.Context, rsyncCtx context.Context)
 }
-
-var (
-	echoPool = make(map[string]echoModel)
-)
 
 func (s *sBot) ctxWithWebSocket(parent context.Context, ws *ghttp.WebSocket) context.Context {
 	return context.WithValue(parent, ctxKeyForWebSocket, ws)
@@ -77,13 +78,16 @@ func (s *sBot) Process(ctx context.Context, ws *ghttp.WebSocket, rawJson []byte,
 
 func (s *sBot) catchEcho(ctx context.Context) (catch bool) {
 	if echoSign := s.getEcho(ctx); echoSign != "" {
-		if echo, ok := echoPool[echoSign]; ok {
-			echo.CallbackFunc(echo.LastContext, ctx)
-			// 用后即删，以防内存泄露
-			delete(echoPool, echoSign)
-			catch = true
+		echo, err := s.popEchoCache(ctx, echoSign)
+		if err != nil {
+			g.Log().Error(ctx, err)
 			return
 		}
+		if echo == nil {
+			return
+		}
+		echo.CallbackFunc(echo.LastContext, ctx)
+		catch = true
 	}
 	return
 }
@@ -102,5 +106,46 @@ func (s *sBot) IsGroupOwnerOrAdmin(ctx context.Context) (yes bool) {
 	if role == "owner" || role == "admin" {
 		yes = true
 	}
+	return
+}
+
+func (s *sBot) pushEchoCache(ctx context.Context, echoSign string, callbackFunc func(ctx context.Context, rsyncCtx context.Context)) (err error) {
+	echoKey := echoPrefix + echoSign
+	// 检查超时
+	go func() {
+		time.Sleep(echoDuration)
+		contain, e := gcache.Contains(ctx, echoKey)
+		if e != nil {
+			g.Log().Error(ctx, e)
+			return
+		}
+		if !contain {
+			return
+		}
+		_, e = gcache.Remove(ctx, echoKey)
+		if e != nil {
+			g.Log().Error(ctx, e)
+		}
+		s.SendPlainMsg(ctx, "echo 超时")
+	}()
+	// 放入缓存
+	err = gcache.Set(ctx, echoKey, echoModel{
+		LastContext:  ctx,
+		CallbackFunc: callbackFunc,
+	}, echoTimeout)
+	return
+}
+
+func (s *sBot) popEchoCache(ctx context.Context, echoSign string) (echo *echoModel, err error) {
+	echoKey := echoPrefix + echoSign
+	contain, err := gcache.Contains(ctx, echoKey)
+	if err != nil || !contain {
+		return
+	}
+	v, err := gcache.Remove(ctx, echoKey)
+	if err != nil {
+		return
+	}
+	err = v.Scan(&echo)
 	return
 }

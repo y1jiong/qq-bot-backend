@@ -91,9 +91,10 @@ func (s *sBot) GetGroupMemberList(ctx context.Context, groupId int64, callback f
 		return
 	}
 	// echo
-	echoPool[echoSign] = echoModel{
-		LastContext:  ctx,
-		CallbackFunc: callback,
+	err = s.pushEchoCache(ctx, echoSign, callback)
+	if err != nil {
+		g.Log().Error(ctx, err)
+		return
 	}
 	// 发送响应
 	err = s.webSocketFromCtx(ctx).WriteMessage(websocket.TextMessage, res)

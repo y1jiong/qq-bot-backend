@@ -3,7 +3,6 @@ package list
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	sj "github.com/bitly/go-simplejson"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/util/gconv"
@@ -335,7 +334,6 @@ func (s *sList) SetListData(ctx context.Context, listName, newListBytes string) 
 func (s *sList) AppendListData(ctx context.Context, listName string, newMap map[string]any) (err error) {
 	listMap := s.GetListData(ctx, listName)
 	if listMap == nil {
-		err = errors.New("未找到 list(" + listName + ")")
 		return
 	}
 	// 追加数据
