@@ -76,15 +76,15 @@ func (s *sToken) RemoveTokenWithRes(ctx context.Context, name string) {
 	if !legalTokenNameRe.MatchString(name) {
 		return
 	}
-	// 数据库计数
-	n, err := dao.Token.Ctx(ctx).
+	// 数据库查存在
+	one, err := dao.Token.Ctx(ctx).
 		Where(dao.Token.Columns().Name, name).
-		Count()
+		One()
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return
 	}
-	if n < 1 {
+	if one.IsEmpty() {
 		service.Bot().SendPlainMsg(ctx, "未找到 token("+name+")")
 	}
 	// 数据库软删除
