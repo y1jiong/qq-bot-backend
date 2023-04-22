@@ -38,7 +38,7 @@ func getList(ctx context.Context, listName string) (lEntity *entity.List) {
 	return
 }
 
-func (s *sList) AddList(ctx context.Context, listName, namespace string) {
+func (s *sList) AddListWithRes(ctx context.Context, listName, namespace string) {
 	// 参数合法性校验
 	if !legalListNameRe.MatchString(listName) {
 		return
@@ -69,7 +69,7 @@ func (s *sList) AddList(ctx context.Context, listName, namespace string) {
 	service.Bot().SendPlainMsg(ctx, "已新增 list("+listName+")")
 }
 
-func (s *sList) RemoveList(ctx context.Context, listName string) {
+func (s *sList) RemoveListWithRes(ctx context.Context, listName string) {
 	// 参数合法性校验
 	if !legalListNameRe.MatchString(listName) {
 		return
@@ -97,7 +97,7 @@ func (s *sList) RemoveList(ctx context.Context, listName string) {
 	service.Bot().SendPlainMsg(ctx, "已删除 list("+listName+")")
 }
 
-func (s *sList) QueryList(ctx context.Context, listName string, keys ...string) {
+func (s *sList) QueryListWithRes(ctx context.Context, listName string, keys ...string) {
 	// 参数合法性校验
 	if !legalListNameRe.MatchString(listName) {
 		return
@@ -162,7 +162,7 @@ func (s *sList) GetListData(ctx context.Context, listName string) (listMap map[s
 	return
 }
 
-func (s *sList) AddListData(ctx context.Context, listName, key string, value ...string) {
+func (s *sList) AddListDataWithRes(ctx context.Context, listName, key string, value ...string) {
 	// 参数合法性校验
 	if !legalListNameRe.MatchString(listName) {
 		return
@@ -212,7 +212,7 @@ func (s *sList) AddListData(ctx context.Context, listName, key string, value ...
 	}
 }
 
-func (s *sList) RemoveListData(ctx context.Context, listName, key string) {
+func (s *sList) RemoveListDataWithRes(ctx context.Context, listName, key string) {
 	// 参数合法性校验
 	if !legalListNameRe.MatchString(listName) {
 		return
@@ -259,7 +259,7 @@ func (s *sList) RemoveListData(ctx context.Context, listName, key string) {
 	service.Bot().SendPlainMsg(ctx, "已删除 key("+key+") 从 list("+listName+")")
 }
 
-func (s *sList) ResetListData(ctx context.Context, listName string) {
+func (s *sList) ResetListDataWithRes(ctx context.Context, listName string) {
 	// 参数合法性校验
 	if !legalListNameRe.MatchString(listName) {
 		return
@@ -286,7 +286,7 @@ func (s *sList) ResetListData(ctx context.Context, listName string) {
 	service.Bot().SendPlainMsg(ctx, "已重置 list("+listName+") 的数据")
 }
 
-func (s *sList) SetListData(ctx context.Context, listName, newListBytes string) {
+func (s *sList) SetListDataWithRes(ctx context.Context, listName, newListStr string) {
 	// 参数合法性校验
 	if !legalListNameRe.MatchString(listName) {
 		return
@@ -301,7 +301,7 @@ func (s *sList) SetListData(ctx context.Context, listName, newListBytes string) 
 		return
 	}
 	// 数据处理
-	listJson, err := sj.NewJson([]byte(newListBytes))
+	listJson, err := sj.NewJson([]byte(newListStr))
 	if err != nil {
 		service.Bot().SendPlainMsg(ctx, "反序列化 json 失败")
 		return
@@ -331,7 +331,43 @@ func (s *sList) SetListData(ctx context.Context, listName, newListBytes string) 
 	service.Bot().SendPlainMsg(ctx, "已覆盖 list("+listName+") 的数据\n共 "+gconv.String(length)+" 条")
 }
 
-func (s *sList) AppendListData(ctx context.Context, listName string, newMap map[string]any) (err error) {
+func (s *sList) AppendListDataWithRes(ctx context.Context, listName, newListStr string) {
+	// 参数合法性校验
+	if !legalListNameRe.MatchString(listName) {
+		return
+	}
+	// 获取 list
+	lEntity := getList(ctx, listName)
+	if lEntity == nil {
+		return
+	}
+	// 权限校验
+	if !service.Namespace().IsNamespaceOwnerOrAdmin(ctx, lEntity.Namespace, service.Bot().GetUserId(ctx)) {
+		return
+	}
+	// 数据处理
+	listJson, err := sj.NewJson([]byte(newListStr))
+	if err != nil {
+		service.Bot().SendPlainMsg(ctx, "反序列化 json 失败")
+		return
+	}
+	listM := listJson.MustMap(make(map[string]any))
+	appendLen := len(listM)
+	if appendLen < 1 {
+		service.Bot().SendPlainMsg(ctx, "无效数据")
+		return
+	}
+	// 追加操作
+	totalLen, err := s.AppendListData(ctx, listName, listM)
+	if err != nil {
+		return
+	}
+	// 回执
+	service.Bot().SendPlainMsg(ctx, "已追加 list("+listName+") 的数据 "+gconv.String(appendLen)+
+		" 条\n共 "+gconv.String(totalLen)+" 条")
+}
+
+func (s *sList) AppendListData(ctx context.Context, listName string, newMap map[string]any) (n int, err error) {
 	listMap := s.GetListData(ctx, listName)
 	if listMap == nil {
 		return
@@ -340,6 +376,7 @@ func (s *sList) AppendListData(ctx context.Context, listName string, newMap map[
 	for k, v := range newMap {
 		listMap[k] = v
 	}
+	n = len(listMap)
 	// 保存数据
 	listBytes, err := json.Marshal(listMap)
 	if err != nil {

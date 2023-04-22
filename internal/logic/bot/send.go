@@ -50,7 +50,7 @@ func (s *sBot) SendMsg(ctx context.Context, msg string) {
 	s.SendMessage(ctx, s.GetMsgType(ctx), s.GetUserId(ctx), s.GetGroupId(ctx), msg, false)
 }
 
-func (s *sBot) ApproveAddGroup(ctx context.Context, flag, subType string, approve bool, reason string) {
+func (s *sBot) ApproveJoinGroup(ctx context.Context, flag, subType string, approve bool, reason string) {
 	// 初始化响应
 	resJson := sj.New()
 	resJson.Set("action", "set_group_add_request")

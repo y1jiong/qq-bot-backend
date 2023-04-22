@@ -9,7 +9,7 @@ import (
 func queryProcessStatus(ctx context.Context) (catch bool) {
 	catch = true
 	// 继续处理
-	if service.Process().IsBotProcess() {
+	if service.Process().IsEnabledBotProcess() {
 		service.Bot().SendPlainMsg(ctx, "正常状态")
 	} else {
 		service.Bot().SendPlainMsg(ctx, "暂停状态")
@@ -20,7 +20,7 @@ func queryProcessStatus(ctx context.Context) (catch bool) {
 func pauseProcess(ctx context.Context) (catch bool) {
 	catch = true
 	// 继续处理
-	if !service.Process().IsBotProcess() {
+	if !service.Process().IsEnabledBotProcess() {
 		service.Bot().SendPlainMsg(ctx, "已处于暂停状态")
 		return
 	}
@@ -36,7 +36,7 @@ func pauseProcess(ctx context.Context) (catch bool) {
 func continueProcess(ctx context.Context) (catch bool) {
 	catch = true
 	// 继续处理
-	if service.Process().IsBotProcess() {
+	if service.Process().IsEnabledBotProcess() {
 		service.Bot().SendPlainMsg(ctx, "已处于正常状态")
 		return
 	}

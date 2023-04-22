@@ -6,7 +6,7 @@ import (
 	"github.com/gogf/gf/v2/frame/g"
 )
 
-func (s *sCfg) IsDebugEnabled(ctx context.Context) bool {
+func (s *sCfg) IsEnabledDebug(ctx context.Context) bool {
 	debug, err := g.Cfg().Get(ctx, "bot.debug")
 	if err != nil {
 		g.Log().Warning(ctx, err)

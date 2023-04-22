@@ -48,7 +48,7 @@ func createUser(ctx context.Context, userId int64) (uEntity *entity.User, err er
 	return
 }
 
-func (s *sUser) SystemTrustUser(ctx context.Context, userId int64) {
+func (s *sUser) SystemTrustUserWithRes(ctx context.Context, userId int64) {
 	// 参数合法性校验
 	if userId < 1 {
 		return
@@ -94,7 +94,7 @@ func (s *sUser) SystemTrustUser(ctx context.Context, userId int64) {
 	service.Bot().SendPlainMsg(ctx, "系统已信任 user("+gconv.String(userId)+")")
 }
 
-func (s *sUser) SystemDistrustUser(ctx context.Context, userId int64) {
+func (s *sUser) SystemDistrustUserWithRes(ctx context.Context, userId int64) {
 	// 参数合法性校验
 	if userId < 1 {
 		return
@@ -154,7 +154,7 @@ func (s *sUser) IsSystemTrustUser(ctx context.Context, userId int64) (yes bool) 
 	return
 }
 
-func (s *sUser) GrantOpNamespace(ctx context.Context, userId int64) {
+func (s *sUser) GrantOpNamespaceWithRes(ctx context.Context, userId int64) {
 	// 参数合法性校验
 	if userId < 1 {
 		return
@@ -200,7 +200,7 @@ func (s *sUser) GrantOpNamespace(ctx context.Context, userId int64) {
 	service.Bot().SendPlainMsg(ctx, "系统已授予 user("+gconv.String(userId)+") 操作 namespace 的权限")
 }
 
-func (s *sUser) RevokeOpNamespace(ctx context.Context, userId int64) {
+func (s *sUser) RevokeOpNamespaceWithRes(ctx context.Context, userId int64) {
 	// 参数合法性校验
 	if userId < 1 {
 		return
@@ -260,7 +260,7 @@ func (s *sUser) CouldOpNamespace(ctx context.Context, userId int64) (yes bool) {
 	return
 }
 
-func (s *sUser) GrantGetRawMsg(ctx context.Context, userId int64) {
+func (s *sUser) GrantGetRawMsgWithRes(ctx context.Context, userId int64) {
 	// 参数合法性校验
 	if userId < 1 {
 		return
@@ -306,7 +306,7 @@ func (s *sUser) GrantGetRawMsg(ctx context.Context, userId int64) {
 	service.Bot().SendPlainMsg(ctx, "系统已授予 user("+gconv.String(userId)+") 获取 raw 的权限")
 }
 
-func (s *sUser) RevokeGetRawMsg(ctx context.Context, userId int64) {
+func (s *sUser) RevokeGetRawMsgWithRes(ctx context.Context, userId int64) {
 	// 参数合法性校验
 	if userId < 1 {
 		return

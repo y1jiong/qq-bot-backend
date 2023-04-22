@@ -48,7 +48,7 @@ func (s *sToken) IsCorrectToken(ctx context.Context, token string) (yes bool, na
 	return
 }
 
-func (s *sToken) AddNewToken(ctx context.Context, name, token string, owner int64) {
+func (s *sToken) AddNewTokenWithRes(ctx context.Context, name, token string, owner int64) {
 	// 过滤非法 token 或 name
 	if !legalTokenRe.MatchString(token) || !legalTokenNameRe.MatchString(name) {
 		return
@@ -71,7 +71,7 @@ func (s *sToken) AddNewToken(ctx context.Context, name, token string, owner int6
 	service.Bot().SendPlainMsg(ctx, "已新增 token("+name+")")
 }
 
-func (s *sToken) RemoveToken(ctx context.Context, name string) {
+func (s *sToken) RemoveTokenWithRes(ctx context.Context, name string) {
 	// 过滤非法 name
 	if !legalTokenNameRe.MatchString(name) {
 		return
@@ -99,7 +99,7 @@ func (s *sToken) RemoveToken(ctx context.Context, name string) {
 	service.Bot().SendPlainMsg(ctx, "已删除 token("+name+")")
 }
 
-func (s *sToken) QueryToken(ctx context.Context) {
+func (s *sToken) QueryTokenWithRes(ctx context.Context) {
 	// 数据库查询
 	var tEntities []*entity.Token
 	err := dao.Token.Ctx(ctx).

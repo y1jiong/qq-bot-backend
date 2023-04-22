@@ -24,7 +24,7 @@ func (c *cBot) Websocket(r *ghttp.Request) {
 	}
 	token := authorizations[1]
 	var tokenName string
-	if service.Cfg().IsDebugEnabled(ctx) {
+	if service.Cfg().IsEnabledDebug(ctx) {
 		// token debug 验证模式
 		var pass bool
 		tokenName = "debug"

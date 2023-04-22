@@ -22,9 +22,9 @@ func (s *sModule) TryLogLeave(ctx context.Context) (catch bool) {
 	operatorId := service.Bot().GetOperatorId(ctx)
 	// 初始化数据
 	one := struct {
-		SubType    string `json:"subType"`
+		SubType    string `json:"sub_type"`
 		Time       string `json:"time"`
-		OperatorId string `json:"operatorId"`
+		OperatorId string `json:"operator_id"`
 	}{
 		SubType:    action,
 		Time:       gtime.New(service.Bot().GetTimestamp(ctx)).String(),
@@ -33,7 +33,7 @@ func (s *sModule) TryLogLeave(ctx context.Context) (catch bool) {
 	listMap := make(map[string]any)
 	listMap[gconv.String(userId)] = one
 	// 保存数据
-	err := service.List().AppendListData(ctx, listName, listMap)
+	_, err := service.List().AppendListData(ctx, listName, listMap)
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return

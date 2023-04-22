@@ -12,9 +12,9 @@ import (
 type (
 	IToken interface {
 		IsCorrectToken(ctx context.Context, token string) (yes bool, name string)
-		AddNewToken(ctx context.Context, name, token string, owner int64)
-		RemoveToken(ctx context.Context, name string)
-		QueryToken(ctx context.Context)
+		AddNewTokenWithRes(ctx context.Context, name, token string, owner int64)
+		RemoveTokenWithRes(ctx context.Context, name string)
+		QueryTokenWithRes(ctx context.Context)
 	}
 )
 

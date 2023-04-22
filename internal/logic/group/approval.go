@@ -19,7 +19,7 @@ const (
 	approvalDisabledAutoPassKey = "approvalDisabledAutoPass"
 )
 
-func (s *sGroup) AddApprovalProcess(ctx context.Context, groupId int64, processName string, args ...string) {
+func (s *sGroup) AddApprovalProcessWithRes(ctx context.Context, groupId int64, processName string, args ...string) {
 	// 参数合法性校验
 	if groupId < 1 {
 		return
@@ -125,7 +125,7 @@ func (s *sGroup) AddApprovalProcess(ctx context.Context, groupId int64, processN
 	}
 }
 
-func (s *sGroup) RemoveApprovalProcess(ctx context.Context, groupId int64, processName string, args ...string) {
+func (s *sGroup) RemoveApprovalProcessWithRes(ctx context.Context, groupId int64, processName string, args ...string) {
 	// 参数合法性校验
 	if groupId < 1 {
 		return

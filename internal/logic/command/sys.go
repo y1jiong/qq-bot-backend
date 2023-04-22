@@ -24,11 +24,11 @@ func trySys(ctx context.Context, cmd string) (catch bool) {
 			catch = trySysRevoke(ctx, next[2])
 		case "trust":
 			// /sys trust <user_id>
-			service.User().SystemTrustUser(ctx, gconv.Int64(next[2]))
+			service.User().SystemTrustUserWithRes(ctx, gconv.Int64(next[2]))
 			catch = true
 		case "distrust":
 			// /sys distrust <user_id>
-			service.User().SystemDistrustUser(ctx, gconv.Int64(next[2]))
+			service.User().SystemDistrustUserWithRes(ctx, gconv.Int64(next[2]))
 			catch = true
 		}
 	}
@@ -42,11 +42,11 @@ func trySysGrant(ctx context.Context, cmd string) (catch bool) {
 		switch dv[2] {
 		case "raw":
 			// /sys grant <user_id> raw
-			service.User().GrantGetRawMsg(ctx, gconv.Int64(dv[1]))
+			service.User().GrantGetRawMsgWithRes(ctx, gconv.Int64(dv[1]))
 			catch = true
 		case "namespace":
 			// /sys grant <user_id> namespace
-			service.User().GrantOpNamespace(ctx, gconv.Int64(dv[1]))
+			service.User().GrantOpNamespaceWithRes(ctx, gconv.Int64(dv[1]))
 			catch = true
 		}
 	}
@@ -60,11 +60,11 @@ func trySysRevoke(ctx context.Context, cmd string) (catch bool) {
 		switch dv[2] {
 		case "raw":
 			// /sys revoke <user_id> raw
-			service.User().RevokeGetRawMsg(ctx, gconv.Int64(dv[1]))
+			service.User().RevokeGetRawMsgWithRes(ctx, gconv.Int64(dv[1]))
 			catch = true
 		case "namespace":
 			// /sys revoke <user_id> namespace
-			service.User().RevokeOpNamespace(ctx, gconv.Int64(dv[1]))
+			service.User().RevokeOpNamespaceWithRes(ctx, gconv.Int64(dv[1]))
 			catch = true
 		}
 	}

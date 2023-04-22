@@ -3,6 +3,7 @@ package group
 import (
 	"context"
 	"github.com/gogf/gf/v2/frame/g"
+	"github.com/gogf/gf/v2/os/gtime"
 	"github.com/gogf/gf/v2/util/gconv"
 	"qq-bot-backend/internal/dao"
 	"qq-bot-backend/internal/model/entity"
@@ -30,7 +31,7 @@ func getGroup(ctx context.Context, groupId int64) (gEntity *entity.Group) {
 	return
 }
 
-func (s *sGroup) BindNamespace(ctx context.Context, groupId int64, namespace string) {
+func (s *sGroup) BindNamespaceWithRes(ctx context.Context, groupId int64, namespace string) {
 	// 参数合法性校验
 	if groupId < 1 {
 		return
@@ -81,7 +82,7 @@ func (s *sGroup) BindNamespace(ctx context.Context, groupId int64, namespace str
 	service.Bot().SendPlainMsg(ctx, "已绑定当前 group("+gconv.String(groupId)+") 到 namespace("+namespace+")")
 }
 
-func (s *sGroup) Unbind(ctx context.Context, groupId int64) {
+func (s *sGroup) UnbindWithRes(ctx context.Context, groupId int64) {
 	// 参数合法性校验
 	if groupId < 1 {
 		return
@@ -112,7 +113,7 @@ func (s *sGroup) Unbind(ctx context.Context, groupId int64) {
 	service.Bot().SendPlainMsg(ctx, "已解除 group("+gconv.String(groupId)+") 的 namespace 绑定")
 }
 
-func (s *sGroup) QueryGroup(ctx context.Context, groupId int64) {
+func (s *sGroup) QueryGroupWithRes(ctx context.Context, groupId int64) {
 	// 参数合法性校验
 	if groupId < 1 {
 		return
@@ -133,7 +134,7 @@ func (s *sGroup) QueryGroup(ctx context.Context, groupId int64) {
 	service.Bot().SendPlainMsg(ctx, msg)
 }
 
-func (s *sGroup) ExportGroupMemberList(ctx context.Context, groupId int64, listName string) {
+func (s *sGroup) ExportGroupMemberListWithRes(ctx context.Context, groupId int64, listName string) {
 	// 参数合法性校验
 	if groupId < 1 {
 		return
@@ -180,22 +181,22 @@ func (s *sGroup) ExportGroupMemberList(ctx context.Context, groupId int64, listN
 			if vv, ok := v.(map[string]any); ok {
 				// 写入数据
 				membersMap[gconv.String(vv["user_id"])] = struct {
-					Role string `json:"role"`
+					JoinTime string `json:"join_time"`
 				}{
-					Role: gconv.String(vv["role"]),
+					JoinTime: gtime.New(gconv.Int(vv["join_time"])).String(),
 				}
 			}
 		}
 		// 保存数据
-		err := service.List().AppendListData(ctx, listName, membersMap)
+		totalLen, err := service.List().AppendListData(ctx, listName, membersMap)
 		if err != nil {
 			g.Log().Error(ctx, err)
 			return
 		}
 		// 回执
 		service.Bot().SendPlainMsg(ctx,
-			"已将 group("+gconv.String(groupId)+") 的 member 导出到 list("+listName+")"+
-				"\n共 "+gconv.String(len(membersMap))+" 条")
+			"已将 group("+gconv.String(groupId)+") 的 member 导出到 list("+listName+") "+
+				gconv.String(len(membersMap))+" 条\n共 "+gconv.String(totalLen)+" 条")
 	}
 	// 异步获取群成员列表
 	service.Bot().GetGroupMemberList(ctx, groupId, f)

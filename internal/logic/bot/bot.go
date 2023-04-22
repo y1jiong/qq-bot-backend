@@ -65,7 +65,7 @@ func (s *sBot) Process(ctx context.Context, ws *ghttp.WebSocket, rawJson []byte,
 	// ctx 携带 reqJson
 	ctx = s.ctxWithReqJson(ctx, reqJson)
 	// debug mode
-	if service.Cfg().IsDebugEnabled(ctx) && s.GetPostType(ctx) != "meta_event" {
+	if service.Cfg().IsEnabledDebug(ctx) && s.GetPostType(ctx) != "meta_event" {
 		g.Log().Info(ctx, "\n", rawJson)
 	}
 	// 捕捉 echo

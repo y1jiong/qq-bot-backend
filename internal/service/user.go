@@ -11,14 +11,14 @@ import (
 
 type (
 	IUser interface {
-		SystemTrustUser(ctx context.Context, userId int64)
-		SystemDistrustUser(ctx context.Context, userId int64)
+		SystemTrustUserWithRes(ctx context.Context, userId int64)
+		SystemDistrustUserWithRes(ctx context.Context, userId int64)
 		IsSystemTrustUser(ctx context.Context, userId int64) (yes bool)
-		GrantOpNamespace(ctx context.Context, userId int64)
-		RevokeOpNamespace(ctx context.Context, userId int64)
+		GrantOpNamespaceWithRes(ctx context.Context, userId int64)
+		RevokeOpNamespaceWithRes(ctx context.Context, userId int64)
 		CouldOpNamespace(ctx context.Context, userId int64) (yes bool)
-		GrantGetRawMsg(ctx context.Context, userId int64)
-		RevokeGetRawMsg(ctx context.Context, userId int64)
+		GrantGetRawMsgWithRes(ctx context.Context, userId int64)
+		RevokeGetRawMsgWithRes(ctx context.Context, userId int64)
 		CouldGetRawMsg(ctx context.Context, userId int64) (yes bool)
 	}
 )

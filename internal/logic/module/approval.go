@@ -44,7 +44,7 @@ func (s *sModule) TryApproveAddGroup(ctx context.Context) (catch bool) {
 	if !pass || (pass && service.Group().GetApprovalIsAutoPass(ctx, groupId)) {
 		// 在不通过和启用自动通过的条件下发送审批回执
 		// 审批请求回执
-		service.Bot().ApproveAddGroup(ctx,
+		service.Bot().ApproveJoinGroup(ctx,
 			service.Bot().GetFlag(ctx),
 			service.Bot().GetSubType(ctx),
 			pass,

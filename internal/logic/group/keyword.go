@@ -17,7 +17,7 @@ const (
 	keywordReplyListKey     = "keywordReplyList"
 )
 
-func (s *sGroup) AddKeywordProcess(ctx context.Context, groupId int64, processName string, args ...string) {
+func (s *sGroup) AddKeywordProcessWithRes(ctx context.Context, groupId int64, processName string, args ...string) {
 	// 参数合法性校验
 	if groupId < 1 {
 		return
@@ -109,7 +109,7 @@ func (s *sGroup) AddKeywordProcess(ctx context.Context, groupId int64, processNa
 	}
 }
 
-func (s *sGroup) RemoveKeywordProcess(ctx context.Context, groupId int64, processName string, args ...string) {
+func (s *sGroup) RemoveKeywordProcessWithRes(ctx context.Context, groupId int64, processName string, args ...string) {
 	// 参数合法性校验
 	if groupId < 1 {
 		return

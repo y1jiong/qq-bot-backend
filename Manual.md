@@ -14,6 +14,7 @@ v1.2
 | /list join {list_name} {key} [value] | 将 key[:value] 添加到 list_name 中（key value 可作为双因子认证使用）（key 包含**空格**请用`%20`转义替换，包含**%**请用`%25`转义替换） | 同上                                             |
 | /list leave {list_name} {key}        | 将 key 从 list_name 中移除（key 包含**空格**请用`%20`转义替换，包含**%**请用`%25`转义替换） | 同上                                             |
 | /list query {list_name} [key]        | 查询 list_name 或者 list_name 内的 key（key 包含**空格**请用`%20`转义替换，包含**%**请用`%25`转义替换） | 同上                                             |
+| /list append {list_name} {json}      | 用 json 追加 list_name 的数据                                | 同上                                             |
 | /list set {list_name} {json}         | 用 json 覆盖 list_name 的数据                                | 同上                                             |
 | /list reset {list_name}              | 重置 list_name 的数据                                        | 同上                                             |
 | /list rm {list_name}                 | 删除 list_name（删除后原 list_name 不可使用）                | 同上                                             |

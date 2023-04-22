@@ -17,7 +17,7 @@ func tryNamespace(ctx context.Context, cmd string) (catch bool) {
 			}
 			// /namespace add <namespace>
 			// 继续处理
-			service.Namespace().AddNewNamespace(ctx, next[2])
+			service.Namespace().AddNewNamespaceWithRes(ctx, next[2])
 			catch = true
 		case "rm":
 			// 权限校验
@@ -26,7 +26,7 @@ func tryNamespace(ctx context.Context, cmd string) (catch bool) {
 			}
 			// /namespace rm <namespace>
 			// 继续处理
-			service.Namespace().RemoveNamespace(ctx, next[2])
+			service.Namespace().RemoveNamespaceWithRes(ctx, next[2])
 			catch = true
 		default:
 			// /namespace <namespace> <>
@@ -40,11 +40,11 @@ func tryNamespace(ctx context.Context, cmd string) (catch bool) {
 				return
 			}
 			// /namespace query
-			service.Namespace().QueryOwnNamespace(ctx, service.Bot().GetUserId(ctx))
+			service.Namespace().QueryOwnNamespaceWithRes(ctx, service.Bot().GetUserId(ctx))
 			catch = true
 		default:
 			// /namespace <namespace>
-			service.Namespace().QueryNamespace(ctx, cmd)
+			service.Namespace().QueryNamespaceWithRes(ctx, cmd)
 			catch = true
 		}
 	}
@@ -56,7 +56,7 @@ func tryNamespaceReset(ctx context.Context, namespace, cmd string) (catch bool) 
 		switch cmd {
 		case "reset":
 			// /namespace <namespace> reset
-			service.Namespace().ResetNamespaceAdmin(ctx, namespace)
+			service.Namespace().ResetNamespaceAdminWithRes(ctx, namespace)
 			catch = true
 		}
 	}

@@ -37,7 +37,7 @@ type (
 		SendMessage(ctx context.Context, messageType string, uid, gid int64, msg string, plain bool)
 		SendPlainMsg(ctx context.Context, msg string)
 		SendMsg(ctx context.Context, msg string)
-		ApproveAddGroup(ctx context.Context, flag, subType string, approve bool, reason string)
+		ApproveJoinGroup(ctx context.Context, flag, subType string, approve bool, reason string)
 		SetModel(ctx context.Context, model string)
 		RevokeMessage(ctx context.Context, msgId int64)
 		MutePrototype(ctx context.Context, groupId, userId int64, seconds int)

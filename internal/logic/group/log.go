@@ -13,7 +13,7 @@ const (
 	logLeaveListKey = "logLeaveList"
 )
 
-func (s *sGroup) SetLogLeaveList(ctx context.Context, groupId int64, listName string) {
+func (s *sGroup) SetLogLeaveListWithRes(ctx context.Context, groupId int64, listName string) {
 	// 参数合法性校验
 	if groupId < 1 {
 		return
@@ -63,7 +63,7 @@ func (s *sGroup) SetLogLeaveList(ctx context.Context, groupId int64, listName st
 	service.Bot().SendPlainMsg(ctx, "已设置 group("+gconv.String(groupId)+") 离群记录 list("+listName+")")
 }
 
-func (s *sGroup) RemoveLogLeaveList(ctx context.Context, groupId int64) {
+func (s *sGroup) RemoveLogLeaveListWithRes(ctx context.Context, groupId int64) {
 	// 参数合法性校验
 	if groupId < 1 {
 		return
