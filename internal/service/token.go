@@ -12,7 +12,7 @@ import (
 type (
 	IToken interface {
 		IsCorrectToken(ctx context.Context, token string) (yes bool, name string)
-		AddNewTokenWithRes(ctx context.Context, name, token string, owner int64)
+		AddNewTokenWithRes(ctx context.Context, name, token string)
 		RemoveTokenWithRes(ctx context.Context, name string)
 		QueryTokenWithRes(ctx context.Context)
 	}

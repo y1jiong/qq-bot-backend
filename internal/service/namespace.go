@@ -15,7 +15,7 @@ type (
 		AddNewNamespaceWithRes(ctx context.Context, namespace string)
 		RemoveNamespaceWithRes(ctx context.Context, namespace string)
 		QueryNamespaceWithRes(ctx context.Context, namespace string)
-		QueryOwnNamespaceWithRes(ctx context.Context, userId int64)
+		QueryOwnNamespaceWithRes(ctx context.Context)
 		AddNamespaceAdminWithRes(ctx context.Context, namespace string, userId int64)
 		RemoveNamespaceAdminWithRes(ctx context.Context, namespace string, userId int64)
 		ResetNamespaceAdminWithRes(ctx context.Context, namespace string)

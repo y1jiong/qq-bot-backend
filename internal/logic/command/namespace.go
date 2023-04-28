@@ -40,7 +40,7 @@ func tryNamespace(ctx context.Context, cmd string) (catch bool) {
 				return
 			}
 			// /namespace query
-			service.Namespace().QueryOwnNamespaceWithRes(ctx, service.Bot().GetUserId(ctx))
+			service.Namespace().QueryOwnNamespaceWithRes(ctx)
 			catch = true
 		default:
 			// /namespace <namespace>

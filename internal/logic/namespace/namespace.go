@@ -92,6 +92,12 @@ func (s *sNamespace) AddNewNamespaceWithRes(ctx context.Context, namespace strin
 	if !legalNamespaceNameRe.MatchString(namespace) {
 		return
 	}
+	// 数据库查存在
+	one := getNamespace(ctx, namespace)
+	if one != nil {
+		service.Bot().SendPlainMsg(ctx, "namespace("+namespace+") 已被占用")
+		return
+	}
 	// 初始化 namespace 对象
 	nEntity := entity.Namespace{
 		Namespace:   namespace,
@@ -121,10 +127,12 @@ func (s *sNamespace) RemoveNamespaceWithRes(ctx context.Context, namespace strin
 	// 获取 namespace 对象
 	nEntity := getNamespace(ctx, namespace)
 	if nEntity == nil {
+		service.Bot().SendPlainMsg(ctx, "未找到 namespace("+namespace+")")
 		return
 	}
 	// 判断 owner
 	if !isNamespaceOwner(service.Bot().GetUserId(ctx), nEntity) {
+		service.Bot().SendPlainMsg(ctx, "未找到 namespace("+namespace+")")
 		return
 	}
 	// 数据库软删除
@@ -161,7 +169,8 @@ func (s *sNamespace) QueryNamespaceWithRes(ctx context.Context, namespace string
 	service.Bot().SendPlainMsg(ctx, msg)
 }
 
-func (s *sNamespace) QueryOwnNamespaceWithRes(ctx context.Context, userId int64) {
+func (s *sNamespace) QueryOwnNamespaceWithRes(ctx context.Context) {
+	userId := service.Bot().GetUserId(ctx)
 	// 参数合法性校验
 	if userId < 1 {
 		return
@@ -181,8 +190,9 @@ func (s *sNamespace) QueryOwnNamespaceWithRes(ctx context.Context, userId int64)
 		return
 	}
 	// 回执
+	nEntitiesLen := len(nEntities)
 	var msg strings.Builder
-	for _, v := range nEntities {
+	for i, v := range nEntities {
 		msg.WriteString(dao.Namespace.Columns().Namespace)
 		msg.WriteString(": ")
 		msg.WriteString(v.Namespace)
@@ -190,7 +200,9 @@ func (s *sNamespace) QueryOwnNamespaceWithRes(ctx context.Context, userId int64)
 		msg.WriteString(dao.Namespace.Columns().CreatedAt)
 		msg.WriteString(": ")
 		msg.WriteString(v.CreatedAt.String())
-		msg.WriteString("\n---\n")
+		if i != nEntitiesLen-1 {
+			msg.WriteString("\n---\n")
+		}
 	}
 	service.Bot().SendPlainMsg(ctx, msg.String())
 }

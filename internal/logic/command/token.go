@@ -41,7 +41,7 @@ func tryTokenAdd(ctx context.Context, cmd string) (catch bool) {
 	// /token add <name> <token>
 	dv := doubleValueCmdEndRe.FindStringSubmatch(cmd)
 	// 执行
-	service.Token().AddNewTokenWithRes(ctx, dv[1], dv[2], service.Bot().GetUserId(ctx))
+	service.Token().AddNewTokenWithRes(ctx, dv[1], dv[2])
 	catch = true
 	return
 }

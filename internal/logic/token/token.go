@@ -48,27 +48,66 @@ func (s *sToken) IsCorrectToken(ctx context.Context, token string) (yes bool, na
 	return
 }
 
-func (s *sToken) AddNewTokenWithRes(ctx context.Context, name, token string, owner int64) {
+func (s *sToken) AddNewTokenWithRes(ctx context.Context, name, token string) {
+	owner := service.Bot().GetUserId(ctx)
 	// 过滤非法 token 或 name
 	if !legalTokenRe.MatchString(token) || !legalTokenNameRe.MatchString(name) {
 		return
 	}
-	tokenEntity := entity.Token{
-		Name:    name,
-		Token:   token,
-		OwnerId: owner,
-	}
-	// 数据库插入
-	_, err := dao.Token.Ctx(ctx).
-		Data(tokenEntity).
-		OmitEmpty().
-		Insert()
+	// 数据库查存在
+	var tokenEntity *entity.Token
+	err := dao.Token.Ctx(ctx).
+		Where(dao.Token.Columns().Name, name).
+		Scan(&tokenEntity)
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return
 	}
-	// 回执
-	service.Bot().SendPlainMsg(ctx, "已新增 token("+name+")")
+	var exist bool
+	// 判断是否存在
+	if tokenEntity != nil {
+		// 判断所有人是否一致
+		if tokenEntity.OwnerId != owner {
+			service.Bot().SendPlainMsg(ctx, "token("+name+") 已被占用")
+			return
+		}
+		exist = true
+	}
+	tokenEntity = &entity.Token{
+		Name:    name,
+		Token:   token,
+		OwnerId: owner,
+	}
+	if !exist {
+		// 数据库插入
+		_, err = dao.Token.Ctx(ctx).
+			Data(tokenEntity).
+			OmitEmpty().
+			Insert()
+		if err != nil {
+			g.Log().Error(ctx, err)
+			// 返回错误
+			service.Bot().SendPlainMsg(ctx, "新增 token 失败")
+			return
+		}
+		// 回执
+		service.Bot().SendPlainMsg(ctx, "已新增 token("+name+")")
+	} else {
+		// 数据库更新
+		_, err = dao.Token.Ctx(ctx).
+			Data(tokenEntity).
+			OmitEmpty().
+			Where(dao.Token.Columns().Name, name).
+			Update()
+		if err != nil {
+			g.Log().Error(ctx, err)
+			// 返回错误
+			service.Bot().SendPlainMsg(ctx, "更新 token 失败")
+			return
+		}
+		// 回执
+		service.Bot().SendPlainMsg(ctx, "已更新 token("+name+")")
+	}
 }
 
 func (s *sToken) RemoveTokenWithRes(ctx context.Context, name string) {
@@ -78,7 +117,10 @@ func (s *sToken) RemoveTokenWithRes(ctx context.Context, name string) {
 	}
 	// 数据库查存在
 	one, err := dao.Token.Ctx(ctx).
-		Where(dao.Token.Columns().Name, name).
+		Where(g.Map{
+			dao.Token.Columns().Name:    name,
+			dao.Token.Columns().OwnerId: service.Bot().GetUserId(ctx),
+		}).
 		One()
 	if err != nil {
 		g.Log().Error(ctx, err)
@@ -86,6 +128,7 @@ func (s *sToken) RemoveTokenWithRes(ctx context.Context, name string) {
 	}
 	if one.IsEmpty() {
 		service.Bot().SendPlainMsg(ctx, "未找到 token("+name+")")
+		return
 	}
 	// 数据库软删除
 	_, err = dao.Token.Ctx(ctx).
@@ -115,7 +158,8 @@ func (s *sToken) QueryTokenWithRes(ctx context.Context) {
 	}
 	// 回执
 	var msg strings.Builder
-	for _, v := range tEntities {
+	tEntitiesLen := len(tEntities)
+	for i, v := range tEntities {
 		msg.WriteString(dao.Token.Columns().Name)
 		msg.WriteString(": ")
 		msg.WriteString(v.Name)
@@ -123,7 +167,9 @@ func (s *sToken) QueryTokenWithRes(ctx context.Context) {
 		msg.WriteString(dao.Token.Columns().CreatedAt)
 		msg.WriteString(": ")
 		msg.WriteString(v.CreatedAt.String())
-		msg.WriteString("\n---\n")
+		if i != tEntitiesLen-1 {
+			msg.WriteString("\n---\n")
+		}
 	}
 	service.Bot().SendPlainMsg(ctx, msg.String())
 }
