@@ -15,6 +15,7 @@ type (
 		AddNewTokenWithRes(ctx context.Context, name, token string)
 		RemoveTokenWithRes(ctx context.Context, name string)
 		QueryTokenWithRes(ctx context.Context)
+		UpdateLoginTime(ctx context.Context, token string)
 	}
 )
 

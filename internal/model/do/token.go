@@ -11,11 +11,12 @@ import (
 
 // Token is the golang structure of table token for DAO operations like Where/Data.
 type Token struct {
-	g.Meta    `orm:"table:token, do:true"`
-	Name      interface{} //
-	Token     interface{} //
-	OwnerId   interface{} //
-	CreatedAt *gtime.Time //
-	UpdatedAt *gtime.Time //
-	DeletedAt *gtime.Time //
+	g.Meta      `orm:"table:token, do:true"`
+	Name        interface{} //
+	Token       interface{} //
+	OwnerId     interface{} //
+	CreatedAt   *gtime.Time //
+	UpdatedAt   *gtime.Time //
+	DeletedAt   *gtime.Time //
+	LastLoginAt *gtime.Time //
 }

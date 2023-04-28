@@ -10,10 +10,11 @@ import (
 
 // Token is the golang structure for table token.
 type Token struct {
-	Name      string      `json:"name"       ` //
-	Token     string      `json:"token"      ` //
-	OwnerId   int64       `json:"owner_id"   ` //
-	CreatedAt *gtime.Time `json:"created_at" ` //
-	UpdatedAt *gtime.Time `json:"updated_at" ` //
-	DeletedAt *gtime.Time `json:"deleted_at" ` //
+	Name        string      `json:"name"          ` //
+	Token       string      `json:"token"         ` //
+	OwnerId     int64       `json:"owner_id"      ` //
+	CreatedAt   *gtime.Time `json:"created_at"    ` //
+	UpdatedAt   *gtime.Time `json:"updated_at"    ` //
+	DeletedAt   *gtime.Time `json:"deleted_at"    ` //
+	LastLoginAt *gtime.Time `json:"last_login_at" ` //
 }

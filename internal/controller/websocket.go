@@ -43,6 +43,8 @@ func (c *cBot) Websocket(r *ghttp.Request) {
 			return
 		}
 	}
+	// 记录登录时间
+	service.Token().UpdateLoginTime(ctx, token)
 	// 升级 WebSocket 协议
 	ws, err := r.WebSocket()
 	if err != nil {

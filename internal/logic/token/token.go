@@ -3,6 +3,7 @@ package token
 import (
 	"context"
 	"github.com/gogf/gf/v2/frame/g"
+	"github.com/gogf/gf/v2/os/gtime"
 	"qq-bot-backend/internal/dao"
 	"qq-bot-backend/internal/model/entity"
 	"qq-bot-backend/internal/service"
@@ -167,9 +168,26 @@ func (s *sToken) QueryTokenWithRes(ctx context.Context) {
 		msg.WriteString(dao.Token.Columns().CreatedAt)
 		msg.WriteString(": ")
 		msg.WriteString(v.CreatedAt.String())
+		msg.WriteString("\n")
+		msg.WriteString(dao.Token.Columns().LastLoginAt)
+		msg.WriteString(": ")
+		msg.WriteString(v.LastLoginAt.String())
 		if i != tEntitiesLen-1 {
 			msg.WriteString("\n---\n")
 		}
 	}
 	service.Bot().SendPlainMsg(ctx, msg.String())
+}
+
+func (s *sToken) UpdateLoginTime(ctx context.Context, token string) {
+	// 数据库更新
+	_, err := dao.Token.Ctx(ctx).
+		Data(g.Map{
+			dao.Token.Columns().LastLoginAt: gtime.Now(),
+		}).
+		Where(dao.Token.Columns().Token, token).
+		Update()
+	if err != nil {
+		g.Log().Error(ctx, err)
+	}
 }
