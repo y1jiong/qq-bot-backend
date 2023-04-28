@@ -16,6 +16,10 @@ func trySys(ctx context.Context, cmd string) (catch bool) {
 	case nextBranchRe.MatchString(cmd):
 		next := nextBranchRe.FindStringSubmatch(cmd)
 		switch next[1] {
+		case "query":
+			// /sys query <user_id>
+			service.User().QueryUserWithRes(ctx, gconv.Int64(next[2]))
+			catch = true
 		case "grant":
 			// /sys grant <>
 			catch = trySysGrant(ctx, next[2])
@@ -48,6 +52,10 @@ func trySysGrant(ctx context.Context, cmd string) (catch bool) {
 			// /sys grant <user_id> namespace
 			service.User().GrantOpNamespaceWithRes(ctx, gconv.Int64(dv[1]))
 			catch = true
+		case "token":
+			// /sys grant <user_id> token
+			service.User().GrantOpTokenWithRes(ctx, gconv.Int64(dv[1]))
+			catch = true
 		}
 	}
 	return
@@ -65,6 +73,10 @@ func trySysRevoke(ctx context.Context, cmd string) (catch bool) {
 		case "namespace":
 			// /sys revoke <user_id> namespace
 			service.User().RevokeOpNamespaceWithRes(ctx, gconv.Int64(dv[1]))
+			catch = true
+		case "token":
+			// /sys revoke <user_id> token
+			service.User().RevokeOpTokenWithRes(ctx, gconv.Int64(dv[1]))
 			catch = true
 		}
 	}

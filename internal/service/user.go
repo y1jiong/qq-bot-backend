@@ -11,9 +11,13 @@ import (
 
 type (
 	IUser interface {
+		QueryUserWithRes(ctx context.Context, userId int64)
 		SystemTrustUserWithRes(ctx context.Context, userId int64)
 		SystemDistrustUserWithRes(ctx context.Context, userId int64)
 		IsSystemTrustUser(ctx context.Context, userId int64) (yes bool)
+		GrantOpTokenWithRes(ctx context.Context, userId int64)
+		RevokeOpTokenWithRes(ctx context.Context, userId int64)
+		CouldOpToken(ctx context.Context, userId int64) (yes bool)
 		GrantOpNamespaceWithRes(ctx context.Context, userId int64)
 		RevokeOpNamespaceWithRes(ctx context.Context, userId int64)
 		CouldOpNamespace(ctx context.Context, userId int64) (yes bool)

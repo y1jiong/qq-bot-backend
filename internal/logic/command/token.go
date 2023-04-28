@@ -7,7 +7,7 @@ import (
 
 func tryToken(ctx context.Context, cmd string) (catch bool) {
 	// 权限校验
-	if !service.User().IsSystemTrustUser(ctx, service.Bot().GetUserId(ctx)) {
+	if !service.User().CouldOpToken(ctx, service.Bot().GetUserId(ctx)) {
 		return
 	}
 	// 继续处理

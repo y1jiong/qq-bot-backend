@@ -22,6 +22,7 @@ func init() {
 
 const (
 	trustKey     = "trust"
+	tokenKey     = "token"
 	namespaceKey = "namespace"
 	rawKey       = "raw"
 )
@@ -46,6 +47,25 @@ func createUser(ctx context.Context, userId int64) (uEntity *entity.User, err er
 		OmitEmpty().
 		Insert()
 	return
+}
+
+func (s *sUser) QueryUserWithRes(ctx context.Context, userId int64) {
+	// 参数合法性校验
+	if userId < 1 {
+		return
+	}
+	// 获取 user
+	uEntity := getUser(ctx, userId)
+	if uEntity == nil {
+		// 回执
+		service.Bot().SendPlainMsg(ctx, "查无此人")
+		return
+	}
+	msg := dao.User.Columns().UserId + ": " + gconv.String(uEntity.UserId) + "\n" +
+		dao.User.Columns().SettingJson + ": " + uEntity.SettingJson + "\n" +
+		dao.User.Columns().UpdatedAt + ": " + uEntity.UpdatedAt.String()
+	// 回执
+	service.Bot().SendPlainMsg(ctx, msg)
 }
 
 func (s *sUser) SystemTrustUserWithRes(ctx context.Context, userId int64) {
@@ -151,6 +171,112 @@ func (s *sUser) IsSystemTrustUser(ctx context.Context, userId int64) (yes bool) 
 		return
 	}
 	yes = settingJson.Get(trustKey).MustBool()
+	return
+}
+
+func (s *sUser) GrantOpTokenWithRes(ctx context.Context, userId int64) {
+	// 参数合法性校验
+	if userId < 1 {
+		return
+	}
+	// 获取 user
+	uEntity := getUser(ctx, userId)
+	if uEntity == nil {
+		// 如果没有获取到 user 则默认创建
+		var err error
+		uEntity, err = createUser(ctx, userId)
+		if err != nil {
+			g.Log().Error(ctx, err)
+			return
+		}
+	}
+	// 数据处理
+	settingJson, err := sj.NewJson([]byte(uEntity.SettingJson))
+	if err != nil {
+		g.Log().Error(ctx, err)
+		return
+	}
+	if _, ok := settingJson.CheckGet(tokenKey); ok {
+		// 重复授予
+		service.Bot().SendPlainMsg(ctx, "重复授予操作 token 的权限")
+		return
+	}
+	settingJson.Set(tokenKey, true)
+	settingBytes, err := settingJson.Encode()
+	if err != nil {
+		g.Log().Error(ctx, err)
+		return
+	}
+	// 数据库更新
+	_, err = dao.User.Ctx(ctx).
+		Where(dao.User.Columns().UserId, userId).
+		Data(dao.User.Columns().SettingJson, string(settingBytes)).
+		Update()
+	if err != nil {
+		g.Log().Error(ctx, err)
+		return
+	}
+	// 回执
+	service.Bot().SendPlainMsg(ctx, "系统已授予 user("+gconv.String(userId)+") 操作 token 的权限")
+}
+
+func (s *sUser) RevokeOpTokenWithRes(ctx context.Context, userId int64) {
+	// 参数合法性校验
+	if userId < 1 {
+		return
+	}
+	// 获取 user
+	uEntity := getUser(ctx, userId)
+	if uEntity == nil {
+		return
+	}
+	// 数据处理
+	settingJson, err := sj.NewJson([]byte(uEntity.SettingJson))
+	if err != nil {
+		g.Log().Error(ctx, err)
+		return
+	}
+	if _, ok := settingJson.CheckGet(tokenKey); !ok {
+		// 并未授予
+		service.Bot().SendPlainMsg(ctx, "并未授予操作 token 的权限")
+		return
+	}
+	settingJson.Del(tokenKey)
+	settingBytes, err := settingJson.Encode()
+	if err != nil {
+		g.Log().Error(ctx, err)
+		return
+	}
+	// 数据库更新
+	_, err = dao.User.Ctx(ctx).
+		Where(dao.User.Columns().UserId, userId).
+		Data(dao.User.Columns().SettingJson, string(settingBytes)).
+		Update()
+	if err != nil {
+		g.Log().Error(ctx, err)
+		return
+	}
+	// 回执
+	service.Bot().SendPlainMsg(ctx, "系统已撤销 user("+gconv.String(userId)+") 操作 token 的权限")
+}
+
+func (s *sUser) CouldOpToken(ctx context.Context, userId int64) (yes bool) {
+	// 参数合法性校验
+	if userId < 1 {
+		return
+	}
+	// 获取 user
+	uEntity := getUser(ctx, userId)
+	if uEntity == nil {
+		return
+	}
+	// 数据处理
+	settingJson, err := sj.NewJson([]byte(uEntity.SettingJson))
+	if err != nil {
+		g.Log().Error(ctx, err)
+		return
+	}
+	yes = settingJson.Get(tokenKey).MustBool()
 	return
 }
 
