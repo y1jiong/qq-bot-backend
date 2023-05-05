@@ -9,16 +9,16 @@ LDFLAGS += -X "$(BINARY_NAME)/internal/consts.CommitHash=$(COMMIT_HASH)"
 
 
 .PHONY: default
-default: check linux-amd64
+default: check linux-amd64v3
 
 .PHONY: all
 all: check linux windows darwin
 
 .PHONY: linux
-linux: linux-amd64 linux-arm64 linux-armv7
+linux: linux-amd64 linux-amd64v3 linux-arm64 linux-armv7
 
 .PHONY: windows
-windows: windows-amd64 windows-arm64
+windows: windows-amd64 windows-arm64 windows-amd64v3
 
 .PHONY: darwin
 darwin: darwin-amd64 darwin-arm64
@@ -46,6 +46,14 @@ linux-amd64:
 	@rm -f $(OUTPUT_PATH)/$(BINARY_NAME)
 	@echo $@ build completed.
 
+.PHONY: linux-amd64v3
+linux-amd64v3:
+	@rm -f $(OUTPUT_PATH)/$(BINARY_NAME).$@.tar.gz
+	@CGO_ENABLE=0 GOOS=linux GOARCH=amd64 GOAMD64=v3 go build -ldflags '$(LDFLAGS)' -o $(OUTPUT_PATH)/$(BINARY_NAME) $(CODE_FILE)
+	@tar -czvf $(OUTPUT_PATH)/$(BINARY_NAME).$@.tar.gz -C $(OUTPUT_PATH) $(BINARY_NAME) >/dev/null
+	@rm -f $(OUTPUT_PATH)/$(BINARY_NAME)
+	@echo $@ build completed.
+
 .PHONY: linux-arm64
 linux-arm64:
 	@rm -f $(OUTPUT_PATH)/$(BINARY_NAME).$@.tar.gz
@@ -67,6 +75,14 @@ linux-armv7:
 windows-amd64:
 	@rm -f $(OUTPUT_PATH)/$(BINARY_NAME).$@.tar.gz
 	@CGO_ENABLE=0 GOOS=windows GOARCH=amd64 go build -ldflags '$(LDFLAGS)' -o $(OUTPUT_PATH)/$(BINARY_NAME).exe $(CODE_FILE)
+	@tar -czvf $(OUTPUT_PATH)/$(BINARY_NAME).$@.tar.gz -C $(OUTPUT_PATH) $(BINARY_NAME).exe >/dev/null
+	@rm -f $(OUTPUT_PATH)/$(BINARY_NAME).exe
+	@echo $@ build completed.
+
+.PHONY: windows-amd64v3
+windows-amd64v3:
+	@rm -f $(OUTPUT_PATH)/$(BINARY_NAME).$@.tar.gz
+	@CGO_ENABLE=0 GOOS=windows GOARCH=amd64 GOAMD64=v3 go build -ldflags '$(LDFLAGS)' -o $(OUTPUT_PATH)/$(BINARY_NAME).exe $(CODE_FILE)
 	@tar -czvf $(OUTPUT_PATH)/$(BINARY_NAME).$@.tar.gz -C $(OUTPUT_PATH) $(BINARY_NAME).exe >/dev/null
 	@rm -f $(OUTPUT_PATH)/$(BINARY_NAME).exe
 	@echo $@ build completed.
