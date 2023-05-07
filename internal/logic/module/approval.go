@@ -25,13 +25,13 @@ func (s *sModule) TryApproveAddGroup(ctx context.Context) (catch bool) {
 	userId := service.Bot().GetUserId(ctx)
 	var extra string
 	// 处理
-	if _, ok := process[consts.RegexpCmd]; ok {
-		// 正则表达式
-		pass, extra = isMatchRegexp(ctx, groupId, comment)
-	}
-	if _, ok := process[consts.McCmd]; ok && pass {
+	if _, ok := process[consts.McCmd]; ok {
 		// mc 正版验证
 		pass, extra = verifyMinecraftGenuine(ctx, comment)
+	}
+	if _, ok := process[consts.RegexpCmd]; ok && pass {
+		// 正则表达式
+		pass, extra = isMatchRegexp(ctx, groupId, comment)
 	}
 	if _, ok := process[consts.WhitelistCmd]; ok && pass {
 		// 白名单
