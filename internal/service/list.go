@@ -13,6 +13,7 @@ type (
 	IList interface {
 		AddListWithRes(ctx context.Context, listName, namespace string)
 		RemoveListWithRes(ctx context.Context, listName string)
+		QueryListLenWithRes(ctx context.Context, listName string)
 		QueryListWithRes(ctx context.Context, listName string, keys ...string)
 		GetListData(ctx context.Context, listName string) (listMap map[string]any)
 		AddListDataWithRes(ctx context.Context, listName, key string, value ...string)

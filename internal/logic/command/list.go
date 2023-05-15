@@ -13,18 +13,22 @@ func tryList(ctx context.Context, cmd string) (catch bool) {
 		case "join":
 			// /list join <>
 			catch = tryListJoin(ctx, next[2])
+		case "len":
+			// /list len <list_name>
+			service.List().QueryListLenWithRes(ctx, next[2])
+			catch = true
 		case "query":
 			// /list query <>
 			catch = tryListQuery(ctx, next[2])
+		case "leave":
+			// /list leave <>
+			catch = tryListLeave(ctx, next[2])
 		case "append":
 			// /list append <>
 			catch = tryListAppend(ctx, next[2])
 		case "set":
 			// /list set <>
 			catch = tryListSet(ctx, next[2])
-		case "leave":
-			// /list leave <>
-			catch = tryListLeave(ctx, next[2])
 		case "reset":
 			// /list reset <list_name>
 			service.List().ResetListDataWithRes(ctx, next[2])

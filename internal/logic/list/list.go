@@ -97,6 +97,31 @@ func (s *sList) RemoveListWithRes(ctx context.Context, listName string) {
 	service.Bot().SendPlainMsg(ctx, "已删除 list("+listName+")")
 }
 
+func (s *sList) QueryListLenWithRes(ctx context.Context, listName string) {
+	// 参数合法性校验
+	if !legalListNameRe.MatchString(listName) {
+		return
+	}
+	// 获取 list
+	lEntity := getList(ctx, listName)
+	if lEntity == nil {
+		return
+	}
+	// 权限校验
+	if !service.Namespace().IsNamespaceOwnerOrAdmin(ctx, lEntity.Namespace, service.Bot().GetUserId(ctx)) {
+		return
+	}
+	// 数据处理
+	listJson, err := sj.NewJson([]byte(lEntity.ListJson))
+	if err != nil {
+		g.Log().Error(ctx, err)
+		return
+	}
+	listMap := listJson.MustMap(make(map[string]any))
+	// 回执
+	service.Bot().SendPlainMsg(ctx, "list("+listName+") 共 "+gconv.String(len(listMap))+" 条")
+}
+
 func (s *sList) QueryListWithRes(ctx context.Context, listName string, keys ...string) {
 	// 参数合法性校验
 	if !legalListNameRe.MatchString(listName) {
