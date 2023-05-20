@@ -10,7 +10,9 @@ bin/
 **/.DS_Store
 main
 output/
-manifest/
+manifest/build/
+manifest/config/
+manifest/log/
 temp/
 
 hack/config.yaml
