@@ -11,17 +11,18 @@ import (
 
 type (
 	IList interface {
+		GetListData(ctx context.Context, listName string) (listMap map[string]any)
+		AppendListData(ctx context.Context, listName string, newMap map[string]any) (n int, err error)
 		AddListWithRes(ctx context.Context, listName, namespace string)
 		RemoveListWithRes(ctx context.Context, listName string)
+		ExportListWithRes(ctx context.Context, listName string)
 		QueryListLenWithRes(ctx context.Context, listName string)
 		QueryListWithRes(ctx context.Context, listName string, keys ...string)
-		GetListData(ctx context.Context, listName string) (listMap map[string]any)
 		AddListDataWithRes(ctx context.Context, listName, key string, value ...string)
 		RemoveListDataWithRes(ctx context.Context, listName, key string)
 		ResetListDataWithRes(ctx context.Context, listName string)
 		SetListDataWithRes(ctx context.Context, listName, newListStr string)
 		AppendListDataWithRes(ctx context.Context, listName, newListStr string)
-		AppendListData(ctx context.Context, listName string, newMap map[string]any) (n int, err error)
 	}
 )
 

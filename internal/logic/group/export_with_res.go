@@ -1,0 +1,75 @@
+package group
+
+import (
+	"context"
+	"github.com/gogf/gf/v2/frame/g"
+	"github.com/gogf/gf/v2/os/gtime"
+	"github.com/gogf/gf/v2/util/gconv"
+	"qq-bot-backend/internal/service"
+)
+
+func (s *sGroup) ExportGroupMemberListWithRes(ctx context.Context, groupId int64, listName string) {
+	// 参数合法性校验
+	if groupId < 1 {
+		return
+	}
+	// 权限校验
+	if !service.Bot().IsGroupOwnerOrAdmin(ctx) {
+		return
+	}
+	// 获取 group
+	gEntity := getGroup(ctx, groupId)
+	if gEntity == nil {
+		return
+	}
+	// 权限校验
+	if !service.Namespace().IsNamespaceOwnerOrAdmin(ctx, gEntity.Namespace, service.Bot().GetUserId(ctx)) {
+		return
+	}
+	// 是否存在 list
+	lists := service.Namespace().GetNamespaceList(ctx, gEntity.Namespace)
+	if _, ok := lists[listName]; !ok {
+		service.Bot().SendPlainMsg(ctx, "在 namespace("+gEntity.Namespace+") 中未找到 list("+listName+")")
+		return
+	}
+	// callback
+	callback := func(ctx context.Context, rsyncCtx context.Context) {
+		if service.Bot().DefaultEchoProcess(ctx, rsyncCtx) {
+			return
+		}
+		// 获取群成员列表
+		membersJson := service.Bot().GetData(rsyncCtx)
+		if membersJson == nil {
+			// 空列表
+			service.Bot().SendPlainMsg(ctx, "获取到空的群成员列表")
+			return
+		}
+		// 局部变量
+		membersArr := membersJson.MustArray()
+		membersMap := make(map[string]any)
+		// 解析数组
+		for _, v := range membersArr {
+			// map 断言
+			if vv, ok := v.(map[string]any); ok {
+				// 写入数据
+				membersMap[gconv.String(vv["user_id"])] = struct {
+					JoinTime string `json:"join_time"`
+				}{
+					JoinTime: gtime.New(gconv.Int(vv["join_time"])).String(),
+				}
+			}
+		}
+		// 保存数据
+		totalLen, err := service.List().AppendListData(ctx, listName, membersMap)
+		if err != nil {
+			g.Log().Error(ctx, err)
+			return
+		}
+		// 回执
+		service.Bot().SendPlainMsg(ctx,
+			"已将 group("+gconv.String(groupId)+") 的 member 导出到 list("+listName+") "+
+				gconv.String(len(membersMap))+" 条\n共 "+gconv.String(totalLen)+" 条")
+	}
+	// 异步获取群成员列表
+	service.Bot().GetGroupMemberList(ctx, groupId, callback)
+}

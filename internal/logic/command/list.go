@@ -23,6 +23,10 @@ func tryList(ctx context.Context, cmd string) (catch bool) {
 		case "leave":
 			// /list leave <>
 			catch = tryListLeave(ctx, next[2])
+		case "export":
+			// /list export <list_name>
+			service.List().ExportListWithRes(ctx, next[2])
+			catch = true
 		case "append":
 			// /list append <>
 			catch = tryListAppend(ctx, next[2])

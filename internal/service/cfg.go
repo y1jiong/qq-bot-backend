@@ -12,9 +12,10 @@ import (
 
 type (
 	ICfg interface {
+		GetRetryIntervalSeconds(ctx context.Context) time.Duration
+		GetUrlPrefix(ctx context.Context) (urlPrefix string, err error)
 		IsEnabledDebug(ctx context.Context) bool
 		GetDebugToken(ctx context.Context) string
-		GetRetryIntervalMilliseconds(ctx context.Context) time.Duration
 	}
 )
 

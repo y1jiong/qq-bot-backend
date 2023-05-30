@@ -7,6 +7,7 @@ import (
 	"github.com/gogf/gf/v2/os/gcmd"
 	"qq-bot-backend/internal/consts"
 	"qq-bot-backend/internal/controller"
+	"qq-bot-backend/internal/service"
 )
 
 var (
@@ -18,6 +19,10 @@ var (
 			s.Group("/ws", func(group *ghttp.RouterGroup) {
 				group.Middleware(ghttp.MiddlewareHandlerResponse)
 				group.Bind(controller.Bot.Websocket)
+			})
+			s.Group("/file/{id}", func(group *ghttp.RouterGroup) {
+				group.Middleware(service.Middleware().ErrCodeToHttpStatus)
+				group.Bind(controller.File.GetCachedFileFromId)
 			})
 			s.Run()
 			return

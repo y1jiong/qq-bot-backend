@@ -132,11 +132,11 @@ func (s *sModule) TryKeywordReply(ctx context.Context) (catch bool) {
 		return
 	}
 	// 获取 list
-	list := service.List().GetListData(ctx, listName)
+	listMap := service.List().GetListData(ctx, listName)
 	// 获取聊天信息
 	msg := service.Bot().GetMessage(ctx)
 	// 匹配关键词
-	if contains, _, value := service.Module().MultiContains(msg, list); contains && value != "" {
+	if contains, _, value := service.Module().MultiContains(msg, listMap); contains && value != "" {
 		// 匹配成功，回复
 		pre := "[CQ:at,qq=" + gconv.String(service.Bot().GetUserId(ctx)) + "]" + value
 		service.Bot().SendMsg(ctx, pre)

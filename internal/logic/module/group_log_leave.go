@@ -14,9 +14,11 @@ func (s *sModule) TryLogLeave(ctx context.Context) (catch bool) {
 	listName := service.Group().GetLogLeaveList(ctx, groupId)
 	// 预处理
 	if listName == "" {
-		// 没有设置离群记录 list
+		// 没有设置 leave list
 		return
 	}
+	// 处理
+	catch = true
 	action := service.Bot().GetSubType(ctx)
 	userId := service.Bot().GetUserId(ctx)
 	operatorId := service.Bot().GetOperatorId(ctx)
@@ -44,6 +46,5 @@ func (s *sModule) TryLogLeave(ctx context.Context) (catch bool) {
 		userId,
 		groupId,
 		operatorId)
-	catch = true
 	return
 }

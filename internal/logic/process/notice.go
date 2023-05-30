@@ -16,6 +16,7 @@ func processNotice(ctx context.Context) {
 		service.Module().TryLogLeave(ctx)
 	case "group_increase":
 		// 群成员增加
+		service.Module().TryAutoSetCard(ctx)
 	case "group_ban":
 		// 群成员禁言
 	case "friend_add":
@@ -26,6 +27,7 @@ func processNotice(ctx context.Context) {
 		// 好友消息撤回
 	case "group_card":
 		// 群名片变更
+		service.Module().TryLockCard(ctx)
 	case "offline_file":
 		// 离线文件上传
 	case "client_status":

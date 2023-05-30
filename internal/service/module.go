@@ -12,6 +12,8 @@ import (
 type (
 	IModule interface {
 		TryApproveAddGroup(ctx context.Context) (catch bool)
+		TryLockCard(ctx context.Context) (catch bool)
+		TryAutoSetCard(ctx context.Context) (catch bool)
 		TryKeywordRevoke(ctx context.Context) (catch bool)
 		TryKeywordReply(ctx context.Context) (catch bool)
 		TryLogLeave(ctx context.Context) (catch bool)

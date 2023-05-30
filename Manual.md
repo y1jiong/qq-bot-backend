@@ -1,6 +1,6 @@
 # Manual
 
-v1.2
+v1.3
 
 {required} [optional]
 
@@ -15,6 +15,7 @@ v1.2
 | /list leave {list_name} {key}        | 将 key 从 list_name 中移除（key 包含**空格**请用`%20`转义替换，包含**%**请用`%25`转义替换） | 同上                                             |
 | /list len {list_name}                | 查询 list_name 里共有多少条数据                              | 同上                                             |
 | /list query {list_name} [key]        | 查询 list_name 或者 list_name 内的 key（key 包含**空格**请用`%20`转义替换，包含**%**请用`%25`转义替换） | 同上                                             |
+| /list export {list_name}             | 将 list_name 以文件的方式导出                                | 同上                                             |
 | /list append {list_name} {json}      | 用 json 追加 list_name 的数据                                | 同上                                             |
 | /list set {list_name} {json}         | 用 json 覆盖 list_name 的数据                                | 同上                                             |
 | /list reset {list_name}              | 重置 list_name 的数据                                        | 同上                                             |
@@ -27,6 +28,7 @@ v1.2
 | /group bind {namespace} | 将当前 group 绑定到 namespace 中（会重置当前 group 的所有配置） | 需要 group admin 和 namespace admin 及以上权限 |
 | /group unbind           | 解除当前 group 的绑定                                        | 同上                                           |
 | /group query            | 查询当前 group 的配置                                        | 需要 namespace admin 及以上权限                |
+| /group kick {list_name} | 用 list_name 把当前 group 的成员踢出                         | 需要 group admin 和 namespace admin 及以上权限 |
 
 
 ## Group Approval
@@ -64,12 +66,23 @@ v1.2
 | /group keyword disable blacklist         | 关键词检查禁用黑名单                                         | 同上                                           |
 | /group keyword disable whitelist         | 关键词检查禁用白名单                                         | 同上                                           |
 
+## Group Card
+
+| Command                                              | Description                                                  | Comment                                        |
+| ---------------------------------------------------- | ------------------------------------------------------------ | ---------------------------------------------- |
+| /group card check {list_name} with {regexp}          | 使用 regexp 正则匹配群名片，将不匹配的成员写入 list_name 中  | 需要 group admin 和 namespace admin 及以上权限 |
+| /group card check {to_list_name} by {from_list_name} | 使用 from_list_name uid:card 匹配群名片，将不匹配的成员写入 to_list_name 中 | 同上                                           |
+| /group card set auto_set {list_name}                 | 设置入群自动修改群名片 list_name；若不包含，那么不修改       | 同上                                           |
+| /group card rm auto_set                              | 清除设置的自动修改群名片 list_name                           | 同上                                           |
+| /group card lock                                     | 锁定群名片，不让修改（实验性功能）                           | 同上                                           |
+| /group card unlock                                   | 解锁群名片（实验性功能）                                     | 同上                                           |
+
 ## Group Log
 
 | Command                          | Description            | Comment                                        |
 | -------------------------------- | ---------------------- | ---------------------------------------------- |
-| /group log leave set {list_name} | 设置离群记录 list_name | 需要 group admin 和 namespace admin 及以上权限 |
-| /group log leave rm              | 移除离群记录 list_name | 同上                                           |
+| /group log set leave {list_name} | 设置离群记录 list_name | 需要 group admin 和 namespace admin 及以上权限 |
+| /group log rm leave              | 移除离群记录 list_name | 同上                                           |
 
 ## Group Export
 

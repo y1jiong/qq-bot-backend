@@ -92,13 +92,17 @@ func (s *sBot) catchEcho(ctx context.Context) (catch bool) {
 	return
 }
 
-func (s *sBot) DefaultEchoProcess(ctx context.Context, rsyncCtx context.Context) {
-	switch s.GetEchoStatus(rsyncCtx) {
-	case "async":
-		s.SendPlainMsg(ctx, "已提交 async 处理")
-	case "failed":
-		s.SendPlainMsg(ctx, s.GetEchoFailedMsg(rsyncCtx))
+func (s *sBot) DefaultEchoProcess(ctx context.Context, rsyncCtx context.Context) (exit bool) {
+	if s.GetEchoStatus(rsyncCtx) != "ok" {
+		exit = true
+		switch s.GetEchoStatus(rsyncCtx) {
+		case "async":
+			s.SendPlainMsg(ctx, "已提交 async 处理")
+		case "failed":
+			s.SendPlainMsg(ctx, s.GetEchoFailedMsg(rsyncCtx))
+		}
 	}
+	return
 }
 
 func (s *sBot) IsGroupOwnerOrAdmin(ctx context.Context) (yes bool) {

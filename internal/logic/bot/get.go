@@ -73,7 +73,7 @@ func (s *sBot) GetOperatorId(ctx context.Context) int64 {
 	return s.reqJsonFromCtx(ctx).Get("operator_id").MustInt64()
 }
 
-func (s *sBot) GetGroupMemberList(ctx context.Context, groupId int64, callback func(ctx context.Context, lastCtx context.Context)) {
+func (s *sBot) GetGroupMemberList(ctx context.Context, groupId int64, callback func(ctx context.Context, lastCtx context.Context), noCache ...bool) {
 	// 初始化响应
 	resJson := sj.New()
 	resJson.Set("action", "get_group_member_list")
@@ -83,6 +83,9 @@ func (s *sBot) GetGroupMemberList(ctx context.Context, groupId int64, callback f
 	// 参数
 	params := make(map[string]any)
 	params["group_id"] = gconv.String(groupId)
+	if len(noCache) > 0 && noCache[0] {
+		params["no_cache"] = "true"
+	}
 	// 参数打包
 	resJson.Set("params", params)
 	res, err := resJson.Encode()
@@ -103,6 +106,8 @@ func (s *sBot) GetGroupMemberList(ctx context.Context, groupId int64, callback f
 	}
 }
 
-func (s *sBot) GetData(ctx context.Context) *sj.Json {
-	return s.reqJsonFromCtx(ctx).Get("data")
+func (s *sBot) GetCardOldNew(ctx context.Context) (oldCard, newCard string) {
+	oldCard = s.reqJsonFromCtx(ctx).Get("card_old").MustString()
+	newCard = s.reqJsonFromCtx(ctx).Get("card_new").MustString()
+	return
 }
