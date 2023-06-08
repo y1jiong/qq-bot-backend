@@ -206,212 +206,103 @@ mjx-container { break-inside: avoid; }
 
 
 :root {
-  --mermaid-theme: night;
+	--text-color: #c8d1d9;
+	--bg-color: #0d1117;
+	--side-bar-bg-color: #0d1117;
+	--control-text-color: #a9aaab;
+	--primary-color: #f9826c;
+	--primary-btn-border-color: #f9826c;
+	--active-file-text-color: inherit;
+	--active-file-border-color: #f9826c;
+	--active-file-bg-color: #0d1117;
+	--primary-btn-text-color: #f9826c;
+	--window-border: 0 solid #0d1117;
+	--item-hover-bg-color: #161b22;
+	--item-hover-text-color: #f9826c;
+	--meta-content-color: #f9826c;
+	--search-select-text-color: #f9826c;
+	--control-text-color: var(--text-color);
+	--control-text-hover-color: var(--text-color);
+	--heading-char-color: #f9826c;
+	--active-toggle-btn-color: #192133;
+	--blur-text-color: rgba(200, 200, 200, 0.33);
+	--rawblock-edit-panel-bd: var(--item-hover-bg-color) !important;
+	--select-text-bg-color: rgba(53, 82, 116, 0.97) !important;
+	--select-text-font-color: #fff !important;
+	--color-border-secondary: #21262d !important;
+	--mermaid-node-color: #b87f62 !important;
+	--mermaid-node-border: #bd7958;
+	--mermaid-contrast-color: #afe61d;
+	--mermaid-theme: dark;
+	--monospace: ui-monospace,
+		Menlo, Monaco,
+		"Cascadia Mono", "Segoe UI Mono",
+		"Roboto Mono",
+		"Oxygen Mono",
+		"Ubuntu Monospace",
+		"Source Code Pro",
+		"Fira Mono",
+		"Droid Sans Mono",
+		"Courier New", monospace;
 }
 
-[lang='mermaid'] .label {
-  color: #333;
+.pane-group {
+	background-color: var(--bg-color);
 }
 
-/* CSS Document */
-
-/** code highlight */
-
-.cm-s-inner .cm-variable,
-.cm-s-inner .cm-operator,
-.cm-s-inner .cm-property {
-    color: #b8bfc6;
+.dropdown-menu {
+	background-color: var(--bg-color) !important;
+	border: 1px solid var(--item-hover-bg-color) !important;
+	color: #8b949e !important;
 }
 
-.cm-s-inner .cm-keyword {
-    color: #C88FD0;
+.dropdown-menu>li>a {
+	border-left: 1px solid var(--bg-color);
+	border-right: 1px solid var(--bg-color);
+	color: var(--text-color) !important;
 }
 
-.cm-s-inner .cm-tag {
-    color: #7DF46A;
+.dropdown-menu>li>a:hover {
+	background-color: var(--item-hover-bg-color);
+	border-left: 1px solid var(--bg-color);
+	border-right: 1px solid var(--bg-color);
+	color: var(--text-color) !important;
 }
 
-.cm-s-inner .cm-attribute {
-    color: #7575E4;
-}
-
-.CodeMirror div.CodeMirror-cursor {
-    border-left: 1px solid #b8bfc6;
-    z-index: 3;
-}
-
-.cm-s-inner .cm-string {
-    color: #D26B6B;
-}
-
-.cm-s-inner .cm-comment,
-.cm-s-inner.cm-comment {
-    color: #DA924A;
-}
-
-.cm-s-inner .cm-header,
-.cm-s-inner .cm-def,
-.cm-s-inner.cm-header,
-.cm-s-inner.cm-def {
-    color: #8d8df0;
-}
-
-.cm-s-inner .cm-quote,
-.cm-s-inner.cm-quote {
-    color: #57ac57;
-}
-
-.cm-s-inner .cm-hr {
-    color: #d8d5d5;
-}
-
-.cm-s-inner .cm-link {
-    color: #d3d3ef;
-}
-
-.cm-s-inner .cm-negative {
-    color: #d95050;
-}
-
-.cm-s-inner .cm-positive {
-    color: #50e650;
-}
-
-.cm-s-inner .cm-string-2 {
-    color: #f50;
-}
-
-.cm-s-inner .cm-meta,
-.cm-s-inner .cm-qualifier {
-    color: #b7b3b3;
-}
-
-.cm-s-inner .cm-builtin {
-    color: #f3b3f8;
-}
-
-.cm-s-inner .cm-bracket {
-    color: #997;
-}
-
-.cm-s-inner .cm-atom,
-.cm-s-inner.cm-atom {
-    color: #84B6CB;
-}
-
-.cm-s-inner .cm-number {
-    color: #64AB8F;
-}
-
-.cm-s-inner .cm-variable {
-    color: #b8bfc6;
-}
-
-.cm-s-inner .cm-variable-2 {
-    color: #9FBAD5;
-}
-
-.cm-s-inner .cm-variable-3 {
-    color: #1cc685;
-}
-
-.CodeMirror-selectedtext,
-.CodeMirror-selected {
-    background: #4a89dc;
-    color: #fff !important;
-    text-shadow: none;
-}
-
-.CodeMirror-gutters {
-    border-right: none;
-}
-
-/* CSS Document */
-
-/** markdown source **/
-.cm-s-typora-default .cm-header, 
-.cm-s-typora-default .cm-property
-{
-    color: #cebcca;
-}
-
-.CodeMirror.cm-s-typora-default div.CodeMirror-cursor{
-    border-left: 3px solid #b8bfc6;
-}
-
-.cm-s-typora-default .cm-comment {
-    color: #9FB1FF;
-}
-
-.cm-s-typora-default .cm-string {
-    color: #A7A7D9
-}
-
-.cm-s-typora-default .cm-atom, .cm-s-typora-default .cm-number {
-    color: #848695;
-    font-style: italic;
-}
-
-.cm-s-typora-default .cm-link {
-    color: #95B94B;
-}
-
-.cm-s-typora-default .CodeMirror-activeline-background {
-    background: rgba(51, 51, 51, 0.72);
-}
-
-.cm-s-typora-default .cm-comment, .cm-s-typora-default .cm-code {
-	color: #8aa1e1;
-}@import "";
-@import "";
-@import "";
-
-:root {
-    --bg-color:  #363B40;
-    --side-bar-bg-color: #2E3033;
-    --text-color: #b8bfc6;
-
-    --select-text-bg-color:#4a89dc;
-
-    --item-hover-bg-color: #0a0d16;
-    --control-text-color: #b7b7b7;
-    --control-text-hover-color: #eee;
-    --window-border: 1px solid #555;
-
-    --active-file-bg-color: rgb(34, 34, 34);
-    --active-file-border-color: #8d8df0;
-
-    --primary-color: #a3d5fe;
-
-    --active-file-text-color: white;
-    --item-hover-bg-color: #70717d;
-    --item-hover-text-color: white;
-    --primary-color: #6dc1e7;
-
-    --rawblock-edit-panel-bd: #333;
-
-    --search-select-bg-color: #428bca;
-}
-
-html {
-    font-size: 16px;
-    -webkit-font-smoothing: antialiased;
-}
-
-html,
 body {
-    -webkit-text-size-adjust: 100%;
-    -ms-text-size-adjust: 100%;
-    background: #363B40;
-    background: var(--bg-color);
-    fill: currentColor;
-    line-height: 1.625rem;
+	line-height: 1.5;
+	font-family: system-ui,
+		-apple-system, BlinkMacSystemFont,
+		"Segoe UI",
+		"Roboto",
+		"Oxygen",
+		"Ubuntu",
+		"Cantarell",
+		"Fira Sans",
+		"Droid Sans",
+		"Helvetica Neue",
+		Arial, sans-serif;
+	font-weight: 500;
 }
 
 #write {
-    max-width: 914px;
+	background-color: var(--bg-color) !important;
+	font-family: system-ui,
+		-apple-system, BlinkMacSystemFont,
+		"Segoe UI",
+		"Roboto",
+		"Oxygen",
+		"Ubuntu",
+		"Cantarell",
+		"Fira Sans",
+		"Droid Sans",
+		"Helvetica Neue",
+		Arial, sans-serif;
+	font-weight: 500;
+	max-width: 860px;
+	margin: 0 auto;
+	padding: 30px;
 }
-
 
 @media only screen and (min-width: 1400px) {
 	#write {
@@ -425,43 +316,14 @@ body {
 	}
 }
 
-html,
-body,
-button,
-input,
-select,
-textarea,
-div.code-tooltip-content {
-    color: #b8bfc6;
-    border-color: transparent;
+#write>ul:first-child,
+#write>ol:first-child {
+	font-weight: 500;
+	margin-top: 30px;
 }
 
-div.code-tooltip,
-.md-hover-tip .md-arrow:after {
-    background: #333;
-}
-
-.native-window #md-notification {
-    border: 1px solid #70717d;
-}
-
-.popover.bottom > .arrow:after {
-    border-bottom-color: #333;
-}
-
-html,
-body,
-button,
-input,
-select,
-textarea {
-    font-family: "Helvetica Neue", Helvetica, Arial, 'Segoe UI Emoji', sans-serif;
-}
-
-hr {
-    height: 2px;
-    border: 0;
-    margin: 24px 0 !important;
+content {
+	background-color: var(--bg-color) !important;
 }
 
 h1,
@@ -470,925 +332,1780 @@ h3,
 h4,
 h5,
 h6 {
-    font-family: "Lucida Grande", "Corbel", sans-serif;
-    font-weight: normal;
-    clear: both;
-    -ms-word-wrap: break-word;
-    word-wrap: break-word;
-    margin: 0;
-    padding: 0;
-    color: #DEDEDE
+	color: var(--text-color);
+	font-family: system-ui,
+		-apple-system, BlinkMacSystemFont,
+		"Segoe UI",
+		"Roboto",
+		"Oxygen",
+		"Ubuntu",
+		"Cantarell",
+		"Fira Sans",
+		"Droid Sans",
+		"Helvetica Neue",
+		Arial, sans-serif;
+	font-weight: 400;
+	padding-top: 5px;
+}
+
+html {
+	font-size: 13px;
+	font-family: system-ui,
+		-apple-system, BlinkMacSystemFont,
+		"Segoe UI",
+		"Roboto",
+		"Oxygen",
+		"Ubuntu",
+		"Cantarell",
+		"Fira Sans",
+		"Droid Sans",
+		"Helvetica Neue",
+		Arial, sans-serif;
+	font-weight: 500;
+}
+
+#write {
+	text-align: left;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+	position: relative;
+	margin-top: 1rem;
+	margin-bottom: 1rem;
+	font-weight: bold;
+	line-height: 1.5;
+	cursor: text;
+}
+
+h1:hover a.anchor,
+h2:hover a.anchor,
+h3:hover a.anchor,
+h4:hover a.anchor,
+h5:hover a.anchor,
+h6:hover a.anchor {
+	text-decoration: none;
+}
+
+h1 tt,
+h1 code {
+	font-size: inherit;
+}
+
+h2 tt,
+h2 code {
+	font-size: inherit;
+}
+
+h3 tt,
+h3 code {
+	font-size: inherit;
+}
+
+h4 tt,
+h4 code {
+	font-size: inherit;
+}
+
+h5 tt,
+h5 code {
+	font-size: inherit;
+}
+
+h6 tt,
+h6 code {
+	font-size: inherit;
 }
 
 h1 {
-    font-size: 2.5rem;
-    /* 36px */
-    line-height: 2.75rem;
-    /* 40px */
-    margin-bottom: 1.5rem;
-    /* 24px */
-    letter-spacing: -1.5px;
+	font-size: 2.6rem;
+	padding-bottom: .15rem;
+	border-bottom: 1px solid var(--color-border-secondary);
 }
 
 h2 {
-    font-size: 1.63rem;
-    /* 24px */
-    line-height: 1.875rem;
-    /* 30px */
-    margin-bottom: 1.5rem;
-    /* 24px */
-    letter-spacing: -1px;
-    font-weight: bold;
+	font-size: 1.9rem;
+	padding-bottom: .15rem;
+	border-bottom: 1px solid var(--color-border-secondary);
 }
 
 h3 {
-    font-size: 1.17rem;
-    /* 18px */
-    line-height: 1.5rem;
-    /* 24px */
-    margin-bottom: 1.5rem;
-    /* 24px */
-    letter-spacing: -1px;
-    font-weight: bold;
+	font-size: 1.7rem;
 }
 
 h4 {
-    font-size: 1.12rem;
-    /* 16px */
-    line-height: 1.375rem;
-    /* 22px */
-    margin-bottom: 1.5rem;
-    /* 24px */
-    color: white;
+	font-size: 1.4rem;
 }
 
 h5 {
-    font-size: 0.97rem;
-    /* 16px */
-    line-height: 1.25rem;
-    /* 22px */
-    margin-bottom: 1.5rem;
-    /* 24px */
-    font-weight: bold;
+	font-size: 1.2rem;
 }
 
 h6 {
-    font-size: 0.93rem;
-    /* 16px */
-    line-height: 1rem;
-    /* 16px */
-    margin-bottom: 0.75rem;
-    color: white;
+	font-size: 1rem;
+	color: rgb(139, 148, 158);
 }
 
-@media (min-width: 980px) {
-    h3.md-focus:before,
-    h4.md-focus:before,
-    h5.md-focus:before,
-    h6.md-focus:before {
-        color: #ddd;
-        border: 1px solid #ddd;
-        border-radius: 3px;
-        position: absolute;
-        left: -1.642857143rem;
-        top: .357142857rem;
-        float: left;
-        font-size: 9px;
-        padding-left: 2px;
-        padding-right: 2px;
-        vertical-align: bottom;
-        font-weight: normal;
-        line-height: normal;
-    }
-
-    h3.md-focus:before {
-        content: 'h3';
-    }
-
-    h4.md-focus:before {
-        content: 'h4';
-    }
-
-    h5.md-focus:before {
-        content: 'h5';
-        top: 0px;
-    }
-
-    h6.md-focus:before {
-        content: 'h6';
-        top: 0px;
-    }
-}
-
-a {
-    text-decoration: none;
-    outline: 0;
-}
-
-a:hover {
-    outline: 0;
-}
-
-a:focus {
-    outline: thin dotted;
-}
-
-sup.md-footnote {
-    background-color: #555;
-    color: #ddd;
+h1.md-focus:before,
+h2.md-focus:before,
+h3.md-focus:before,
+h4.md-focus:before,
+h5.md-focus:before,
+h6.md-focus:before {
+	content: '';
+	border: 0;
 }
 
 p {
-    -ms-word-wrap: break-word;
-    word-wrap: break-word;
-}
-
-p,
-ul,
-dd,
-ol,
-hr,
-address,
-pre,
-table,
-iframe,
-.wp-caption,
-.wp-audio-shortcode,
-.wp-video-shortcode {
-    margin-top: 0;
-    margin-bottom: 1.5rem;
-    /* 24px */
-}
-
-audio:not([controls]) {
-    display: none;
-}
-
-[hidden] {
-    display: none;
-}
-
-::-moz-selection {
-    background: #4a89dc;
-    color: #fff;
-    text-shadow: none;
-}
-
-*.in-text-selection,
-::selection {
-    background: #4a89dc;
-    color: #fff;
-    text-shadow: none;
-}
-
-ul,
-ol {
-    padding: 0 0 0 1.875rem;
-    /* 30px */
-}
-
-ul {
-    list-style: square;
-}
-
-ol {
-    list-style: decimal;
-}
-
-ul ul,
-ol ol,
-ul ol,
-ol ul {
-    margin: 0;
-}
-
-b,
-th,
-dt,
-strong {
-    font-weight: bold;
-}
-
-i,
-em,
-dfn,
-cite {
-    font-style: italic;
-}
-
-blockquote {
-    padding-left: 1.875rem;
-    margin: 0 0 1.875rem 1.875rem;
-    border-left: solid 2px #474d54;
-    padding-left: 30px;
-    margin-top: 35px;
-}
-
-pre,
-code,
-kbd,
-tt,
-var {
-    font-size: 0.875em;
-    font-family: Monaco, Consolas, "Andale Mono", "DejaVu Sans Mono", monospace;
-}
-
-code,
-tt,
-var {
-    background: rgba(0, 0, 0, 0.05);
+	color: var(--text-color);
+	line-height: 1.20rem;
+	margin: 0 0 1.25rem;
 }
 
 kbd {
-    padding: 2px 4px;
-    font-size: 90%;
-    color: #fff;
-    background-color: #333;
-    border-radius: 3px;
-    box-shadow: inset 0 -1px 0 rgba(0,0,0,.25);
+	display: inline-block;
+	padding: 3px 5px;
+	font: 11px ui-monospace,
+		Menlo, Monaco,
+		"Cascadia Mono", "Segoe UI Mono",
+		"Roboto Mono",
+		"Oxygen Mono",
+		"Ubuntu Monospace",
+		"Source Code Pro",
+		"Fira Mono",
+		"Droid Sans Mono",
+		"Courier New", monospace;
+	line-height: 10px;
+	color: #b1bac4;
+	vertical-align: middle;
+	background-color: var(--bg-color);
+	border-bottom-color: #6e7681;
+	border: 1px solid #6e7681;
+	border-radius: 6px;
+	box-shadow: inset 0 -1px 0 #6e7681;
 }
 
-pre.md-fences {
-    padding: 10px 10px 10px 30px;
-    margin-bottom: 20px;
-    background: #333;
-}
-
-.CodeMirror-gutters {
-    background: #333;
-    border-right: 1px solid transparent;
-}
-
-.enable-diagrams pre.md-fences[lang="sequence"] .code-tooltip,
-.enable-diagrams pre.md-fences[lang="flow"] .code-tooltip,
-.enable-diagrams pre.md-fences[lang="mermaid"] .code-tooltip {
-    bottom: -2.2em;
-    right: 4px;
-}
-
-code,
-kbd,
-tt,
-var {
-    padding: 2px 5px;
+p {
+	font-size: 1.25rem;
+	line-height: 1.5;
 }
 
 table {
-    max-width: 100%;
-    width: 100%;
-    border-collapse: collapse;
-    border-spacing: 0;
+	font-size: 1.25rem;
 }
 
-th,
-td {
-    padding: 5px 10px;
-    vertical-align: top;
-}
 
-a {
-    -webkit-transition: all .2s ease-in-out;
-    transition: all .2s ease-in-out;
-}
-
-hr {
-    background: #474d54;
-    /* variable */
-}
-
-h1 {
-    margin-top: 2em;
-}
-
-a {
-    color: #e0e0e0;
-    text-decoration: underline;
+a,
+.md-def-url {
+	color: #58a6ff;
+	text-decoration: none;
 }
 
 a:hover {
-    color: #fff;
+	color: #58a6ff;
+	text-decoration: underline;
 }
 
-.md-inline-math script {
-    color: #81b1db;
+/* Summary */
+.md-toc {
+	margin-left: 0;
+	margin-right: 0;
 }
 
-b,
-th,
-dt,
-strong {
-    color: #DEDEDE;
-    /* variable */
-}
-
-mark {
-    background: #D3D40E;
-}
-
-blockquote {
-    color: #9DA2A6;
-}
-
-table a {
-    color: #DEDEDE;
-    /* variable */
-}
-
-th,
-td {
-    border: solid 1px #474d54;
-    /* variable */
-}
-
-.task-list {
-    padding-left: 0;
-}
-
-.md-task-list-item {
-    padding-left: 1.25rem;
-}
-
-.md-task-list-item > input {
-    top: auto;
-}
-
-.md-task-list-item > input:before {
-    content: "";
-    display: inline-block;
-    width: 0.875rem;
-    height: 0.875rem;
-    vertical-align: middle;
-    text-align: center;
-    border: 1px solid #b8bfc6;
-    background-color: #363B40;
-    margin-top: -0.4rem;
-}
-
-.md-task-list-item > input:checked:before,
-.md-task-list-item > input[checked]:before {
-    content: '\221A';
-    /*◘*/
-    font-size: 0.625rem;
-    line-height: 0.625rem;
-    color: #DEDEDE;
-}
-
-/** quick open **/
-.auto-suggest-container {
-    border: 0px;
-    background-color: #525C65;
-}
-
-#typora-quick-open {
-    background-color: #525C65;
-}
-
-#typora-quick-open input{
-    background-color: #525C65;
-    border: 0;
-    border-bottom: 1px solid grey;
-}
-
-.typora-quick-open-item {
-    background-color: inherit;
-    color: inherit;
-}
-
-.typora-quick-open-item.active,
-.typora-quick-open-item:hover {
-    background-color: #4D8BDB;
-    color: white;
-}
-
-.typora-quick-open-item:hover {
-    background-color: rgba(77, 139, 219, 0.8);
-}
-
-.typora-search-spinner > div {
-  background-color: #fff;
-}
-
-#write pre.md-meta-block {
-    border-bottom: 1px dashed #ccc;
-    background: transparent;
-    padding-bottom: 0.6em;
-    line-height: 1.6em;
-}
-
-.btn,
-.btn .btn-default {
-    background: transparent;
-    color: #b8bfc6;
-}
-
-.ty-table-edit {
-    border-top: 1px solid gray;
-    background-color: #363B40;
-}
-
-.popover-title {
-    background: transparent;
-}
-
-.md-image>.md-meta {
-    color: #BBBBBB;
-    background: transparent;
-}
-
-.md-expand.md-image>.md-meta {
-    color: #DDD;
-}
-
-#write>h3:before,
-#write>h4:before,
-#write>h5:before,
-#write>h6:before {
-    border: none;
-    border-radius: 0px;
-    color: #888;
-    text-decoration: underline;
-    left: -1.4rem;
-    top: 0.2rem;
-}
-
-#write>h3.md-focus:before {
-    top: 2px;
-}
-
-#write>h4.md-focus:before {
-    top: 2px;
-}
-
-.md-toc-item {
-    color: #A8C2DC;
+.md-toc-content {
+	background-color: var(--item-hover-bg-color) !important;
+	border-radius: 6px;
+	padding-top: 10px;
+	padding-bottom: 10px;
 }
 
 #write div.md-toc-tooltip {
-    background-color: #363B40;
+	background-color: var(--item-hover-bg-color) !important;
+	border: 1px solid var(--item-hover-bg-color);
+	padding-left: 5px;
+	font-size: 1.4rem;
+	color: var(--text-color);
 }
 
-.dropdown-menu .btn:hover,
-.dropdown-menu .btn:focus,
-.md-toc .btn:hover,
-.md-toc .btn:focus {
-    color: white;
-    background: black;
+.md-toc:focus .md-toc-content {
+	border: 1px solid var(--item-hover-bg-color);
 }
 
-#toc-dropmenu {
-    background: rgba(50, 54, 59, 0.93);
-    border: 1px solid rgba(253, 253, 253, 0.15);
+.md-delete-toc {
+	color: var(--text-color);
 }
 
-#toc-dropmenu .divider {
-    background-color: #9b9b9b;
+table {
+	margin-bottom: 20px;
+	line-height: 24px;
 }
 
-.outline-expander:before {
-    top: 2px;
+table th,
+table td {
+	padding: 8px;
+	line-height: 1.25rem;
+	vertical-align: middle;
+	border-top: 1px solid #3D454D;
 }
 
-#typora-sidebar {
-    box-shadow: none;
-    border-right: 1px dashed;
-    border-right: none;
+table th {
+	font-weight: 700;
+	padding: 6px 13px;
 }
 
-.sidebar-tabs {
-    border-bottom:0;
+table caption+thead tr:first-child th,
+table caption+thead tr:first-child td,
+table colgroup+thead tr:first-child th,
+table colgroup+thead tr:first-child td,
+table thead:first-child tr:first-child th,
+table thead:first-child tr:first-child td {
+	border-top: 0;
 }
 
-#typora-sidebar:hover .outline-title-wrapper {
-    border-left: 1px dashed;
+table tbody+tbody {
+	border-top: 2px solid #3D454D;
 }
 
-.outline-title-wrapper .btn {
-    color: inherit;
+table tr th {
+	border: 1px solid #324560;
+	border-bottom: solid 2px #3D454D;
+	border-bottom: 0;
+	font-weight: 700;
+	margin: 0;
+	padding: 10px 16px;
 }
 
-.outline-item:hover {
-    border-color: #363B40;
-    background-color: #363B40;
-    color: white;
+table tr td {
+	background: #192534;
+	border: 1px solid #3D454D;
+	margin: 0;
+	padding: 10px 16px;
 }
 
-h1.md-focus .md-attr,
-h2.md-focus .md-attr,
-h3.md-focus .md-attr,
-h4.md-focus .md-attr,
-h5.md-focus .md-attr,
-h6.md-focus .md-attr,
-.md-header-span .md-attr {
-    color: #8C8E92;
-    display: inline;
+table tr th:first-child,
+table tr td:first-child {
+	margin-top: 0;
 }
 
-.md-comment {
-    color: #5a95e3;
-    opacity: 0.8;
+table tr th:last-child,
+table tr td:last-child {
+	margin-bottom: 0;
 }
 
-.md-inline-math svg {
-    color: #b8bfc6;
+table {
+	padding: 0;
+	word-break: initial;
 }
 
-#math-inline-preview .md-arrow:after {
-    background: black;
+table tr {
+	border-top: 1px solid #3D454D;
+	margin: 0;
+	padding: 0;
 }
 
-.modal-content {
-    background: var(--bg-color);
-    border: 0;
+thead {
+	background-color: var(--bg-color);
+	color: var(--text-color);
 }
 
-.modal-title {
-    font-size: 1.5em;
+table tr th {
+	border: 1px solid #3D454D;
+	border-bottom: solid 2px #ccc;
+	border-bottom: 0;
+	font-weight: 700;
+	margin: 0;
+	padding: 10px 16px;
 }
 
-.modal-content input {
-    background-color: rgba(26, 21, 21, 0.51);
-    color: white;
+table tr td {
+	background: #192534;
+	border: 1px solid #3D454D;
+	margin: 0;
+	padding: 10px 16px;
+	line-height: 1.6rem;
 }
 
-.modal-content .input-group-addon {
-    color: white;
+table tr th:first-child,
+table tr td:first-child {
+	margin-top: 0;
 }
 
-.modal-backdrop {
-    background-color: rgba(174, 174, 174, 0.7);
+table tr th:last-child,
+table tr td:last-child {
+	margin-bottom: 0;
 }
 
-.modal-content .btn-primary {
-    border-color: var(--primary-color);
+table tr:nth-child(2n),
+table tr:nth-child(1n) td {
+	background-color: var(--item-hover-bg-color);
 }
 
-.md-table-resize-popover {
-    background-color: #333;
+table tr:nth-child(2n),
+table tr:nth-child(2n) td {
+	background-color: var(--bg-color);
 }
 
-.form-inline .input-group .input-group-addon {
-    color: white;
+.md-fences,
+tt {
+	color: var(--item-hover-bg-color);
+	font-size: 1.05rem;
+	font-weight: 500;
 }
 
-#md-searchpanel {
-    border-bottom: 1px dashed grey;
+code {
+	padding: .18rem .4rem .22rem;
+	margin: 0;
+	font-size: 1.05rem;
+	background-color: #343941;
+	border-radius: 6px;
+	font-family: ui-monospace,
+		Menlo, Monaco,
+		"Cascadia Mono", "Segoe UI Mono",
+		"Roboto Mono",
+		"Oxygen Mono",
+		"Ubuntu Monospace",
+		"Source Code Pro",
+		"Fira Mono",
+		"Droid Sans Mono",
+		"Courier New", monospace;
+	font-weight: 500;
+	line-height: 1.5;
 }
 
-/** UI for electron */
-
-.context-menu,
-#spell-check-panel,
-#footer-word-count-info {
-    background-color: #42464A;
-}
-
-.context-menu.dropdown-menu .divider,
-.dropdown-menu .divider {
-    background-color: #777777;
-    opacity: 1;
-}
-
-footer {
-    color: inherit;
-}
-
-@media (max-width: 1000px) {
-    footer {
-        border-top: none;
-    }
-    footer:hover {
-        color: inherit;
-    }
-}
-
-#file-info-file-path .file-info-field-value:hover {
-    background-color: #555;
-    color: #dedede;
-}
-
-.megamenu-content,
-.megamenu-opened header {
-    background: var(--bg-color);
-}
-
-.megamenu-menu-panel h2,
-.megamenu-menu-panel h1,
-.long-btn {
-    color: inherit;
-}
-
-.megamenu-menu-panel input[type='text'] {
-    background: inherit;
-    border: 0;
-    border-bottom: 1px solid;
-}
-
-#recent-file-panel-action-btn {
-    background: inherit;
-    border: 1px grey solid;
-}
-
-.megamenu-menu-panel .dropdown-menu > li > a {
-    color: inherit;
-    background-color: #2F353A;
-    text-decoration: none;
-}
-
-.megamenu-menu-panel table td:nth-child(1) {
-    color: inherit;
-    font-weight: bold;
-}
-
-.megamenu-menu-panel tbody tr:hover td:nth-child(1) {
-    color: white;
-}
-
-.modal-footer .btn-default, 
-.modal-footer .btn-primary,
-.modal-footer .btn-default:not(:hover) {
-    border: 1px solid;
-    border-color: transparent;
-}
-
-.btn-primary {
-    color: white;
-}
-
-.btn-default:hover, .btn-default:focus, .btn-default.focus, .btn-default:active, .btn-default.active, .open > .dropdown-toggle.btn-default {
-    color: white;
-    border: 1px solid #ddd;
-    background-color: inherit;
-}
-
-.modal-header {
-    border-bottom: 0;
-}
-
-.modal-footer {
-    border-top: 0;
-}
-
-#recent-file-panel tbody tr:nth-child(2n-1) {
-    background-color: transparent !important;
-}
-
-.megamenu-menu-panel tbody tr:hover td:nth-child(2) {
-    color: inherit;
-}
-
-.megamenu-menu-panel .btn {
-    border: 1px solid #eee;
-    background: transparent;
-}
-
-.mouse-hover .toolbar-icon.btn:hover,
-#w-full.mouse-hover,
-#w-pin.mouse-hover {
-    background-color: inherit;
-}
-
-.typora-node::-webkit-scrollbar {
-    width: 5px;
-}
-
-.typora-node::-webkit-scrollbar-thumb:vertical {
-    background: rgba(250, 250, 250, 0.3);
-}
-
-.typora-node::-webkit-scrollbar-thumb:vertical:active {
-    background: rgba(250, 250, 250, 0.5);
-}
-
-#w-unpin {
-    background-color: #4182c4;
-}
-
-#top-titlebar, #top-titlebar * {
-    color: var(--item-hover-text-color);
-}
-
-.typora-sourceview-on #toggle-sourceview-btn,
-#footer-word-count:hover,
-.ty-show-word-count #footer-word-count {
-    background: #333333;
-}
-
-#toggle-sourceview-btn:hover {
-    color: #eee;
-    background: #333333;
-}
-
-/** focus mode */
-.on-focus-mode .md-end-block:not(.md-focus):not(.md-focus-container) * {
-    color: #686868 !important;
-}
-
-.on-focus-mode .md-end-block:not(.md-focus) img,
-.on-focus-mode .md-task-list-item:not(.md-focus-container)>input {
-    opacity: #686868 !important;
-}
-
-.on-focus-mode li[cid]:not(.md-focus-container){
-    color: #686868;
-}
-
-.on-focus-mode .md-fences.md-focus .CodeMirror-code>*:not(.CodeMirror-activeline) *,
-.on-focus-mode .CodeMirror.cm-s-inner:not(.CodeMirror-focused) * {
-    color: #686868 !important;
-}
-
-.on-focus-mode .md-focus,
-.on-focus-mode .md-focus-container {
-    color: #fff;
-}
-
-.on-focus-mode #typora-source .CodeMirror-code>*:not(.CodeMirror-activeline) * {
-    color: #686868 !important;
-}
-
-
-/*diagrams*/
-#write .md-focus .md-diagram-panel {
-    border: 1px solid #ddd;
-    margin-left: -1px;
-    width: calc(100% + 2px);
-}
-
-/*diagrams*/
-#write .md-focus.md-fences-with-lineno .md-diagram-panel {
-    margin-left: auto;
-}
-
-.md-diagram-panel-error {
-    color: #f1908e;
-}
-
-.active-tab-files #info-panel-tab-file,
-.active-tab-files #info-panel-tab-file:hover,
-.active-tab-outline #info-panel-tab-outline,
-.active-tab-outline #info-panel-tab-outline:hover {
-    color: #eee;
-}
-
-.sidebar-footer-item:hover,
-.footer-item:hover {
-    background: inherit;
-    color: white;
-}
-
-.ty-side-sort-btn.active,
-.ty-side-sort-btn:hover,
-.selected-folder-menu-item a:after {
-    color: white;
-}
-
-#sidebar-files-menu {
-    border:solid 1px;
-    box-shadow: 4px 4px 20px rgba(0, 0, 0, 0.79);
-    background-color: var(--bg-color);
-}
-
-.file-list-item {
-    border-bottom:none;
-}
-
-.file-list-item-summary {
-    opacity: 1;
-}
-
-.file-list-item.active:first-child {
-    border-top: none;
-}
-
-.file-node-background {
-    height: 32px;
+.md-fences {
+	margin-bottom: 15px;
+	margin-top: 15px;
+	padding-bottom: 6px;
+	padding-top: 88px;
+	color: var(--text-color);
 }
 
-.file-library-node.active>.file-node-content,
-.file-list-item.active {
-    color: white;
-    color: var(--active-file-text-color);
-}
-
-.file-library-node.active>.file-node-background{
-    background-color: rgb(34, 34, 34);
-    background-color: var(--active-file-bg-color);
-}
-.file-list-item.active {
-    background-color: rgb(34, 34, 34);
-    background-color: var(--active-file-bg-color);
+.file-tree-node {
+	padding-top: 2px;
 }
 
-#ty-tooltip {
-    background-color: black;
-    color: #eee;
+#write pre.md-meta-block {
+	background-color: var(--item-hover-bg-color);
+	border: 0;
+	border-radius: 3px;
+	color: #fff;
+	font-size: 100%;
+	line-height: 1.45;
+	margin-top: 0 !important;
+	padding: 1rem;
 }
 
-.md-task-list-item>input {
-    margin-left: -1.3em;
-    margin-top: 0.3rem;
-    -webkit-appearance: none;
+.mathjax-block>.code-tooltip {
+	bottom: .375rem;
 }
 
 .md-mathjax-midline {
-    background-color: #57616b;
-    border-bottom: none;
+	background: #fafafa;
 }
 
-footer.ty-footer {
-    border-color: #656565;
+.md-image>.md-meta {
+	border-radius: 6px;
+	color: inherit;
+	font-size: .9rem;
+	padding: 2px 0 0 4px;
 }
 
-.ty-preferences .btn-default {
-    background: transparent;
-}
-.ty-preferences .btn-default:hover {
-    background: #57616b;
+.md-tag {
+	color: #70bfd9;
+	opacity: 1;
 }
 
-.ty-preferences select {
-    border: 1px solid #989698;
-    height: 21px;
+.CodeMirror-line {
+	padding-left: 15px;
 }
 
-.ty-preferences .nav-group-item.active,
-.export-item.active,
-.export-items-list-control,
-.export-detail {
-    background: var(--item-hover-bg-color);
+.code-tooltip {
+	background: var(--item-hover-bg-color);
+	border: 1px solid var(--item-hover-bg-color);
+	box-shadow: 0 1px 1px 0 rgba(0, 28, 36, .3);
+	border-radius: 6px;
 }
 
-.ty-preferences input[type="search"] {
-    border-color: #333;
-    background: #333;
-    line-height: 22px;
-    border-radius: 6px;
-    color: white;
+/* Yellow border when focusing Code block language input */
+.code-tooltip .ty-input {
+	border: 0;
 }
 
-.ty-preferences input[type="search"]:focus {
-    box-shadow: none;
+/* Languages suggestions Menu */
+.auto-suggest-container {
+	background-color: var(--item-hover-bg-color);
+	border: 1px solid var(--item-hover-bg-color);
+	color: var(--text-color);
+	border-radius: 6px;
 }
 
-[data-is-directory="true"] .file-node-content {
-    margin-bottom: 0;
+.dropdown-menu {
+	color: #70c0d8;
+	margin-right: 5px;
 }
 
-.file-node-title {
-    line-height: 22px;
+.md-fences {
+	padding: .3rem;
+	font-size: .9rem;
+	margin-left: .2rem;
+	margin-right: .2rem;
 }
 
-.html-for-mac .file-node-open-state, .html-for-mac .file-node-icon {
-    line-height: 26px;
+.md-fences {
+	margin: 0 0 20px;
+	font-size: 1.105rem;
+	padding: 0;
+	padding-top: .4rem;
 }
 
-::-webkit-scrollbar-thumb {
-    background: rgba(230, 230, 230, 0.30);
+blockquote .md-end-block.md-heading {
+	color: inherit;
 }
 
-::-webkit-scrollbar-thumb:active {
-    background: rgba(230, 230, 230, 0.50);
+blockquote .md-end-block.md-heading:before {
+	content: '' !important;
 }
 
-#typora-sidebar:hover div.sidebar-content-content::-webkit-scrollbar-thumb:horizontal {
-    background: rgba(230, 230, 230, 0.30);
+blockquote {
+	margin: 0 0 1rem;
+	padding: 0 1rem;
+	border-left: .25rem solid #3b434b;
 }
 
-.nav-group-item:active {
-    background-color: #474d54 !important;
+blockquote,
+blockquote p {
+	line-height: 1.5;
+	color: #8b949e;
 }
 
-.md-search-hit {
-    background: rgba(199, 140, 60, 0.81);
-    color: #eee;
+.MathJax_Display {
+	font-size: 1rem !important;
+	margin-top: .5rem;
+	margin-bottom: 0;
 }
 
-.md-search-hit * {
-    color: #eee;
+.md-math-block {
+	font-size: 1.4rem;
+}
+
+.md-rawblock-tooltip .md-rawblock-control {
+	background-color: var(--item-hover-bg-color);
+}
+
+/* Edit Math Blocks */
+.md-rawblock-control:not(.md-rawblock-tooltip) {
+	font-size: 1.105rem;
+	background-color: var(--item-hover-bg-color);
+}
+
+.md-rawblock-control .CodeMirror.cm-s-inner {
+	border: 0px;
+}
+
+/* Inline Math Editing */
+.md-inline-math script {
+	color: #f9826c;
+}
+
+.md-math-tex inline-math-svg {
+	font-size: 1.4rem;
+}
+
+.md-rawblock-panel .code-tooltip {
+	border: 0px;
+}
+
+.md-rawblock-input {
+	font-size: 1.105rem;
+}
+
+/* Mathjax edit panel*/
+.md-rawblock-before {
+	border-top-left-radius: 6px;
+}
+
+.md-rawblock-after {
+	border-bottom-left-radius: 6px;
+	border-bottom-right-radius: 6px;
+}
+
+/* Inline Math */
+.MathJax_SVG {
+	font-size: 1.4rem;
+}
+
+.MathJax_SVG:focus {
+	outline: none;
+	background-color: transparent;
+}
+
+.md-rawblock>.md-rawblock-container {
+	transition: 0.5s;
+}
+
+.md-rawblock>.md-rawblock-tooltip {
+	transition: 0.5s;
+	display: block;
+	visibility: hidden;
+	opacity: 0;
+}
+
+.md-rawblock:hover>.md-rawblock-tooltip {
+	transition: 0.5s;
+	visibility: visible;
+	opacity: 1;
+	animation: none;
+}
+
+p.mathjax-block,
+.mathjax-block {
+	padding-bottom: 0;
+}
+
+.mathjax-block>.code-tooltip {
+	bottom: 5px;
+	box-shadow: none;
+}
+
+.md-image>.md-meta {
+	padding-left: 0.5rem;
+	padding-right: 0.5rem;
+}
+
+.md-image>img {
+	margin-top: 2px;
+	padding-top: 10px;
+	padding-bottom: 10px;
+}
+
+.md-image>.md-meta:first-of-type:before {
+	padding-left: 4px;
+}
+
+#typora-source {
+	color: var(--text-color);
+}
+
+.typora-sourceview-on #toggle-sourceview-btn {
+	color: var(--text-color);
+	background-color: #484f58;
+}
+
+.md-image-pick-file-btn,
+.md-image-input-src-btn {
+	background-color: var(--item-hover-bg-color);
+}
+
+.md-image-btn.selected,
+.md-image-btn:hover,
+.md-image-pick-file-btn:hover,
+.md-image-input-src-btn:hover {
+	color: #f9826c !important;
+	background-color: var(--item-hover-bg-color) !important;
+}
+
+.searchpanel-search-option-btn {
+	background-color: var(--item-hover-bg-color) !important;
+	border: 1px solid #30363d;
+}
+
+.searchpanel-search-option-btn.active {
+	color: #ddd;
+	border: 1px solid #8b949e;
+}
+
+.searchpanel-search-option-btn:hover {
+	border: 1px solid #8b949e;
+}
+
+#md-searchpanel {
+	border-bottom: 0 solid #324560;
+	font-family: system-ui,
+		-apple-system, BlinkMacSystemFont,
+		"Segoe UI",
+		"Roboto",
+		"Oxygen",
+		"Ubuntu",
+		"Cantarell",
+		"Fira Sans",
+		"Droid Sans",
+		"Helvetica Neue",
+		Arial, sans-serif;
+	font-weight: 500;
 }
 
 #md-searchpanel input {
-    color: white;
+	background-color: #21262d !important;
+	border: 1px solid #30363d;
 }
 
-.modal-backdrop.in {
-    opacity: 1;
-    backdrop-filter: blur(1px);
+#md-searchpanel .btn {
+	font-size: 11px;
 }
 
-.clear-btn-icon {
-    top: 8px;
+#md-searchpanel .btn:hover {
+	color: #8b949e;
 }
 
-/* try fix https://github.com/typora/typora-issues/issues/5253 */
-.file-node-expanded>.file-node-children {
-    display: grid;
-  }
+#md-notification:before {
+	top: 13px;
+}
+
+#md-notification {
+	background: var(--bg-color);
+	font-size: 13px;
+	border-bottom: 0;
+}
+
+#md-notification .ty-enter-mode-warning-header {
+	color: #f9826c;
+}
+
+#md-notification p,
+#md-notification .btn,
+#md-notification label {
+	font-size: 13px !important;
+}
+
+.megamenu-menu-panel .btn {
+	border: 1px solid #ccc;
+}
+
+.on-focus-mode blockquote {
+	border-left-color: rgba(85, 85, 85, 0.12);
+}
+
+header,
+.context-menu,
+.megamenu-content,
+footer {
+	font-family: system-ui,
+		-apple-system, BlinkMacSystemFont,
+		"Segoe UI",
+		"Roboto",
+		"Oxygen",
+		"Ubuntu",
+		"Cantarell",
+		"Fira Sans",
+		"Droid Sans",
+		"Helvetica Neue",
+		Arial, sans-serif;
+	font-weight: 500;
+}
+
+.megamenu-opened header {
+	background-image: none;
+}
+
+.file-node-content .fa-caret-right,
+.file-node-content .fa-caret-down {
+	color: #f9826c;
+}
+
+.file-node-title {
+	color: var(--text-color);
+}
+
+.active-tab-files {
+	background-color: var(--item-hover-bg-color) !important;
+}
+
+#typora-sidebar #ty-sidebar-footer {
+	background-color: var(--item-hover-bg-color) !important;
+	border-top: 0 solid #090b10;
+}
+
+.sidebar-tabs {
+	border-bottom: 0;
+}
+
+.megamenu-menu-header {
+	border-bottom: 1px solid #090b10;
+}
+
+.megamenu-menu-list li:not(.saved) a:not(.active):hover,
+.megamenu-menu-list li a.active {
+	background: var(--item-hover-bg-color) !important;
+}
+
+.file-node-open-state {
+	background-color: transparent !important;
+}
+
+.mac-seamless-mode #typora-sidebar {
+	background-color: var(--item-hover-bg-color);
+	border-right: 0 solid #090c12;
+	font-family: system-ui,
+		-apple-system, BlinkMacSystemFont,
+		"Segoe UI",
+		"Roboto",
+		"Oxygen",
+		"Ubuntu",
+		"Cantarell",
+		"Fira Sans",
+		"Droid Sans",
+		"Helvetica Neue",
+		Arial, sans-serif;
+	font-weight: 500;
+}
+
+titlebar {
+	background-color: var(--bg-color);
+}
+
+/* Sidebar header on Win/Linux (Files/Plan) */
+.info-panel-tab-title {
+}
+
+/* Plan should get the same sidebar background color on Win/Linux */
+.typora-node.pin-outline:not(.megamenu-opened):not(.typora-sourceview-on) #typora-sidebar {
+	background-color: var(--item-hover-bg-color)
+}
+
+/* Bottom border on Win/Linux Sidebar */
+.info-panel-tab-border {
+	background-color: #f9826c !important;
+}
+
+.sidebar-footer-item:hover {
+	background-color: inherit;
+}
+
+.sidebar-tab.active {
+	color: var(--text-color);
+	font-weight: 700;
+}
+
+.file-node-icon,
+.file-node-open-state {
+	color: #6E7681;
+}
+
+.fa-file-text-o:before {
+	color: var(--text-color) !important;
+}
+
+.md-lang {
+	color: #b4654d;
+}
+
+.html-for-mac .context-menu {
+	--item-hover-bg-color: var(--bg-color);
+	color: #efb752;
+}
+
+hr {
+	background-color: #30363d;
+	border: 0 none;
+	box-sizing: content-box;
+	height: 0.25rem;
+	margin: 16px 0;
+	overflow: hidden;
+	padding: 0;
+}
+
+input {
+	color: #82bed6;
+}
+
+#searchpanel-word-option-btn,
+#find-and-replace-icon-word,
+#find-and-replace-icon-case,
+.searchpanel-search-option-btn,
+.icon,
+.glyphicon .popover,
+.popover-title {
+	color: #82bed6 !important;
+	fill: #82bed6 !important;
+}
+
+#md-notification .btn {
+	border: 0;
+}
+
+.show-word-count #footer-word-count {
+	background: #000;
+}
+
+#recent-file-panel-action-btn {
+	background-color: #82bed6;
+}
+
+.dropdown-menu .divider {
+	border-color: #303d50;
+}
+
+.ty-preferences .window-content {
+	background-color: #fafafa;
+}
+
+.ty-preferences .nav-group-item.active {
+	background: var(--bg-color);
+	color: var(--text-color);
+}
+
+/* Code block */
+.cm-s-inner {
+	border: 1px solid #324560;
+	border-radius: 6px;
+	padding: 1.2rem 1rem;
+}
+
+.cm-s-inner .cm-link,
+.cm-s-inner.cm-link {
+	color: #d2a8ff;
+}
+
+.cm-s-inner .cm-header {
+	color: #d2a8ff;
+}
+
+.cm-s-inner.CodeMirror,
+.cm-s-inner .CodeMirror-gutters {
+	background-color: var(--item-hover-bg-color) !important;
+	border: 1px solid var(--item-hover-bg-color);
+}
+
+.cm-s-inner .CodeMirror-gutters {
+	border: 0;
+	color: #6d8a88;
+}
+
+#typora-source .CodeMirror-gutter-wrapper {
+	font-size: 1rem;
+}
+
+/* Code block in Source Mode. If activated, borders are nicer but displayed funny when stacked
+#typora-source .cm-s-inner {
+border-radius: 6px;
+}
+*/
+
+.cm-s-inner .CodeMirror-cursor {
+	border-left: solid thin #f8f8f2 !important;
+}
+
+.cm-s-inner .CodeMirror-linenumber {
+	color: #6d8a88;
+}
+
+.cm-s-inner .CodeMirror-line::selection,
+.cm-s-inner .CodeMirror-line::-moz-selection,
+.cm-s-inner .CodeMirror-line>span::selection,
+.cm-s-inner .CodeMirror-line>span::-moz-selection,
+.cm-s-inner .CodeMirror-line>span>span::selection,
+.cm-s-inner .CodeMirror-line>span>span::-moz-selection {
+	background: rgba(255, 255, 255, .1);
+}
+
+.cm-s-inner span.cm-comment {
+	color: #8b949e;
+	font-style: normal;
+}
+
+.cm-s-inner span.cm-string,
+.cm-s-inner span.cm-string-2,
+.cm-s-inner span.cm-quote {
+	color: #a5d6ff;
+}
+
+.cm-s-inner span.cm-number {
+	color: #79c0ff;
+}
+
+.cm-s-inner span.cm-variable {
+	color: var(--text-color);
+}
+
+.cm-s-inner span.cm-variable-2 {
+	color: var(--text-color);
+}
+
+.cm-s-inner span.cm-def {
+	color: var(--text-color);
+}
+
+.cm-s-inner span.cm-operator {
+	color: #ff7b72;
+}
+
+.cm-s-inner span.cm-keyword {
+	color: #ff7b72;
+}
+
+.cm-s-inner span.cm-atom {
+	color: #8b949e;
+}
+
+.cm-s-inner span.cm-meta {
+	color: #8b949e;
+}
+
+.cm-s-inner span.cm-tag {
+	color: #7ee787;
+}
+
+.cm-s-inner span.cm-attribute {
+	color: #79c0ff;
+}
+
+.cm-s-inner span.cm-defined {
+	color: #d2a8ff;
+}
+
+.cm-s-inner span.cm-qualifier {
+	color: #50fa7b;
+}
+
+.cm-s-inner span.cm-property {
+	color: #d2a8ff;
+}
+
+.cm-s-inner span.cm-builtin {
+	color: #79c0ff;
+}
+
+.cm-s-inner span.cm-variable-3 {
+	color: #ff7b72;
+}
+
+.cm-s-inner span.cm-block-start {
+	color: #ffa657;
+}
+
+.cm-s-inner span.cm-type {
+	color: #ffb86c;
+}
+
+.cm-positive {
+	color: #aff5b4;
+	background-color: #033a16;
+}
+
+.cm-negative {
+	color: #aff5b4;
+	background-color: #67060c;
+}
+
+.md-fences.md-focus .cm-s-inner .CodeMirror-activeline-background {
+	background: rgba(255, 255, 255, 0.1);
+}
+
+.cm-s-inner .CodeMirror-matchingbracket {
+	color: var(--text-color) !important;
+	text-decoration: underline;
+}
+
+.cm-s-inner .CodeMirror-selected,
+.cm-s-inner .CodeMirror-selectedtext,
+body::selection,
+body::-moz-selection {
+	background: var(--select-text-bg-color) !important;
+	background-color: var(--select-text-bg-color) !important;
+	color: var(--select-text-font-color) !important;
+	text-shadow: none;
+}
+
+#write ol,
+#write ul {
+	font-size: 1.25rem;
+	font-weight: 500;
+	padding-left: 2rem;
+}
+
+/* Code block inside lists */
+#write li .cm-s-inner {
+	font-size: 1.05rem;
+	font-weight: 500;
+	margin-bottom: -0.65rem;
+}
+
+/* Code block inside list with better margins, but it resizes borders and consider all as first-child :(
+#write li .cm-s-inner>:first-child {
+margin-top: 1.2rem;
+}
+
+#write li .cm-s-inner>:last-child {
+margin-bottom: 1.2rem;
+}		
+*/
+
+#write ol>li,
+#write ul>li {
+	font-weight: 500;
+	margin-bottom: 0;
+}
+
+#write ul>li ul>li {
+	list-style-type: circle;
+	background-color: transparent;
+	font-weight: 500;
+}
+
+#write ul>li ul>li ul>li {
+	list-style-type: square;
+	font-weight: 500;
+}
+
+#write ol>li ol>li {
+	list-style-type: lower-roman;
+}
+
+#write ol>li ol>li ol>li {
+	list-style-type: lower-latin;
+}
+
+#write ol>li>*,
+#write ul>li>* {
+	font-weight: 500;
+}
+
+#write ol>li>*:not(ol):not(ul),
+#write ul>li>*:not(ol):not(ul) {
+	font-weight: 500;
+	padding-left: 0.25rem;
+}
+
+#write ul {
+	font-weight: 500;
+	list-style-type: disc;
+}
+
+ul:first-child,
+ol:first-child {
+	font-weight: 500;
+	margin-top: 0;
+}
+
+ul:last-child,
+ol:last-child {
+	font-weight: 500;
+	margin-top: 0;
+}
+
+sup.md-footnote {
+	background-color: rgba(56, 139, 253, 0.1);
+	color: #58a6ff;
+	font-weight: 700;
+	font-size: 75%;
+	font-style: normal;
+}
+
+sup.md-footnote a {
+	font-style: normal;
+}
+
+sup.md-footnote:hover {
+	background-color: rgba(56, 139, 253, 0.15);
+}
+
+sup.md-footnote .md-meta {
+	color: #58a6ff;
+}
+
+.md-def-footnote .md-def-name:before,
+.md-def-footnote .md-def-name:after {
+	content: '';
+}
+
+.md-def-footnote .md-def-name {
+	padding: 2px;
+	padding-left: 4px;
+	padding-right: 4px;
+	background-color: rgba(56, 139, 253, 0.1);
+	color: #58a6ff;
+	border-radius: 4px;
+	cursor: pointer;
+}
+
+.footnotes {
+	opacity: 1;
+}
+
+.md-def-footnote .md-def-content {
+	font-size: 15px;
+}
+
+a.reversefootnote {
+	color: #f9826c;
+	font-weight: bold;
+	font-size: 13px;
+}
+
+mark {
+	background-color: #2ea44f;
+	border-radius: 6px;
+	color: white;
+	line-height: 2;
+	padding: 5px 10px;
+	white-space: nowrap;
+}
+
+.cm-s-typora-default {
+	font-family: system-ui,
+		-apple-system, BlinkMacSystemFont,
+		"Segoe UI",
+		"Roboto",
+		"Oxygen",
+		"Ubuntu",
+		"Cantarell",
+		"Fira Sans",
+		"Droid Sans",
+		"Helvetica Neue",
+		Arial, sans-serif;
+	font-weight: 500;
+	font-size: 13px;
+	color: var(--text-color);
+}
+
+.cm-s-typora-default .cm-header,
+.cm-s-typora-default .cm-property {
+	color: var(--text-color);
+}
+
+.CodeMirror.cm-s-typora-default div.CodeMirror-cursor {
+	border-left: 3px solid #b8bfc6;
+}
+
+.cm-s-typora-default .cm-comment {
+	color: #8b949e;
+}
+
+.cm-s-typora-default .cm-string {
+	color: #a5d6ff;
+}
+
+.cm-s-typora-default .cm-atom,
+.cm-s-typora-default .cm-number {
+	color: #8b949e;
+	font-style: italic;
+}
+
+.cm-s-typora-default .cm-link,
+.cm-s-typora-default .cm-tag {
+	color: rgb(165, 214, 255);
+}
+
+.cm-s-typora-default .cm-string {
+	color: #f0b752;
+}
+
+.cm-s-typora-default pre.cm-s-inner {
+	background-color: var(--item-hover-bg-color) !important;
+	border: 1px solid var(--item-hover-bg-color);
+	color: var(--text-color);
+	font-size: 0.9rem;
+}
+
+.cm-s-typora-default .cm-atom {
+	color: #8b949e;
+}
+
+.CodeMirror-activeline .cm-atom {
+	color: var(--text-color) !important;
+}
+
+.cm-s-typora-default .CodeMirror-activeline-background {
+	background: #484f58;
+}
+
+.cm-s-typora-default .cm-comment,
+.cm-s-typora-default .cm-code {
+	color: #8aa1e1;
+	font-size: 0.9rem !important;
+}
+
+/* Mega menu */
+.megamenu-content,
+.megamenu-opened header {
+	background: var(--bg-color1);
+}
+
+.megamenu-content {
+	display: block;
+	visibility: hidden;
+	opacity: 0;
+	transition: 0.3s;
+}
+
+.megamenu-menu-list {
+	background-color: var(--item-hover-bg-color) !important;
+}
+
+.megamenu-opened .megamenu-content {
+	visibility: visible;
+	opacity: 1;
+	animation: none;
+	background-color: inherit;
+}
+
+/* Mega menu sidebar */
+.megamenu-menu {
+	background-color: var(--item-hover-bg-color);
+}
+
+/* Return button in mega menu */
+#megamenu-menu-sidebar .menu-style-btn {
+	border: 0px;
+}
+
+/* Remove divider in mega menu */
+.megamenu-menu-header {}
+
+/* Return button color in mega menu */
+.megamenu-menu-header #megamenu-menu-header-title,
+.megamenu-menu-header #megamenu-menu-header-title:before {
+	color: var(--text-color);
+}
+
+.megamenu-menu-list li a:hover,
+.megamenu-menu-list li a.active {
+	background-color: var(--bg-color);
+}
+
+/* Return button hover in mega menu */
+.megamenu-menu-header:hover {}
+
+/* Return button hover in mega menu */
+.megamenu-menu-header:hover #megamenu-menu-header-title {}
+
+/* Long button in mega menu */
+.long-btn {
+	border: 0px;
+	box-shadow: 0px 0px 10px rgba(0, 0, 0, .2);
+	margin-bottom: 10px;
+	margin-left: 10px;
+	background-color: var(--item-hover-bg-color);
+}
+
+.long-btn:hover {
+	background-color: var(--item-hover-bg-color);
+	border-color: 1px solid #8b949e;
+	color: var(--text-color) !important;
+}
+
+
+#recent-file-panel-action-btn {
+	background-color: var(--item-hover-bg-color);
+	border: 0px;
+	box-shadow: 0px 0px 10px rgba(0, 0, 0, .2);
+	margin-bottom: 10px;
+	margin-left: 10px;
+}
+
+/* Mermaid Diagrams */
+
+.titleText,
+.pieTitleText {
+	fill: var(--mermaid-contrast-color);
+	font-size: 2rem;
+	font-family: system-ui,
+		-apple-system, BlinkMacSystemFont,
+		"Segoe UI",
+		"Roboto",
+		"Oxygen",
+		"Ubuntu",
+		"Cantarell",
+		"Fira Sans",
+		"Droid Sans",
+		"Helvetica Neue",
+		Arial, sans-serif;
+	font-weight: 300;
+}
+
+/* Node text */
+.grid .tick text,
+.taskText,
+text.actor,
+.node .label,
+.taskTextOutsideRight,
+.taskTextOutsideLeft,
+.labelText,
+.loopText,
+g.classGroup text {
+	color: var(--text-color);
+	fill: var(--text-color);
+	stroke: black;
+	stroke-width: 0.05px;
+	
+	.title {
+		font-weight: 600;
+	}
+}
+
+/* Node color */
+.actor,
+.task,
+.node rect,
+.node circle,
+.node ellipse,
+.node polygon,
+g.classGroup rect,
+.labelBox {
+	fill: var(--mermaid-node-color);
+	stroke: var(--mermaid-node-border);
+	color: var(--text-color);
+}
+
+/* Node Labels (Notes & On path) */
+.edgeLabel foreignObject {
+	color: black;
+	background-color: var(--primary-color);
+	stroke: var(--primary-btn-border-color);
+	stroke-width: 1px;
+	height: 20px;
+	text-align: center;
+}
+
+.note {
+	fill: var(--primary-color);
+	stroke: var(--primary-btn-border-color);
+}
+
+.noteText {
+	color: black;
+}
+
+.noteText>tspan {
+	fill: #333 !important;
+	color: #333 !important;
+}
+
+.taskText {
+	fill: white !important;
+}
+
+/* Class diagram specific */
+g.classGroup line {
+	stroke: var(--text-color);
+}
+
+.classLabel .box {
+	stroke: none;
+	stroke-width: 0;
+	fill: var(--primary-color);
+	opacity: 1;
+}
+
+svg[id^="mermaidChart"] .composition,
+svg[id^="mermaidChart"] .aggregation,
+svg[id^="mermaidChart"] .dependency,
+svg[id^="mermaidChart"] .relation {
+	stroke: var(--text-color);
+}
+
+.classLabel .label {
+	fill: black;
+}
+
+#extensionStart,
+#extensionEnd,
+#compositionStart,
+#compositionEnd,
+#aggregationStart,
+#aggregationEnd,
+#dependencyStart,
+#dependencyEnd {
+	fill: var(--text-color);
+	stroke: var(--text-color);
+}
+
+/* Gantt Specific */
+svg[id^="mermaidChart"] .today {
+	stroke: var(--mermaid-contrast-color);
+}
+
+/* Pie Chart Specific */
+
+svg[id^="mermaidChart"] g path {
+	stroke: var(--text-color);
+}
+
+text.slice {
+	fill: var(--text-color);
+}
+
+.legend text {
+	fill: var(--text-color);
+}
+
+.doneCritText0,
+.doneCritText1,
+.doneCritText2,
+.doneCritText3 {
+	fill: var(--text-color) !important;
+	stroke: var(--text-color) !important;
+}
+
+/* End mermaid */
+
+/* Tip when hover on a button */
+#ty-tooltip {
+	background-color: black;
+	color: white;
+}
+
+/* Header in setting */
+.window-header {}
+
+/* Sidebar in setting */
+.sidebar {
+	background-color: var(--item-hover-bg-color) !important;
+}
+
+.list-group-content {
+	margin-left: 10px !important;
+}
+
+/* Sidebar button in setting menu */
+.nav-group-item {
+	color: var(--text-color) !important;
+	border-top-left-radius: 6px !important;
+	border-bottom-left-radius: 6px !important;
+	border-top-right-radius: 0px !important;
+	border-bottom-right-radius: 0px !important;
+}
+
+/* Sidebar button hover in setting menu */
+.nav-group-item:hover,
+.nav-group-item:active,
+.nav-group-item.active {
+	background-color: #0d1117 !important;
+	color: var(--text-color) !important;
+}
+
+/* The indent example in setting.editor */
+div.pane>div:nth-child(4)>div:nth-child(2) .label-input-group td:last-child div {
+	border: 1px solid #30363d !important;
+	border-radius: 6px;
+	background-color: var(--color-border-secondary);
+	margin: 10px !important;
+}
+
+/* Button in setting menu */
+.ty-preferences button.btn-default {
+	border: 1px solid #30363d;
+	background-color: var(--color-border-secondary);
+	border-radius: 6px;
+}
+
+/* Button hover in setting menu */
+.ty-preferences .btn-default:not([disabled]):hover {
+	border-color: #8b949e !important;
+	background-color: var(--color-border-secondary) !important;
+}
+
+/* Return button in setting menu */
+.window-header button:hover {
+	color: var(--text-color) !important;
+}
+
+/* Search input in setting menu */
+.search-input {
+	border: 1px solid #30363d;
+	border-top-left-radius: 6px !important;
+	border-bottom-left-radius: 6px !important;
+	border-top-right-radius: 0px !important;
+	border-bottom-right-radius: 0px !important;
+	margin-top: 10px !important;
+	margin-bottom: 10px !important;
+	margin-left: 10px !important;
+}
+
+.search-input:hover {
+	border: 1px solid #8b949e;
+}
+
+.search-input:focus {
+	border: none !important;
+}
+
+/* Select item (mostly in setting menu) */
+select {
+	border: 1px solid #30363d;
+	border-radius: 6px;
+	background-color: var(--color-border-secondary) !important;
+	padding-top: 5px !important;
+	padding-bottom: 5px !important;
+}
+
+/* Enabled select item hover */
+select:not([disabled]):hover {
+	color: var(--text-color);
+	opacity: 1;
+	border: 1px solid #8b949e;
+}
+
+/* Disabled select item hover */
+select[disabled]:hover {
+	opacity: 0.5;
+	border: 1px solid #8b949e;
+}
+
+/* Radio */
+input[type="radio"] {
+	background-color: var(--item-hover-bg-color) !important;
+	border: 0px !important;
+}
+
+input[type="radio"]:before {
+	content: "";
+	display: inline-block;
+	width: 1.1rem;
+	height: 1.1rem;
+	vertical-align: middle;
+	text-align: center;
+	border: 1px solid #30363d;
+	border-radius: 0.55rem;
+	background-color: var(--item-hover-bg-color) !important;
+	margin-top: -0.5rem;
+	margin-left: -0.1rem;
+	box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* Radio hover */
+input[type="radio"]:not([disabled]):not(:checked):hover:before {
+	content: "\25CF";
+	font-size: 1rem;
+	line-height: 1rem;
+	color: var(--text-color);
+}
+
+/* Radio checked */
+input[type="radio"]:checked:before {
+	content: "\25CF";
+	font-size: 1rem;
+	line-height: 1rem;
+	color: var(--text-color);
+	background-color: var(--item-hover-bg-color) !important;
+}
+
+/* Remove up and down button from number type input */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+	-webkit-appearance: none !important;
+}
+
+input {
+	background-color: var(--item-hover-bg-color) !important;
+	border: 0px;
+	box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* Checkbox */
+input[type="checkbox"]:before {
+	content: "";
+	display: inline-block;
+	width: 1.1rem;
+	height: 1.1rem;
+	vertical-align: middle;
+	text-align: center;
+	border: 1px solid #30363d;
+	border-radius: 3px;
+	background-color: var(--item-hover-bg-color);
+	margin-top: -0.5rem;
+	margin-left: -0.1rem;
+}
+
+/* Checkbox hover */
+input[type="checkbox"]:not([disabled]):not(:checked):hover:before {
+	content: "\2713";
+	font-size: 0.9rem;
+	line-height: 1rem;
+	color: var(--text-color);
+}
+
+/* Checkbox checked */
+input[type="checkbox"]:checked:before {
+	content: "\2713";
+	font-size: 0.9rem;
+	line-height: 1rem;
+	color: var(--text-color);
+	margin-top: -0.5rem;
+	margin-left: -0.1rem;
+}
+
+#write input[type="checkbox"]:before,
+#write input[type="checkbox"]:checked:before {
+	margin-top: -0.9rem;
+}
+
+/* Checkbox checked hover*/
+input[type="checkbox"]:checked:hover:before {
+	content: "\2713";
+	font-size: 0.9rem;
+	line-height: 1rem;
+	color: white;
+	margin-top: -0.5rem;
+	margin-left: -0.1rem;
+}
+
+/* Using checkboxes in sublists should not get list circles inside inputs */
+.md-task-list-item {
+	list-style-type: none !important;
+}
+
+/* Input number in settings for Win/Linux */
+input:not([type="range"]):not([type="color"]) {
+	border: 1px solid #30363d !important;
+	border-radius: 3px;
+	background-color: var(--item-hover-bg-color);
+}
+
+.pane-sm input[type="search"] {
+	border: 1px solid #30363d !important;
+}
+
+/* Search in settings */
+#file-library-search-input:hover {
+	border: 1px solid #8b949e !important;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar-thumb,
+::-webkit-scrollbar-thumb:active {
+	border-radius: 10px;
+	background-color: #2F333A;
+}
+
+/* Remove dashed border on filenames in the sidebar */
+.file-library-node:not(.file-node-root):focus>.file-node-content {
+	outline: 0 !important;
+}
+
+/* Handle long filenames in sidebar */
+file-node-title-name-part {
+	white-space: pre-wrap;
+}
+
+/* Custom syntax highlighting */
+div.cm-s-inner[lang="css"] .cm-qualifier {
+	color: #a5d6ff !important;
+}
+
+div.cm-s-inner[lang="css"] .cm-def {
+	color: #ff7b72 !important;
+}
+
+div.cm-s-inner[lang="css"] .cm-tag {
+	color: #7ee787 !important;
+}
+
+div.cm-s-inner[lang="diff"] .cm-meta {
+	color: #d2a8ff !important;
+	font-weight: 700;
+}
+
+div.cm-s-inner[lang="diff"] .cm-negative {
+	color: #d2a8ff !important;
+	font-weight: 700;
+}
+
+div.cm-s-inner[lang="dockerfile"] .cm-variable-2 {
+	color: #ff7b72 !important;
+}
+
+div.cm-s-inner[lang="elixir"] .cm-def {
+	color: #ff7b72 !important;
+}
+
+div.cm-s-inner[lang="elixir"] .cm-atom {
+	color: #d2a8ff !important;
+}
+
+div.cm-s-inner[lang="erlang"] .cm-tag {
+	color: #d2a8ff !important;
+}
+
+div.cm-s-inner[lang="fsharp"] .cm-variable {
+	color: #ffa657 !important;
+}
+
+div.cm-s-inner[lang="go"] .cm-atom {
+	color: #d2a8ff !important;
+}
+
+div.cm-s-inner[lang="http"] .cm-atom {
+	color: #d2a8ff !important;
+}
+
+div.cm-s-inner[lang="java"] .cm-def {
+	color: #ffa657 !important;
+}
+
+div.cm-s-inner[lang="javascript"] .cm-def {
+	color: #ffa657 !important;
+}
+
+div.cm-s-inner[lang="less"] .cm-def {
+	color: #ff7b72 !important;
+}
+
+div.cm-s-inner[lang="kotlin"] .cm-def {
+	color: #d2a8ff !important;
+}
+
+div.cm-s-inner[lang="markdown"] .cm-comment.cm-variable-2 {
+	color: #d2a8ff !important;
+}
+
+div.cm-s-inner[lang="perl"] .cm-def {
+	color: #ff7b72 !important;
+}
+
+div.cm-s-inner[lang="perl"] .cm-meta {
+	color: #d2a8ff !important;
+}
+
+div.cm-s-inner[lang="perl"] .cm-variable-2 {
+	color: #8b949e !important;
+}
+
+div.cm-s-inner[lang="php"] .cm-def {
+	color: #d2a8ff !important;
+}
+
+div.cm-s-inner[lang="python"] .cm-property {
+	color: #ffa657 !important;
+}
+
+div.cm-s-inner[lang="rust"] .cm-def {
+	color: #d2a8ff !important;
+}
+
+div.cm-s-inner[lang="rust"] .cm-variable-3 {
+	color: #d2a8ff !important;
+}
+
+div.cm-s-inner[lang="scss"] .cm-def {
+	color: #ff7b72 !important;
+}
+
+div.cm-s-inner[lang="scss"] .cm-variable-2 {
+	color: #ffa657 !important;
+}
+
+div.cm-s-inner[lang="scss"] .cm-tag {
+	color: #d2a8ff !important;
+}
+
+div.cm-s-inner[lang="scss"] .cm-error {
+	color: #d2a8ff !important;
+}
+
+div.cm-s-inner[lang="ruby"] .cm-atom {
+	color: #d2a8ff !important;
+}
+
 
 
 </style><title>Manual</title>
 </head>
 <body class='typora-export os-windows'><div class='typora-export-content'>
-<div id='write'  class=''><h1 id='manual'><span>Manual</span></h1><p><span>v1.3</span></p><p><span>{required} [optional]</span></p><div class='md-toc' mdtype='toc'><p class="md-toc-content" role="list"><span role="listitem" class="md-toc-item md-toc-h1" data-ref="n0"><a class="md-toc-inner" href="#manual">Manual</a></span><span role="listitem" class="md-toc-item md-toc-h2" data-ref="n5"><a class="md-toc-inner" href="#list">List</a></span><span role="listitem" class="md-toc-item md-toc-h2" data-ref="n51"><a class="md-toc-inner" href="#group">Group</a></span><span role="listitem" class="md-toc-item md-toc-h2" data-ref="n70"><a class="md-toc-inner" href="#group-approval">Group Approval</a></span><span role="listitem" class="md-toc-item md-toc-h2" data-ref="n136"><a class="md-toc-inner" href="#group-keyword">Group Keyword</a></span><span role="listitem" class="md-toc-item md-toc-h2" data-ref="n182"><a class="md-toc-inner" href="#group-card">Group Card</a></span><span role="listitem" class="md-toc-item md-toc-h2" data-ref="n277"><a class="md-toc-inner" href="#group-log">Group Log</a></span><span role="listitem" class="md-toc-item md-toc-h2" data-ref="n196"><a class="md-toc-inner" href="#group-export">Group Export</a></span><span role="listitem" class="md-toc-item md-toc-h2" data-ref="n206"><a class="md-toc-inner" href="#user">User</a></span><span role="listitem" class="md-toc-item md-toc-h2" data-ref="n220"><a class="md-toc-inner" href="#namespace">Namespace</a></span><span role="listitem" class="md-toc-item md-toc-h2" data-ref="n246"><a class="md-toc-inner" href="#extra">Extra</a></span><span role="listitem" class="md-toc-item md-toc-h2" data-ref="n272"><a class="md-toc-inner" href="#advanced-features">Advanced features</a></span></p></div><h2 id='list'><span>List</span></h2><figure><table><thead><tr><th><span>Command</span></th><th><span>Description</span></th><th><span>Comment</span></th></tr></thead><tbody><tr><td><span>/list add {list_name} {namespace}</span></td><td><span>在 namespace 下新增 list_name</span></td><td><span>需要 list_name 对应的 namespace admin 及以上权限</span></td></tr><tr><td><span>/list join {list_name} {key} [value]</span></td><td><span>将 key[:value] 添加到 list_name 中（key value 可作为双因子认证使用）（key 包含</span><strong><span>空格</span></strong><span>请用</span><code>%20</code><span>转义替换，包含</span><strong><span>%</span></strong><span>请用</span><code>%25</code><span>转义替换）</span></td><td><span>同上</span></td></tr><tr><td><span>/list leave {list_name} {key}</span></td><td><span>将 key 从 list_name 中移除（key 包含</span><strong><span>空格</span></strong><span>请用</span><code>%20</code><span>转义替换，包含</span><strong><span>%</span></strong><span>请用</span><code>%25</code><span>转义替换）</span></td><td><span>同上</span></td></tr><tr><td><span>/list len {list_name}</span></td><td><span>查询 list_name 里共有多少条数据</span></td><td><span>同上</span></td></tr><tr><td><span>/list query {list_name} [key]</span></td><td><span>查询 list_name 或者 list_name 内的 key（key 包含</span><strong><span>空格</span></strong><span>请用</span><code>%20</code><span>转义替换，包含</span><strong><span>%</span></strong><span>请用</span><code>%25</code><span>转义替换）</span></td><td><span>同上</span></td></tr><tr><td><span>/list export {list_name}</span></td><td><span>将 list_name 以文件的方式导出</span></td><td><span>同上</span></td></tr><tr><td><span>/list append {list_name} {json}</span></td><td><span>用 json 追加 list_name 的数据</span></td><td><span>同上</span></td></tr><tr><td><span>/list set {list_name} {json}</span></td><td><span>用 json 覆盖 list_name 的数据</span></td><td><span>同上</span></td></tr><tr><td><span>/list reset {list_name}</span></td><td><span>重置 list_name 的数据</span></td><td><span>同上</span></td></tr><tr><td><span>/list rm {list_name}</span></td><td><span>删除 list_name（删除后原 list_name 不可使用）</span></td><td><span>同上</span></td></tr></tbody></table></figure><h2 id='group'><span>Group</span></h2><figure><table><thead><tr><th><span>Command</span></th><th><span>Description</span></th><th><span>Comment</span></th></tr></thead><tbody><tr><td><span>/group bind {namespace}</span></td><td><span>将当前 group 绑定到 namespace 中（会重置当前 group 的所有配置）</span></td><td><span>需要 group admin 和 namespace admin 及以上权限</span></td></tr><tr><td><span>/group unbind</span></td><td><span>解除当前 group 的绑定</span></td><td><span>同上</span></td></tr><tr><td><span>/group query</span></td><td><span>查询当前 group 的配置</span></td><td><span>需要 namespace admin 及以上权限</span></td></tr><tr><td><span>/group kick {list_name}</span></td><td><span>用 list_name 把当前 group 的成员踢出</span></td><td><span>需要 group admin 和 namespace admin 及以上权限</span></td></tr></tbody></table></figure><h2 id='group-approval'><span>Group Approval</span></h2><figure><table><thead><tr><th><span>Command</span></th><th><span>Description</span></th><th><span>Comment</span></th></tr></thead><tbody><tr><td><span>/group approval enable mc</span></td><td><span>入群审批启用 mc 正版用户名验证（将使用正版 UUID 作为双因子认证的输入）</span></td><td><span>需要 group admin 和 namespace admin 及以上权限</span></td></tr><tr><td><span>/group approval enable regexp</span></td><td><span>入群审批启用正则表达式（将使用匹配结果作为双因子认证的输入）</span></td><td><span>同上</span></td></tr><tr><td><span>/group approval enable whitelist</span></td><td><span>入群审批启用白名单</span></td><td><span>同上</span></td></tr><tr><td><span>/group approval enable blacklist</span></td><td><span>入群审批启用黑名单</span></td><td><span>同上</span></td></tr><tr><td><span>/group approval enable autopass</span></td><td><span>入群审批启用自动通过（默认启用）</span></td><td><span>同上</span></td></tr><tr><td><span>/group approval set regexp {regexp}</span></td><td><span>指定入群审批的正则表达式（若有子表达式，则会使用第一个子表达式的匹配结果）</span></td><td><span>同上</span></td></tr><tr><td><span>/group approval add whitelist {list_name}</span></td><td><span>新增入群审批白名单 list_name（可以多次指定不同的 list_name 最终采用并集查找）</span></td><td><span>同上</span></td></tr><tr><td><span>/group approval add blacklist {list_name}</span></td><td><span>新增入群审批黑名单 list_name（可以多次指定不同的 list_name 最终采用并集查找）</span></td><td><span>同上</span></td></tr><tr><td><span>/group approval rm whitelist {list_name}</span></td><td><span>移除入群审批白名单 list_name</span></td><td><span>同上</span></td></tr><tr><td><span>/group approval rm blacklist {list_name}</span></td><td><span>移除入群审批黑名单 list_name</span></td><td><span>同上</span></td></tr><tr><td><span>/group approval disable mc</span></td><td><span>入群审批禁用 mc 正版用户名验证</span></td><td><span>同上</span></td></tr><tr><td><span>/group approval disable regexp</span></td><td><span>入群审批禁用正则表达式</span></td><td><span>同上</span></td></tr><tr><td><span>/group approval disable whitelist</span></td><td><span>入群审批禁用白名单</span></td><td><span>同上</span></td></tr><tr><td><span>/group approval disable blacklist</span></td><td><span>入群审批禁用黑名单</span></td><td><span>同上</span></td></tr><tr><td><span>/group approval disable autopass</span></td><td><span>入群审批禁用自动通过（言下之意，符合通过条件的申请不自动处理，需要手动同意。自动拒绝照常工作）</span></td><td><span>同上</span></td></tr></tbody></table></figure><h2 id='group-keyword'><span>Group Keyword</span></h2><figure><table><thead><tr><th><span>Command</span></th><th><span>Description</span></th><th><span>Comment</span></th></tr></thead><tbody><tr><td><span>/group keyword enable blacklist</span></td><td><span>关键词检查启用黑名单</span></td><td><span>需要 group admin 和 namespace admin 及以上权限</span></td></tr><tr><td><span>/group keyword enable whitelist</span></td><td><span>关键词检查启用白名单</span></td><td><span>同上</span></td></tr><tr><td><span>/group keyword add blacklist {list_name}</span></td><td><span>新增关键词检查黑名单 list_name（可以多次指定不同的 list_name 最终采用并集查找）</span></td><td><span>同上</span></td></tr><tr><td><span>/group keyword add whitelist {list_name}</span></td><td><span>新增关键词检查白名单 list_name（可以多次指定不同的 list_name 最终采用并集查找）</span></td><td><span>同上</span></td></tr><tr><td><span>/group keyword set reply {list_name}</span></td><td><span>设置关键词回复列表 list_name</span></td><td><span>同上</span></td></tr><tr><td><span>/group keyword rm blacklist {list_name}</span></td><td><span>移除关键词检查黑名单 list_name</span></td><td><span>同上</span></td></tr><tr><td><span>/group keyword rm whitelist {list_name}</span></td><td><span>移除关键词检查白名单 list_name</span></td><td><span>同上</span></td></tr><tr><td><span>/group keyword rm reply</span></td><td><span>移除关键词回复列表</span></td><td><span>同上</span></td></tr><tr><td><span>/group keyword disable blacklist</span></td><td><span>关键词检查禁用黑名单</span></td><td><span>同上</span></td></tr><tr><td><span>/group keyword disable whitelist</span></td><td><span>关键词检查禁用白名单</span></td><td><span>同上</span></td></tr></tbody></table></figure><h2 id='group-card'><span>Group Card</span></h2><figure><table><thead><tr><th><span>Command</span></th><th><span>Description</span></th><th><span>Comment</span></th></tr></thead><tbody><tr><td><span>/group card check {list_name} with {regexp}</span></td><td><span>使用 regexp 正则匹配群名片，将不匹配的成员写入 list_name 中</span></td><td><span>需要 group admin 和 namespace admin 及以上权限</span></td></tr><tr><td><span>/group card check {to_list_name} by {from_list_name}</span></td><td><span>使用 from_list_name uid:card 匹配群名片，将不匹配的成员写入 to_list_name 中</span></td><td><span>同上</span></td></tr><tr><td><span>/group card set auto_set {list_name}</span></td><td><span>设置入群自动修改群名片 list_name；若不包含，那么不修改</span></td><td><span>同上</span></td></tr><tr><td><span>/group card rm auto_set</span></td><td><span>清除设置的自动修改群名片 list_name</span></td><td><span>同上</span></td></tr><tr><td><span>/group card lock</span></td><td><span>锁定群名片，不让修改（实验性功能）</span></td><td><span>同上</span></td></tr><tr><td><span>/group card unlock</span></td><td><span>解锁群名片（实验性功能）</span></td><td><span>同上</span></td></tr></tbody></table></figure><h2 id='group-log'><span>Group Log</span></h2><figure><table><thead><tr><th><span>Command</span></th><th><span>Description</span></th><th><span>Comment</span></th></tr></thead><tbody><tr><td><span>/group log set leave {list_name}</span></td><td><span>设置离群记录 list_name</span></td><td><span>需要 group admin 和 namespace admin 及以上权限</span></td></tr><tr><td><span>/group log rm leave</span></td><td><span>移除离群记录 list_name</span></td><td><span>同上</span></td></tr></tbody></table></figure><h2 id='group-export'><span>Group Export</span></h2><figure><table><thead><tr><th><span>Command</span></th><th><span>Description</span></th><th><span>Comment</span></th></tr></thead><tbody><tr><td><span>/group export member {list_name}</span></td><td><span>导出 group member 到 list_name</span></td><td><span>需要 group admin 和 namespace admin 及以上权限</span></td></tr></tbody></table></figure><h2 id='user'><span>User</span></h2><figure><table><thead><tr><th><span>Command</span></th><th><span>Description</span></th><th><span>Comment</span></th></tr></thead><tbody><tr><td><span>/user join {namespace} {user_id}</span></td><td><span>将 user_id 添加到 namespace admin 名单</span></td><td><span>需要 namespace owner 权限</span></td></tr><tr><td><span>/user leave {namespace} {user_id}</span></td><td><span>将 user_id 从 namespace admin 名单移除</span></td><td><span>同上</span></td></tr></tbody></table></figure><h2 id='namespace'><span>Namespace</span></h2><figure><table><thead><tr><th><span>Command</span></th><th><span>Description</span></th><th><span>Comment</span></th></tr></thead><tbody><tr><td><span>/namespace add {namespace}</span></td><td><span>新建 namespace</span></td><td><span>需要系统授予的操作 namespace 权限</span></td></tr><tr><td><span>/namespace rm {namespace}</span></td><td><span>删除 namespace</span></td><td><span>同上</span></td></tr><tr><td><span>/namespace query</span></td><td><span>查询自己所有的 namespace</span></td><td><span>同上</span></td></tr><tr><td><span>/namespace {namespace}</span></td><td><span>查询 namespace 配置</span></td><td><span>需要 namespace admin 及以上权限</span></td></tr><tr><td><span>/namespace {namespace} reset</span></td><td><span>重置 namespace 的 admin</span></td><td><span>需要 namespace owner 权限</span></td></tr></tbody></table></figure><h2 id='extra'><span>Extra</span></h2><figure><table><thead><tr><th><span>Command</span></th><th><span>Description</span></th><th><span>Comment</span></th></tr></thead><tbody><tr><td><span>/raw {message}</span></td><td><span>获取 message 的原始信息</span></td><td><span>需要系统授予的获取 raw 的权限</span></td></tr><tr><td><span>/model set {model}</span></td><td><span>设置机型</span></td><td><span>需要受系统信任</span></td></tr><tr><td><span>/token add {name} {token}</span></td><td><span>添加可让 user 接入本系统的令牌</span></td><td><span>需要系统授予的操作 token 的权限</span></td></tr><tr><td><span>/token rm {name}</span></td><td><span>删除令牌</span></td><td><span>需要系统授予的操作 token 的权限</span></td></tr><tr><td><span>/token query</span></td><td><span>查询自己所有的令牌</span></td><td><span>需要系统授予的操作 token 的权限</span></td></tr></tbody></table></figure><h2 id='advanced-features'><span>Advanced features</span></h2><ol start='' ><li><p><span>当 group keyword 使用的 key 有</span><strong><span>空格</span></strong><span>（转义后为</span><code>%20</code><span>）时，会对 key 的字符串以</span><strong><span>空格</span></strong><span>拆分。当检查的文本全部包含拆分字符串，则匹配成功。</span></p><p><span>e.g. key: </span><code>砍 并夕夕</code><span> 文本1：</span><code>帮我并夕夕砍一刀</code><span>（匹配成功）文本2：</span><code>是兄弟就来砍我</code><span>（匹配失败）</span></p></li></ol></div></div>
+<div id='write'  class=''><h1 id='manual'><span>Manual</span></h1><p><span>v1.3</span></p><p><span>{required} [optional]</span></p><div class='md-toc' mdtype='toc'><p class="md-toc-content" role="list"><span role="listitem" class="md-toc-item md-toc-h1" data-ref="n0"><a class="md-toc-inner" href="#manual">Manual</a></span><span role="listitem" class="md-toc-item md-toc-h2" data-ref="n5"><a class="md-toc-inner" href="#list">List</a></span><span role="listitem" class="md-toc-item md-toc-h2" data-ref="n51"><a class="md-toc-inner" href="#group">Group</a></span><span role="listitem" class="md-toc-item md-toc-h2" data-ref="n74"><a class="md-toc-inner" href="#group-approval">Group Approval</a></span><span role="listitem" class="md-toc-item md-toc-h2" data-ref="n140"><a class="md-toc-inner" href="#group-keyword">Group Keyword</a></span><span role="listitem" class="md-toc-item md-toc-h2" data-ref="n186"><a class="md-toc-inner" href="#group-card">Group Card</a></span><span role="listitem" class="md-toc-item md-toc-h2" data-ref="n216"><a class="md-toc-inner" href="#group-log">Group Log</a></span><span role="listitem" class="md-toc-item md-toc-h2" data-ref="n230"><a class="md-toc-inner" href="#group-export">Group Export</a></span><span role="listitem" class="md-toc-item md-toc-h2" data-ref="n240"><a class="md-toc-inner" href="#user">User</a></span><span role="listitem" class="md-toc-item md-toc-h2" data-ref="n254"><a class="md-toc-inner" href="#namespace">Namespace</a></span><span role="listitem" class="md-toc-item md-toc-h2" data-ref="n280"><a class="md-toc-inner" href="#extra">Extra</a></span><span role="listitem" class="md-toc-item md-toc-h2" data-ref="n306"><a class="md-toc-inner" href="#advanced-features">Advanced features</a></span></p></div><h2 id='list'><span>List</span></h2><figure class='table-figure'><table><thead><tr><th><span>Command</span></th><th><span>Description</span></th><th><span>Comment</span></th></tr></thead><tbody><tr><td><span>/list add {list_name} {namespace}</span></td><td><span>在 namespace 下新增 list_name</span></td><td><span>需要 list_name 对应的 namespace admin 及以上权限</span></td></tr><tr><td><span>/list join {list_name} {key} [value]</span></td><td><span>将 key[:value] 添加到 list_name 中（key value 可作为双因子认证使用）（key 包含</span><strong><span>空格</span></strong><span>请用</span><code>%20</code><span>转义替换，包含</span><strong><span>%</span></strong><span>请用</span><code>%25</code><span>转义替换）</span></td><td><span>同上</span></td></tr><tr><td><span>/list leave {list_name} {key}</span></td><td><span>将 key 从 list_name 中移除（key 包含</span><strong><span>空格</span></strong><span>请用</span><code>%20</code><span>转义替换，包含</span><strong><span>%</span></strong><span>请用</span><code>%25</code><span>转义替换）</span></td><td><span>同上</span></td></tr><tr><td><span>/list len {list_name}</span></td><td><span>查询 list_name 里共有多少条数据</span></td><td><span>同上</span></td></tr><tr><td><span>/list query {list_name} [key]</span></td><td><span>查询 list_name 或者 list_name 内的 key（key 包含</span><strong><span>空格</span></strong><span>请用</span><code>%20</code><span>转义替换，包含</span><strong><span>%</span></strong><span>请用</span><code>%25</code><span>转义替换）</span></td><td><span>同上</span></td></tr><tr><td><span>/list export {list_name}</span></td><td><span>将 list_name 以文件的方式导出</span></td><td><span>同上</span></td></tr><tr><td><span>/list append {list_name} {json}</span></td><td><span>用 json 追加 list_name 的数据</span></td><td><span>同上</span></td></tr><tr><td><span>/list set {list_name} {json}</span></td><td><span>用 json 覆盖 list_name 的数据</span></td><td><span>同上</span></td></tr><tr><td><span>/list reset {list_name}</span></td><td><span>重置 list_name 的数据</span></td><td><span>同上</span></td></tr><tr><td><span>/list rm {list_name}</span></td><td><span>删除 list_name（删除后原 list_name 不可使用）</span></td><td><span>同上</span></td></tr></tbody></table></figure><h2 id='group'><span>Group</span></h2><figure class='table-figure'><table><thead><tr><th><span>Command</span></th><th><span>Description</span></th><th><span>Comment</span></th></tr></thead><tbody><tr><td><span>/group bind {namespace}</span></td><td><span>将当前 group 绑定到 namespace 中（会重置当前 group 的所有配置）</span></td><td><span>需要 group admin 和 namespace admin 及以上权限</span></td></tr><tr><td><span>/group unbind</span></td><td><span>解除当前 group 的绑定</span></td><td><span>同上</span></td></tr><tr><td><span>/group query</span></td><td><span>查询当前 group 的配置</span></td><td><span>需要 namespace admin 及以上权限</span></td></tr><tr><td><span>/group kick {list_name}</span></td><td><span>用 list_name 把当前 group 的成员踢出</span></td><td><span>需要 group admin 和 namespace admin 及以上权限</span></td></tr></tbody></table></figure><h2 id='group-approval'><span>Group Approval</span></h2><figure class='table-figure'><table><thead><tr><th><span>Command</span></th><th><span>Description</span></th><th><span>Comment</span></th></tr></thead><tbody><tr><td><span>/group approval enable mc</span></td><td><span>入群审批启用 mc 正版用户名验证（将使用正版 UUID 作为双因子认证的输入）</span></td><td><span>需要 group admin 和 namespace admin 及以上权限</span></td></tr><tr><td><span>/group approval enable regexp</span></td><td><span>入群审批启用正则表达式（将使用匹配结果作为双因子认证的输入）</span></td><td><span>同上</span></td></tr><tr><td><span>/group approval enable whitelist</span></td><td><span>入群审批启用白名单</span></td><td><span>同上</span></td></tr><tr><td><span>/group approval enable blacklist</span></td><td><span>入群审批启用黑名单</span></td><td><span>同上</span></td></tr><tr><td><span>/group approval enable autopass</span></td><td><span>入群审批启用自动通过（默认启用）</span></td><td><span>同上</span></td></tr><tr><td><span>/group approval set regexp {regexp}</span></td><td><span>指定入群审批的正则表达式（若有子表达式，则会使用第一个子表达式的匹配结果）</span></td><td><span>同上</span></td></tr><tr><td><span>/group approval add whitelist {list_name}</span></td><td><span>新增入群审批白名单 list_name（可以多次指定不同的 list_name 最终采用并集查找）</span></td><td><span>同上</span></td></tr><tr><td><span>/group approval add blacklist {list_name}</span></td><td><span>新增入群审批黑名单 list_name（可以多次指定不同的 list_name 最终采用并集查找）</span></td><td><span>同上</span></td></tr><tr><td><span>/group approval rm whitelist {list_name}</span></td><td><span>移除入群审批白名单 list_name</span></td><td><span>同上</span></td></tr><tr><td><span>/group approval rm blacklist {list_name}</span></td><td><span>移除入群审批黑名单 list_name</span></td><td><span>同上</span></td></tr><tr><td><span>/group approval disable mc</span></td><td><span>入群审批禁用 mc 正版用户名验证</span></td><td><span>同上</span></td></tr><tr><td><span>/group approval disable regexp</span></td><td><span>入群审批禁用正则表达式</span></td><td><span>同上</span></td></tr><tr><td><span>/group approval disable whitelist</span></td><td><span>入群审批禁用白名单</span></td><td><span>同上</span></td></tr><tr><td><span>/group approval disable blacklist</span></td><td><span>入群审批禁用黑名单</span></td><td><span>同上</span></td></tr><tr><td><span>/group approval disable autopass</span></td><td><span>入群审批禁用自动通过（言下之意，符合通过条件的申请不自动处理，需要手动同意。自动拒绝照常工作）</span></td><td><span>同上</span></td></tr></tbody></table></figure><h2 id='group-keyword'><span>Group Keyword</span></h2><figure class='table-figure'><table><thead><tr><th><span>Command</span></th><th><span>Description</span></th><th><span>Comment</span></th></tr></thead><tbody><tr><td><span>/group keyword enable blacklist</span></td><td><span>关键词检查启用黑名单</span></td><td><span>需要 group admin 和 namespace admin 及以上权限</span></td></tr><tr><td><span>/group keyword enable whitelist</span></td><td><span>关键词检查启用白名单</span></td><td><span>同上</span></td></tr><tr><td><span>/group keyword add blacklist {list_name}</span></td><td><span>新增关键词检查黑名单 list_name（可以多次指定不同的 list_name 最终采用并集查找）</span></td><td><span>同上</span></td></tr><tr><td><span>/group keyword add whitelist {list_name}</span></td><td><span>新增关键词检查白名单 list_name（可以多次指定不同的 list_name 最终采用并集查找）</span></td><td><span>同上</span></td></tr><tr><td><span>/group keyword set reply {list_name}</span></td><td><span>设置关键词回复列表 list_name</span></td><td><span>同上</span></td></tr><tr><td><span>/group keyword rm blacklist {list_name}</span></td><td><span>移除关键词检查黑名单 list_name</span></td><td><span>同上</span></td></tr><tr><td><span>/group keyword rm whitelist {list_name}</span></td><td><span>移除关键词检查白名单 list_name</span></td><td><span>同上</span></td></tr><tr><td><span>/group keyword rm reply</span></td><td><span>移除关键词回复列表</span></td><td><span>同上</span></td></tr><tr><td><span>/group keyword disable blacklist</span></td><td><span>关键词检查禁用黑名单</span></td><td><span>同上</span></td></tr><tr><td><span>/group keyword disable whitelist</span></td><td><span>关键词检查禁用白名单</span></td><td><span>同上</span></td></tr></tbody></table></figure><h2 id='group-card'><span>Group Card</span></h2><figure class='table-figure'><table><thead><tr><th><span>Command</span></th><th><span>Description</span></th><th><span>Comment</span></th></tr></thead><tbody><tr><td><span>/group card check {list_name} with {regexp}</span></td><td><span>使用 regexp 正则匹配群名片，将不匹配的成员写入 list_name 中</span></td><td><span>需要 group admin 和 namespace admin 及以上权限</span></td></tr><tr><td><span>/group card check {to_list_name} by {from_list_name}</span></td><td><span>使用 from_list_name uid:card 匹配群名片，将不匹配的成员写入 to_list_name 中</span></td><td><span>同上</span></td></tr><tr><td><span>/group card set auto_set {list_name}</span></td><td><span>设置入群自动修改群名片 list_name；若不包含，那么不修改</span></td><td><span>同上</span></td></tr><tr><td><span>/group card rm auto_set</span></td><td><span>清除设置的自动修改群名片 list_name</span></td><td><span>同上</span></td></tr><tr><td><span>/group card lock</span></td><td><span>锁定群名片，不让修改（实验性功能）</span></td><td><span>同上</span></td></tr><tr><td><span>/group card unlock</span></td><td><span>解锁群名片（实验性功能）</span></td><td><span>同上</span></td></tr></tbody></table></figure><h2 id='group-log'><span>Group Log</span></h2><figure class='table-figure'><table><thead><tr><th><span>Command</span></th><th><span>Description</span></th><th><span>Comment</span></th></tr></thead><tbody><tr><td><span>/group log set leave {list_name}</span></td><td><span>设置离群记录 list_name</span></td><td><span>需要 group admin 和 namespace admin 及以上权限</span></td></tr><tr><td><span>/group log rm leave</span></td><td><span>移除离群记录 list_name</span></td><td><span>同上</span></td></tr></tbody></table></figure><h2 id='group-export'><span>Group Export</span></h2><figure class='table-figure'><table><thead><tr><th><span>Command</span></th><th><span>Description</span></th><th><span>Comment</span></th></tr></thead><tbody><tr><td><span>/group export member {list_name}</span></td><td><span>导出 group member 到 list_name</span></td><td><span>需要 group admin 和 namespace admin 及以上权限</span></td></tr></tbody></table></figure><h2 id='user'><span>User</span></h2><figure class='table-figure'><table><thead><tr><th><span>Command</span></th><th><span>Description</span></th><th><span>Comment</span></th></tr></thead><tbody><tr><td><span>/user join {namespace} {user_id}</span></td><td><span>将 user_id 添加到 namespace admin 名单</span></td><td><span>需要 namespace owner 权限</span></td></tr><tr><td><span>/user leave {namespace} {user_id}</span></td><td><span>将 user_id 从 namespace admin 名单移除</span></td><td><span>同上</span></td></tr></tbody></table></figure><h2 id='namespace'><span>Namespace</span></h2><figure class='table-figure'><table><thead><tr><th><span>Command</span></th><th><span>Description</span></th><th><span>Comment</span></th></tr></thead><tbody><tr><td><span>/namespace add {namespace}</span></td><td><span>新建 namespace</span></td><td><span>需要系统授予的操作 namespace 权限</span></td></tr><tr><td><span>/namespace rm {namespace}</span></td><td><span>删除 namespace</span></td><td><span>同上</span></td></tr><tr><td><span>/namespace query</span></td><td><span>查询自己所有的 namespace</span></td><td><span>同上</span></td></tr><tr><td><span>/namespace {namespace}</span></td><td><span>查询 namespace 配置</span></td><td><span>需要 namespace admin 及以上权限</span></td></tr><tr><td><span>/namespace {namespace} reset</span></td><td><span>重置 namespace 的 admin</span></td><td><span>需要 namespace owner 权限</span></td></tr></tbody></table></figure><h2 id='extra'><span>Extra</span></h2><figure class='table-figure'><table><thead><tr><th><span>Command</span></th><th><span>Description</span></th><th><span>Comment</span></th></tr></thead><tbody><tr><td><span>/raw {message}</span></td><td><span>获取 message 的原始信息</span></td><td><span>需要系统授予的获取 raw 的权限</span></td></tr><tr><td><span>/model set {model}</span></td><td><span>设置机型</span></td><td><span>需要受系统信任</span></td></tr><tr><td><span>/token add {name} {token}</span></td><td><span>添加可让 user 接入本系统的令牌</span></td><td><span>需要系统授予的操作 token 的权限</span></td></tr><tr><td><span>/token rm {name}</span></td><td><span>删除令牌</span></td><td><span>需要系统授予的操作 token 的权限</span></td></tr><tr><td><span>/token query</span></td><td><span>查询自己所有的令牌</span></td><td><span>需要系统授予的操作 token 的权限</span></td></tr></tbody></table></figure><h2 id='advanced-features'><span>Advanced features</span></h2><ol start='' ><li><p><span>当 group keyword 使用的 key 有</span><strong><span>空格</span></strong><span>（转义后为</span><code>%20</code><span>）时，会对 key 的字符串以</span><strong><span>空格</span></strong><span>拆分。当检查的文本全部包含拆分字符串，则匹配成功。</span></p><p><span>e.g. key: </span><code>砍 并夕夕</code><span> 文本1：</span><code>帮我并夕夕砍一刀</code><span>（匹配成功）文本2：</span><code>是兄弟就来砍我</code><span>（匹配失败）</span></p></li></ol></div></div>
 </body>
 </html>
