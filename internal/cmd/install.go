@@ -50,8 +50,9 @@ var (
 		},
 	}
 	Uninstall = gcmd.Command{
-		Name:  "uninstall",
-		Brief: "uninstall service",
+		Name:          "uninstall",
+		Brief:         "uninstall service",
+		CaseSensitive: true,
 		Func: func(ctx context.Context, parser *gcmd.Parser) (err error) {
 			if isWindows() {
 				err = errors.New("windows 暂不支持安装到系统")
