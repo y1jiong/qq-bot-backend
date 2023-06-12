@@ -170,6 +170,12 @@ func (s *sGroup) KickFromListWithRes(ctx context.Context, groupId int64, listNam
 				}
 			}
 		}
+		// 不需要执行踢出
+		if len(kickMap) == 0 {
+			service.Bot().SendPlainMsg(ctx, "list("+listName+") 中的 group("+gconv.String(groupId)+
+				") member 无需踢出")
+			return
+		}
 		// 踢人过程
 		service.Bot().SendPlainMsg(ctx, "正在踢出 list("+listName+") 中的 group("+gconv.String(groupId)+
 			") member\n共 "+gconv.String(listMapLen)+" 条，有 "+gconv.String(len(kickMap))+" 条需要踢出")
