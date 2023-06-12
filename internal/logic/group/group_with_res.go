@@ -141,15 +141,80 @@ func (s *sGroup) KickFromListWithRes(ctx context.Context, groupId int64, listNam
 	// 获取 list
 	listMap := service.List().GetListData(ctx, listName)
 	listMapLen := len(listMap)
-	service.Bot().SendPlainMsg(ctx, "正在踢出 list("+listName+") 中的 group("+gconv.String(groupId)+
-		") member\n共 "+gconv.String(listMapLen)+" 条")
-	for k := range listMap {
-		// 踢人
-		service.Bot().Kick(ctx, groupId, gconv.Int64(k))
-		// 随机延时
-		time.Sleep(time.Duration(grand.N(1000, 10000)) * time.Millisecond)
+	// 异步 callback
+	callback := func(ctx context.Context, rsyncCtx context.Context) {
+		if service.Bot().DefaultEchoProcess(ctx, rsyncCtx) {
+			return
+		}
+		// 获取群成员列表
+		membersJson := service.Bot().GetData(rsyncCtx)
+		if membersJson == nil {
+			// 空列表
+			service.Bot().SendPlainMsg(ctx, "获取到空的群成员列表")
+			return
+		}
+		// 局部变量
+		membersArr := membersJson.MustArray()
+		kickMap := make(map[string]any)
+		// 解析数组
+		for _, v := range membersArr {
+			// map 断言
+			if kk, ok := v.(map[string]any); ok {
+				if kk["role"] != "member" {
+					continue
+				}
+				// 放入待踢出 map
+				userId := gconv.String(kk["user_id"])
+				if _, ok := listMap[userId]; ok {
+					kickMap[userId] = nil
+				}
+			}
+		}
+		// 踢人过程
+		service.Bot().SendPlainMsg(ctx, "正在踢出 list("+listName+") 中的 group("+gconv.String(groupId)+
+			") member\n共 "+gconv.String(listMapLen)+" 条，有 "+gconv.String(len(kickMap))+" 条需要踢出")
+		for k := range kickMap {
+			// 踢人
+			service.Bot().Kick(ctx, groupId, gconv.Int64(k))
+			// 随机延时
+			time.Sleep(time.Duration(grand.N(1000, 10000)) * time.Millisecond)
+		}
+		// 异步检查有没有踢出失败的
+		callback2 := func(ctx context.Context, rsyncCtx context.Context) {
+			if service.Bot().DefaultEchoProcess(ctx, rsyncCtx) {
+				return
+			}
+			// 获取群成员列表
+			membersJson = service.Bot().GetData(rsyncCtx)
+			if membersJson == nil {
+				// 空列表
+				service.Bot().SendPlainMsg(ctx, "获取到空的群成员列表")
+				return
+			}
+			// 局部变量
+			membersArr = membersJson.MustArray()
+			kickMap = make(map[string]any)
+			// 解析数组
+			for _, v := range membersArr {
+				// map 断言
+				if kk, ok := v.(map[string]any); ok {
+					if kk["role"] != "member" {
+						continue
+					}
+					// 放入待踢出 map
+					userId := gconv.String(kk["user_id"])
+					if _, ok := listMap[userId]; ok {
+						kickMap[userId] = nil
+					}
+				}
+			}
+			// 回执
+			service.Bot().SendPlainMsg(ctx, "已踢出 list("+listName+") 中的 group("+gconv.String(groupId)+
+				") member\n共 "+gconv.String(listMapLen)+" 条，有 "+gconv.String(len(kickMap))+" 条未踢出")
+		}
+		// 异步获取群成员列表
+		service.Bot().GetGroupMemberList(ctx, groupId, callback2, true)
 	}
-	// 回执
-	service.Bot().SendPlainMsg(ctx, "已踢出 list("+listName+") 中的 group("+gconv.String(groupId)+
-		") member\n共 "+gconv.String(listMapLen)+" 条")
+	// 异步获取群成员列表
+	service.Bot().GetGroupMemberList(ctx, groupId, callback, true)
 }
