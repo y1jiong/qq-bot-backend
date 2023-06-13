@@ -9,7 +9,7 @@ type (
 	ICodec interface {
 		DecodeCqCode(src string) (dest string)
 		EncodeCqCode(src string) (dest string)
-		IsIncludeCqCode(str string) (yes bool)
+		IsIncludeCqCode(str string) bool
 		DecodeBlank(src string) (dest string)
 	}
 )

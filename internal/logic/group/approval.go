@@ -94,7 +94,7 @@ func (s *sGroup) GetApprovalRegexp(ctx context.Context, groupId int64) (exp stri
 	return
 }
 
-func (s *sGroup) GetApprovalIsAutoPass(ctx context.Context, groupId int64) (yes bool) {
+func (s *sGroup) IsEnabledApprovalAutoPass(ctx context.Context, groupId int64) (enabled bool) {
 	// 参数合法性校验
 	if groupId < 1 {
 		return
@@ -110,6 +110,6 @@ func (s *sGroup) GetApprovalIsAutoPass(ctx context.Context, groupId int64) (yes 
 		g.Log().Error(ctx, err)
 		return
 	}
-	yes = !settingJson.Get(approvalDisabledAutoPassKey).MustBool()
+	enabled = !settingJson.Get(approvalDisabledAutoPassKey).MustBool()
 	return
 }

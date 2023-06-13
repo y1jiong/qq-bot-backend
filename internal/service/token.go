@@ -11,11 +11,11 @@ import (
 
 type (
 	IToken interface {
-		IsCorrectToken(ctx context.Context, token string) (yes bool, name string)
+		IsCorrectToken(ctx context.Context, token string) (correct bool, name string)
+		UpdateLoginTime(ctx context.Context, token string)
 		AddNewTokenWithRes(ctx context.Context, name, token string)
 		RemoveTokenWithRes(ctx context.Context, name string)
 		QueryTokenWithRes(ctx context.Context)
-		UpdateLoginTime(ctx context.Context, token string)
 	}
 )
 

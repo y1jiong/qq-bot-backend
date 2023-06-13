@@ -34,8 +34,11 @@ type (
 		GetOperatorId(ctx context.Context) int64
 		GetGroupMemberList(ctx context.Context, groupId int64, callback func(ctx context.Context, lastCtx context.Context), noCache ...bool)
 		GetCardOldNew(ctx context.Context) (oldCard, newCard string)
+		RequestMessage(ctx context.Context, messageId int64, callback func(ctx context.Context, lastCtx context.Context))
 		GetData(ctx context.Context) *sj.Json
-		GetFile(ctx context.Context) string
+		GetFileFromData(ctx context.Context) string
+		GetSenderFromData(ctx context.Context) (nickname string, userId int64)
+		GetMessageFromData(ctx context.Context) string
 		SendMessage(ctx context.Context, messageType string, uid, gid int64, msg string, plain bool)
 		SendPlainMsg(ctx context.Context, msg string)
 		SendMsg(ctx context.Context, msg string)
@@ -44,7 +47,7 @@ type (
 		SendFile(ctx context.Context, name, url string)
 		ApproveJoinGroup(ctx context.Context, flag, subType string, approve bool, reason string)
 		SetModel(ctx context.Context, model string)
-		RevokeMessage(ctx context.Context, msgId int64)
+		RecallMessage(ctx context.Context, msgId int64)
 		MutePrototype(ctx context.Context, groupId, userId int64, seconds int)
 		Mute(ctx context.Context, seconds int)
 		SetGroupCard(ctx context.Context, groupId, userId int64, card string)

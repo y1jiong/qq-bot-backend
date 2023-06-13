@@ -15,11 +15,11 @@ type (
 		GetApprovalWhitelists(ctx context.Context, groupId int64) (whitelists map[string]any)
 		GetApprovalBlacklists(ctx context.Context, groupId int64) (blacklists map[string]any)
 		GetApprovalRegexp(ctx context.Context, groupId int64) (exp string)
-		GetApprovalIsAutoPass(ctx context.Context, groupId int64) (yes bool)
+		IsEnabledApprovalAutoPass(ctx context.Context, groupId int64) (enabled bool)
 		AddApprovalProcessWithRes(ctx context.Context, groupId int64, processName string, args ...string)
 		RemoveApprovalProcessWithRes(ctx context.Context, groupId int64, processName string, args ...string)
 		GetCardAutoSetList(ctx context.Context, groupId int64) (listName string)
-		GetCardLock(ctx context.Context, groupId int64) (lock bool)
+		IsCardLocked(ctx context.Context, groupId int64) (locked bool)
 		SetAutoSetListWithRes(ctx context.Context, groupId int64, listName string)
 		RemoveAutoSetListWithRes(ctx context.Context, groupId int64)
 		CheckCardWithRegexpWithRes(ctx context.Context, groupId int64, listName, exp string)
@@ -40,6 +40,8 @@ type (
 		GetLogLeaveList(ctx context.Context, groupId int64) (listName string)
 		SetLogLeaveListWithRes(ctx context.Context, groupId int64, listName string)
 		RemoveLogLeaveListWithRes(ctx context.Context, groupId int64)
+		IsEnabledAntiRecall(ctx context.Context, groupId int64) (enabled bool)
+		SetAntiRecallWithRes(ctx context.Context, groupId int64, enable bool)
 	}
 )
 

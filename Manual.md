@@ -77,6 +77,13 @@ v1.3
 | /group card lock                                     | 锁定群名片，不让修改（实验性功能）                           | 同上                                           |
 | /group card unlock                                   | 解锁群名片（实验性功能）                                     | 同上                                           |
 
+## Group Message
+
+| Command                            | Description  | Comment                                        |
+| ---------------------------------- | ------------ | ---------------------------------------------- |
+| /group message enable anti-recall  | 启用群反撤回 | 需要 group admin 和 namespace admin 及以上权限 |
+| /group message disable anti-recall | 禁用群反撤回 | 同上                                           |
+
 ## Group Log
 
 | Command                          | Description            | Comment                                        |

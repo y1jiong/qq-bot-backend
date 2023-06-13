@@ -111,3 +111,33 @@ func (s *sBot) GetCardOldNew(ctx context.Context) (oldCard, newCard string) {
 	newCard = s.reqJsonFromCtx(ctx).Get("card_new").MustString()
 	return
 }
+
+func (s *sBot) RequestMessage(ctx context.Context, messageId int64, callback func(ctx context.Context, lastCtx context.Context)) {
+	// 初始化响应
+	resJson := sj.New()
+	resJson.Set("action", "get_msg")
+	// echo sign
+	echoSign := guid.S()
+	resJson.Set("echo", echoSign)
+	// 参数
+	params := make(map[string]any)
+	params["message_id"] = gconv.String(messageId)
+	// 参数打包
+	resJson.Set("params", params)
+	res, err := resJson.Encode()
+	if err != nil {
+		g.Log().Warning(ctx, err)
+		return
+	}
+	// echo
+	err = s.pushEchoCache(ctx, echoSign, callback)
+	if err != nil {
+		g.Log().Error(ctx, err)
+		return
+	}
+	// 发送响应
+	err = s.webSocketFromCtx(ctx).WriteMessage(websocket.TextMessage, res)
+	if err != nil {
+		g.Log().Warning(ctx, err)
+	}
+}

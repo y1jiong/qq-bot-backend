@@ -31,7 +31,7 @@ func (s *sGroup) GetCardAutoSetList(ctx context.Context, groupId int64) (listNam
 	return
 }
 
-func (s *sGroup) GetCardLock(ctx context.Context, groupId int64) (lock bool) {
+func (s *sGroup) IsCardLocked(ctx context.Context, groupId int64) (locked bool) {
 	// 参数合法性校验
 	if groupId < 1 {
 		return
@@ -47,6 +47,6 @@ func (s *sGroup) GetCardLock(ctx context.Context, groupId int64) (lock bool) {
 		g.Log().Error(ctx, err)
 		return
 	}
-	lock = settingJson.Get(cardLockKey).MustBool()
+	locked = settingJson.Get(cardLockKey).MustBool()
 	return
 }

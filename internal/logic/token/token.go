@@ -25,7 +25,7 @@ var (
 	legalTokenNameRe = regexp.MustCompile(`^\S{1,16}$`)
 )
 
-func (s *sToken) IsCorrectToken(ctx context.Context, token string) (yes bool, name string) {
+func (s *sToken) IsCorrectToken(ctx context.Context, token string) (correct bool, name string) {
 	// 过滤非法 token
 	if !legalTokenRe.MatchString(token) {
 		return
@@ -43,7 +43,7 @@ func (s *sToken) IsCorrectToken(ctx context.Context, token string) (yes bool, na
 		return
 	}
 	// 数据处理
-	yes = true
+	correct = true
 	name = tEntity.Name
 	return
 }

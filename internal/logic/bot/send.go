@@ -118,7 +118,7 @@ func (s *sBot) SendFile(ctx context.Context, name, url string) {
 		if s.DefaultEchoProcess(ctx, rsyncCtx) {
 			return
 		}
-		filePath := s.GetFile(rsyncCtx)
+		filePath := s.GetFileFromData(rsyncCtx)
 		groupId := s.GetGroupId(ctx)
 		if groupId != 0 {
 			s.SendFileToGroup(ctx, groupId, filePath, name, "")
@@ -204,7 +204,7 @@ func (s *sBot) SetModel(ctx context.Context, model string) {
 	}
 }
 
-func (s *sBot) RevokeMessage(ctx context.Context, msgId int64) {
+func (s *sBot) RecallMessage(ctx context.Context, msgId int64) {
 	// 初始化响应
 	resJson := sj.New()
 	resJson.Set("action", "delete_msg")

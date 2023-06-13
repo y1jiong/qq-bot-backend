@@ -14,10 +14,12 @@ type (
 		TryApproveAddGroup(ctx context.Context) (catch bool)
 		TryLockCard(ctx context.Context) (catch bool)
 		TryAutoSetCard(ctx context.Context) (catch bool)
-		TryKeywordRevoke(ctx context.Context) (catch bool)
+		TryKeywordRecall(ctx context.Context) (catch bool)
 		TryKeywordReply(ctx context.Context) (catch bool)
 		TryLogLeave(ctx context.Context) (catch bool)
+		TryUndoMessageRecall(ctx context.Context) (catch bool)
 		MultiContains(str string, m map[string]any) (contains bool, hit string, mValue string)
+		AutoMute(ctx context.Context, groupId, userId int64)
 	}
 )
 

@@ -22,6 +22,6 @@ func (s *sCodec) EncodeCqCode(src string) (dest string) {
 	return
 }
 
-func (s *sCodec) IsIncludeCqCode(str string) (yes bool) {
+func (s *sCodec) IsIncludeCqCode(str string) bool {
 	return strings.Contains(str, "[CQ:")
 }

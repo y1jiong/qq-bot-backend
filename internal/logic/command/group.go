@@ -29,6 +29,9 @@ func tryGroup(ctx context.Context, cmd string) (catch bool) {
 		case "export":
 			// /group export <>
 			catch = tryGroupExport(ctx, next[2])
+		case "message":
+			// /group message <>
+			catch = tryGroupMessage(ctx, next[2])
 		case "bind":
 			// /group bind <namespace>
 			service.Group().BindNamespaceWithRes(ctx, service.Bot().GetGroupId(ctx), next[2])

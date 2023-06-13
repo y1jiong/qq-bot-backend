@@ -41,7 +41,7 @@ func (s *sModule) TryApproveAddGroup(ctx context.Context) (catch bool) {
 		// 黑名单
 		pass = isNotInApprovalBlacklist(ctx, groupId, userId, extra)
 	}
-	if !pass || (pass && service.Group().GetApprovalIsAutoPass(ctx, groupId)) {
+	if !pass || (pass && service.Group().IsEnabledApprovalAutoPass(ctx, groupId)) {
 		// 在不通过和启用自动通过的条件下发送审批回执
 		// 审批请求回执
 		service.Bot().ApproveJoinGroup(ctx,
@@ -72,7 +72,7 @@ func (s *sModule) TryApproveAddGroup(ctx context.Context) (catch bool) {
 	return
 }
 
-func isMatchRegexp(ctx context.Context, groupId int64, comment string) (yes bool, matched string) {
+func isMatchRegexp(ctx context.Context, groupId int64, comment string) (match bool, matched string) {
 	exp := service.Group().GetApprovalRegexp(ctx, groupId)
 	// 匹配正则
 	re, err := regexp.Compile(exp)
@@ -85,11 +85,11 @@ func isMatchRegexp(ctx context.Context, groupId int64, comment string) (yes bool
 	case 0:
 	case 1:
 		matched = ans[0]
-		yes = true
+		match = true
 	default:
 		// 读取第一个子表达式
 		matched = ans[1]
-		yes = true
+		match = true
 	}
 	return
 }
@@ -103,7 +103,7 @@ func verifyMinecraftGenuine(ctx context.Context, comment string) (genuine bool, 
 	return
 }
 
-func isInApprovalWhitelist(ctx context.Context, groupId, userId int64, extra string) (yes bool) {
+func isInApprovalWhitelist(ctx context.Context, groupId, userId int64, extra string) (in bool) {
 	// 获取白名单组
 	whitelists := service.Group().GetApprovalWhitelists(ctx, groupId)
 	for k := range whitelists {
@@ -114,12 +114,12 @@ func isInApprovalWhitelist(ctx context.Context, groupId, userId int64, extra str
 			if vv, okay := v.(string); okay {
 				// 有额外验证信息
 				if vv == extra {
-					yes = true
+					in = true
 					return
 				}
 			} else {
 				// 没有额外验证信息
-				yes = true
+				in = true
 				return
 			}
 		}
@@ -131,7 +131,7 @@ func isInApprovalWhitelist(ctx context.Context, groupId, userId int64, extra str
 		if v, ok := whitelist[extra]; ok {
 			if vv, okay := v.(string); okay {
 				if vv == gconv.String(userId) {
-					yes = true
+					in = true
 					return
 				}
 			}
@@ -140,9 +140,9 @@ func isInApprovalWhitelist(ctx context.Context, groupId, userId int64, extra str
 	return
 }
 
-func isNotInApprovalBlacklist(ctx context.Context, groupId, userId int64, extra string) (yes bool) {
+func isNotInApprovalBlacklist(ctx context.Context, groupId, userId int64, extra string) (notIn bool) {
 	// 默认不在黑名单内
-	yes = true
+	notIn = true
 	// 获取黑名单组
 	blacklists := service.Group().GetApprovalBlacklists(ctx, groupId)
 	for k := range blacklists {
@@ -153,12 +153,12 @@ func isNotInApprovalBlacklist(ctx context.Context, groupId, userId int64, extra 
 			if vv, okay := v.(string); okay {
 				// 有额外验证信息
 				if vv == extra {
-					yes = false
+					notIn = false
 					return
 				}
 			} else {
 				// 没有额外验证信息
-				yes = false
+				notIn = false
 				return
 			}
 		}
@@ -170,7 +170,7 @@ func isNotInApprovalBlacklist(ctx context.Context, groupId, userId int64, extra 
 		if v, ok := blacklist[extra]; ok {
 			if vv, okay := v.(string); okay {
 				if vv == gconv.String(userId) {
-					yes = false
+					notIn = false
 					return
 				}
 			}

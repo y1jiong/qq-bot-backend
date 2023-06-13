@@ -9,8 +9,8 @@ import (
 func (s *sModule) TryLockCard(ctx context.Context) (catch bool) {
 	// 获取当前 group card lock
 	groupId := service.Bot().GetGroupId(ctx)
-	lock := service.Group().GetCardLock(ctx, groupId)
-	if !lock {
+	locked := service.Group().IsCardLocked(ctx, groupId)
+	if !locked {
 		// 不需要锁定
 		return
 	}
