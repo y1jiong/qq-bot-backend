@@ -4,13 +4,13 @@ go 1.20
 
 require (
 	github.com/bitly/go-simplejson v0.5.0
-	github.com/gogf/gf/contrib/drivers/pgsql/v2 v2.4.2
-	github.com/gogf/gf/v2 v2.4.2
+	github.com/gogf/gf/contrib/drivers/pgsql/v2 v2.4.3
+	github.com/gogf/gf/v2 v2.4.3
 	github.com/gorilla/websocket v1.5.0
 )
 
 require (
-	github.com/BurntSushi/toml v1.3.0 // indirect
+	github.com/BurntSushi/toml v1.3.2 // indirect
 	github.com/bmizerany/assert v0.0.0-20160611221934-b7ed37b82869 // indirect
 	github.com/clbanning/mxj/v2 v2.5.7 // indirect
 	github.com/fatih/color v1.15.0 // indirect
@@ -28,10 +28,10 @@ require (
 	github.com/rivo/uniseg v0.4.3 // indirect
 	go.opentelemetry.io/otel v1.16.0 // indirect
 	go.opentelemetry.io/otel/metric v1.16.0 // indirect
-	go.opentelemetry.io/otel/sdk v1.15.1 // indirect
+	go.opentelemetry.io/otel/sdk v1.16.0 // indirect
 	go.opentelemetry.io/otel/trace v1.16.0 // indirect
 	golang.org/x/net v0.7.0 // indirect
-	golang.org/x/sys v0.8.0 // indirect
-	golang.org/x/text v0.9.0 // indirect
+	golang.org/x/sys v0.9.0 // indirect
+	golang.org/x/text v0.10.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
