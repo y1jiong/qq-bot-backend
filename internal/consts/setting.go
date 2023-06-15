@@ -7,6 +7,4 @@ const (
 	McCmd        = "mc"
 	ReplyCmd     = "reply"
 	AutoPassCmd  = "autopass"
-
-	BaseMuteMinutes = 5
 )

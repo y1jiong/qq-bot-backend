@@ -37,7 +37,8 @@ func (s *sModule) TryUndoMessageRecall(ctx context.Context) (catch bool) {
 	}
 	service.Bot().RequestMessage(ctx, msgId, callback)
 	// 防止过度触发反撤回
-	s.AutoMute(ctx, groupId, service.Bot().GetUserId(ctx))
+	s.AutoMute(ctx, "recall", groupId, service.Bot().GetUserId(ctx),
+		2, 5, 5, gconv.Duration("1m"))
 	catch = true
 	return
 }

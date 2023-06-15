@@ -5,41 +5,51 @@ import (
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/os/gcache"
 	"github.com/gogf/gf/v2/util/gconv"
-	"qq-bot-backend/internal/consts"
 	"qq-bot-backend/internal/service"
 	"time"
 )
 
-func (s *sModule) AutoMute(ctx context.Context, groupId, userId int64) {
+func (s *sModule) AutoMute(ctx context.Context, kind string, groupId, userId int64,
+	passTimes, baseMinutes, limitMinutes int, duration time.Duration) {
 	// 缓存键名
-	cacheKey := "MuteTimes.QQ=" + gconv.String(userId)
+	cacheKey := "MuteTimes:" + kind + "=" + gconv.String(userId)
 	// 过期时间
-	expirationDuration := 16 * time.Hour
 	timesVar, err := gcache.Get(ctx, cacheKey)
 	if err != nil {
 		g.Log().Warning(ctx, err)
 		return
 	}
+	var times int
 	if timesVar == nil {
-		// 第一次不禁言
-		err = gcache.Set(ctx, cacheKey, 1, expirationDuration)
+		// 设置缓存
+		defaultTimes := 1
+		err = gcache.Set(ctx, cacheKey, defaultTimes, duration)
 		if err != nil {
 			g.Log().Warning(ctx, err)
+			return
 		}
-		return
+		times = defaultTimes - 1
+	} else {
+		// 更新缓存
+		times = timesVar.Int()
+		_, _, err = gcache.Update(ctx, cacheKey, times+1)
+		if err != nil {
+			g.Log().Warning(ctx, err)
+			return
+		}
 	}
-	times := timesVar.Int()
-	// 多次撤回
-	err = gcache.Set(ctx, cacheKey, times+1, expirationDuration)
-	if err != nil {
-		g.Log().Warning(ctx, err)
+	if times < passTimes {
 		return
 	}
 	// 最终禁言分钟数
 	muteMinutes := 1
 	// 执行幂次运算
 	for i := 0; i < times; i++ {
-		muteMinutes *= consts.BaseMuteMinutes
+		muteMinutes *= baseMinutes
+		if limitMinutes > 0 && muteMinutes > limitMinutes {
+			muteMinutes = limitMinutes
+			break
+		}
 		// 不超过 30 天 30*24*60=43200
 		if muteMinutes > 43199 {
 			muteMinutes = 43199

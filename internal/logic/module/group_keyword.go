@@ -48,7 +48,8 @@ func (s *sModule) TryKeywordRecall(ctx context.Context) (catch bool) {
 		hit,
 		msg)
 	// 禁言
-	s.AutoMute(ctx, groupId, userId)
+	s.AutoMute(ctx, "keyword", groupId, userId,
+		1, 5, 0, gconv.Duration("16h"))
 	catch = true
 	return
 }

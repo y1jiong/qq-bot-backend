@@ -7,6 +7,7 @@ package service
 
 import (
 	"context"
+	"time"
 )
 
 type (
@@ -19,7 +20,7 @@ type (
 		TryLogLeave(ctx context.Context) (catch bool)
 		TryUndoMessageRecall(ctx context.Context) (catch bool)
 		MultiContains(str string, m map[string]any) (contains bool, hit string, mValue string)
-		AutoMute(ctx context.Context, groupId, userId int64)
+		AutoMute(ctx context.Context, kind string, groupId, userId int64, passTimes, baseMinutes, limitMinutes int, duration time.Duration)
 	}
 )
 
