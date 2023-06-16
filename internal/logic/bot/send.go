@@ -35,7 +35,7 @@ func (s *sBot) SendMessage(ctx context.Context, messageType string, uid, gid int
 		g.Log().Warning(ctx, err)
 		return
 	}
-	err = s.webSocketFromCtx(ctx).WriteMessage(websocket.TextMessage, res)
+	err = s.writeMessage(ctx, websocket.TextMessage, res)
 	if err != nil {
 		g.Log().Warning(ctx, err)
 	}
@@ -68,7 +68,7 @@ func (s *sBot) SendFileToGroup(ctx context.Context, gid int64, filePath, name, f
 		g.Log().Warning(ctx, err)
 		return
 	}
-	err = s.webSocketFromCtx(ctx).WriteMessage(websocket.TextMessage, res)
+	err = s.writeMessage(ctx, websocket.TextMessage, res)
 	if err != nil {
 		g.Log().Warning(ctx, err)
 	}
@@ -90,7 +90,7 @@ func (s *sBot) SendFileToUser(ctx context.Context, uid int64, filePath, name str
 		g.Log().Warning(ctx, err)
 		return
 	}
-	err = s.webSocketFromCtx(ctx).WriteMessage(websocket.TextMessage, res)
+	err = s.writeMessage(ctx, websocket.TextMessage, res)
 	if err != nil {
 		g.Log().Warning(ctx, err)
 	}
@@ -133,7 +133,7 @@ func (s *sBot) SendFile(ctx context.Context, name, url string) {
 		g.Log().Error(ctx, err)
 		return
 	}
-	err = s.webSocketFromCtx(ctx).WriteMessage(websocket.TextMessage, res)
+	err = s.writeMessage(ctx, websocket.TextMessage, res)
 	if err != nil {
 		g.Log().Warning(ctx, err)
 	}
@@ -160,7 +160,7 @@ func (s *sBot) ApproveJoinGroup(ctx context.Context, flag, subType string, appro
 		return
 	}
 	// 发送响应
-	err = s.webSocketFromCtx(ctx).WriteMessage(websocket.TextMessage, res)
+	err = s.writeMessage(ctx, websocket.TextMessage, res)
 	if err != nil {
 		g.Log().Warning(ctx, err)
 	}
@@ -198,7 +198,7 @@ func (s *sBot) SetModel(ctx context.Context, model string) {
 		return
 	}
 	// 发送响应
-	err = s.webSocketFromCtx(ctx).WriteMessage(websocket.TextMessage, res)
+	err = s.writeMessage(ctx, websocket.TextMessage, res)
 	if err != nil {
 		g.Log().Warning(ctx, err)
 	}
@@ -218,7 +218,7 @@ func (s *sBot) RecallMessage(ctx context.Context, msgId int64) {
 		g.Log().Warning(ctx, err)
 		return
 	}
-	err = s.webSocketFromCtx(ctx).WriteMessage(websocket.TextMessage, res)
+	err = s.writeMessage(ctx, websocket.TextMessage, res)
 	if err != nil {
 		g.Log().Warning(ctx, err)
 	}
@@ -245,7 +245,7 @@ func (s *sBot) MutePrototype(ctx context.Context, groupId, userId int64, seconds
 		g.Log().Warning(ctx, err)
 		return
 	}
-	err = s.webSocketFromCtx(ctx).WriteMessage(websocket.TextMessage, res)
+	err = s.writeMessage(ctx, websocket.TextMessage, res)
 	if err != nil {
 		g.Log().Warning(ctx, err)
 	}
@@ -271,7 +271,7 @@ func (s *sBot) SetGroupCard(ctx context.Context, groupId, userId int64, card str
 		g.Log().Warning(ctx, err)
 		return
 	}
-	err = s.webSocketFromCtx(ctx).WriteMessage(websocket.TextMessage, res)
+	err = s.writeMessage(ctx, websocket.TextMessage, res)
 	if err != nil {
 		g.Log().Warning(ctx, err)
 	}
@@ -295,7 +295,7 @@ func (s *sBot) Kick(ctx context.Context, groupId, userId int64, reject ...bool) 
 		g.Log().Warning(ctx, err)
 		return
 	}
-	err = s.webSocketFromCtx(ctx).WriteMessage(websocket.TextMessage, res)
+	err = s.writeMessage(ctx, websocket.TextMessage, res)
 	if err != nil {
 		g.Log().Warning(ctx, err)
 	}

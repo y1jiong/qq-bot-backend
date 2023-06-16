@@ -7,6 +7,7 @@ import (
 	"github.com/gogf/gf/v2/net/ghttp"
 	"github.com/gogf/gf/v2/os/gcache"
 	"qq-bot-backend/internal/service"
+	"sync"
 	"time"
 )
 
@@ -21,16 +22,28 @@ func init() {
 }
 
 const (
-	ctxKeyForWebSocket = "ws"
-	ctxKeyForReqJson   = "reqJson"
-	echoPrefix         = "echo_"
-	echoDuration       = 60 * time.Second
-	echoTimeout        = echoDuration + 10*time.Second
+	ctxKeyForWebSocketMutex = "ws.mutex"
+	ctxKeyForWebSocket      = "ws"
+	ctxKeyForReqJson        = "reqJson"
+	echoPrefix              = "echo_"
+	echoDuration            = 60 * time.Second
+	echoTimeout             = echoDuration + 10*time.Second
 )
 
 type echoModel struct {
 	LastContext  context.Context
 	CallbackFunc func(ctx context.Context, rsyncCtx context.Context)
+}
+
+func (s *sBot) CtxNewWebSocketMutex(parent context.Context) context.Context {
+	return context.WithValue(parent, ctxKeyForWebSocketMutex, &sync.Mutex{})
+}
+
+func (s *sBot) webSocketMutexFromCtx(ctx context.Context) *sync.Mutex {
+	if v := ctx.Value(ctxKeyForWebSocketMutex); v != nil {
+		return v.(*sync.Mutex)
+	}
+	return nil
 }
 
 func (s *sBot) ctxWithWebSocket(parent context.Context, ws *ghttp.WebSocket) context.Context {
@@ -53,6 +66,15 @@ func (s *sBot) reqJsonFromCtx(ctx context.Context) *sj.Json {
 		return v.(*sj.Json)
 	}
 	return nil
+}
+
+func (s *sBot) writeMessage(ctx context.Context, messageType int, data []byte) error {
+	mu := s.webSocketMutexFromCtx(ctx)
+	if mu != nil {
+		mu.Lock()
+		defer mu.Unlock()
+	}
+	return s.webSocketFromCtx(ctx).WriteMessage(messageType, data)
 }
 
 func (s *sBot) Process(ctx context.Context, ws *ghttp.WebSocket, rawJson []byte, nextProcess func(ctx context.Context)) {

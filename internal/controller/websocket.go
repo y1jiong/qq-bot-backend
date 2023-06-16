@@ -56,6 +56,9 @@ func (c *cBot) Websocket(r *ghttp.Request) {
 		return
 	}
 	g.Log().Info(ctx, tokenName+" Connected")
+	// 并发 ws 写锁
+	ctx = service.Bot().CtxNewWebSocketMutex(ctx)
+	// 消息循环
 	for {
 		var wsReq []byte
 		_, wsReq, err = ws.ReadMessage()

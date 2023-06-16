@@ -100,7 +100,7 @@ func (s *sBot) GetGroupMemberList(ctx context.Context, groupId int64, callback f
 		return
 	}
 	// 发送响应
-	err = s.webSocketFromCtx(ctx).WriteMessage(websocket.TextMessage, res)
+	err = s.writeMessage(ctx, websocket.TextMessage, res)
 	if err != nil {
 		g.Log().Warning(ctx, err)
 	}
@@ -136,7 +136,7 @@ func (s *sBot) RequestMessage(ctx context.Context, messageId int64, callback fun
 		return
 	}
 	// 发送响应
-	err = s.webSocketFromCtx(ctx).WriteMessage(websocket.TextMessage, res)
+	err = s.writeMessage(ctx, websocket.TextMessage, res)
 	if err != nil {
 		g.Log().Warning(ctx, err)
 	}
