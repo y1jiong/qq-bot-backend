@@ -11,18 +11,18 @@ import (
 
 type (
 	IUser interface {
-		QueryUserWithRes(ctx context.Context, userId int64)
-		SystemTrustUserWithRes(ctx context.Context, userId int64)
-		SystemDistrustUserWithRes(ctx context.Context, userId int64)
+		QueryUserReturnRes(ctx context.Context, userId int64)
+		SystemTrustUserReturnRes(ctx context.Context, userId int64)
+		SystemDistrustUserReturnRes(ctx context.Context, userId int64)
 		IsSystemTrustUser(ctx context.Context, userId int64) (yes bool)
-		GrantOpTokenWithRes(ctx context.Context, userId int64)
-		RevokeOpTokenWithRes(ctx context.Context, userId int64)
+		GrantOpTokenReturnRes(ctx context.Context, userId int64)
+		RevokeOpTokenReturnRes(ctx context.Context, userId int64)
 		CouldOpToken(ctx context.Context, userId int64) (yes bool)
-		GrantOpNamespaceWithRes(ctx context.Context, userId int64)
-		RevokeOpNamespaceWithRes(ctx context.Context, userId int64)
+		GrantOpNamespaceReturnRes(ctx context.Context, userId int64)
+		RevokeOpNamespaceReturnRes(ctx context.Context, userId int64)
 		CouldOpNamespace(ctx context.Context, userId int64) (yes bool)
-		GrantGetRawMsgWithRes(ctx context.Context, userId int64)
-		RevokeGetRawMsgWithRes(ctx context.Context, userId int64)
+		GrantGetRawMsgReturnRes(ctx context.Context, userId int64)
+		RevokeGetRawMsgReturnRes(ctx context.Context, userId int64)
 		CouldGetRawMsg(ctx context.Context, userId int64) (yes bool)
 	}
 )

@@ -10,7 +10,7 @@ import (
 	"qq-bot-backend/internal/service"
 )
 
-func (s *sGroup) AddKeywordProcessWithRes(ctx context.Context, groupId int64, processName string, args ...string) {
+func (s *sGroup) AddKeywordProcessReturnRes(ctx context.Context, groupId int64, processName string, args ...string) {
 	// 参数合法性校验
 	if groupId < 1 {
 		return
@@ -102,7 +102,7 @@ func (s *sGroup) AddKeywordProcessWithRes(ctx context.Context, groupId int64, pr
 	}
 }
 
-func (s *sGroup) RemoveKeywordProcessWithRes(ctx context.Context, groupId int64, processName string, args ...string) {
+func (s *sGroup) RemoveKeywordProcessReturnRes(ctx context.Context, groupId int64, processName string, args ...string) {
 	// 参数合法性校验
 	if groupId < 1 {
 		return

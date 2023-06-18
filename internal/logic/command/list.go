@@ -15,7 +15,7 @@ func tryList(ctx context.Context, cmd string) (catch bool) {
 			catch = tryListJoin(ctx, next[2])
 		case "len":
 			// /list len <list_name>
-			service.List().QueryListLenWithRes(ctx, next[2])
+			service.List().QueryListLenReturnRes(ctx, next[2])
 			catch = true
 		case "query":
 			// /list query <>
@@ -25,7 +25,7 @@ func tryList(ctx context.Context, cmd string) (catch bool) {
 			catch = tryListLeave(ctx, next[2])
 		case "export":
 			// /list export <list_name>
-			service.List().ExportListWithRes(ctx, next[2])
+			service.List().ExportListReturnRes(ctx, next[2])
 			catch = true
 		case "append":
 			// /list append <>
@@ -35,7 +35,7 @@ func tryList(ctx context.Context, cmd string) (catch bool) {
 			catch = tryListSet(ctx, next[2])
 		case "reset":
 			// /list reset <list_name>
-			service.List().ResetListDataWithRes(ctx, next[2])
+			service.List().ResetListDataReturnRes(ctx, next[2])
 			catch = true
 		case "add":
 			if !doubleValueCmdEndRe.MatchString(next[2]) {
@@ -43,11 +43,11 @@ func tryList(ctx context.Context, cmd string) (catch bool) {
 			}
 			// /list add <list_name> <namespace>
 			dv := doubleValueCmdEndRe.FindStringSubmatch(next[2])
-			service.List().AddListWithRes(ctx, dv[1], dv[2])
+			service.List().AddListReturnRes(ctx, dv[1], dv[2])
 			catch = true
 		case "rm":
 			// /list rm <list_name>
-			service.List().RemoveListWithRes(ctx, next[2])
+			service.List().RemoveListReturnRes(ctx, next[2])
 			catch = true
 		}
 	}
@@ -62,11 +62,11 @@ func tryListJoin(ctx context.Context, cmd string) (catch bool) {
 		case nextBranchRe.MatchString(next[2]):
 			// /list join <list_name> <key> [value]
 			ne := nextBranchRe.FindStringSubmatch(next[2])
-			service.List().AddListDataWithRes(ctx, next[1], ne[1], ne[2])
+			service.List().AddListDataReturnRes(ctx, next[1], ne[1], ne[2])
 			catch = true
 		case endBranchRe.MatchString(next[2]):
 			// /list join <list_name> <key>
-			service.List().AddListDataWithRes(ctx, next[1], next[2])
+			service.List().AddListDataReturnRes(ctx, next[1], next[2])
 			catch = true
 		}
 	}
@@ -78,11 +78,11 @@ func tryListQuery(ctx context.Context, cmd string) (catch bool) {
 	case nextBranchRe.MatchString(cmd):
 		// /list query <list_name> [key]
 		next := nextBranchRe.FindStringSubmatch(cmd)
-		service.List().QueryListWithRes(ctx, next[1], next[2])
+		service.List().QueryListReturnRes(ctx, next[1], next[2])
 		catch = true
 	case endBranchRe.MatchString(cmd):
 		// /list query <list_name>
-		service.List().QueryListWithRes(ctx, cmd)
+		service.List().QueryListReturnRes(ctx, cmd)
 		catch = true
 	}
 	return
@@ -93,7 +93,7 @@ func tryListAppend(ctx context.Context, cmd string) (catch bool) {
 	case nextBranchRe.MatchString(cmd):
 		// /list append <list_name> <json>
 		next := nextBranchRe.FindStringSubmatch(cmd)
-		service.List().AppendListDataWithRes(ctx, next[1], next[2])
+		service.List().AppendListDataReturnRes(ctx, next[1], next[2])
 		catch = true
 	}
 	return
@@ -105,7 +105,7 @@ func tryListSet(ctx context.Context, cmd string) (catch bool) {
 		next := nextBranchRe.FindStringSubmatch(cmd)
 		if endBranchRe.MatchString(next[2]) {
 			// /list set <list_name> <json>
-			service.List().SetListDataWithRes(ctx, next[1], next[2])
+			service.List().SetListDataReturnRes(ctx, next[1], next[2])
 			catch = true
 		}
 	}
@@ -117,7 +117,7 @@ func tryListLeave(ctx context.Context, cmd string) (catch bool) {
 	case nextBranchRe.MatchString(cmd):
 		next := nextBranchRe.FindStringSubmatch(cmd)
 		// /list leave <list_name> <key>
-		service.List().RemoveListDataWithRes(ctx, next[1], next[2])
+		service.List().RemoveListDataReturnRes(ctx, next[1], next[2])
 		catch = true
 	}
 	return

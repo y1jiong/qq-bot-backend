@@ -10,7 +10,7 @@ import (
 	"regexp"
 )
 
-func (s *sGroup) SetAutoSetListWithRes(ctx context.Context, groupId int64, listName string) {
+func (s *sGroup) SetAutoSetListReturnRes(ctx context.Context, groupId int64, listName string) {
 	// 参数合法性校验
 	if groupId < 1 {
 		return
@@ -61,7 +61,7 @@ func (s *sGroup) SetAutoSetListWithRes(ctx context.Context, groupId int64, listN
 	return
 }
 
-func (s *sGroup) RemoveAutoSetListWithRes(ctx context.Context, groupId int64) {
+func (s *sGroup) RemoveAutoSetListReturnRes(ctx context.Context, groupId int64) {
 	// 参数合法性校验
 	if groupId < 1 {
 		return
@@ -109,7 +109,7 @@ func (s *sGroup) RemoveAutoSetListWithRes(ctx context.Context, groupId int64) {
 	service.Bot().SendPlainMsg(ctx, "已移除 group("+gconv.String(groupId)+") 群名片自动设置 list")
 }
 
-func (s *sGroup) CheckCardWithRegexpWithRes(ctx context.Context, groupId int64, listName, exp string) {
+func (s *sGroup) CheckCardWithRegexpReturnRes(ctx context.Context, groupId int64, listName, exp string) {
 	// 参数合法性校验
 	if groupId < 1 {
 		return
@@ -184,7 +184,7 @@ func (s *sGroup) CheckCardWithRegexpWithRes(ctx context.Context, groupId int64, 
 	service.Bot().GetGroupMemberList(ctx, groupId, callback, true)
 }
 
-func (s *sGroup) CheckCardByListWithRes(ctx context.Context, groupId int64, toList, fromList string) {
+func (s *sGroup) CheckCardByListReturnRes(ctx context.Context, groupId int64, toList, fromList string) {
 	// 参数合法性校验
 	if groupId < 1 {
 		return
@@ -261,7 +261,7 @@ func (s *sGroup) CheckCardByListWithRes(ctx context.Context, groupId int64, toLi
 	service.Bot().GetGroupMemberList(ctx, groupId, callback, true)
 }
 
-func (s *sGroup) LockCardWithRes(ctx context.Context, groupId int64) {
+func (s *sGroup) LockCardReturnRes(ctx context.Context, groupId int64) {
 	// 参数合法性校验
 	if groupId < 1 {
 		return
@@ -309,7 +309,7 @@ func (s *sGroup) LockCardWithRes(ctx context.Context, groupId int64) {
 	service.Bot().SendPlainMsg(ctx, "已设置 group("+gconv.String(groupId)+") 群名片锁定")
 }
 
-func (s *sGroup) UnlockCardWithRes(ctx context.Context, groupId int64) {
+func (s *sGroup) UnlockCardReturnRes(ctx context.Context, groupId int64) {
 	// 参数合法性校验
 	if groupId < 1 {
 		return

@@ -8,7 +8,7 @@ import (
 	"qq-bot-backend/internal/service"
 )
 
-func (s *sGroup) ExportGroupMemberListWithRes(ctx context.Context, groupId int64, listName string) {
+func (s *sGroup) ExportGroupMemberListReturnRes(ctx context.Context, groupId int64, listName string) {
 	// 参数合法性校验
 	if groupId < 1 {
 		return

@@ -9,7 +9,7 @@ import (
 	"qq-bot-backend/internal/service"
 )
 
-func (s *sGroup) SetAntiRecallWithRes(ctx context.Context, groupId int64, enable bool) {
+func (s *sGroup) SetAntiRecallReturnRes(ctx context.Context, groupId int64, enable bool) {
 	// 参数合法性校验
 	if groupId < 1 {
 		return

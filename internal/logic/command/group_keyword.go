@@ -39,7 +39,7 @@ func tryGroupKeywordAdd(ctx context.Context, cmd string) (catch bool) {
 		case consts.BlacklistCmd, consts.WhitelistCmd:
 			// /group keyword add blacklist <list_name>
 			// /group keyword add whitelist <list_name>
-			service.Group().AddKeywordProcessWithRes(ctx, service.Bot().GetGroupId(ctx), next[1], next[2])
+			service.Group().AddKeywordProcessReturnRes(ctx, service.Bot().GetGroupId(ctx), next[1], next[2])
 			catch = true
 		}
 	}
@@ -53,7 +53,7 @@ func tryGroupKeywordSet(ctx context.Context, cmd string) (catch bool) {
 		switch next[1] {
 		case consts.ReplyCmd:
 			// /group keyword set reply <list_name>
-			service.Group().AddKeywordProcessWithRes(ctx, service.Bot().GetGroupId(ctx), next[1], next[2])
+			service.Group().AddKeywordProcessReturnRes(ctx, service.Bot().GetGroupId(ctx), next[1], next[2])
 			catch = true
 		}
 	}
@@ -67,7 +67,7 @@ func tryGroupKeywordEnable(ctx context.Context, cmd string) (catch bool) {
 		case consts.BlacklistCmd, consts.WhitelistCmd:
 			// /group keyword enable blacklist
 			// /group keyword enable whitelist
-			service.Group().AddKeywordProcessWithRes(ctx, service.Bot().GetGroupId(ctx), cmd)
+			service.Group().AddKeywordProcessReturnRes(ctx, service.Bot().GetGroupId(ctx), cmd)
 			catch = true
 		}
 	}
@@ -82,14 +82,14 @@ func tryGroupKeywordRemove(ctx context.Context, cmd string) (catch bool) {
 		case consts.BlacklistCmd, consts.WhitelistCmd:
 			// /group keyword rm blacklist <list_name>
 			// /group keyword rm whitelist <list_name>
-			service.Group().RemoveKeywordProcessWithRes(ctx, service.Bot().GetGroupId(ctx), next[1], next[2])
+			service.Group().RemoveKeywordProcessReturnRes(ctx, service.Bot().GetGroupId(ctx), next[1], next[2])
 			catch = true
 		}
 	case endBranchRe.MatchString(cmd):
 		switch cmd {
 		case consts.ReplyCmd:
 			// /group keyword rm reply
-			service.Group().RemoveKeywordProcessWithRes(ctx, service.Bot().GetGroupId(ctx), cmd)
+			service.Group().RemoveKeywordProcessReturnRes(ctx, service.Bot().GetGroupId(ctx), cmd)
 			catch = true
 		}
 	}
@@ -103,7 +103,7 @@ func tryGroupKeywordDisable(ctx context.Context, cmd string) (catch bool) {
 		case consts.BlacklistCmd, consts.WhitelistCmd:
 			// /group keyword disable blacklist
 			// /group keyword disable whitelist
-			service.Group().RemoveKeywordProcessWithRes(ctx, service.Bot().GetGroupId(ctx), cmd)
+			service.Group().RemoveKeywordProcessReturnRes(ctx, service.Bot().GetGroupId(ctx), cmd)
 			catch = true
 		}
 	}

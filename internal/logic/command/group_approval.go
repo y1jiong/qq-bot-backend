@@ -38,7 +38,7 @@ func tryGroupApprovalSet(ctx context.Context, cmd string) (catch bool) {
 		switch next[1] {
 		case consts.RegexpCmd:
 			// /group approval set regexp <regexp>
-			service.Group().AddApprovalProcessWithRes(ctx, service.Bot().GetGroupId(ctx), next[1], next[2])
+			service.Group().AddApprovalProcessReturnRes(ctx, service.Bot().GetGroupId(ctx), next[1], next[2])
 			catch = true
 		}
 	}
@@ -53,7 +53,7 @@ func tryGroupApprovalAdd(ctx context.Context, cmd string) (catch bool) {
 		case consts.WhitelistCmd, consts.BlacklistCmd:
 			// /group approval add whitelist <list_name>
 			// /group approval add blacklist <list_name>
-			service.Group().AddApprovalProcessWithRes(ctx, service.Bot().GetGroupId(ctx), next[1], next[2])
+			service.Group().AddApprovalProcessReturnRes(ctx, service.Bot().GetGroupId(ctx), next[1], next[2])
 			catch = true
 		}
 	}
@@ -70,7 +70,7 @@ func tryGroupApprovalEnable(ctx context.Context, cmd string) (catch bool) {
 			// /group approval enable regexp
 			// /group approval enable autopass
 			// /group approval enable mc
-			service.Group().AddApprovalProcessWithRes(ctx, service.Bot().GetGroupId(ctx), cmd)
+			service.Group().AddApprovalProcessReturnRes(ctx, service.Bot().GetGroupId(ctx), cmd)
 			catch = true
 		}
 	}
@@ -85,7 +85,7 @@ func tryGroupApprovalRemove(ctx context.Context, cmd string) (catch bool) {
 		case consts.WhitelistCmd, consts.BlacklistCmd:
 			// /group approval rm whitelist <list_name>
 			// /group approval rm blacklist <list_name>
-			service.Group().RemoveApprovalProcessWithRes(ctx, service.Bot().GetGroupId(ctx), next[1], next[2])
+			service.Group().RemoveApprovalProcessReturnRes(ctx, service.Bot().GetGroupId(ctx), next[1], next[2])
 			catch = true
 		}
 	}
@@ -102,7 +102,7 @@ func tryGroupApprovalDisable(ctx context.Context, cmd string) (catch bool) {
 			// /group approval disable regexp
 			// /group approval disable autopass
 			// /group approval disable mc
-			service.Group().RemoveApprovalProcessWithRes(ctx, service.Bot().GetGroupId(ctx), cmd)
+			service.Group().RemoveApprovalProcessReturnRes(ctx, service.Bot().GetGroupId(ctx), cmd)
 			catch = true
 		}
 	}

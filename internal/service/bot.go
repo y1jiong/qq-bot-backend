@@ -33,9 +33,10 @@ type (
 		GetFlag(ctx context.Context) string
 		GetTimestamp(ctx context.Context) int64
 		GetOperatorId(ctx context.Context) int64
-		GetGroupMemberList(ctx context.Context, groupId int64, callback func(ctx context.Context, lastCtx context.Context), noCache ...bool)
+		GetGroupMemberList(ctx context.Context, groupId int64, callback func(ctx context.Context, rsyncCtx context.Context), noCache ...bool)
 		GetCardOldNew(ctx context.Context) (oldCard, newCard string)
-		RequestMessage(ctx context.Context, messageId int64, callback func(ctx context.Context, lastCtx context.Context))
+		RequestMessage(ctx context.Context, messageId int64, callback func(ctx context.Context, rsyncCtx context.Context))
+		GetGroupInfo(ctx context.Context, groupId int64, callback func(ctx context.Context, rsyncCtx context.Context), noCache ...bool)
 		GetData(ctx context.Context) *sj.Json
 		GetFileFromData(ctx context.Context) string
 		GetSenderFromData(ctx context.Context) (nickname string, userId int64)

@@ -12,7 +12,7 @@ func tryGroupExport(ctx context.Context, cmd string) (catch bool) {
 		switch next[1] {
 		case "member":
 			// /group export member <list_name>
-			service.Group().ExportGroupMemberListWithRes(ctx, service.Bot().GetGroupId(ctx), next[2])
+			service.Group().ExportGroupMemberListReturnRes(ctx, service.Bot().GetGroupId(ctx), next[2])
 			catch = true
 		}
 	}

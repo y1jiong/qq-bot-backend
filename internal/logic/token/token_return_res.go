@@ -9,7 +9,7 @@ import (
 	"strings"
 )
 
-func (s *sToken) AddNewTokenWithRes(ctx context.Context, name, token string) {
+func (s *sToken) AddNewTokenReturnRes(ctx context.Context, name, token string) {
 	owner := service.Bot().GetUserId(ctx)
 	// 过滤非法 token 或 name
 	if !legalTokenRe.MatchString(token) || !legalTokenNameRe.MatchString(name) {
@@ -71,7 +71,7 @@ func (s *sToken) AddNewTokenWithRes(ctx context.Context, name, token string) {
 	}
 }
 
-func (s *sToken) RemoveTokenWithRes(ctx context.Context, name string) {
+func (s *sToken) RemoveTokenReturnRes(ctx context.Context, name string) {
 	// 过滤非法 name
 	if !legalTokenNameRe.MatchString(name) {
 		return
@@ -103,7 +103,7 @@ func (s *sToken) RemoveTokenWithRes(ctx context.Context, name string) {
 	service.Bot().SendPlainMsg(ctx, "已删除 token("+name+")")
 }
 
-func (s *sToken) QueryTokenWithRes(ctx context.Context) {
+func (s *sToken) QueryTokenReturnRes(ctx context.Context) {
 	// 数据库查询
 	var tEntities []*entity.Token
 	err := dao.Token.Ctx(ctx).

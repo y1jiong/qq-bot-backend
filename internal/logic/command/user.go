@@ -30,7 +30,7 @@ func tryUserJoin(ctx context.Context, cmd string) (catch bool) {
 	// /user join <namespace> <user_id>
 	dv := doubleValueCmdEndRe.FindStringSubmatch(cmd)
 	// 执行
-	service.Namespace().AddNamespaceAdminWithRes(ctx, dv[1], gconv.Int64(dv[2]))
+	service.Namespace().AddNamespaceAdminReturnRes(ctx, dv[1], gconv.Int64(dv[2]))
 	catch = true
 	return
 }
@@ -42,7 +42,7 @@ func tryUserLeave(ctx context.Context, cmd string) (catch bool) {
 	// /user leave <namespace> <user_id>
 	dv := doubleValueCmdEndRe.FindStringSubmatch(cmd)
 	// 执行
-	service.Namespace().RemoveNamespaceAdminWithRes(ctx, dv[1], gconv.Int64(dv[2]))
+	service.Namespace().RemoveNamespaceAdminReturnRes(ctx, dv[1], gconv.Int64(dv[2]))
 	catch = true
 	return
 }

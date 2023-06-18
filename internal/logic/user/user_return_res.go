@@ -9,7 +9,7 @@ import (
 	"qq-bot-backend/internal/service"
 )
 
-func (s *sUser) QueryUserWithRes(ctx context.Context, userId int64) {
+func (s *sUser) QueryUserReturnRes(ctx context.Context, userId int64) {
 	// 参数合法性校验
 	if userId < 1 {
 		return
@@ -28,7 +28,7 @@ func (s *sUser) QueryUserWithRes(ctx context.Context, userId int64) {
 	service.Bot().SendPlainMsg(ctx, msg)
 }
 
-func (s *sUser) SystemTrustUserWithRes(ctx context.Context, userId int64) {
+func (s *sUser) SystemTrustUserReturnRes(ctx context.Context, userId int64) {
 	// 参数合法性校验
 	if userId < 1 {
 		return
@@ -74,7 +74,7 @@ func (s *sUser) SystemTrustUserWithRes(ctx context.Context, userId int64) {
 	service.Bot().SendPlainMsg(ctx, "系统已信任 user("+gconv.String(userId)+")")
 }
 
-func (s *sUser) SystemDistrustUserWithRes(ctx context.Context, userId int64) {
+func (s *sUser) SystemDistrustUserReturnRes(ctx context.Context, userId int64) {
 	// 参数合法性校验
 	if userId < 1 {
 		return
@@ -114,7 +114,7 @@ func (s *sUser) SystemDistrustUserWithRes(ctx context.Context, userId int64) {
 	service.Bot().SendPlainMsg(ctx, "系统已拒绝信任 user("+gconv.String(userId)+")")
 }
 
-func (s *sUser) GrantOpTokenWithRes(ctx context.Context, userId int64) {
+func (s *sUser) GrantOpTokenReturnRes(ctx context.Context, userId int64) {
 	// 参数合法性校验
 	if userId < 1 {
 		return
@@ -160,7 +160,7 @@ func (s *sUser) GrantOpTokenWithRes(ctx context.Context, userId int64) {
 	service.Bot().SendPlainMsg(ctx, "系统已授予 user("+gconv.String(userId)+") 操作 token 的权限")
 }
 
-func (s *sUser) RevokeOpTokenWithRes(ctx context.Context, userId int64) {
+func (s *sUser) RevokeOpTokenReturnRes(ctx context.Context, userId int64) {
 	// 参数合法性校验
 	if userId < 1 {
 		return
@@ -200,7 +200,7 @@ func (s *sUser) RevokeOpTokenWithRes(ctx context.Context, userId int64) {
 	service.Bot().SendPlainMsg(ctx, "系统已撤销 user("+gconv.String(userId)+") 操作 token 的权限")
 }
 
-func (s *sUser) GrantOpNamespaceWithRes(ctx context.Context, userId int64) {
+func (s *sUser) GrantOpNamespaceReturnRes(ctx context.Context, userId int64) {
 	// 参数合法性校验
 	if userId < 1 {
 		return
@@ -246,7 +246,7 @@ func (s *sUser) GrantOpNamespaceWithRes(ctx context.Context, userId int64) {
 	service.Bot().SendPlainMsg(ctx, "系统已授予 user("+gconv.String(userId)+") 操作 namespace 的权限")
 }
 
-func (s *sUser) RevokeOpNamespaceWithRes(ctx context.Context, userId int64) {
+func (s *sUser) RevokeOpNamespaceReturnRes(ctx context.Context, userId int64) {
 	// 参数合法性校验
 	if userId < 1 {
 		return
@@ -286,7 +286,7 @@ func (s *sUser) RevokeOpNamespaceWithRes(ctx context.Context, userId int64) {
 	service.Bot().SendPlainMsg(ctx, "系统已撤销 user("+gconv.String(userId)+") 操作 namespace 的权限")
 }
 
-func (s *sUser) GrantGetRawMsgWithRes(ctx context.Context, userId int64) {
+func (s *sUser) GrantGetRawMsgReturnRes(ctx context.Context, userId int64) {
 	// 参数合法性校验
 	if userId < 1 {
 		return
@@ -332,7 +332,7 @@ func (s *sUser) GrantGetRawMsgWithRes(ctx context.Context, userId int64) {
 	service.Bot().SendPlainMsg(ctx, "系统已授予 user("+gconv.String(userId)+") 获取 raw 的权限")
 }
 
-func (s *sUser) RevokeGetRawMsgWithRes(ctx context.Context, userId int64) {
+func (s *sUser) RevokeGetRawMsgReturnRes(ctx context.Context, userId int64) {
 	// 参数合法性校验
 	if userId < 1 {
 		return

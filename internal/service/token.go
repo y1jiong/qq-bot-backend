@@ -13,9 +13,9 @@ type (
 	IToken interface {
 		IsCorrectToken(ctx context.Context, token string) (correct bool, name string)
 		UpdateLoginTime(ctx context.Context, token string)
-		AddNewTokenWithRes(ctx context.Context, name, token string)
-		RemoveTokenWithRes(ctx context.Context, name string)
-		QueryTokenWithRes(ctx context.Context)
+		AddNewTokenReturnRes(ctx context.Context, name, token string)
+		RemoveTokenReturnRes(ctx context.Context, name string)
+		QueryTokenReturnRes(ctx context.Context)
 	}
 )
 

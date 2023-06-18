@@ -16,9 +16,12 @@ func trySys(ctx context.Context, cmd string) (catch bool) {
 	case nextBranchRe.MatchString(cmd):
 		next := nextBranchRe.FindStringSubmatch(cmd)
 		switch next[1] {
+		case "check":
+			// /sys check <>
+			catch = trySysCheck(ctx, next[2])
 		case "query":
 			// /sys query <user_id>
-			service.User().QueryUserWithRes(ctx, gconv.Int64(next[2]))
+			service.User().QueryUserReturnRes(ctx, gconv.Int64(next[2]))
 			catch = true
 		case "grant":
 			// /sys grant <>
@@ -28,11 +31,24 @@ func trySys(ctx context.Context, cmd string) (catch bool) {
 			catch = trySysRevoke(ctx, next[2])
 		case "trust":
 			// /sys trust <user_id>
-			service.User().SystemTrustUserWithRes(ctx, gconv.Int64(next[2]))
+			service.User().SystemTrustUserReturnRes(ctx, gconv.Int64(next[2]))
 			catch = true
 		case "distrust":
 			// /sys distrust <user_id>
-			service.User().SystemDistrustUserWithRes(ctx, gconv.Int64(next[2]))
+			service.User().SystemDistrustUserReturnRes(ctx, gconv.Int64(next[2]))
+			catch = true
+		}
+	}
+	return
+}
+
+func trySysCheck(ctx context.Context, cmd string) (catch bool) {
+	switch {
+	case endBranchRe.MatchString(cmd):
+		switch cmd {
+		case "group":
+			// /sys check group
+			service.Group().CheckExistReturnRes(ctx)
 			catch = true
 		}
 	}
@@ -46,15 +62,15 @@ func trySysGrant(ctx context.Context, cmd string) (catch bool) {
 		switch dv[2] {
 		case "raw":
 			// /sys grant <user_id> raw
-			service.User().GrantGetRawMsgWithRes(ctx, gconv.Int64(dv[1]))
+			service.User().GrantGetRawMsgReturnRes(ctx, gconv.Int64(dv[1]))
 			catch = true
 		case "namespace":
 			// /sys grant <user_id> namespace
-			service.User().GrantOpNamespaceWithRes(ctx, gconv.Int64(dv[1]))
+			service.User().GrantOpNamespaceReturnRes(ctx, gconv.Int64(dv[1]))
 			catch = true
 		case "token":
 			// /sys grant <user_id> token
-			service.User().GrantOpTokenWithRes(ctx, gconv.Int64(dv[1]))
+			service.User().GrantOpTokenReturnRes(ctx, gconv.Int64(dv[1]))
 			catch = true
 		}
 	}
@@ -68,15 +84,15 @@ func trySysRevoke(ctx context.Context, cmd string) (catch bool) {
 		switch dv[2] {
 		case "raw":
 			// /sys revoke <user_id> raw
-			service.User().RevokeGetRawMsgWithRes(ctx, gconv.Int64(dv[1]))
+			service.User().RevokeGetRawMsgReturnRes(ctx, gconv.Int64(dv[1]))
 			catch = true
 		case "namespace":
 			// /sys revoke <user_id> namespace
-			service.User().RevokeOpNamespaceWithRes(ctx, gconv.Int64(dv[1]))
+			service.User().RevokeOpNamespaceReturnRes(ctx, gconv.Int64(dv[1]))
 			catch = true
 		case "token":
 			// /sys revoke <user_id> token
-			service.User().RevokeOpTokenWithRes(ctx, gconv.Int64(dv[1]))
+			service.User().RevokeOpTokenReturnRes(ctx, gconv.Int64(dv[1]))
 			catch = true
 		}
 	}

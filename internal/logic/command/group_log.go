@@ -28,7 +28,7 @@ func tryGroupLogSet(ctx context.Context, cmd string) (catch bool) {
 		switch next[1] {
 		case "leave":
 			// /group log set leave <list_name>
-			service.Group().SetLogLeaveListWithRes(ctx, service.Bot().GetGroupId(ctx), next[2])
+			service.Group().SetLogLeaveListReturnRes(ctx, service.Bot().GetGroupId(ctx), next[2])
 			catch = true
 		}
 	}
@@ -41,7 +41,7 @@ func tryGroupLogRemove(ctx context.Context, cmd string) (catch bool) {
 		switch cmd {
 		case "leave":
 			// /group log rm leave
-			service.Group().RemoveLogLeaveListWithRes(ctx, service.Bot().GetGroupId(ctx))
+			service.Group().RemoveLogLeaveListReturnRes(ctx, service.Bot().GetGroupId(ctx))
 			catch = true
 		}
 	}

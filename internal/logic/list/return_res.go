@@ -11,7 +11,7 @@ import (
 	"time"
 )
 
-func (s *sList) AddListWithRes(ctx context.Context, listName, namespace string) {
+func (s *sList) AddListReturnRes(ctx context.Context, listName, namespace string) {
 	// 参数合法性校验
 	if !legalListNameRe.MatchString(listName) {
 		return
@@ -42,7 +42,7 @@ func (s *sList) AddListWithRes(ctx context.Context, listName, namespace string) 
 	service.Bot().SendPlainMsg(ctx, "已新增 list("+listName+")")
 }
 
-func (s *sList) RemoveListWithRes(ctx context.Context, listName string) {
+func (s *sList) RemoveListReturnRes(ctx context.Context, listName string) {
 	// 参数合法性校验
 	if !legalListNameRe.MatchString(listName) {
 		return
@@ -70,7 +70,7 @@ func (s *sList) RemoveListWithRes(ctx context.Context, listName string) {
 	service.Bot().SendPlainMsg(ctx, "已删除 list("+listName+")")
 }
 
-func (s *sList) ExportListWithRes(ctx context.Context, listName string) {
+func (s *sList) ExportListReturnRes(ctx context.Context, listName string) {
 	// 参数合法性校验
 	if !legalListNameRe.MatchString(listName) {
 		return
@@ -103,7 +103,7 @@ func (s *sList) ExportListWithRes(ctx context.Context, listName string) {
 	service.Bot().SendFile(ctx, "list("+listName+").txt", url)
 }
 
-func (s *sList) QueryListLenWithRes(ctx context.Context, listName string) {
+func (s *sList) QueryListLenReturnRes(ctx context.Context, listName string) {
 	// 参数合法性校验
 	if !legalListNameRe.MatchString(listName) {
 		return
@@ -128,7 +128,7 @@ func (s *sList) QueryListLenWithRes(ctx context.Context, listName string) {
 	service.Bot().SendPlainMsg(ctx, "list("+listName+") 共 "+gconv.String(len(listMap))+" 条")
 }
 
-func (s *sList) QueryListWithRes(ctx context.Context, listName string, keys ...string) {
+func (s *sList) QueryListReturnRes(ctx context.Context, listName string, keys ...string) {
 	// 参数合法性校验
 	if !legalListNameRe.MatchString(listName) {
 		return
@@ -173,7 +173,7 @@ func (s *sList) QueryListWithRes(ctx context.Context, listName string, keys ...s
 	service.Bot().SendPlainMsg(ctx, msg)
 }
 
-func (s *sList) AddListDataWithRes(ctx context.Context, listName, key string, value ...string) {
+func (s *sList) AddListDataReturnRes(ctx context.Context, listName, key string, value ...string) {
 	// 参数合法性校验
 	if !legalListNameRe.MatchString(listName) {
 		return
@@ -223,7 +223,7 @@ func (s *sList) AddListDataWithRes(ctx context.Context, listName, key string, va
 	}
 }
 
-func (s *sList) RemoveListDataWithRes(ctx context.Context, listName, key string) {
+func (s *sList) RemoveListDataReturnRes(ctx context.Context, listName, key string) {
 	// 参数合法性校验
 	if !legalListNameRe.MatchString(listName) {
 		return
@@ -270,7 +270,7 @@ func (s *sList) RemoveListDataWithRes(ctx context.Context, listName, key string)
 	service.Bot().SendPlainMsg(ctx, "已删除 key("+key+") 从 list("+listName+")")
 }
 
-func (s *sList) ResetListDataWithRes(ctx context.Context, listName string) {
+func (s *sList) ResetListDataReturnRes(ctx context.Context, listName string) {
 	// 参数合法性校验
 	if !legalListNameRe.MatchString(listName) {
 		return
@@ -297,7 +297,7 @@ func (s *sList) ResetListDataWithRes(ctx context.Context, listName string) {
 	service.Bot().SendPlainMsg(ctx, "已重置 list("+listName+") 的数据")
 }
 
-func (s *sList) SetListDataWithRes(ctx context.Context, listName, newListStr string) {
+func (s *sList) SetListDataReturnRes(ctx context.Context, listName, newListStr string) {
 	// 参数合法性校验
 	if !legalListNameRe.MatchString(listName) {
 		return
@@ -342,7 +342,7 @@ func (s *sList) SetListDataWithRes(ctx context.Context, listName, newListStr str
 	service.Bot().SendPlainMsg(ctx, "已覆盖 list("+listName+") 的数据\n共 "+gconv.String(length)+" 条")
 }
 
-func (s *sList) AppendListDataWithRes(ctx context.Context, listName, newListStr string) {
+func (s *sList) AppendListDataReturnRes(ctx context.Context, listName, newListStr string) {
 	// 参数合法性校验
 	if !legalListNameRe.MatchString(listName) {
 		return

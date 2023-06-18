@@ -20,14 +20,14 @@ func tryToken(ctx context.Context, cmd string) (catch bool) {
 			catch = tryTokenAdd(ctx, next[2])
 		case "rm":
 			// /token rm <name>
-			service.Token().RemoveTokenWithRes(ctx, next[2])
+			service.Token().RemoveTokenReturnRes(ctx, next[2])
 			catch = true
 		}
 	case endBranchRe.MatchString(cmd):
 		switch cmd {
 		case "query":
 			// /token query
-			service.Token().QueryTokenWithRes(ctx)
+			service.Token().QueryTokenReturnRes(ctx)
 			catch = true
 		}
 	}
@@ -41,7 +41,7 @@ func tryTokenAdd(ctx context.Context, cmd string) (catch bool) {
 	// /token add <name> <token>
 	dv := doubleValueCmdEndRe.FindStringSubmatch(cmd)
 	// 执行
-	service.Token().AddNewTokenWithRes(ctx, dv[1], dv[2])
+	service.Token().AddNewTokenReturnRes(ctx, dv[1], dv[2])
 	catch = true
 	return
 }

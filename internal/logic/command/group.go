@@ -21,11 +21,11 @@ func tryGroup(ctx context.Context, cmd string) (catch bool) {
 			catch = tryGroupCard(ctx, next[2])
 		case "kick":
 			// /group kick <list_name>
-			service.Group().KickFromListWithRes(ctx, service.Bot().GetGroupId(ctx), next[2])
+			service.Group().KickFromListReturnRes(ctx, service.Bot().GetGroupId(ctx), next[2])
 			catch = true
 		case "keep":
 			// /group keep <list_name>
-			service.Group().KeepFromListWithRes(ctx, service.Bot().GetGroupId(ctx), next[2])
+			service.Group().KeepFromListReturnRes(ctx, service.Bot().GetGroupId(ctx), next[2])
 			catch = true
 		case "log":
 			// /group log <>
@@ -38,18 +38,18 @@ func tryGroup(ctx context.Context, cmd string) (catch bool) {
 			catch = tryGroupMessage(ctx, next[2])
 		case "bind":
 			// /group bind <namespace>
-			service.Group().BindNamespaceWithRes(ctx, service.Bot().GetGroupId(ctx), next[2])
+			service.Group().BindNamespaceReturnRes(ctx, service.Bot().GetGroupId(ctx), next[2])
 			catch = true
 		}
 	case endBranchRe.MatchString(cmd):
 		switch cmd {
 		case "query":
 			// /group query
-			service.Group().QueryGroupWithRes(ctx, service.Bot().GetGroupId(ctx))
+			service.Group().QueryGroupReturnRes(ctx, service.Bot().GetGroupId(ctx))
 			catch = true
 		case "unbind":
 			// /group unbind
-			service.Group().UnbindWithRes(ctx, service.Bot().GetGroupId(ctx))
+			service.Group().UnbindReturnRes(ctx, service.Bot().GetGroupId(ctx))
 			catch = true
 		}
 	}

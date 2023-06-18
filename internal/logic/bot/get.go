@@ -73,7 +73,7 @@ func (s *sBot) GetOperatorId(ctx context.Context) int64 {
 	return s.reqJsonFromCtx(ctx).Get("operator_id").MustInt64()
 }
 
-func (s *sBot) GetGroupMemberList(ctx context.Context, groupId int64, callback func(ctx context.Context, lastCtx context.Context), noCache ...bool) {
+func (s *sBot) GetGroupMemberList(ctx context.Context, groupId int64, callback func(ctx context.Context, rsyncCtx context.Context), noCache ...bool) {
 	// 初始化响应
 	resJson := sj.New()
 	resJson.Set("action", "get_group_member_list")
@@ -82,9 +82,9 @@ func (s *sBot) GetGroupMemberList(ctx context.Context, groupId int64, callback f
 	resJson.Set("echo", echoSign)
 	// 参数
 	params := make(map[string]any)
-	params["group_id"] = gconv.String(groupId)
+	params["group_id"] = groupId
 	if len(noCache) > 0 && noCache[0] {
-		params["no_cache"] = "true"
+		params["no_cache"] = true
 	}
 	// 参数打包
 	resJson.Set("params", params)
@@ -112,7 +112,7 @@ func (s *sBot) GetCardOldNew(ctx context.Context) (oldCard, newCard string) {
 	return
 }
 
-func (s *sBot) RequestMessage(ctx context.Context, messageId int64, callback func(ctx context.Context, lastCtx context.Context)) {
+func (s *sBot) RequestMessage(ctx context.Context, messageId int64, callback func(ctx context.Context, rsyncCtx context.Context)) {
 	// 初始化响应
 	resJson := sj.New()
 	resJson.Set("action", "get_msg")
@@ -122,6 +122,39 @@ func (s *sBot) RequestMessage(ctx context.Context, messageId int64, callback fun
 	// 参数
 	params := make(map[string]any)
 	params["message_id"] = gconv.String(messageId)
+	// 参数打包
+	resJson.Set("params", params)
+	res, err := resJson.Encode()
+	if err != nil {
+		g.Log().Warning(ctx, err)
+		return
+	}
+	// echo
+	err = s.pushEchoCache(ctx, echoSign, callback)
+	if err != nil {
+		g.Log().Error(ctx, err)
+		return
+	}
+	// 发送响应
+	err = s.writeMessage(ctx, websocket.TextMessage, res)
+	if err != nil {
+		g.Log().Warning(ctx, err)
+	}
+}
+
+func (s *sBot) GetGroupInfo(ctx context.Context, groupId int64, callback func(ctx context.Context, rsyncCtx context.Context), noCache ...bool) {
+	// 初始化响应
+	resJson := sj.New()
+	resJson.Set("action", "get_group_info")
+	// echo sign
+	echoSign := guid.S()
+	resJson.Set("echo", echoSign)
+	// 参数
+	params := make(map[string]any)
+	params["group_id"] = groupId
+	if len(noCache) > 0 && noCache[0] {
+		params["no_cache"] = true
+	}
 	// 参数打包
 	resJson.Set("params", params)
 	res, err := resJson.Encode()

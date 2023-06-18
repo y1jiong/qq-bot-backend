@@ -8,10 +8,11 @@ import (
 	"qq-bot-backend/internal/dao"
 	"qq-bot-backend/internal/model/entity"
 	"qq-bot-backend/internal/service"
+	"sync"
 	"time"
 )
 
-func (s *sGroup) BindNamespaceWithRes(ctx context.Context, groupId int64, namespace string) {
+func (s *sGroup) BindNamespaceReturnRes(ctx context.Context, groupId int64, namespace string) {
 	// 参数合法性校验
 	if groupId < 1 {
 		return
@@ -62,7 +63,7 @@ func (s *sGroup) BindNamespaceWithRes(ctx context.Context, groupId int64, namesp
 	service.Bot().SendPlainMsg(ctx, "已绑定当前 group("+gconv.String(groupId)+") 到 namespace("+namespace+")")
 }
 
-func (s *sGroup) UnbindWithRes(ctx context.Context, groupId int64) {
+func (s *sGroup) UnbindReturnRes(ctx context.Context, groupId int64) {
 	// 参数合法性校验
 	if groupId < 1 {
 		return
@@ -93,7 +94,7 @@ func (s *sGroup) UnbindWithRes(ctx context.Context, groupId int64) {
 	service.Bot().SendPlainMsg(ctx, "已解除 group("+gconv.String(groupId)+") 的 namespace 绑定")
 }
 
-func (s *sGroup) QueryGroupWithRes(ctx context.Context, groupId int64) {
+func (s *sGroup) QueryGroupReturnRes(ctx context.Context, groupId int64) {
 	// 参数合法性校验
 	if groupId < 1 {
 		return
@@ -114,7 +115,7 @@ func (s *sGroup) QueryGroupWithRes(ctx context.Context, groupId int64) {
 	service.Bot().SendPlainMsg(ctx, msg)
 }
 
-func (s *sGroup) KickFromListWithRes(ctx context.Context, groupId int64, listName string) {
+func (s *sGroup) KickFromListReturnRes(ctx context.Context, groupId int64, listName string) {
 	// 参数合法性校验
 	if groupId < 1 {
 		return
@@ -225,7 +226,7 @@ func (s *sGroup) KickFromListWithRes(ctx context.Context, groupId int64, listNam
 	service.Bot().GetGroupMemberList(ctx, groupId, callback, true)
 }
 
-func (s *sGroup) KeepFromListWithRes(ctx context.Context, groupId int64, listName string) {
+func (s *sGroup) KeepFromListReturnRes(ctx context.Context, groupId int64, listName string) {
 	// 参数合法性校验
 	if groupId < 1 {
 		return
@@ -334,4 +335,53 @@ func (s *sGroup) KeepFromListWithRes(ctx context.Context, groupId int64, listNam
 	}
 	// 异步获取群成员列表
 	service.Bot().GetGroupMemberList(ctx, groupId, callback, true)
+}
+
+func (s *sGroup) CheckExistReturnRes(ctx context.Context) {
+	wg := sync.WaitGroup{}
+	pageNum, pageSize := 1, 10
+	deleted := 0
+	msg := ""
+	for {
+		var gEntity []*entity.Group
+		err := dao.Group.Ctx(ctx).Page(pageNum, pageSize).Scan(&gEntity)
+		if err != nil {
+			g.Log().Error(ctx, err)
+			return
+		}
+		for _, v := range gEntity {
+			vGroupId := v.GroupId
+			// 异步 callback
+			callback := func(ctx context.Context, rsyncCtx context.Context) {
+				defer wg.Done()
+				// 不使用默认 echo 处理流程
+				//if service.Bot().DefaultEchoProcess(ctx, rsyncCtx) {
+				//	return
+				//}
+				// 判断群是否已经解散
+				if service.Bot().GetEchoStatus(rsyncCtx) != "failed" || service.Bot().GetEchoFailedMsg(rsyncCtx) != "群聊不存在" {
+					return
+				}
+				// 记录信息
+				msg += "\ngroup(" + gconv.String(vGroupId) + ")"
+				// 删除 group
+				_, err = dao.Group.Ctx(ctx).Where(dao.Group.Columns().GroupId, vGroupId).Delete()
+				if err != nil {
+					g.Log().Error(ctx, err)
+					return
+				}
+				deleted++
+			}
+			wg.Add(1)
+			service.Bot().GetGroupInfo(ctx, vGroupId, callback, true)
+		}
+		// 结束条件
+		if len(gEntity) < pageSize {
+			break
+		}
+		pageNum++
+	}
+	// 回执
+	wg.Wait()
+	service.Bot().SendPlainMsg(ctx, "已删除 "+gconv.String(deleted)+" 条不存在的 group"+msg)
 }

@@ -27,7 +27,7 @@ func tryGroupMessageEnable(ctx context.Context, cmd string) (catch bool) {
 		switch cmd {
 		case "anti-recall":
 			// /group message enable anti-recall
-			service.Group().SetAntiRecallWithRes(ctx, service.Bot().GetGroupId(ctx), true)
+			service.Group().SetAntiRecallReturnRes(ctx, service.Bot().GetGroupId(ctx), true)
 			catch = true
 		}
 	}
@@ -40,7 +40,7 @@ func tryGroupMessageDisable(ctx context.Context, cmd string) (catch bool) {
 		switch cmd {
 		case "anti-recall":
 			// /group message disable anti-recall
-			service.Group().SetAntiRecallWithRes(ctx, service.Bot().GetGroupId(ctx), false)
+			service.Group().SetAntiRecallReturnRes(ctx, service.Bot().GetGroupId(ctx), false)
 			catch = true
 		}
 	}
