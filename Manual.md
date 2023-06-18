@@ -28,7 +28,8 @@ v1.3
 | /group bind {namespace} | 将当前 group 绑定到 namespace 中（会重置当前 group 的所有配置） | 需要 group admin 和 namespace admin 及以上权限 |
 | /group unbind           | 解除当前 group 的绑定                                        | 同上                                           |
 | /group query            | 查询当前 group 的配置                                        | 需要 namespace admin 及以上权限                |
-| /group kick {list_name} | 用 list_name 把当前 group 的成员踢出                         | 需要 group admin 和 namespace admin 及以上权限 |
+| /group kick {list_name} | 把当前 group 在 list_name 中的成员踢出                       | 需要 group admin 和 namespace admin 及以上权限 |
+| /group keep {list_name} | 把当前 group 不在 list_name 中的成员踢出                     | 同上                                           |
 
 
 ## Group Approval

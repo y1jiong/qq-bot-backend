@@ -4,7 +4,7 @@ import "runtime"
 
 const (
 	ProjName = "qq-bot-backend"
-	Version  = "v1.3.2"
+	Version  = "v1.3.3"
 )
 
 var (

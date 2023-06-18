@@ -23,6 +23,10 @@ func tryGroup(ctx context.Context, cmd string) (catch bool) {
 			// /group kick <list_name>
 			service.Group().KickFromListWithRes(ctx, service.Bot().GetGroupId(ctx), next[2])
 			catch = true
+		case "keep":
+			// /group keep <list_name>
+			service.Group().KeepFromListWithRes(ctx, service.Bot().GetGroupId(ctx), next[2])
+			catch = true
 		case "log":
 			// /group log <>
 			catch = tryGroupLog(ctx, next[2])
