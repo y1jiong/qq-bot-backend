@@ -344,7 +344,10 @@ func (s *sGroup) CheckExistReturnRes(ctx context.Context) {
 	msg := ""
 	for {
 		var gEntity []*entity.Group
-		err := dao.Group.Ctx(ctx).Page(pageNum, pageSize).Scan(&gEntity)
+		err := dao.Group.Ctx(ctx).
+			Fields(dao.Group.Columns().GroupId).
+			Page(pageNum, pageSize).
+			Scan(&gEntity)
 		if err != nil {
 			g.Log().Error(ctx, err)
 			return

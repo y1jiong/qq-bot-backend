@@ -28,7 +28,9 @@ const (
 
 func getUser(ctx context.Context, userId int64) (uEntity *entity.User) {
 	// 数据库查询
-	err := dao.User.Ctx(ctx).Where(dao.User.Columns().UserId, userId).Scan(&uEntity)
+	err := dao.User.Ctx(ctx).
+		Where(dao.User.Columns().UserId, userId).
+		Scan(&uEntity)
 	if err != nil {
 		g.Log().Error(ctx, err)
 	}

@@ -33,6 +33,7 @@ func (s *sToken) IsCorrectToken(ctx context.Context, token string) (correct bool
 	// 数据库查询
 	var tEntity *entity.Token
 	err := dao.Token.Ctx(ctx).
+		Fields(dao.Token.Columns().Name).
 		Where(dao.Token.Columns().Token, token).
 		Scan(&tEntity)
 	if err != nil {
