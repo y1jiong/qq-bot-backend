@@ -35,6 +35,17 @@ type echoModel struct {
 	CallbackFunc func(ctx context.Context, rsyncCtx context.Context)
 }
 
+func (s *sBot) CtxWithWebSocket(parent context.Context, ws *ghttp.WebSocket) context.Context {
+	return context.WithValue(parent, ctxKeyForWebSocket, ws)
+}
+
+func (s *sBot) webSocketFromCtx(ctx context.Context) *ghttp.WebSocket {
+	if v := ctx.Value(ctxKeyForWebSocket); v != nil {
+		return v.(*ghttp.WebSocket)
+	}
+	return nil
+}
+
 func (s *sBot) CtxNewWebSocketMutex(parent context.Context) context.Context {
 	return context.WithValue(parent, ctxKeyForWebSocketMutex, &sync.Mutex{})
 }
@@ -42,17 +53,6 @@ func (s *sBot) CtxNewWebSocketMutex(parent context.Context) context.Context {
 func (s *sBot) webSocketMutexFromCtx(ctx context.Context) *sync.Mutex {
 	if v := ctx.Value(ctxKeyForWebSocketMutex); v != nil {
 		return v.(*sync.Mutex)
-	}
-	return nil
-}
-
-func (s *sBot) ctxWithWebSocket(parent context.Context, ws *ghttp.WebSocket) context.Context {
-	return context.WithValue(parent, ctxKeyForWebSocket, ws)
-}
-
-func (s *sBot) webSocketFromCtx(ctx context.Context) *ghttp.WebSocket {
-	if v := ctx.Value(ctxKeyForWebSocket); v != nil {
-		return v.(*ghttp.WebSocket)
 	}
 	return nil
 }
@@ -77,14 +77,16 @@ func (s *sBot) writeMessage(ctx context.Context, messageType int, data []byte) e
 	return s.webSocketFromCtx(ctx).WriteMessage(messageType, data)
 }
 
-func (s *sBot) Process(ctx context.Context, ws *ghttp.WebSocket, rawJson []byte, nextProcess func(ctx context.Context)) {
+func (s *sBot) Process(ctx context.Context, rawJson []byte, nextProcess func(ctx context.Context)) {
+	// 检查 context 中是否携带 WebSocket 对象
+	if s.webSocketFromCtx(ctx) == nil {
+		panic("context does not include websocket")
+	}
+	// ctx 携带 reqJson
 	reqJson, err := sj.NewJson(rawJson)
 	if err != nil {
 		return
 	}
-	// ctx 携带 websocket
-	ctx = s.ctxWithWebSocket(ctx, ws)
-	// ctx 携带 reqJson
 	ctx = s.ctxWithReqJson(ctx, reqJson)
 	// debug mode
 	if service.Cfg().IsEnabledDebug(ctx) && s.GetPostType(ctx) != "meta_event" {

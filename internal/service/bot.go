@@ -14,8 +14,9 @@ import (
 
 type (
 	IBot interface {
+		CtxWithWebSocket(parent context.Context, ws *ghttp.WebSocket) context.Context
 		CtxNewWebSocketMutex(parent context.Context) context.Context
-		Process(ctx context.Context, ws *ghttp.WebSocket, rawJson []byte, nextProcess func(ctx context.Context))
+		Process(ctx context.Context, rawJson []byte, nextProcess func(ctx context.Context))
 		DefaultEchoProcess(ctx context.Context, rsyncCtx context.Context) (exit bool)
 		IsGroupOwnerOrAdmin(ctx context.Context) (yes bool)
 		GetEchoStatus(ctx context.Context) string

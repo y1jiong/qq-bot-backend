@@ -56,6 +56,8 @@ func (c *cBot) Websocket(r *ghttp.Request) {
 		return
 	}
 	g.Log().Info(ctx, tokenName+" Connected")
+	// context 携带 WebSocket 对象
+	ctx = service.Bot().CtxWithWebSocket(ctx, ws)
 	// 并发 ws 写锁
 	ctx = service.Bot().CtxNewWebSocketMutex(ctx)
 	// 消息循环
@@ -67,6 +69,6 @@ func (c *cBot) Websocket(r *ghttp.Request) {
 			return
 		}
 		// 异步处理 WebSocket 请求
-		go service.Bot().Process(ctx, ws, wsReq, service.Process().Process)
+		go service.Bot().Process(ctx, wsReq, service.Process().Process)
 	}
 }
