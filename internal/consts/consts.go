@@ -1,6 +1,9 @@
 package consts
 
-import "runtime"
+import (
+	"github.com/gogf/gf/v2"
+	"runtime"
+)
 
 const (
 	ProjName = "qq-bot-backend"
@@ -8,10 +11,11 @@ const (
 )
 
 var (
+	GitCommit   = ""
 	BuildTime   = ""
-	CommitHash  = ""
-	Description = "Go Version: " + runtime.Version() +
-		"\nVersion: " + Version +
-		"\nBuild Time: " + BuildTime +
-		"\nCommit Hash: " + CommitHash
+	Description = "Version: " + Version +
+		"\nGo Version: " + runtime.Version() +
+		"\nGoFrame Version: " + gf.VERSION +
+		"\nGit Commit: " + GitCommit +
+		"\nBuild Time: " + BuildTime
 )
