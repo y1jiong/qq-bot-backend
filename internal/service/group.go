@@ -16,6 +16,7 @@ type (
 		GetApprovalBlacklists(ctx context.Context, groupId int64) (blacklists map[string]any)
 		GetApprovalRegexp(ctx context.Context, groupId int64) (exp string)
 		IsEnabledApprovalAutoPass(ctx context.Context, groupId int64) (enabled bool)
+		IsEnabledApprovalAutoReject(ctx context.Context, groupId int64) (enabled bool)
 		AddApprovalProcessReturnRes(ctx context.Context, groupId int64, processName string, args ...string)
 		RemoveApprovalProcessReturnRes(ctx context.Context, groupId int64, processName string, args ...string)
 		GetCardAutoSetList(ctx context.Context, groupId int64) (listName string)

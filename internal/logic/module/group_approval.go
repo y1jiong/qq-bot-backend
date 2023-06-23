@@ -41,7 +41,9 @@ func (s *sModule) TryApproveAddGroup(ctx context.Context) (catch bool) {
 		// 黑名单
 		pass = isNotInApprovalBlacklist(ctx, groupId, userId, extra)
 	}
-	if !pass || (pass && service.Group().IsEnabledApprovalAutoPass(ctx, groupId)) {
+	// 回执与日志
+	if (!pass && service.Group().IsEnabledApprovalAutoReject(ctx, groupId)) ||
+		(pass && service.Group().IsEnabledApprovalAutoPass(ctx, groupId)) {
 		// 在不通过和启用自动通过的条件下发送审批回执
 		// 审批请求回执
 		service.Bot().ApproveJoinGroup(ctx,
@@ -62,8 +64,14 @@ func (s *sModule) TryApproveAddGroup(ctx context.Context) (catch bool) {
 				comment)
 		}
 	} else if pass {
-		// 禁用自动通过打印跳过日志
+		// 打印跳过同意日志
 		g.Log().Infof(ctx, "skip processing approve user(%v) join group(%v) with %v",
+			userId,
+			groupId,
+			comment)
+	} else if !pass {
+		// 打印跳过拒绝日志
+		g.Log().Infof(ctx, "skip processing reject user(%v) join group(%v) with %v",
 			userId,
 			groupId,
 			comment)

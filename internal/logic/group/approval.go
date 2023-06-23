@@ -7,11 +7,12 @@ import (
 )
 
 const (
-	approvalProcessMapKey       = "approvalProcess"
-	approvalRegexpKey           = "approvalRegexp"
-	approvalWhitelistsMapKey    = "approvalWhitelists"
-	approvalBlacklistsMapKey    = "approvalBlacklists"
-	approvalDisabledAutoPassKey = "approvalDisabledAutoPass"
+	approvalProcessMapKey         = "approvalProcess"
+	approvalRegexpKey             = "approvalRegexp"
+	approvalWhitelistsMapKey      = "approvalWhitelists"
+	approvalBlacklistsMapKey      = "approvalBlacklists"
+	approvalDisabledAutoPassKey   = "approvalDisabledAutoPass"
+	approvalDisabledAutoRejectKey = "approvalDisabledAutoReject"
 )
 
 func (s *sGroup) GetApprovalProcess(ctx context.Context, groupId int64) (process map[string]any) {
@@ -111,5 +112,25 @@ func (s *sGroup) IsEnabledApprovalAutoPass(ctx context.Context, groupId int64) (
 		return
 	}
 	enabled = !settingJson.Get(approvalDisabledAutoPassKey).MustBool()
+	return
+}
+
+func (s *sGroup) IsEnabledApprovalAutoReject(ctx context.Context, groupId int64) (enabled bool) {
+	// 参数合法性校验
+	if groupId < 1 {
+		return
+	}
+	// 获取 group
+	gEntity := getGroup(ctx, groupId)
+	if gEntity == nil {
+		return
+	}
+	// 数据处理
+	settingJson, err := sj.NewJson([]byte(gEntity.SettingJson))
+	if err != nil {
+		g.Log().Error(ctx, err)
+		return
+	}
+	enabled = !settingJson.Get(approvalDisabledAutoRejectKey).MustBool()
 	return
 }

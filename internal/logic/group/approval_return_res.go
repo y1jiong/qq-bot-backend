@@ -86,6 +86,12 @@ func (s *sGroup) AddApprovalProcessReturnRes(ctx context.Context, groupId int64,
 				return
 			}
 			settingJson.Del(approvalDisabledAutoPassKey)
+		case consts.AutoRejectCmd:
+			if _, ok := settingJson.CheckGet(approvalDisabledAutoRejectKey); !ok {
+				service.Bot().SendPlainMsg(ctx, "并未禁用自动拒绝")
+				return
+			}
+			settingJson.Del(approvalDisabledAutoRejectKey)
 		default:
 			// 添加 processName
 			processMap := settingJson.Get(approvalProcessMapKey).MustMap(make(map[string]any))
@@ -171,6 +177,12 @@ func (s *sGroup) RemoveApprovalProcessReturnRes(ctx context.Context, groupId int
 				return
 			}
 			settingJson.Set(approvalDisabledAutoPassKey, true)
+		case consts.AutoRejectCmd:
+			if _, ok := settingJson.CheckGet(approvalDisabledAutoRejectKey); ok {
+				service.Bot().SendPlainMsg(ctx, "早已禁用自动拒绝")
+				return
+			}
+			settingJson.Set(approvalDisabledAutoRejectKey, true)
 		default:
 			// 删除 processName
 			processMap := settingJson.Get(approvalProcessMapKey).MustMap(make(map[string]any))
