@@ -270,7 +270,7 @@ func (s *sGroup) KeepFromListReturnRes(ctx context.Context, groupId int64, listN
 		// 随机延时
 		time.Sleep(time.Duration(grand.N(1000, 10000)) * time.Millisecond)
 	}
-	// 异步检查有没有踢出失败的
+	// 检查有没有踢出失败的
 	// 获取群成员列表
 	membersArr, err = service.Bot().GetGroupMemberList(ctx, groupId, true)
 	if err != nil {

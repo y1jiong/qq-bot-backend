@@ -103,7 +103,7 @@ func (s *sGroup) SetMessageNotificationReturnRes(ctx context.Context, groupId in
 	// 验证是否存在该群
 	_, err = service.Bot().GetGroupInfo(ctx, notificationGroupId)
 	if err != nil {
-		service.Bot().SendPlainMsg(ctx, "group("+gconv.String(notificationGroupId)+")"+" 未找到")
+		service.Bot().SendPlainMsg(ctx, "group("+gconv.String(notificationGroupId)+") 未找到")
 		return
 	}
 	settingJson.Set(messageNotificationGroupIdKey, notificationGroupId)

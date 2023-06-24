@@ -78,14 +78,20 @@ func (s *sGroup) AddApprovalProcessReturnRes(ctx context.Context, groupId int64,
 			}
 			settingJson.Set(approvalRegexpKey, args[0])
 		case consts.NotificationCmd:
+			if v, ok := settingJson.CheckGet(approvalNotificationGroupIdKey); ok {
+				service.Bot().SendPlainMsg(ctx,
+					"早已设置 group("+gconv.String(groupId)+") 群入群审批通知群为 group("+
+						gconv.String(v.MustInt64())+")")
+				return
+			}
 			// 验证是否存在该群
 			_, err = service.Bot().GetGroupInfo(ctx, gconv.Int64(args[0]))
 			if err != nil {
-				service.Bot().SendPlainMsg(ctx, "group("+args[0]+")"+" 未找到")
+				service.Bot().SendPlainMsg(ctx, "group("+args[0]+") 未找到")
 				return
 			}
 			// 继续处理
-			settingJson.Set(approvalNotificationGroupIdKey, args[0])
+			settingJson.Set(approvalNotificationGroupIdKey, gconv.Int64(args[0]))
 		}
 	} else {
 		switch processName {
