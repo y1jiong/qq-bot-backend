@@ -7,7 +7,8 @@ import (
 )
 
 const (
-	antiRecallKey = "antiRecall"
+	messageNotificationGroupIdKey = "messageNotificationGroupId"
+	antiRecallKey                 = "antiRecall"
 )
 
 func (s *sGroup) IsEnabledAntiRecall(ctx context.Context, groupId int64) (enabled bool) {
@@ -27,5 +28,25 @@ func (s *sGroup) IsEnabledAntiRecall(ctx context.Context, groupId int64) (enable
 		return
 	}
 	enabled = settingJson.Get(antiRecallKey).MustBool()
+	return
+}
+
+func (s *sGroup) GetMessageNotificationGroupId(ctx context.Context, groupId int64) (notificationGroupId int64) {
+	// 参数合法性校验
+	if groupId < 1 {
+		return
+	}
+	// 获取 group
+	gEntity := getGroup(ctx, groupId)
+	if gEntity == nil {
+		return
+	}
+	// 数据处理
+	settingJson, err := sj.NewJson([]byte(gEntity.SettingJson))
+	if err != nil {
+		g.Log().Error(ctx, err)
+		return
+	}
+	notificationGroupId = settingJson.Get(messageNotificationGroupIdKey).MustInt64()
 	return
 }

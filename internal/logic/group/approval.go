@@ -7,12 +7,13 @@ import (
 )
 
 const (
-	approvalProcessMapKey         = "approvalProcess"
-	approvalRegexpKey             = "approvalRegexp"
-	approvalWhitelistsMapKey      = "approvalWhitelists"
-	approvalBlacklistsMapKey      = "approvalBlacklists"
-	approvalDisabledAutoPassKey   = "approvalDisabledAutoPass"
-	approvalDisabledAutoRejectKey = "approvalDisabledAutoReject"
+	approvalProcessMapKey          = "approvalProcess"
+	approvalRegexpKey              = "approvalRegexp"
+	approvalWhitelistsMapKey       = "approvalWhitelists"
+	approvalBlacklistsMapKey       = "approvalBlacklists"
+	approvalDisabledAutoPassKey    = "approvalDisabledAutoPass"
+	approvalDisabledAutoRejectKey  = "approvalDisabledAutoReject"
+	approvalNotificationGroupIdKey = "approvalNotificationGroupId"
 )
 
 func (s *sGroup) GetApprovalProcess(ctx context.Context, groupId int64) (process map[string]any) {
@@ -92,6 +93,26 @@ func (s *sGroup) GetApprovalRegexp(ctx context.Context, groupId int64) (exp stri
 		return
 	}
 	exp = settingJson.Get(approvalRegexpKey).MustString()
+	return
+}
+
+func (s *sGroup) GetApprovalNotificationGroupId(ctx context.Context, groupId int64) (notificationGroupId int64) {
+	// 参数合法性校验
+	if groupId < 1 {
+		return
+	}
+	// 获取 group
+	gEntity := getGroup(ctx, groupId)
+	if gEntity == nil {
+		return
+	}
+	// 数据处理
+	settingJson, err := sj.NewJson([]byte(gEntity.SettingJson))
+	if err != nil {
+		g.Log().Error(ctx, err)
+		return
+	}
+	notificationGroupId = settingJson.Get(approvalNotificationGroupIdKey).MustInt64()
 	return
 }
 

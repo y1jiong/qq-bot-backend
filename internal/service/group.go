@@ -15,6 +15,7 @@ type (
 		GetApprovalWhitelists(ctx context.Context, groupId int64) (whitelists map[string]any)
 		GetApprovalBlacklists(ctx context.Context, groupId int64) (blacklists map[string]any)
 		GetApprovalRegexp(ctx context.Context, groupId int64) (exp string)
+		GetApprovalNotificationGroupId(ctx context.Context, groupId int64) (notificationGroupId int64)
 		IsEnabledApprovalAutoPass(ctx context.Context, groupId int64) (enabled bool)
 		IsEnabledApprovalAutoReject(ctx context.Context, groupId int64) (enabled bool)
 		AddApprovalProcessReturnRes(ctx context.Context, groupId int64, processName string, args ...string)
@@ -44,7 +45,10 @@ type (
 		SetLogLeaveListReturnRes(ctx context.Context, groupId int64, listName string)
 		RemoveLogLeaveListReturnRes(ctx context.Context, groupId int64)
 		IsEnabledAntiRecall(ctx context.Context, groupId int64) (enabled bool)
+		GetMessageNotificationGroupId(ctx context.Context, groupId int64) (notificationGroupId int64)
 		SetAntiRecallReturnRes(ctx context.Context, groupId int64, enable bool)
+		SetMessageNotificationReturnRes(ctx context.Context, groupId int64, notificationGroupId int64)
+		RemoveMessageNotificationReturnRes(ctx context.Context, groupId int64)
 	}
 )
 

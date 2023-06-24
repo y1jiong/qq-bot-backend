@@ -8,7 +8,6 @@ package service
 import (
 	"context"
 
-	sj "github.com/bitly/go-simplejson"
 	"github.com/gogf/gf/v2/net/ghttp"
 )
 
@@ -17,10 +16,7 @@ type (
 		CtxWithWebSocket(parent context.Context, ws *ghttp.WebSocket) context.Context
 		CtxNewWebSocketMutex(parent context.Context) context.Context
 		Process(ctx context.Context, rawJson []byte, nextProcess func(ctx context.Context))
-		DefaultEchoProcess(ctx context.Context, rsyncCtx context.Context) (exit bool)
 		IsGroupOwnerOrAdmin(ctx context.Context) (yes bool)
-		GetEchoStatus(ctx context.Context) string
-		GetEchoFailedMsg(ctx context.Context) string
 		GetPostType(ctx context.Context) string
 		GetMsgType(ctx context.Context) string
 		GetRequestType(ctx context.Context) string
@@ -34,14 +30,10 @@ type (
 		GetFlag(ctx context.Context) string
 		GetTimestamp(ctx context.Context) int64
 		GetOperatorId(ctx context.Context) int64
-		GetGroupMemberList(ctx context.Context, groupId int64, callback func(ctx context.Context, rsyncCtx context.Context), noCache ...bool)
+		GetGroupMemberList(ctx context.Context, groupId int64, noCache ...bool) (members []any, err error)
 		GetCardOldNew(ctx context.Context) (oldCard, newCard string)
-		RequestMessage(ctx context.Context, messageId int64, callback func(ctx context.Context, rsyncCtx context.Context))
-		GetGroupInfo(ctx context.Context, groupId int64, callback func(ctx context.Context, rsyncCtx context.Context), noCache ...bool)
-		GetData(ctx context.Context) *sj.Json
-		GetFileFromData(ctx context.Context) string
-		GetSenderFromData(ctx context.Context) (nickname string, userId int64)
-		GetMessageFromData(ctx context.Context) string
+		RequestMessage(ctx context.Context, messageId int64) (messageMap map[string]any, err error)
+		GetGroupInfo(ctx context.Context, groupId int64, noCache ...bool) (infoMap map[string]any, err error)
 		SendMessage(ctx context.Context, messageType string, uid, gid int64, msg string, plain bool)
 		SendPlainMsg(ctx context.Context, msg string)
 		SendMsg(ctx context.Context, msg string)

@@ -32,44 +32,34 @@ func (s *sGroup) ExportGroupMemberListReturnRes(ctx context.Context, groupId int
 		service.Bot().SendPlainMsg(ctx, "在 namespace("+gEntity.Namespace+") 中未找到 list("+listName+")")
 		return
 	}
-	// callback
-	callback := func(ctx context.Context, rsyncCtx context.Context) {
-		if service.Bot().DefaultEchoProcess(ctx, rsyncCtx) {
-			return
-		}
-		// 获取群成员列表
-		membersJson := service.Bot().GetData(rsyncCtx)
-		if membersJson == nil {
-			// 空列表
-			service.Bot().SendPlainMsg(ctx, "获取到空的群成员列表")
-			return
-		}
-		// 局部变量
-		membersArr := membersJson.MustArray()
-		membersMap := make(map[string]any)
-		// 解析数组
-		for _, v := range membersArr {
-			// map 断言
-			if vv, ok := v.(map[string]any); ok {
-				// 写入数据
-				membersMap[gconv.String(vv["user_id"])] = struct {
-					JoinTime string `json:"join_time"`
-				}{
-					JoinTime: gtime.New(gconv.Int(vv["join_time"])).String(),
-				}
+	// 获取群成员列表
+	membersArr, err := service.Bot().GetGroupMemberList(ctx, groupId)
+	if err != nil {
+		service.Bot().SendPlainMsg(ctx, "获取群成员列表失败")
+		return
+	}
+	// 局部变量
+	membersMap := make(map[string]any)
+	// 解析数组
+	for _, v := range membersArr {
+		// map 断言
+		if vv, ok := v.(map[string]any); ok {
+			// 写入数据
+			membersMap[gconv.String(vv["user_id"])] = struct {
+				JoinTime string `json:"join_time"`
+			}{
+				JoinTime: gtime.New(gconv.Int(vv["join_time"])).String(),
 			}
 		}
-		// 保存数据
-		totalLen, err := service.List().AppendListData(ctx, listName, membersMap)
-		if err != nil {
-			g.Log().Error(ctx, err)
-			return
-		}
-		// 回执
-		service.Bot().SendPlainMsg(ctx,
-			"已将 group("+gconv.String(groupId)+") 的 member 导出到 list("+listName+") "+
-				gconv.String(len(membersMap))+" 条\n共 "+gconv.String(totalLen)+" 条")
 	}
-	// 异步获取群成员列表
-	service.Bot().GetGroupMemberList(ctx, groupId, callback)
+	// 保存数据
+	totalLen, err := service.List().AppendListData(ctx, listName, membersMap)
+	if err != nil {
+		g.Log().Error(ctx, err)
+		return
+	}
+	// 回执
+	service.Bot().SendPlainMsg(ctx,
+		"已将 group("+gconv.String(groupId)+") 的 member 导出到 list("+listName+") "+
+			gconv.String(len(membersMap))+" 条\n共 "+gconv.String(totalLen)+" 条")
 }

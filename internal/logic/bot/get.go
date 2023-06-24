@@ -7,17 +7,18 @@ import (
 	"github.com/gogf/gf/v2/util/gconv"
 	"github.com/gogf/gf/v2/util/guid"
 	"github.com/gorilla/websocket"
+	"sync"
 )
 
 func (s *sBot) getEcho(ctx context.Context) string {
 	return s.reqJsonFromCtx(ctx).Get("echo").MustString()
 }
 
-func (s *sBot) GetEchoStatus(ctx context.Context) string {
+func (s *sBot) getEchoStatus(ctx context.Context) string {
 	return s.reqJsonFromCtx(ctx).Get("status").MustString()
 }
 
-func (s *sBot) GetEchoFailedMsg(ctx context.Context) string {
+func (s *sBot) getEchoFailedMsg(ctx context.Context) string {
 	return s.reqJsonFromCtx(ctx).Get("wording").MustString()
 }
 
@@ -73,7 +74,7 @@ func (s *sBot) GetOperatorId(ctx context.Context) int64 {
 	return s.reqJsonFromCtx(ctx).Get("operator_id").MustInt64()
 }
 
-func (s *sBot) GetGroupMemberList(ctx context.Context, groupId int64, callback func(ctx context.Context, rsyncCtx context.Context), noCache ...bool) {
+func (s *sBot) GetGroupMemberList(ctx context.Context, groupId int64, noCache ...bool) (members []any, err error) {
 	// 初始化响应
 	resJson := sj.New()
 	resJson.Set("action", "get_group_member_list")
@@ -93,6 +94,17 @@ func (s *sBot) GetGroupMemberList(ctx context.Context, groupId int64, callback f
 		g.Log().Warning(ctx, err)
 		return
 	}
+	// callback
+	wg := sync.WaitGroup{}
+	callback := func(ctx context.Context, rsyncCtx context.Context) {
+		defer wg.Done()
+		if err = s.defaultEchoProcess(rsyncCtx); err != nil {
+			return
+		}
+		received := s.getData(rsyncCtx)
+		members = received.MustArray()
+	}
+	wg.Add(1)
 	// echo
 	err = s.pushEchoCache(ctx, echoSign, callback)
 	if err != nil {
@@ -103,7 +115,10 @@ func (s *sBot) GetGroupMemberList(ctx context.Context, groupId int64, callback f
 	err = s.writeMessage(ctx, websocket.TextMessage, res)
 	if err != nil {
 		g.Log().Warning(ctx, err)
+		return
 	}
+	wg.Wait()
+	return
 }
 
 func (s *sBot) GetCardOldNew(ctx context.Context) (oldCard, newCard string) {
@@ -112,7 +127,7 @@ func (s *sBot) GetCardOldNew(ctx context.Context) (oldCard, newCard string) {
 	return
 }
 
-func (s *sBot) RequestMessage(ctx context.Context, messageId int64, callback func(ctx context.Context, rsyncCtx context.Context)) {
+func (s *sBot) RequestMessage(ctx context.Context, messageId int64) (messageMap map[string]any, err error) {
 	// 初始化响应
 	resJson := sj.New()
 	resJson.Set("action", "get_msg")
@@ -129,6 +144,17 @@ func (s *sBot) RequestMessage(ctx context.Context, messageId int64, callback fun
 		g.Log().Warning(ctx, err)
 		return
 	}
+	// callback
+	wg := sync.WaitGroup{}
+	callback := func(ctx context.Context, rsyncCtx context.Context) {
+		defer wg.Done()
+		if err = s.defaultEchoProcess(rsyncCtx); err != nil {
+			return
+		}
+		received := s.getData(rsyncCtx)
+		messageMap = received.MustMap()
+	}
+	wg.Add(1)
 	// echo
 	err = s.pushEchoCache(ctx, echoSign, callback)
 	if err != nil {
@@ -139,10 +165,13 @@ func (s *sBot) RequestMessage(ctx context.Context, messageId int64, callback fun
 	err = s.writeMessage(ctx, websocket.TextMessage, res)
 	if err != nil {
 		g.Log().Warning(ctx, err)
+		return
 	}
+	wg.Wait()
+	return
 }
 
-func (s *sBot) GetGroupInfo(ctx context.Context, groupId int64, callback func(ctx context.Context, rsyncCtx context.Context), noCache ...bool) {
+func (s *sBot) GetGroupInfo(ctx context.Context, groupId int64, noCache ...bool) (infoMap map[string]any, err error) {
 	// 初始化响应
 	resJson := sj.New()
 	resJson.Set("action", "get_group_info")
@@ -162,6 +191,17 @@ func (s *sBot) GetGroupInfo(ctx context.Context, groupId int64, callback func(ct
 		g.Log().Warning(ctx, err)
 		return
 	}
+	// callback
+	wg := sync.WaitGroup{}
+	callback := func(ctx context.Context, rsyncCtx context.Context) {
+		defer wg.Done()
+		if err = s.defaultEchoProcess(rsyncCtx); err != nil {
+			return
+		}
+		received := s.getData(rsyncCtx)
+		infoMap = received.MustMap()
+	}
+	wg.Add(1)
 	// echo
 	err = s.pushEchoCache(ctx, echoSign, callback)
 	if err != nil {
@@ -172,5 +212,8 @@ func (s *sBot) GetGroupInfo(ctx context.Context, groupId int64, callback func(ct
 	err = s.writeMessage(ctx, websocket.TextMessage, res)
 	if err != nil {
 		g.Log().Warning(ctx, err)
+		return
 	}
+	wg.Wait()
+	return
 }

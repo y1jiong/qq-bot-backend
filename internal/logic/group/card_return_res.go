@@ -133,55 +133,45 @@ func (s *sGroup) CheckCardWithRegexpReturnRes(ctx context.Context, groupId int64
 		service.Bot().SendPlainMsg(ctx, "在 namespace("+gEntity.Namespace+") 中未找到 list("+listName+")")
 		return
 	}
-	// callback
-	callback := func(ctx context.Context, rsyncCtx context.Context) {
-		if service.Bot().DefaultEchoProcess(ctx, rsyncCtx) {
-			return
-		}
-		// compile regexp
-		exp = service.Codec().DecodeCqCode(exp)
-		reg, err := regexp.Compile(exp)
-		if err != nil {
-			service.Bot().SendPlainMsg(ctx, "正则表达式编译失败")
-			return
-		}
-		// 获取群成员列表
-		membersJson := service.Bot().GetData(rsyncCtx)
-		if membersJson == nil {
-			// 空列表
-			service.Bot().SendPlainMsg(ctx, "获取到空的群成员列表")
-			return
-		}
-		// 局部变量
-		membersArr := membersJson.MustArray()
-		membersMap := make(map[string]any)
-		// 解析数组
-		for _, v := range membersArr {
-			// map 断言
-			if vv, ok := v.(map[string]any); ok {
-				if vv["role"] != "member" {
-					continue
-				}
-				userCard := gconv.String(vv["card"])
-				// 正则匹配
-				if !reg.MatchString(userCard) {
-					membersMap[gconv.String(vv["user_id"])] = userCard
-				}
+	// 获取群成员列表
+	membersArr, err := service.Bot().GetGroupMemberList(ctx, groupId, true)
+	if err != nil {
+		service.Bot().SendPlainMsg(ctx, "获取群成员列表失败")
+		return
+	}
+	// compile regexp
+	exp = service.Codec().DecodeCqCode(exp)
+	reg, err := regexp.Compile(exp)
+	if err != nil {
+		service.Bot().SendPlainMsg(ctx, "正则表达式编译失败")
+		return
+	}
+	// 局部变量
+	membersMap := make(map[string]any)
+	// 解析数组
+	for _, v := range membersArr {
+		// map 断言
+		if vv, ok := v.(map[string]any); ok {
+			if vv["role"] != "member" {
+				continue
+			}
+			userCard := gconv.String(vv["card"])
+			// 正则匹配
+			if !reg.MatchString(userCard) {
+				membersMap[gconv.String(vv["user_id"])] = userCard
 			}
 		}
-		// 保存数据
-		totalLen, err := service.List().AppendListData(ctx, listName, membersMap)
-		if err != nil {
-			g.Log().Error(ctx, err)
-			return
-		}
-		// 回执
-		service.Bot().SendPlainMsg(ctx,
-			"已将 group("+gconv.String(groupId)+") 中不符合群名片规则的 member 导出到 list("+listName+") "+
-				gconv.String(len(membersMap))+" 条\n共 "+gconv.String(totalLen)+" 条")
 	}
-	// 异步获取群成员列表
-	service.Bot().GetGroupMemberList(ctx, groupId, callback, true)
+	// 保存数据
+	totalLen, err := service.List().AppendListData(ctx, listName, membersMap)
+	if err != nil {
+		g.Log().Error(ctx, err)
+		return
+	}
+	// 回执
+	service.Bot().SendPlainMsg(ctx,
+		"已将 group("+gconv.String(groupId)+") 中不符合群名片规则的 member 导出到 list("+listName+") "+
+			gconv.String(len(membersMap))+" 条\n共 "+gconv.String(totalLen)+" 条")
 }
 
 func (s *sGroup) CheckCardByListReturnRes(ctx context.Context, groupId int64, toList, fromList string) {
@@ -212,53 +202,39 @@ func (s *sGroup) CheckCardByListReturnRes(ctx context.Context, groupId int64, to
 		service.Bot().SendPlainMsg(ctx, "在 namespace("+gEntity.Namespace+") 中未找到 list("+fromList+")")
 		return
 	}
-	// callback
-	callback := func(ctx context.Context, rsyncCtx context.Context) {
-		if service.Bot().DefaultEchoProcess(ctx, rsyncCtx) {
-			return
-		}
-		// 获取 fromList
-		fromListData := service.List().GetListData(ctx, fromList)
-		// 获取群成员列表
-		membersJson := service.Bot().GetData(rsyncCtx)
-		if membersJson == nil {
-			// 空列表
-			service.Bot().SendPlainMsg(ctx, "获取到空的群成员列表")
-			return
-		}
-		// 局部变量
-		membersArr := membersJson.MustArray()
-		membersMap := make(map[string]any)
-		// 解析数组
-		for _, v := range membersArr {
-			// map 断言
-			if vv, ok := v.(map[string]any); ok {
-				if vv["role"] != "member" {
-					continue
-				}
-				userId := gconv.String(vv["user_id"])
-				// 匹配
-				if _, okk := fromListData[userId].(string); okk {
-					userCard := gconv.String(vv["card"])
-					if userCard != fromListData[userId] {
-						membersMap[userId] = userCard
-					}
+	// 获取群成员列表
+	membersArr, err := service.Bot().GetGroupMemberList(ctx, groupId, true)
+	// 获取 fromList
+	fromListData := service.List().GetListData(ctx, fromList)
+	// 局部变量
+	membersMap := make(map[string]any)
+	// 解析数组
+	for _, v := range membersArr {
+		// map 断言
+		if vv, ok := v.(map[string]any); ok {
+			if vv["role"] != "member" {
+				continue
+			}
+			userId := gconv.String(vv["user_id"])
+			// 匹配
+			if _, okk := fromListData[userId].(string); okk {
+				userCard := gconv.String(vv["card"])
+				if userCard != fromListData[userId] {
+					membersMap[userId] = userCard
 				}
 			}
 		}
-		// 保存数据
-		totalLen, err := service.List().AppendListData(ctx, toList, membersMap)
-		if err != nil {
-			g.Log().Error(ctx, err)
-			return
-		}
-		// 回执
-		service.Bot().SendPlainMsg(ctx,
-			"已将 group("+gconv.String(groupId)+") 中不符合群名片规则的 member 导出到 list("+toList+") "+
-				gconv.String(len(membersMap))+" 条\n共 "+gconv.String(totalLen)+" 条")
 	}
-	// 异步获取群成员列表
-	service.Bot().GetGroupMemberList(ctx, groupId, callback, true)
+	// 保存数据
+	totalLen, err := service.List().AppendListData(ctx, toList, membersMap)
+	if err != nil {
+		g.Log().Error(ctx, err)
+		return
+	}
+	// 回执
+	service.Bot().SendPlainMsg(ctx,
+		"已将 group("+gconv.String(groupId)+") 中不符合群名片规则的 member 导出到 list("+toList+") "+
+			gconv.String(len(membersMap))+" 条\n共 "+gconv.String(totalLen)+" 条")
 }
 
 func (s *sGroup) LockCardReturnRes(ctx context.Context, groupId int64) {

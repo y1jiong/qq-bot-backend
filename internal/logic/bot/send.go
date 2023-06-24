@@ -115,10 +115,11 @@ func (s *sBot) SendFile(ctx context.Context, name, url string) {
 	}
 	// callback
 	callback := func(ctx context.Context, rsyncCtx context.Context) {
-		if s.DefaultEchoProcess(ctx, rsyncCtx) {
+		if err = s.defaultEchoProcess(rsyncCtx); err != nil {
+			s.SendPlainMsg(ctx, err.Error())
 			return
 		}
-		filePath := s.GetFileFromData(rsyncCtx)
+		filePath := s.getFileFromData(rsyncCtx)
 		groupId := s.GetGroupId(ctx)
 		if groupId != 0 {
 			s.SendFileToGroup(ctx, groupId, filePath, name, "")
@@ -186,7 +187,8 @@ func (s *sBot) SetModel(ctx context.Context, model string) {
 	}
 	// callback
 	callback := func(ctx context.Context, rsyncCtx context.Context) {
-		if s.DefaultEchoProcess(ctx, rsyncCtx) {
+		if err = s.defaultEchoProcess(rsyncCtx); err != nil {
+			s.SendPlainMsg(ctx, err.Error())
 			return
 		}
 		s.SendPlainMsg(ctx, "已更改机型为 '"+model+"'")

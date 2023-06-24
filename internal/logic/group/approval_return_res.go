@@ -77,6 +77,15 @@ func (s *sGroup) AddApprovalProcessReturnRes(ctx context.Context, groupId int64,
 				return
 			}
 			settingJson.Set(approvalRegexpKey, args[0])
+		case consts.NotificationCmd:
+			// 验证是否存在该群
+			_, err = service.Bot().GetGroupInfo(ctx, gconv.Int64(args[0]))
+			if err != nil {
+				service.Bot().SendPlainMsg(ctx, "group("+args[0]+")"+" 未找到")
+				return
+			}
+			// 继续处理
+			settingJson.Set(approvalNotificationGroupIdKey, args[0])
 		}
 	} else {
 		switch processName {
@@ -183,6 +192,12 @@ func (s *sGroup) RemoveApprovalProcessReturnRes(ctx context.Context, groupId int
 				return
 			}
 			settingJson.Set(approvalDisabledAutoRejectKey, true)
+		case consts.NotificationCmd:
+			if _, ok := settingJson.CheckGet(approvalNotificationGroupIdKey); !ok {
+				service.Bot().SendPlainMsg(ctx, "并未设置通知群")
+				return
+			}
+			settingJson.Del(approvalNotificationGroupIdKey)
 		default:
 			// 删除 processName
 			processMap := settingJson.Get(approvalProcessMapKey).MustMap(make(map[string]any))

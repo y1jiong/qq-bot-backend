@@ -2,6 +2,7 @@ package module
 
 import (
 	"context"
+	"fmt"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/util/gconv"
 	"qq-bot-backend/internal/consts"
@@ -42,6 +43,7 @@ func (s *sModule) TryApproveAddGroup(ctx context.Context) (catch bool) {
 		pass = isNotInApprovalBlacklist(ctx, groupId, userId, extra)
 	}
 	// 回执与日志
+	var logMsg string
 	if (!pass && service.Group().IsEnabledApprovalAutoReject(ctx, groupId)) ||
 		(pass && service.Group().IsEnabledApprovalAutoPass(ctx, groupId)) {
 		// 在不通过和启用自动通过的条件下发送审批回执
@@ -53,28 +55,35 @@ func (s *sModule) TryApproveAddGroup(ctx context.Context) (catch bool) {
 			"Auto-rejection")
 		// 打印审批日志
 		if pass {
-			g.Log().Infof(ctx, "approve user(%v) join group(%v) with %v",
+			logMsg = fmt.Sprintf("approve user(%v) join group(%v) with %v",
 				userId,
 				groupId,
 				comment)
 		} else {
-			g.Log().Infof(ctx, "reject user(%v) join group(%v) with %v",
+			logMsg = fmt.Sprintf("reject user(%v) join group(%v) with %v",
 				userId,
 				groupId,
 				comment)
 		}
 	} else if pass {
 		// 打印跳过同意日志
-		g.Log().Infof(ctx, "skip processing approve user(%v) join group(%v) with %v",
+		logMsg = fmt.Sprintf("skip processing approve user(%v) join group(%v) with %v",
 			userId,
 			groupId,
 			comment)
 	} else if !pass {
 		// 打印跳过拒绝日志
-		g.Log().Infof(ctx, "skip processing reject user(%v) join group(%v) with %v",
+		logMsg = fmt.Sprintf("skip processing reject user(%v) join group(%v) with %v",
 			userId,
 			groupId,
 			comment)
+	}
+	g.Log().Info(ctx, logMsg)
+	// 通知
+	notificationGroupId := service.Group().GetApprovalNotificationGroupId(ctx, groupId)
+	if notificationGroupId > 0 {
+		service.Bot().SendMessage(ctx,
+			"group", 0, notificationGroupId, logMsg, true)
 	}
 	catch = true
 	return

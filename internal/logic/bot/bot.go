@@ -2,6 +2,7 @@ package bot
 
 import (
 	"context"
+	"errors"
 	sj "github.com/bitly/go-simplejson"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/net/ghttp"
@@ -116,14 +117,13 @@ func (s *sBot) catchEcho(ctx context.Context) (catch bool) {
 	return
 }
 
-func (s *sBot) DefaultEchoProcess(ctx context.Context, rsyncCtx context.Context) (exit bool) {
-	if s.GetEchoStatus(rsyncCtx) != "ok" {
-		exit = true
-		switch s.GetEchoStatus(rsyncCtx) {
+func (s *sBot) defaultEchoProcess(rsyncCtx context.Context) (err error) {
+	if s.getEchoStatus(rsyncCtx) != "ok" {
+		switch s.getEchoStatus(rsyncCtx) {
 		case "async":
-			s.SendPlainMsg(ctx, "已提交 async 处理")
+			err = errors.New("已提交 async 处理")
 		case "failed":
-			s.SendPlainMsg(ctx, s.GetEchoFailedMsg(rsyncCtx))
+			err = errors.New(s.getEchoFailedMsg(rsyncCtx))
 		}
 	}
 	return

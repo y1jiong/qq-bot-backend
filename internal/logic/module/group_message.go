@@ -22,23 +22,33 @@ func (s *sModule) TryUndoMessageRecall(ctx context.Context) (catch bool) {
 	}
 	// 获取撤回消息的 id
 	msgId := service.Bot().GetMsgId(ctx)
-	// 异步反撤回
-	callback := func(ctx context.Context, rsyncCtx context.Context) {
-		if service.Bot().DefaultEchoProcess(ctx, rsyncCtx) {
-			return
-		}
-		// 获取发送者信息
-		nickname, userId := service.Bot().GetSenderFromData(rsyncCtx)
-		// 获取撤回消息
-		message := service.Bot().GetMessageFromData(rsyncCtx)
-		// 反撤回
-		msg := gconv.String(userId) + "(" + nickname + ")" + "撤回了一条消息：\n" + message
-		service.Bot().SendMsg(ctx, msg)
+	// 反撤回
+	messageMap, err := service.Bot().RequestMessage(ctx, msgId)
+	if err != nil {
+		service.Bot().SendPlainMsg(ctx, "获取历史消息失败")
+		return
 	}
-	service.Bot().RequestMessage(ctx, msgId, callback)
+	// 获取发送者信息
+	senderMap := gconv.Map(messageMap["sender"])
+	nickname := gconv.String(senderMap["nickname"])
+	userId := gconv.Int64(senderMap["user_id"])
+	// 获取撤回消息
+	message := gconv.String(messageMap["message"])
 	// 防止过度触发反撤回
 	s.AutoMute(ctx, "recall", groupId, service.Bot().GetUserId(ctx),
 		2, 5, 5, gconv.Duration("1m"))
+	// 反撤回
+	notificationGroupId := service.Group().GetMessageNotificationGroupId(ctx, groupId)
+	var msg string
+	if notificationGroupId < 1 {
+		notificationGroupId = groupId
+		msg = gconv.String(userId) + "(" + nickname + ") 撤回了一条消息：\n"
+	} else {
+		msg = gconv.String(userId) + "(" + nickname + ") 在 group(" + gconv.String(groupId) + ") 撤回了一条消息：\n"
+	}
+	msg += message
+	service.Bot().SendMessage(ctx,
+		"group", 0, notificationGroupId, msg, false)
 	catch = true
 	return
 }
