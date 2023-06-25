@@ -2,6 +2,7 @@ package module
 
 import (
 	"context"
+	"fmt"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/util/gconv"
 	"qq-bot-backend/internal/consts"
@@ -42,11 +43,18 @@ func (s *sModule) TryKeywordRecall(ctx context.Context) (catch bool) {
 	service.Bot().RecallMessage(ctx, service.Bot().GetMsgId(ctx))
 	userId := service.Bot().GetUserId(ctx)
 	// 打印撤回日志
-	g.Log().Infof(ctx, "recall group(%v) user(%v) hit(%v) detail %v",
+	logMsg := fmt.Sprintf("recall group(%v) user(%v) hit(%v) detail %v",
 		groupId,
 		userId,
 		hit,
 		msg)
+	g.Log().Info(ctx, logMsg)
+	// 通知
+	notificationGroupId := service.Group().GetMessageNotificationGroupId(ctx, groupId)
+	if notificationGroupId > 0 {
+		service.Bot().SendMessage(ctx,
+			"group", 0, notificationGroupId, logMsg, true)
+	}
 	// 禁言
 	s.AutoMute(ctx, "keyword", groupId, userId,
 		1, 5, 0, gconv.Duration("16h"))
