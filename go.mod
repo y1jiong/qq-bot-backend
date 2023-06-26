@@ -7,6 +7,8 @@ require (
 	github.com/gogf/gf/contrib/drivers/pgsql/v2 v2.4.4
 	github.com/gogf/gf/v2 v2.4.4
 	github.com/gorilla/websocket v1.5.0
+	github.com/lukesampson/figlet v0.0.0-20190211215653-8a3ef4a6ac42
+	github.com/nsf/termbox-go v1.1.1
 )
 
 require (
