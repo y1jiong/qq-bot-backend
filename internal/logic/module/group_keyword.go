@@ -31,7 +31,7 @@ func (s *sModule) TryKeywordRecall(ctx context.Context) (catch bool) {
 	if _, ok := process[consts.BlacklistCmd]; ok {
 		shouldRecall, hit = isInKeywordBlacklist(ctx, groupId, msg)
 	}
-	if _, ok := process[consts.WhitelistCmd]; ok && !shouldRecall {
+	if _, ok := process[consts.WhitelistCmd]; ok && shouldRecall {
 		shouldRecall, hit = isNotInKeywordWhitelist(ctx, groupId, msg)
 	}
 	// 结果处理
