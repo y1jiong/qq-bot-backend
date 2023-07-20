@@ -19,7 +19,7 @@ type (
 		TryKeywordReply(ctx context.Context) (catch bool)
 		TryLogLeave(ctx context.Context) (catch bool)
 		TryUndoMessageRecall(ctx context.Context) (catch bool)
-		AutoLimit(ctx context.Context, kind, key string, limitTimes int, duration time.Duration) (limited bool)
+		AutoLimit(ctx context.Context, kind, key string, limitTimes int, duration time.Duration) (limited bool, times int)
 		MultiContains(str string, m map[string]any) (contains bool, hit string, mValue string)
 		AutoMute(ctx context.Context, kind string, groupId, userId int64, passTimes, baseMinutes, limitMinutes int, duration time.Duration)
 	}

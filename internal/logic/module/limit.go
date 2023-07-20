@@ -8,7 +8,7 @@ import (
 )
 
 func (s *sModule) AutoLimit(ctx context.Context, kind, key string, limitTimes int, duration time.Duration) (
-	limited bool) {
+	limited bool, times int) {
 	// 缓存键名
 	cacheKey := "LimitTimes:" + kind + "=" + key
 	// 过期时间
@@ -17,7 +17,6 @@ func (s *sModule) AutoLimit(ctx context.Context, kind, key string, limitTimes in
 		g.Log().Warning(ctx, err)
 		return
 	}
-	var times int
 	if timesVar == nil {
 		// 设置缓存
 		defaultTimes := 1
@@ -40,6 +39,5 @@ func (s *sModule) AutoLimit(ctx context.Context, kind, key string, limitTimes in
 		return
 	}
 	limited = true
-	g.Log().Info(ctx, kind, key, "is limited")
 	return
 }

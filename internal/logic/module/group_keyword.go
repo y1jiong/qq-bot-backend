@@ -105,7 +105,10 @@ func (s *sModule) TryKeywordReply(ctx context.Context) (catch bool) {
 	// 匹配关键词
 	if contains, _, value := service.Module().MultiContains(msg, listMap); contains && value != "" {
 		// 限速
-		if s.AutoLimit(ctx, "reply", gconv.String(groupId), 2, gconv.Duration("1m")) {
+		kind := "replyG"
+		gid := gconv.String(groupId)
+		if limited, _ := s.AutoLimit(ctx, kind, gid, 2, gconv.Duration("1m")); limited {
+			g.Log().Info(ctx, kind, gid, "is limited")
 			return
 		}
 		// 匹配成功，回复
