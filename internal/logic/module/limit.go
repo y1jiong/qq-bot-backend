@@ -40,6 +40,6 @@ func (s *sModule) AutoLimit(ctx context.Context, kind, key string, limitTimes in
 		return
 	}
 	limited = true
-	g.Log().Info(ctx, kind, key, limitTimes, "limited")
+	g.Log().Info(ctx, kind, key, "is limited")
 	return
 }
