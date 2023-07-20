@@ -93,6 +93,10 @@ func isNotInKeywordWhitelist(ctx context.Context, groupId int64, msg string) (no
 func (s *sModule) TryKeywordReply(ctx context.Context) (catch bool) {
 	// 获取当前 group reply list
 	groupId := service.Bot().GetGroupId(ctx)
+	// 限速
+	if s.AutoLimit(ctx, "reply", gconv.String(groupId), 5, gconv.Duration("1m")) {
+		return
+	}
 	listName := service.Group().GetKeywordReplyList(ctx, groupId)
 	if listName == "" {
 		// 没有设置回复列表，跳过回复功能
