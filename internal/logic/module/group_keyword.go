@@ -29,10 +29,11 @@ func (s *sModule) TryKeywordRecall(ctx context.Context) (catch bool) {
 	hit := ""
 	// 处理
 	if _, ok := process[consts.BlacklistCmd]; ok {
-		shouldRecall, hit = isInKeywordBlacklist(ctx, groupId, msg)
+		shouldRecall, hit = isInKeywordLists(ctx, msg, service.Group().GetKeywordBlacklists(ctx, groupId))
 	}
 	if _, ok := process[consts.WhitelistCmd]; ok && shouldRecall {
-		shouldRecall, hit = isNotInKeywordWhitelist(ctx, groupId, msg)
+		in, _ := isInKeywordLists(ctx, msg, service.Group().GetKeywordWhitelists(ctx, groupId))
+		shouldRecall = !in
 	}
 	// 结果处理
 	if !shouldRecall {
@@ -62,27 +63,11 @@ func (s *sModule) TryKeywordRecall(ctx context.Context) (catch bool) {
 	return
 }
 
-func isInKeywordBlacklist(ctx context.Context, groupId int64, msg string) (in bool, hit string) {
-	blacklists := service.Group().GetKeywordBlacklists(ctx, groupId)
-	for k := range blacklists {
+func isInKeywordLists(ctx context.Context, msg string, lists map[string]any) (in bool, hit string) {
+	for k := range lists {
 		blacklist := service.List().GetListData(ctx, k)
 		if contains, hitStr, _ := service.Module().MultiContains(msg, blacklist); contains {
 			in = true
-			hit = hitStr
-			return
-		}
-	}
-	return
-}
-
-func isNotInKeywordWhitelist(ctx context.Context, groupId int64, msg string) (notIn bool, hit string) {
-	// 默认不在白名单内
-	notIn = true
-	whitelists := service.Group().GetKeywordWhitelists(ctx, groupId)
-	for k := range whitelists {
-		whitelist := service.List().GetListData(ctx, k)
-		if contains, hitStr, _ := service.Module().MultiContains(msg, whitelist); contains {
-			notIn = false
 			hit = hitStr
 			return
 		}
