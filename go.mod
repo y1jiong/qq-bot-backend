@@ -4,8 +4,8 @@ go 1.20
 
 require (
 	github.com/bitly/go-simplejson v0.5.0
-	github.com/gogf/gf/contrib/drivers/pgsql/v2 v2.5.0
-	github.com/gogf/gf/v2 v2.5.0
+	github.com/gogf/gf/contrib/drivers/pgsql/v2 v2.5.1
+	github.com/gogf/gf/v2 v2.5.1
 	github.com/gorilla/websocket v1.5.0
 	github.com/lukesampson/figlet v0.0.0-20190211215653-8a3ef4a6ac42
 	github.com/nsf/termbox-go v1.1.1
@@ -14,7 +14,7 @@ require (
 require (
 	github.com/BurntSushi/toml v1.3.2 // indirect
 	github.com/bmizerany/assert v0.0.0-20160611221934-b7ed37b82869 // indirect
-	github.com/clbanning/mxj/v2 v2.5.7 // indirect
+	github.com/clbanning/mxj/v2 v2.7.0 // indirect
 	github.com/fatih/color v1.15.0 // indirect
 	github.com/fsnotify/fsnotify v1.6.0 // indirect
 	github.com/go-logr/logr v1.2.4 // indirect
