@@ -4,8 +4,8 @@ go 1.21
 
 require (
 	github.com/bitly/go-simplejson v0.5.0
-	github.com/gogf/gf/contrib/drivers/pgsql/v2 v2.5.3
-	github.com/gogf/gf/v2 v2.5.3
+	github.com/gogf/gf/contrib/drivers/pgsql/v2 v2.5.4
+	github.com/gogf/gf/v2 v2.5.4
 	github.com/gorilla/websocket v1.5.0
 	github.com/lukesampson/figlet v0.0.0-20190211215653-8a3ef4a6ac42
 	github.com/nsf/termbox-go v1.1.1
@@ -28,10 +28,10 @@ require (
 	github.com/mattn/go-runewidth v0.0.15 // indirect
 	github.com/olekukonko/tablewriter v0.0.5 // indirect
 	github.com/rivo/uniseg v0.4.4 // indirect
-	go.opentelemetry.io/otel v1.17.0 // indirect
-	go.opentelemetry.io/otel/metric v1.17.0 // indirect
-	go.opentelemetry.io/otel/sdk v1.17.0 // indirect
-	go.opentelemetry.io/otel/trace v1.17.0 // indirect
+	go.opentelemetry.io/otel v1.18.0 // indirect
+	go.opentelemetry.io/otel/metric v1.18.0 // indirect
+	go.opentelemetry.io/otel/sdk v1.18.0 // indirect
+	go.opentelemetry.io/otel/trace v1.18.0 // indirect
 	golang.org/x/net v0.12.0 // indirect
 	golang.org/x/sys v0.12.0 // indirect
 	golang.org/x/text v0.13.0 // indirect
