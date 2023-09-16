@@ -9,7 +9,8 @@ import (
 	"qq-bot-backend/internal/service"
 )
 
-func (s *sGroup) SetAntiRecallReturnRes(ctx context.Context, groupId int64, enable bool) {
+func (s *sGroup) SetAntiRecallReturnRes(ctx context.Context,
+	groupId int64, enable bool) (retMsg string) {
 	// 参数合法性校验
 	if groupId < 1 {
 		return
@@ -35,7 +36,7 @@ func (s *sGroup) SetAntiRecallReturnRes(ctx context.Context, groupId int64, enab
 	}
 	if enable {
 		if _, ok := settingJson.CheckGet(antiRecallKey); ok {
-			service.Bot().SendPlainMsg(ctx, "早已启用 group("+gconv.String(groupId)+") 群反撤回")
+			retMsg = "早已启用 group(" + gconv.String(groupId) + ") 群反撤回"
 			return
 		}
 		settingJson.Set(antiRecallKey, true)
@@ -43,7 +44,7 @@ func (s *sGroup) SetAntiRecallReturnRes(ctx context.Context, groupId int64, enab
 		if _, ok := settingJson.CheckGet(antiRecallKey); ok {
 			settingJson.Del(antiRecallKey)
 		} else {
-			service.Bot().SendPlainMsg(ctx, "并未启用 group("+gconv.String(groupId)+") 群反撤回")
+			retMsg = "并未启用 group(" + gconv.String(groupId) + ") 群反撤回"
 			return
 		}
 	}
@@ -64,13 +65,15 @@ func (s *sGroup) SetAntiRecallReturnRes(ctx context.Context, groupId int64, enab
 	}
 	// 回执
 	if enable {
-		service.Bot().SendPlainMsg(ctx, "已启用 group("+gconv.String(groupId)+") 群反撤回")
+		retMsg = "已启用 group(" + gconv.String(groupId) + ") 群反撤回"
 	} else {
-		service.Bot().SendPlainMsg(ctx, "已禁用 group("+gconv.String(groupId)+") 群反撤回")
+		retMsg = "已禁用 group(" + gconv.String(groupId) + ") 群反撤回"
 	}
+	return
 }
 
-func (s *sGroup) SetMessageNotificationReturnRes(ctx context.Context, groupId int64, notificationGroupId int64) {
+func (s *sGroup) SetMessageNotificationReturnRes(ctx context.Context,
+	groupId int64, notificationGroupId int64) (retMsg string) {
 	// 参数合法性校验
 	if groupId < 1 || notificationGroupId < 1 {
 		return
@@ -95,15 +98,14 @@ func (s *sGroup) SetMessageNotificationReturnRes(ctx context.Context, groupId in
 		return
 	}
 	if v, ok := settingJson.CheckGet(messageNotificationGroupIdKey); ok {
-		service.Bot().SendPlainMsg(ctx,
-			"早已设置 group("+gconv.String(groupId)+") 群消息通知群为 group("+
-				gconv.String(v.MustInt64())+")")
+		retMsg = "早已设置 group(" + gconv.String(groupId) + ") 群消息通知群为 group(" +
+			gconv.String(v.MustInt64()) + ")"
 		return
 	}
 	// 验证是否存在该群
 	_, err = service.Bot().GetGroupInfo(ctx, notificationGroupId)
 	if err != nil {
-		service.Bot().SendPlainMsg(ctx, "group("+gconv.String(notificationGroupId)+") 未找到")
+		retMsg = "group(" + gconv.String(notificationGroupId) + ") 未找到"
 		return
 	}
 	settingJson.Set(messageNotificationGroupIdKey, notificationGroupId)
@@ -123,10 +125,11 @@ func (s *sGroup) SetMessageNotificationReturnRes(ctx context.Context, groupId in
 		return
 	}
 	// 回执
-	service.Bot().SendPlainMsg(ctx, "已设置 group("+gconv.String(groupId)+") 群消息通知群为 group("+gconv.String(notificationGroupId)+")")
+	retMsg = "已设置 group(" + gconv.String(groupId) + ") 群消息通知群为 group(" + gconv.String(notificationGroupId) + ")"
+	return
 }
 
-func (s *sGroup) RemoveMessageNotificationReturnRes(ctx context.Context, groupId int64) {
+func (s *sGroup) RemoveMessageNotificationReturnRes(ctx context.Context, groupId int64) (retMsg string) {
 	// 参数合法性校验
 	if groupId < 1 {
 		return
@@ -151,7 +154,7 @@ func (s *sGroup) RemoveMessageNotificationReturnRes(ctx context.Context, groupId
 		return
 	}
 	if _, ok := settingJson.CheckGet(messageNotificationGroupIdKey); !ok {
-		service.Bot().SendPlainMsg(ctx, "并未设置 group("+gconv.String(groupId)+") 群消息通知群")
+		retMsg = "并未设置 group(" + gconv.String(groupId) + ") 群消息通知群"
 		return
 	}
 	settingJson.Del(messageNotificationGroupIdKey)
@@ -171,5 +174,6 @@ func (s *sGroup) RemoveMessageNotificationReturnRes(ctx context.Context, groupId
 		return
 	}
 	// 回执
-	service.Bot().SendPlainMsg(ctx, "已移除 group("+gconv.String(groupId)+") 群消息通知群")
+	retMsg = "已移除 group(" + gconv.String(groupId) + ") 群消息通知群"
+	return
 }

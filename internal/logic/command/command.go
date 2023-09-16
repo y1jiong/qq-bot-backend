@@ -26,7 +26,7 @@ var (
 	doubleValueCmdEndRe = regexp.MustCompile(`^(\S+) (\S+)$`)
 )
 
-func (s *sCommand) TryCommand(ctx context.Context) (catch bool) {
+func (s *sCommand) TryCommand(ctx context.Context) (catch bool, retMsg string) {
 	msg := service.Bot().GetMessage(ctx)
 	if !commandPrefixRe.MatchString(msg) {
 		return
@@ -48,28 +48,28 @@ func (s *sCommand) TryCommand(ctx context.Context) (catch bool) {
 		switch next[1] {
 		case "list":
 			// /list <>
-			catch = tryList(ctx, next[2])
+			catch, retMsg = tryList(ctx, next[2])
 		case "group":
 			// /group <>
-			catch = tryGroup(ctx, next[2])
+			catch, retMsg = tryGroup(ctx, next[2])
 		case "namespace":
 			// /namespace <>
-			catch = tryNamespace(ctx, next[2])
+			catch, retMsg = tryNamespace(ctx, next[2])
 		case "user":
 			// /user <>
-			catch = tryUser(ctx, next[2])
+			catch, retMsg = tryUser(ctx, next[2])
 		case "raw":
 			// /raw <>
-			catch = tryRaw(ctx, next[2])
+			catch, retMsg = tryRaw(ctx, next[2])
 		case "model":
 			// /model <>
-			catch = tryModelSet(ctx, next[2])
+			catch, retMsg = tryModelSet(ctx, next[2])
 		case "token":
 			// /token <>
-			catch = tryToken(ctx, next[2])
+			catch, retMsg = tryToken(ctx, next[2])
 		case "sys":
 			// /sys <>
-			catch = trySys(ctx, next[2])
+			catch, retMsg = trySys(ctx, next[2])
 		}
 	case endBranchRe.MatchString(cmd):
 		// 权限校验
@@ -79,17 +79,17 @@ func (s *sCommand) TryCommand(ctx context.Context) (catch bool) {
 		switch cmd {
 		case "status":
 			// /status
-			catch = queryProcessStatus(ctx)
+			catch, retMsg = queryProcessStatus(ctx)
 		case "version":
 			// /version
-			service.Bot().SendPlainMsg(ctx, consts.Description)
+			retMsg = consts.Description
 			catch = true
 		case "continue":
 			// /continue
-			catch = continueProcess(ctx)
+			catch, retMsg = continueProcess(ctx)
 		case "pause":
 			// /pause
-			catch = pauseProcess(ctx)
+			catch, retMsg = pauseProcess(ctx)
 		}
 	}
 	return

@@ -8,7 +8,8 @@ import (
 	"qq-bot-backend/internal/service"
 )
 
-func (s *sGroup) ExportGroupMemberListReturnRes(ctx context.Context, groupId int64, listName string) {
+func (s *sGroup) ExportGroupMemberListReturnRes(ctx context.Context,
+	groupId int64, listName string) (retMsg string) {
 	// 参数合法性校验
 	if groupId < 1 {
 		return
@@ -29,13 +30,13 @@ func (s *sGroup) ExportGroupMemberListReturnRes(ctx context.Context, groupId int
 	// 是否存在 list
 	lists := service.Namespace().GetNamespaceList(ctx, gEntity.Namespace)
 	if _, ok := lists[listName]; !ok {
-		service.Bot().SendPlainMsg(ctx, "在 namespace("+gEntity.Namespace+") 中未找到 list("+listName+")")
+		retMsg = "在 namespace(" + gEntity.Namespace + ") 中未找到 list(" + listName + ")"
 		return
 	}
 	// 获取群成员列表
 	membersArr, err := service.Bot().GetGroupMemberList(ctx, groupId)
 	if err != nil {
-		service.Bot().SendPlainMsg(ctx, "获取群成员列表失败")
+		retMsg = "获取群成员列表失败"
 		return
 	}
 	// 局部变量
@@ -59,7 +60,7 @@ func (s *sGroup) ExportGroupMemberListReturnRes(ctx context.Context, groupId int
 		return
 	}
 	// 回执
-	service.Bot().SendPlainMsg(ctx,
-		"已将 group("+gconv.String(groupId)+") 的 member 导出到 list("+listName+") "+
-			gconv.String(len(membersMap))+" 条\n共 "+gconv.String(totalLen)+" 条")
+	retMsg = "已将 group(" + gconv.String(groupId) + ") 的 member 导出到 list(" + listName + ") " +
+		gconv.String(len(membersMap)) + " 条\n共 " + gconv.String(totalLen) + " 条"
+	return
 }

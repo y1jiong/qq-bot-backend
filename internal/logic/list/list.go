@@ -25,11 +25,11 @@ var (
 	legalListNameRe = regexp.MustCompile(`^\S{1,16}$`)
 )
 
-func getList(ctx context.Context, listName string) (lEntity *entity.List) {
+func getList(ctx context.Context, listName string) (listE *entity.List) {
 	// 数据库查询
 	err := dao.List.Ctx(ctx).
 		Where(dao.List.Columns().ListName, listName).
-		Scan(&lEntity)
+		Scan(&listE)
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return
@@ -43,12 +43,12 @@ func (s *sList) GetListData(ctx context.Context, listName string) (listMap map[s
 		return
 	}
 	// 获取 list
-	lEntity := getList(ctx, listName)
-	if lEntity == nil {
+	listE := getList(ctx, listName)
+	if listE == nil {
 		return
 	}
 	// 数据处理
-	listJson, err := sj.NewJson([]byte(lEntity.ListJson))
+	listJson, err := sj.NewJson([]byte(listE.ListJson))
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return

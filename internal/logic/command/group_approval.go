@@ -6,32 +6,32 @@ import (
 	"qq-bot-backend/internal/service"
 )
 
-func tryGroupApproval(ctx context.Context, cmd string) (catch bool) {
+func tryGroupApproval(ctx context.Context, cmd string) (catch bool, retMsg string) {
 	switch {
 	case nextBranchRe.MatchString(cmd):
 		next := nextBranchRe.FindStringSubmatch(cmd)
 		switch next[1] {
 		case "add":
 			// /group approval add <>
-			catch = tryGroupApprovalAdd(ctx, next[2])
+			catch, retMsg = tryGroupApprovalAdd(ctx, next[2])
 		case "set":
 			// /group approval set <>
-			catch = tryGroupApprovalSet(ctx, next[2])
+			catch, retMsg = tryGroupApprovalSet(ctx, next[2])
 		case "enable":
 			// /group approval enable <>
-			catch = tryGroupApprovalEnable(ctx, next[2])
+			catch, retMsg = tryGroupApprovalEnable(ctx, next[2])
 		case "rm":
 			// /group approval rm <>
-			catch = tryGroupApprovalRemove(ctx, next[2])
+			catch, retMsg = tryGroupApprovalRemove(ctx, next[2])
 		case "disable":
 			// /group approval disable <>
-			catch = tryGroupApprovalDisable(ctx, next[2])
+			catch, retMsg = tryGroupApprovalDisable(ctx, next[2])
 		}
 	}
 	return
 }
 
-func tryGroupApprovalSet(ctx context.Context, cmd string) (catch bool) {
+func tryGroupApprovalSet(ctx context.Context, cmd string) (catch bool, retMsg string) {
 	switch {
 	case nextBranchRe.MatchString(cmd):
 		next := nextBranchRe.FindStringSubmatch(cmd)
@@ -39,14 +39,14 @@ func tryGroupApprovalSet(ctx context.Context, cmd string) (catch bool) {
 		case consts.RegexpCmd, consts.NotificationCmd:
 			// /group approval set regexp <regexp>
 			// /group approval set notification <group_id>
-			service.Group().AddApprovalProcessReturnRes(ctx, service.Bot().GetGroupId(ctx), next[1], next[2])
+			retMsg = service.Group().AddApprovalProcessReturnRes(ctx, service.Bot().GetGroupId(ctx), next[1], next[2])
 			catch = true
 		}
 	}
 	return
 }
 
-func tryGroupApprovalAdd(ctx context.Context, cmd string) (catch bool) {
+func tryGroupApprovalAdd(ctx context.Context, cmd string) (catch bool, retMsg string) {
 	switch {
 	case nextBranchRe.MatchString(cmd):
 		next := nextBranchRe.FindStringSubmatch(cmd)
@@ -54,14 +54,14 @@ func tryGroupApprovalAdd(ctx context.Context, cmd string) (catch bool) {
 		case consts.WhitelistCmd, consts.BlacklistCmd:
 			// /group approval add whitelist <list_name>
 			// /group approval add blacklist <list_name>
-			service.Group().AddApprovalProcessReturnRes(ctx, service.Bot().GetGroupId(ctx), next[1], next[2])
+			retMsg = service.Group().AddApprovalProcessReturnRes(ctx, service.Bot().GetGroupId(ctx), next[1], next[2])
 			catch = true
 		}
 	}
 	return
 }
 
-func tryGroupApprovalEnable(ctx context.Context, cmd string) (catch bool) {
+func tryGroupApprovalEnable(ctx context.Context, cmd string) (catch bool, retMsg string) {
 	switch {
 	case endBranchRe.MatchString(cmd):
 		switch cmd {
@@ -73,14 +73,14 @@ func tryGroupApprovalEnable(ctx context.Context, cmd string) (catch bool) {
 			// /group approval enable mc
 			// /group approval enable auto-pass
 			// /group approval enable auto-reject
-			service.Group().AddApprovalProcessReturnRes(ctx, service.Bot().GetGroupId(ctx), cmd)
+			retMsg = service.Group().AddApprovalProcessReturnRes(ctx, service.Bot().GetGroupId(ctx), cmd)
 			catch = true
 		}
 	}
 	return
 }
 
-func tryGroupApprovalRemove(ctx context.Context, cmd string) (catch bool) {
+func tryGroupApprovalRemove(ctx context.Context, cmd string) (catch bool, retMsg string) {
 	switch {
 	case nextBranchRe.MatchString(cmd):
 		next := nextBranchRe.FindStringSubmatch(cmd)
@@ -88,21 +88,21 @@ func tryGroupApprovalRemove(ctx context.Context, cmd string) (catch bool) {
 		case consts.WhitelistCmd, consts.BlacklistCmd:
 			// /group approval rm whitelist <list_name>
 			// /group approval rm blacklist <list_name>
-			service.Group().RemoveApprovalProcessReturnRes(ctx, service.Bot().GetGroupId(ctx), next[1], next[2])
+			retMsg = service.Group().RemoveApprovalProcessReturnRes(ctx, service.Bot().GetGroupId(ctx), next[1], next[2])
 			catch = true
 		}
 	case endBranchRe.MatchString(cmd):
 		switch cmd {
 		case consts.NotificationCmd:
 			// /group approval rm notification
-			service.Group().RemoveApprovalProcessReturnRes(ctx, service.Bot().GetGroupId(ctx), cmd)
+			retMsg = service.Group().RemoveApprovalProcessReturnRes(ctx, service.Bot().GetGroupId(ctx), cmd)
 			catch = true
 		}
 	}
 	return
 }
 
-func tryGroupApprovalDisable(ctx context.Context, cmd string) (catch bool) {
+func tryGroupApprovalDisable(ctx context.Context, cmd string) (catch bool, retMsg string) {
 	switch {
 	case endBranchRe.MatchString(cmd):
 		switch cmd {
@@ -114,7 +114,7 @@ func tryGroupApprovalDisable(ctx context.Context, cmd string) (catch bool) {
 			// /group approval disable mc
 			// /group approval disable auto-pass
 			// /group approval disable auto-reject
-			service.Group().RemoveApprovalProcessReturnRes(ctx, service.Bot().GetGroupId(ctx), cmd)
+			retMsg = service.Group().RemoveApprovalProcessReturnRes(ctx, service.Bot().GetGroupId(ctx), cmd)
 			catch = true
 		}
 	}

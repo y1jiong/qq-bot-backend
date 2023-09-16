@@ -11,7 +11,7 @@ import (
 	"strings"
 )
 
-func (s *sNamespace) AddNewNamespaceReturnRes(ctx context.Context, namespace string) {
+func (s *sNamespace) AddNewNamespaceReturnRes(ctx context.Context, namespace string) (retMsg string) {
 	// 参数合法性校验
 	if !legalNamespaceNameRe.MatchString(namespace) {
 		return
@@ -19,7 +19,7 @@ func (s *sNamespace) AddNewNamespaceReturnRes(ctx context.Context, namespace str
 	// 数据库查存在
 	one := getNamespace(ctx, namespace)
 	if one != nil {
-		service.Bot().SendPlainMsg(ctx, "namespace("+namespace+") 已被占用")
+		retMsg = "namespace(" + namespace + ") 已被占用"
 		return
 	}
 	// 初始化 namespace 对象
@@ -36,14 +36,15 @@ func (s *sNamespace) AddNewNamespaceReturnRes(ctx context.Context, namespace str
 	if err != nil {
 		g.Log().Error(ctx, err)
 		// 返回错误
-		service.Bot().SendPlainMsg(ctx, "新增 namespace 失败")
+		retMsg = "新增 namespace 失败"
 		return
 	}
 	// 回执
-	service.Bot().SendPlainMsg(ctx, "已新增 namespace("+namespace+")")
+	retMsg = "已新增 namespace(" + namespace + ")"
+	return
 }
 
-func (s *sNamespace) RemoveNamespaceReturnRes(ctx context.Context, namespace string) {
+func (s *sNamespace) RemoveNamespaceReturnRes(ctx context.Context, namespace string) (retMsg string) {
 	// 参数合法性校验
 	if !legalNamespaceNameRe.MatchString(namespace) {
 		return
@@ -51,12 +52,12 @@ func (s *sNamespace) RemoveNamespaceReturnRes(ctx context.Context, namespace str
 	// 获取 namespace 对象
 	nEntity := getNamespace(ctx, namespace)
 	if nEntity == nil {
-		service.Bot().SendPlainMsg(ctx, "未找到 namespace("+namespace+")")
+		retMsg = "未找到 namespace(" + namespace + ")"
 		return
 	}
 	// 判断 owner
 	if !isNamespaceOwner(service.Bot().GetUserId(ctx), nEntity) {
-		service.Bot().SendPlainMsg(ctx, "未找到 namespace("+namespace+")")
+		retMsg = "未找到 namespace(" + namespace + ")"
 		return
 	}
 	// 数据库软删除
@@ -68,10 +69,11 @@ func (s *sNamespace) RemoveNamespaceReturnRes(ctx context.Context, namespace str
 		return
 	}
 	// 回执
-	service.Bot().SendPlainMsg(ctx, "已删除 namespace("+namespace+")")
+	retMsg = "已删除 namespace(" + namespace + ")"
+	return
 }
 
-func (s *sNamespace) QueryNamespaceReturnRes(ctx context.Context, namespace string) {
+func (s *sNamespace) QueryNamespaceReturnRes(ctx context.Context, namespace string) (retMsg string) {
 	// 参数合法性校验
 	if !legalNamespaceNameRe.MatchString(namespace) {
 		return
@@ -86,14 +88,14 @@ func (s *sNamespace) QueryNamespaceReturnRes(ctx context.Context, namespace stri
 		return
 	}
 	// 回执
-	msg := dao.Namespace.Columns().Namespace + ": " + nEntity.Namespace + "\n" +
+	retMsg = dao.Namespace.Columns().Namespace + ": " + nEntity.Namespace + "\n" +
 		dao.Namespace.Columns().OwnerId + ": " + gconv.String(nEntity.OwnerId) + "\n" +
 		dao.Namespace.Columns().SettingJson + ": " + nEntity.SettingJson + "\n" +
 		dao.Namespace.Columns().UpdatedAt + ": " + nEntity.UpdatedAt.String()
-	service.Bot().SendPlainMsg(ctx, msg)
+	return
 }
 
-func (s *sNamespace) QueryOwnNamespaceReturnRes(ctx context.Context) {
+func (s *sNamespace) QueryOwnNamespaceReturnRes(ctx context.Context) (retMsg string) {
 	userId := service.Bot().GetUserId(ctx)
 	// 参数合法性校验
 	if userId < 1 {
@@ -128,10 +130,12 @@ func (s *sNamespace) QueryOwnNamespaceReturnRes(ctx context.Context) {
 			msg.WriteString("\n---\n")
 		}
 	}
-	service.Bot().SendPlainMsg(ctx, msg.String())
+	retMsg = msg.String()
+	return
 }
 
-func (s *sNamespace) AddNamespaceAdminReturnRes(ctx context.Context, namespace string, userId int64) {
+func (s *sNamespace) AddNamespaceAdminReturnRes(ctx context.Context,
+	namespace string, userId int64) (retMsg string) {
 	// 参数合法性校验
 	if userId < 1 || !legalNamespaceNameRe.MatchString(namespace) {
 		return
@@ -172,10 +176,12 @@ func (s *sNamespace) AddNamespaceAdminReturnRes(ctx context.Context, namespace s
 		return
 	}
 	// 回执
-	service.Bot().SendPlainMsg(ctx, "已添加 user("+gconv.String(userId)+") 的 namespace("+namespace+") admin 权限")
+	retMsg = "已添加 user(" + gconv.String(userId) + ") 的 namespace(" + namespace + ") admin 权限"
+	return
 }
 
-func (s *sNamespace) RemoveNamespaceAdminReturnRes(ctx context.Context, namespace string, userId int64) {
+func (s *sNamespace) RemoveNamespaceAdminReturnRes(ctx context.Context,
+	namespace string, userId int64) (retMsg string) {
 	// 参数合法性校验
 	if userId < 1 || !legalNamespaceNameRe.MatchString(namespace) {
 		return
@@ -198,8 +204,7 @@ func (s *sNamespace) RemoveNamespaceAdminReturnRes(ctx context.Context, namespac
 	// 获取 admin map
 	admins := settingJson.Get(adminMapKey).MustMap(make(map[string]any))
 	if _, ok := admins[gconv.String(userId)]; !ok {
-		service.Bot().SendPlainMsg(ctx,
-			"在 namespace("+nEntity.Namespace+") 的 "+adminMapKey+" 中未找到 user("+gconv.String(userId)+")")
+		retMsg = "在 namespace(" + nEntity.Namespace + ") 的 " + adminMapKey + " 中未找到 user(" + gconv.String(userId) + ")"
 		return
 	}
 	// 删除 userId 的 admin 权限
@@ -221,10 +226,11 @@ func (s *sNamespace) RemoveNamespaceAdminReturnRes(ctx context.Context, namespac
 		return
 	}
 	// 回执
-	service.Bot().SendPlainMsg(ctx, "已取消 user("+gconv.String(userId)+") 的 namespace("+namespace+") admin 权限")
+	retMsg = "已取消 user(" + gconv.String(userId) + ") 的 namespace(" + namespace + ") admin 权限"
+	return
 }
 
-func (s *sNamespace) ResetNamespaceAdminReturnRes(ctx context.Context, namespace string) {
+func (s *sNamespace) ResetNamespaceAdminReturnRes(ctx context.Context, namespace string) (retMsg string) {
 	// 参数合法性校验
 	if !legalNamespaceNameRe.MatchString(namespace) {
 		return
@@ -261,5 +267,6 @@ func (s *sNamespace) ResetNamespaceAdminReturnRes(ctx context.Context, namespace
 		return
 	}
 	// 回执
-	service.Bot().SendPlainMsg(ctx, "已重置 namespace("+namespace+") 的 admin")
+	retMsg = "已重置 namespace(" + namespace + ") 的 admin"
+	return
 }

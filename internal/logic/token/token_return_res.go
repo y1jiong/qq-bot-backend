@@ -9,7 +9,7 @@ import (
 	"strings"
 )
 
-func (s *sToken) AddNewTokenReturnRes(ctx context.Context, name, token string) {
+func (s *sToken) AddNewTokenReturnRes(ctx context.Context, name, token string) (retMsg string) {
 	owner := service.Bot().GetUserId(ctx)
 	// 过滤非法 token 或 name
 	if !legalTokenRe.MatchString(token) || !legalTokenNameRe.MatchString(name) {
@@ -29,7 +29,7 @@ func (s *sToken) AddNewTokenReturnRes(ctx context.Context, name, token string) {
 	if tokenEntity != nil {
 		// 判断所有人是否一致
 		if tokenEntity.OwnerId != owner {
-			service.Bot().SendPlainMsg(ctx, "token("+name+") 已被占用")
+			retMsg = "token(" + name + ") 已被占用"
 			return
 		}
 		exist = true
@@ -48,11 +48,11 @@ func (s *sToken) AddNewTokenReturnRes(ctx context.Context, name, token string) {
 		if err != nil {
 			g.Log().Error(ctx, err)
 			// 返回错误
-			service.Bot().SendPlainMsg(ctx, "新增 token 失败")
+			retMsg = "新增 token 失败"
 			return
 		}
 		// 回执
-		service.Bot().SendPlainMsg(ctx, "已新增 token("+name+")")
+		retMsg = "已新增 token(" + name + ")"
 	} else {
 		// 数据库更新
 		_, err = dao.Token.Ctx(ctx).
@@ -63,15 +63,16 @@ func (s *sToken) AddNewTokenReturnRes(ctx context.Context, name, token string) {
 		if err != nil {
 			g.Log().Error(ctx, err)
 			// 返回错误
-			service.Bot().SendPlainMsg(ctx, "更新 token 失败")
+			retMsg = "更新 token 失败"
 			return
 		}
 		// 回执
-		service.Bot().SendPlainMsg(ctx, "已更新 token("+name+")")
+		retMsg = "已更新 token(" + name + ")"
 	}
+	return
 }
 
-func (s *sToken) RemoveTokenReturnRes(ctx context.Context, name string) {
+func (s *sToken) RemoveTokenReturnRes(ctx context.Context, name string) (retMsg string) {
 	// 过滤非法 name
 	if !legalTokenNameRe.MatchString(name) {
 		return
@@ -88,7 +89,7 @@ func (s *sToken) RemoveTokenReturnRes(ctx context.Context, name string) {
 		return
 	}
 	if one.IsEmpty() {
-		service.Bot().SendPlainMsg(ctx, "未找到 token("+name+")")
+		retMsg = "未找到 token(" + name + ")"
 		return
 	}
 	// 数据库软删除
@@ -100,10 +101,11 @@ func (s *sToken) RemoveTokenReturnRes(ctx context.Context, name string) {
 		return
 	}
 	// 回执
-	service.Bot().SendPlainMsg(ctx, "已删除 token("+name+")")
+	retMsg = "已删除 token(" + name + ")"
+	return
 }
 
-func (s *sToken) QueryTokenReturnRes(ctx context.Context) {
+func (s *sToken) QueryTokenReturnRes(ctx context.Context) (retMsg string) {
 	// 数据库查询
 	var tEntities []*entity.Token
 	err := dao.Token.Ctx(ctx).
@@ -136,5 +138,6 @@ func (s *sToken) QueryTokenReturnRes(ctx context.Context) {
 			msg.WriteString("\n---\n")
 		}
 	}
-	service.Bot().SendPlainMsg(ctx, msg.String())
+	retMsg = msg.String()
+	return
 }

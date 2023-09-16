@@ -4,6 +4,7 @@ import (
 	"context"
 	sj "github.com/bitly/go-simplejson"
 	"github.com/gogf/gf/v2/frame/g"
+	"github.com/gogf/gf/v2/os/gtime"
 	"github.com/gogf/gf/v2/util/gconv"
 	"qq-bot-backend/internal/dao"
 	"qq-bot-backend/internal/model/entity"
@@ -11,7 +12,7 @@ import (
 	"time"
 )
 
-func (s *sList) AddListReturnRes(ctx context.Context, listName, namespace string) {
+func (s *sList) AddListReturnRes(ctx context.Context, listName, namespace string) (retMsg string) {
 	// 参数合法性校验
 	if !legalListNameRe.MatchString(listName) {
 		return
@@ -21,39 +22,40 @@ func (s *sList) AddListReturnRes(ctx context.Context, listName, namespace string
 		return
 	}
 	// 初始化 list 对象
-	lEntity := entity.List{
+	listE := entity.List{
 		ListName:  listName,
 		Namespace: namespace,
 		ListJson:  "{}",
 	}
 	// 数据库插入
 	_, err := dao.List.Ctx(ctx).
-		Data(lEntity).
+		Data(listE).
 		OmitEmpty().
 		Insert()
 	if err != nil {
 		g.Log().Error(ctx, err)
-		service.Bot().SendPlainMsg(ctx, "新增 list 失败")
+		retMsg = "新增 list 失败"
 		return
 	}
 	// 同步写入
 	service.Namespace().AddNamespaceList(ctx, namespace, listName)
 	// 回执
-	service.Bot().SendPlainMsg(ctx, "已新增 list("+listName+")")
+	retMsg = "已新增 list(" + listName + ")"
+	return
 }
 
-func (s *sList) RemoveListReturnRes(ctx context.Context, listName string) {
+func (s *sList) RemoveListReturnRes(ctx context.Context, listName string) (retMsg string) {
 	// 参数合法性校验
 	if !legalListNameRe.MatchString(listName) {
 		return
 	}
 	// 获取 list
-	lEntity := getList(ctx, listName)
-	if lEntity == nil {
+	listE := getList(ctx, listName)
+	if listE == nil {
 		return
 	}
 	// 权限校验
-	if !service.Namespace().IsNamespaceOwnerOrAdmin(ctx, lEntity.Namespace, service.Bot().GetUserId(ctx)) {
+	if !service.Namespace().IsNamespaceOwnerOrAdmin(ctx, listE.Namespace, service.Bot().GetUserId(ctx)) {
 		return
 	}
 	// 数据库软删除
@@ -65,30 +67,77 @@ func (s *sList) RemoveListReturnRes(ctx context.Context, listName string) {
 		return
 	}
 	// 同步删除
-	service.Namespace().RemoveNamespaceList(ctx, lEntity.Namespace, listName)
+	service.Namespace().RemoveNamespaceList(ctx, listE.Namespace, listName)
 	// 回执
-	service.Bot().SendPlainMsg(ctx, "已删除 list("+listName+")")
+	retMsg = "已删除 list(" + listName + ")"
+	return
 }
 
-func (s *sList) ExportListReturnRes(ctx context.Context, listName string) {
+func (s *sList) RecoverListReturnRes(ctx context.Context, listName string) (retMsg string) {
 	// 参数合法性校验
 	if !legalListNameRe.MatchString(listName) {
 		return
 	}
 	// 获取 list
-	lEntity := getList(ctx, listName)
-	if lEntity == nil {
+	var listE *entity.List
+	err := dao.List.Ctx(ctx).
+		Where(dao.List.Columns().ListName, listName).
+		Unscoped().
+		Scan(&listE)
+	if err != nil {
+		g.Log().Error(ctx, err)
+		return
+	}
+	if listE == nil {
 		return
 	}
 	// 权限校验
-	if !service.Namespace().IsNamespaceOwnerOrAdmin(ctx, lEntity.Namespace, service.Bot().GetUserId(ctx)) {
+	if !service.Namespace().IsNamespaceOwnerOrAdmin(ctx, listE.Namespace, service.Bot().GetUserId(ctx)) {
+		return
+	}
+	if listE.DeletedAt == nil {
+		retMsg = "我寻思 list(" + listName + ") 也没删除啊"
+		return
+	}
+	// 数据库更新
+	_, err = dao.List.Ctx(ctx).
+		Where(dao.List.Columns().ListName, listName).
+		Data(g.Map{
+			dao.List.Columns().DeletedAt: nil,
+			dao.List.Columns().UpdatedAt: gtime.Now(),
+		}).
+		Unscoped().
+		Update()
+	if err != nil {
+		g.Log().Error(ctx, err)
+		return
+	}
+	// 同步恢复
+	service.Namespace().AddNamespaceList(ctx, listE.Namespace, listName)
+	// 回执
+	retMsg = "已恢复 list(" + listName + ")"
+	return
+}
+
+func (s *sList) ExportListReturnRes(ctx context.Context, listName string) (retMsg string) {
+	// 参数合法性校验
+	if !legalListNameRe.MatchString(listName) {
+		return
+	}
+	// 获取 list
+	listE := getList(ctx, listName)
+	if listE == nil {
+		return
+	}
+	// 权限校验
+	if !service.Namespace().IsNamespaceOwnerOrAdmin(ctx, listE.Namespace, service.Bot().GetUserId(ctx)) {
 		return
 	}
 	// 数据处理
 	var msg string
-	msg = dao.List.Columns().Namespace + ": " + lEntity.Namespace + "\n" +
-		dao.List.Columns().ListJson + ": " + lEntity.ListJson + "\n" +
-		dao.List.Columns().UpdatedAt + ": " + lEntity.UpdatedAt.String()
+	msg = dao.List.Columns().Namespace + ": " + listE.Namespace + "\n" +
+		dao.List.Columns().ListJson + ": " + listE.ListJson + "\n" +
+		dao.List.Columns().UpdatedAt + ": " + listE.UpdatedAt.String()
 	// 回执
 	id, err := service.File().SetCachedFile(ctx, msg, time.Minute)
 	if err != nil {
@@ -101,59 +150,61 @@ func (s *sList) ExportListReturnRes(ctx context.Context, listName string) {
 		return
 	}
 	service.Bot().SendFile(ctx, "list("+listName+").txt", url)
+	return
 }
 
-func (s *sList) QueryListLenReturnRes(ctx context.Context, listName string) {
+func (s *sList) QueryListLenReturnRes(ctx context.Context, listName string) (retMsg string) {
 	// 参数合法性校验
 	if !legalListNameRe.MatchString(listName) {
 		return
 	}
 	// 获取 list
-	lEntity := getList(ctx, listName)
-	if lEntity == nil {
+	listE := getList(ctx, listName)
+	if listE == nil {
 		return
 	}
 	// 权限校验
-	if !service.Namespace().IsNamespaceOwnerOrAdmin(ctx, lEntity.Namespace, service.Bot().GetUserId(ctx)) {
+	if !service.Namespace().IsNamespaceOwnerOrAdmin(ctx, listE.Namespace, service.Bot().GetUserId(ctx)) {
 		return
 	}
 	// 数据处理
-	listJson, err := sj.NewJson([]byte(lEntity.ListJson))
+	listJson, err := sj.NewJson([]byte(listE.ListJson))
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return
 	}
 	listMap := listJson.MustMap(make(map[string]any))
 	// 回执
-	service.Bot().SendPlainMsg(ctx, "list("+listName+") 共 "+gconv.String(len(listMap))+" 条")
+	retMsg = "list(" + listName + ") 共 " + gconv.String(len(listMap)) + " 条"
+	return
 }
 
-func (s *sList) QueryListReturnRes(ctx context.Context, listName string, keys ...string) {
+func (s *sList) QueryListReturnRes(ctx context.Context, listName string, keys ...string) (retMsg string) {
 	// 参数合法性校验
 	if !legalListNameRe.MatchString(listName) {
 		return
 	}
 	// 获取 list
-	lEntity := getList(ctx, listName)
-	if lEntity == nil {
+	listE := getList(ctx, listName)
+	if listE == nil {
 		return
 	}
 	// 权限校验
-	if !service.Namespace().IsNamespaceOwnerOrAdmin(ctx, lEntity.Namespace, service.Bot().GetUserId(ctx)) {
+	if !service.Namespace().IsNamespaceOwnerOrAdmin(ctx, listE.Namespace, service.Bot().GetUserId(ctx)) {
 		return
 	}
 	// 数据处理
 	var msg string
 	if len(keys) > 0 {
 		// 查询 key
-		listJson, err := sj.NewJson([]byte(lEntity.ListJson))
+		listJson, err := sj.NewJson([]byte(listE.ListJson))
 		if err != nil {
 			g.Log().Error(ctx, err)
 			return
 		}
 		keys[0] = service.Codec().DecodeBlank(keys[0])
 		if _, ok := listJson.CheckGet(keys[0]); !ok {
-			service.Bot().SendPlainMsg(ctx, "在 list("+listName+") 中未找到 key("+keys[0]+")")
+			retMsg = "在 list(" + listName + ") 中未找到 key(" + keys[0] + ")"
 			return
 		}
 		viewJson := sj.New()
@@ -165,30 +216,31 @@ func (s *sList) QueryListReturnRes(ctx context.Context, listName string, keys ..
 		}
 		msg = string(msgBytes)
 	} else {
-		msg = dao.List.Columns().Namespace + ": " + lEntity.Namespace + "\n" +
-			dao.List.Columns().ListJson + ": " + lEntity.ListJson + "\n" +
-			dao.List.Columns().UpdatedAt + ": " + lEntity.UpdatedAt.String()
+		msg = dao.List.Columns().Namespace + ": " + listE.Namespace + "\n" +
+			dao.List.Columns().ListJson + ": " + listE.ListJson + "\n" +
+			dao.List.Columns().UpdatedAt + ": " + listE.UpdatedAt.String()
 	}
 	// 回执
-	service.Bot().SendPlainMsg(ctx, msg)
+	retMsg = msg
+	return
 }
 
-func (s *sList) AddListDataReturnRes(ctx context.Context, listName, key string, value ...string) {
+func (s *sList) AddListDataReturnRes(ctx context.Context, listName, key string, value ...string) (retMsg string) {
 	// 参数合法性校验
 	if !legalListNameRe.MatchString(listName) {
 		return
 	}
 	// 获取 list
-	lEntity := getList(ctx, listName)
-	if lEntity == nil {
+	listE := getList(ctx, listName)
+	if listE == nil {
 		return
 	}
 	// 权限校验
-	if !service.Namespace().IsNamespaceOwnerOrAdmin(ctx, lEntity.Namespace, service.Bot().GetUserId(ctx)) {
+	if !service.Namespace().IsNamespaceOwnerOrAdmin(ctx, listE.Namespace, service.Bot().GetUserId(ctx)) {
 		return
 	}
 	// 数据处理
-	listJson, err := sj.NewJson([]byte(lEntity.ListJson))
+	listJson, err := sj.NewJson([]byte(listE.ListJson))
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return
@@ -217,28 +269,29 @@ func (s *sList) AddListDataReturnRes(ctx context.Context, listName, key string, 
 	}
 	// 回执
 	if len(value) > 0 {
-		service.Bot().SendPlainMsg(ctx, "已添加 key("+key+") value("+value[0]+") 到 list("+listName+")")
+		retMsg = "已添加 key(" + key + ") value(" + value[0] + ") 到 list(" + listName + ")"
 	} else {
-		service.Bot().SendPlainMsg(ctx, "已添加 key("+key+") 到 list("+listName+")")
+		retMsg = "已添加 key(" + key + ") 到 list(" + listName + ")"
 	}
+	return
 }
 
-func (s *sList) RemoveListDataReturnRes(ctx context.Context, listName, key string) {
+func (s *sList) RemoveListDataReturnRes(ctx context.Context, listName, key string) (retMsg string) {
 	// 参数合法性校验
 	if !legalListNameRe.MatchString(listName) {
 		return
 	}
 	// 获取 list
-	lEntity := getList(ctx, listName)
-	if lEntity == nil {
+	listE := getList(ctx, listName)
+	if listE == nil {
 		return
 	}
 	// 权限校验
-	if !service.Namespace().IsNamespaceOwnerOrAdmin(ctx, lEntity.Namespace, service.Bot().GetUserId(ctx)) {
+	if !service.Namespace().IsNamespaceOwnerOrAdmin(ctx, listE.Namespace, service.Bot().GetUserId(ctx)) {
 		return
 	}
 	// 数据处理
-	listJson, err := sj.NewJson([]byte(lEntity.ListJson))
+	listJson, err := sj.NewJson([]byte(listE.ListJson))
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return
@@ -247,7 +300,7 @@ func (s *sList) RemoveListDataReturnRes(ctx context.Context, listName, key strin
 	key = service.Codec().DecodeBlank(key)
 	if _, ok := listJson.CheckGet(key); !ok {
 		// 未找到 key
-		service.Bot().SendPlainMsg(ctx, "在 list("+listName+") 中未找到 key("+key+")")
+		retMsg = "在 list(" + listName + ") 中未找到 key(" + key + ")"
 		return
 	}
 	listJson.Del(key)
@@ -267,21 +320,22 @@ func (s *sList) RemoveListDataReturnRes(ctx context.Context, listName, key strin
 		return
 	}
 	// 回执
-	service.Bot().SendPlainMsg(ctx, "已删除 key("+key+") 从 list("+listName+")")
+	retMsg = "已删除 key(" + key + ") 从 list(" + listName + ")"
+	return
 }
 
-func (s *sList) ResetListDataReturnRes(ctx context.Context, listName string) {
+func (s *sList) ResetListDataReturnRes(ctx context.Context, listName string) (retMsg string) {
 	// 参数合法性校验
 	if !legalListNameRe.MatchString(listName) {
 		return
 	}
 	// 获取 list
-	lEntity := getList(ctx, listName)
-	if lEntity == nil {
+	listE := getList(ctx, listName)
+	if listE == nil {
 		return
 	}
 	// 权限校验
-	if !service.Namespace().IsNamespaceOwnerOrAdmin(ctx, lEntity.Namespace, service.Bot().GetUserId(ctx)) {
+	if !service.Namespace().IsNamespaceOwnerOrAdmin(ctx, listE.Namespace, service.Bot().GetUserId(ctx)) {
 		return
 	}
 	// 数据库更新
@@ -294,33 +348,34 @@ func (s *sList) ResetListDataReturnRes(ctx context.Context, listName string) {
 		return
 	}
 	// 回执
-	service.Bot().SendPlainMsg(ctx, "已重置 list("+listName+") 的数据")
+	retMsg = "已重置 list(" + listName + ") 的数据"
+	return
 }
 
-func (s *sList) SetListDataReturnRes(ctx context.Context, listName, newListStr string) {
+func (s *sList) SetListDataReturnRes(ctx context.Context, listName, newListStr string) (retMsg string) {
 	// 参数合法性校验
 	if !legalListNameRe.MatchString(listName) {
 		return
 	}
 	// 获取 list
-	lEntity := getList(ctx, listName)
-	if lEntity == nil {
+	listE := getList(ctx, listName)
+	if listE == nil {
 		return
 	}
 	// 权限校验
-	if !service.Namespace().IsNamespaceOwnerOrAdmin(ctx, lEntity.Namespace, service.Bot().GetUserId(ctx)) {
+	if !service.Namespace().IsNamespaceOwnerOrAdmin(ctx, listE.Namespace, service.Bot().GetUserId(ctx)) {
 		return
 	}
 	// 数据处理
 	listJson, err := sj.NewJson([]byte(newListStr))
 	if err != nil {
-		service.Bot().SendPlainMsg(ctx, "反序列化 json 失败")
+		retMsg = "反序列化 json 失败"
 		return
 	}
 	listM := listJson.MustMap(make(map[string]any))
 	length := len(listM)
 	if length < 1 {
-		service.Bot().SendPlainMsg(ctx, "无效数据")
+		retMsg = "无效数据"
 		return
 	}
 	// 保存数据
@@ -339,33 +394,34 @@ func (s *sList) SetListDataReturnRes(ctx context.Context, listName, newListStr s
 		return
 	}
 	// 回执
-	service.Bot().SendPlainMsg(ctx, "已覆盖 list("+listName+") 的数据\n共 "+gconv.String(length)+" 条")
+	retMsg = "已覆盖 list(" + listName + ") 的数据\n共 " + gconv.String(length) + " 条"
+	return
 }
 
-func (s *sList) AppendListDataReturnRes(ctx context.Context, listName, newListStr string) {
+func (s *sList) AppendListDataReturnRes(ctx context.Context, listName, newListStr string) (retMsg string) {
 	// 参数合法性校验
 	if !legalListNameRe.MatchString(listName) {
 		return
 	}
 	// 获取 list
-	lEntity := getList(ctx, listName)
-	if lEntity == nil {
+	listE := getList(ctx, listName)
+	if listE == nil {
 		return
 	}
 	// 权限校验
-	if !service.Namespace().IsNamespaceOwnerOrAdmin(ctx, lEntity.Namespace, service.Bot().GetUserId(ctx)) {
+	if !service.Namespace().IsNamespaceOwnerOrAdmin(ctx, listE.Namespace, service.Bot().GetUserId(ctx)) {
 		return
 	}
 	// 数据处理
 	listJson, err := sj.NewJson([]byte(newListStr))
 	if err != nil {
-		service.Bot().SendPlainMsg(ctx, "反序列化 json 失败")
+		retMsg = "反序列化 json 失败"
 		return
 	}
 	listM := listJson.MustMap(make(map[string]any))
 	appendLen := len(listM)
 	if appendLen < 1 {
-		service.Bot().SendPlainMsg(ctx, "无效数据")
+		retMsg = "无效数据"
 		return
 	}
 	// 追加操作
@@ -374,6 +430,7 @@ func (s *sList) AppendListDataReturnRes(ctx context.Context, listName, newListSt
 		return
 	}
 	// 回执
-	service.Bot().SendPlainMsg(ctx, "已追加 list("+listName+") 的数据 "+gconv.String(appendLen)+
-		" 条\n共 "+gconv.String(totalLen)+" 条")
+	retMsg = "已追加 list(" + listName + ") 的数据 " + gconv.String(appendLen) +
+		" 条\n共 " + gconv.String(totalLen) + " 条"
+	return
 }

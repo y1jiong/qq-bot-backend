@@ -6,10 +6,9 @@ import (
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/util/gconv"
 	"qq-bot-backend/internal/dao"
-	"qq-bot-backend/internal/service"
 )
 
-func (s *sUser) QueryUserReturnRes(ctx context.Context, userId int64) {
+func (s *sUser) QueryUserReturnRes(ctx context.Context, userId int64) (retMsg string) {
 	// 参数合法性校验
 	if userId < 1 {
 		return
@@ -18,17 +17,17 @@ func (s *sUser) QueryUserReturnRes(ctx context.Context, userId int64) {
 	uEntity := getUser(ctx, userId)
 	if uEntity == nil {
 		// 回执
-		service.Bot().SendPlainMsg(ctx, "查无此人")
+		retMsg = "查无此人"
 		return
 	}
-	msg := dao.User.Columns().UserId + ": " + gconv.String(uEntity.UserId) + "\n" +
+	// 回执
+	retMsg = dao.User.Columns().UserId + ": " + gconv.String(uEntity.UserId) + "\n" +
 		dao.User.Columns().SettingJson + ": " + uEntity.SettingJson + "\n" +
 		dao.User.Columns().UpdatedAt + ": " + uEntity.UpdatedAt.String()
-	// 回执
-	service.Bot().SendPlainMsg(ctx, msg)
+	return
 }
 
-func (s *sUser) SystemTrustUserReturnRes(ctx context.Context, userId int64) {
+func (s *sUser) SystemTrustUserReturnRes(ctx context.Context, userId int64) (retMsg string) {
 	// 参数合法性校验
 	if userId < 1 {
 		return
@@ -52,7 +51,7 @@ func (s *sUser) SystemTrustUserReturnRes(ctx context.Context, userId int64) {
 	}
 	if _, ok := settingJson.CheckGet(trustKey); ok {
 		// 重复信任
-		service.Bot().SendPlainMsg(ctx, "重复信任")
+		retMsg = "重复信任"
 		return
 	}
 	settingJson.Set(trustKey, true)
@@ -71,10 +70,11 @@ func (s *sUser) SystemTrustUserReturnRes(ctx context.Context, userId int64) {
 		return
 	}
 	// 回执
-	service.Bot().SendPlainMsg(ctx, "系统已信任 user("+gconv.String(userId)+")")
+	retMsg = "系统已信任 user(" + gconv.String(userId) + ")"
+	return
 }
 
-func (s *sUser) SystemDistrustUserReturnRes(ctx context.Context, userId int64) {
+func (s *sUser) SystemDistrustUserReturnRes(ctx context.Context, userId int64) (retMsg string) {
 	// 参数合法性校验
 	if userId < 1 {
 		return
@@ -92,7 +92,7 @@ func (s *sUser) SystemDistrustUserReturnRes(ctx context.Context, userId int64) {
 	}
 	if _, ok := settingJson.CheckGet(trustKey); !ok {
 		// 并未信任
-		service.Bot().SendPlainMsg(ctx, "并未信任")
+		retMsg = "并未信任"
 		return
 	}
 	settingJson.Del(trustKey)
@@ -111,10 +111,11 @@ func (s *sUser) SystemDistrustUserReturnRes(ctx context.Context, userId int64) {
 		return
 	}
 	// 回执
-	service.Bot().SendPlainMsg(ctx, "系统已拒绝信任 user("+gconv.String(userId)+")")
+	retMsg = "系统已拒绝信任 user(" + gconv.String(userId) + ")"
+	return
 }
 
-func (s *sUser) GrantOpTokenReturnRes(ctx context.Context, userId int64) {
+func (s *sUser) GrantOpTokenReturnRes(ctx context.Context, userId int64) (retMsg string) {
 	// 参数合法性校验
 	if userId < 1 {
 		return
@@ -138,7 +139,7 @@ func (s *sUser) GrantOpTokenReturnRes(ctx context.Context, userId int64) {
 	}
 	if _, ok := settingJson.CheckGet(tokenKey); ok {
 		// 重复授予
-		service.Bot().SendPlainMsg(ctx, "重复授予操作 token 的权限")
+		retMsg = "重复授予操作 token 的权限"
 		return
 	}
 	settingJson.Set(tokenKey, true)
@@ -157,10 +158,11 @@ func (s *sUser) GrantOpTokenReturnRes(ctx context.Context, userId int64) {
 		return
 	}
 	// 回执
-	service.Bot().SendPlainMsg(ctx, "系统已授予 user("+gconv.String(userId)+") 操作 token 的权限")
+	retMsg = "系统已授予 user(" + gconv.String(userId) + ") 操作 token 的权限"
+	return
 }
 
-func (s *sUser) RevokeOpTokenReturnRes(ctx context.Context, userId int64) {
+func (s *sUser) RevokeOpTokenReturnRes(ctx context.Context, userId int64) (retMsg string) {
 	// 参数合法性校验
 	if userId < 1 {
 		return
@@ -178,7 +180,7 @@ func (s *sUser) RevokeOpTokenReturnRes(ctx context.Context, userId int64) {
 	}
 	if _, ok := settingJson.CheckGet(tokenKey); !ok {
 		// 并未授予
-		service.Bot().SendPlainMsg(ctx, "并未授予操作 token 的权限")
+		retMsg = "并未授予操作 token 的权限"
 		return
 	}
 	settingJson.Del(tokenKey)
@@ -197,10 +199,11 @@ func (s *sUser) RevokeOpTokenReturnRes(ctx context.Context, userId int64) {
 		return
 	}
 	// 回执
-	service.Bot().SendPlainMsg(ctx, "系统已撤销 user("+gconv.String(userId)+") 操作 token 的权限")
+	retMsg = "系统已撤销 user(" + gconv.String(userId) + ") 操作 token 的权限"
+	return
 }
 
-func (s *sUser) GrantOpNamespaceReturnRes(ctx context.Context, userId int64) {
+func (s *sUser) GrantOpNamespaceReturnRes(ctx context.Context, userId int64) (retMsg string) {
 	// 参数合法性校验
 	if userId < 1 {
 		return
@@ -224,7 +227,7 @@ func (s *sUser) GrantOpNamespaceReturnRes(ctx context.Context, userId int64) {
 	}
 	if _, ok := settingJson.CheckGet(namespaceKey); ok {
 		// 重复授予
-		service.Bot().SendPlainMsg(ctx, "重复授予操作 namespace 的权限")
+		retMsg = "重复授予操作 namespace 的权限"
 		return
 	}
 	settingJson.Set(namespaceKey, true)
@@ -243,10 +246,11 @@ func (s *sUser) GrantOpNamespaceReturnRes(ctx context.Context, userId int64) {
 		return
 	}
 	// 回执
-	service.Bot().SendPlainMsg(ctx, "系统已授予 user("+gconv.String(userId)+") 操作 namespace 的权限")
+	retMsg = "系统已授予 user(" + gconv.String(userId) + ") 操作 namespace 的权限"
+	return
 }
 
-func (s *sUser) RevokeOpNamespaceReturnRes(ctx context.Context, userId int64) {
+func (s *sUser) RevokeOpNamespaceReturnRes(ctx context.Context, userId int64) (retMsg string) {
 	// 参数合法性校验
 	if userId < 1 {
 		return
@@ -264,7 +268,7 @@ func (s *sUser) RevokeOpNamespaceReturnRes(ctx context.Context, userId int64) {
 	}
 	if _, ok := settingJson.CheckGet(namespaceKey); !ok {
 		// 并未授予
-		service.Bot().SendPlainMsg(ctx, "并未授予操作 namespace 的权限")
+		retMsg = "并未授予操作 namespace 的权限"
 		return
 	}
 	settingJson.Del(namespaceKey)
@@ -283,10 +287,11 @@ func (s *sUser) RevokeOpNamespaceReturnRes(ctx context.Context, userId int64) {
 		return
 	}
 	// 回执
-	service.Bot().SendPlainMsg(ctx, "系统已撤销 user("+gconv.String(userId)+") 操作 namespace 的权限")
+	retMsg = "系统已撤销 user(" + gconv.String(userId) + ") 操作 namespace 的权限"
+	return
 }
 
-func (s *sUser) GrantGetRawMsgReturnRes(ctx context.Context, userId int64) {
+func (s *sUser) GrantGetRawMsgReturnRes(ctx context.Context, userId int64) (retMsg string) {
 	// 参数合法性校验
 	if userId < 1 {
 		return
@@ -310,7 +315,7 @@ func (s *sUser) GrantGetRawMsgReturnRes(ctx context.Context, userId int64) {
 	}
 	if _, ok := settingJson.CheckGet(rawKey); ok {
 		// 重复授予
-		service.Bot().SendPlainMsg(ctx, "重复授予获取 raw 的权限")
+		retMsg = "重复授予获取 raw 的权限"
 		return
 	}
 	settingJson.Set(rawKey, true)
@@ -329,10 +334,11 @@ func (s *sUser) GrantGetRawMsgReturnRes(ctx context.Context, userId int64) {
 		return
 	}
 	// 回执
-	service.Bot().SendPlainMsg(ctx, "系统已授予 user("+gconv.String(userId)+") 获取 raw 的权限")
+	retMsg = "系统已授予 user(" + gconv.String(userId) + ") 获取 raw 的权限"
+	return
 }
 
-func (s *sUser) RevokeGetRawMsgReturnRes(ctx context.Context, userId int64) {
+func (s *sUser) RevokeGetRawMsgReturnRes(ctx context.Context, userId int64) (retMsg string) {
 	// 参数合法性校验
 	if userId < 1 {
 		return
@@ -350,7 +356,7 @@ func (s *sUser) RevokeGetRawMsgReturnRes(ctx context.Context, userId int64) {
 	}
 	if _, ok := settingJson.CheckGet(rawKey); !ok {
 		// 并未授予
-		service.Bot().SendPlainMsg(ctx, "并未授予获取 raw 的权限")
+		retMsg = "并未授予获取 raw 的权限"
 		return
 	}
 	settingJson.Del(rawKey)
@@ -369,5 +375,6 @@ func (s *sUser) RevokeGetRawMsgReturnRes(ctx context.Context, userId int64) {
 		return
 	}
 	// 回执
-	service.Bot().SendPlainMsg(ctx, "系统已撤销 user("+gconv.String(userId)+") 获取 raw 的权限")
+	retMsg = "系统已撤销 user(" + gconv.String(userId) + ") 获取 raw 的权限"
+	return
 }

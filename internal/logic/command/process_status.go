@@ -6,45 +6,45 @@ import (
 	"qq-bot-backend/internal/service"
 )
 
-func queryProcessStatus(ctx context.Context) (catch bool) {
+func queryProcessStatus(ctx context.Context) (catch bool, retMsg string) {
 	catch = true
 	// 继续处理
 	if service.Process().IsEnabledBotProcess() {
-		service.Bot().SendPlainMsg(ctx, "正常状态")
+		retMsg = "正常状态"
 	} else {
-		service.Bot().SendPlainMsg(ctx, "暂停状态")
+		retMsg = "暂停状态"
 	}
 	return
 }
 
-func pauseProcess(ctx context.Context) (catch bool) {
+func pauseProcess(ctx context.Context) (catch bool, retMsg string) {
 	catch = true
 	// 继续处理
 	if !service.Process().IsEnabledBotProcess() {
-		service.Bot().SendPlainMsg(ctx, "已处于暂停状态")
+		retMsg = "已处于暂停状态"
 		return
 	}
 	if service.Process().PauseBotProcess() {
-		service.Bot().SendPlainMsg(ctx, "已调至暂停状态")
+		retMsg = "已调至暂停状态"
 		g.Log().Info(ctx, "Pause process")
 	} else {
-		service.Bot().SendPlainMsg(ctx, "调至暂停状态失败")
+		retMsg = "调至暂停状态失败"
 	}
 	return
 }
 
-func continueProcess(ctx context.Context) (catch bool) {
+func continueProcess(ctx context.Context) (catch bool, retMsg string) {
 	catch = true
 	// 继续处理
 	if service.Process().IsEnabledBotProcess() {
-		service.Bot().SendPlainMsg(ctx, "已处于正常状态")
+		retMsg = "已处于正常状态"
 		return
 	}
 	if service.Process().ContinueBotProcess() {
-		service.Bot().SendPlainMsg(ctx, "已调至正常状态")
+		retMsg = "已调至正常状态"
 		g.Log().Info(ctx, "Continue process")
 	} else {
-		service.Bot().SendPlainMsg(ctx, "调至正常状态失败")
+		retMsg = "调至正常状态失败"
 	}
 	return
 }

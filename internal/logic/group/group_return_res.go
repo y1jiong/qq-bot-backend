@@ -11,7 +11,8 @@ import (
 	"time"
 )
 
-func (s *sGroup) BindNamespaceReturnRes(ctx context.Context, groupId int64, namespace string) {
+func (s *sGroup) BindNamespaceReturnRes(ctx context.Context,
+	groupId int64, namespace string) (retMsg string) {
 	// 参数合法性校验
 	if groupId < 1 {
 		return
@@ -38,8 +39,7 @@ func (s *sGroup) BindNamespaceReturnRes(ctx context.Context, groupId int64, name
 			Insert()
 	} else {
 		if gEntity.Namespace != "" {
-			service.Bot().SendPlainMsg(ctx,
-				"当前 group("+gconv.String(groupId)+") 已经绑定了 namespace("+gEntity.Namespace+")")
+			retMsg = "当前 group(" + gconv.String(groupId) + ") 已经绑定了 namespace(" + gEntity.Namespace + ")"
 			return
 		}
 		// 重置 setting
@@ -59,10 +59,11 @@ func (s *sGroup) BindNamespaceReturnRes(ctx context.Context, groupId int64, name
 		return
 	}
 	// 回执
-	service.Bot().SendPlainMsg(ctx, "已绑定当前 group("+gconv.String(groupId)+") 到 namespace("+namespace+")")
+	retMsg = "已绑定当前 group(" + gconv.String(groupId) + ") 到 namespace(" + namespace + ")"
+	return
 }
 
-func (s *sGroup) UnbindReturnRes(ctx context.Context, groupId int64) {
+func (s *sGroup) UnbindReturnRes(ctx context.Context, groupId int64) (retMsg string) {
 	// 参数合法性校验
 	if groupId < 1 {
 		return
@@ -90,10 +91,11 @@ func (s *sGroup) UnbindReturnRes(ctx context.Context, groupId int64) {
 		return
 	}
 	// 回执
-	service.Bot().SendPlainMsg(ctx, "已解除 group("+gconv.String(groupId)+") 的 namespace 绑定")
+	retMsg = "已解除 group(" + gconv.String(groupId) + ") 的 namespace 绑定"
+	return
 }
 
-func (s *sGroup) QueryGroupReturnRes(ctx context.Context, groupId int64) {
+func (s *sGroup) QueryGroupReturnRes(ctx context.Context, groupId int64) (retMsg string) {
 	// 参数合法性校验
 	if groupId < 1 {
 		return
@@ -108,13 +110,14 @@ func (s *sGroup) QueryGroupReturnRes(ctx context.Context, groupId int64) {
 		return
 	}
 	// 回执
-	msg := dao.Group.Columns().Namespace + ": " + gEntity.Namespace + "\n" +
+	retMsg = dao.Group.Columns().Namespace + ": " + gEntity.Namespace + "\n" +
 		dao.Group.Columns().SettingJson + ": " + gEntity.SettingJson + "\n" +
 		dao.Group.Columns().UpdatedAt + ": " + gEntity.UpdatedAt.String()
-	service.Bot().SendPlainMsg(ctx, msg)
+	return
 }
 
-func (s *sGroup) KickFromListReturnRes(ctx context.Context, groupId int64, listName string) {
+func (s *sGroup) KickFromListReturnRes(ctx context.Context,
+	groupId int64, listName string) (retMsg string) {
 	// 参数合法性校验
 	if groupId < 1 {
 		return
@@ -135,7 +138,7 @@ func (s *sGroup) KickFromListReturnRes(ctx context.Context, groupId int64, listN
 	// 是否存在 list
 	lists := service.Namespace().GetNamespaceList(ctx, gEntity.Namespace)
 	if _, ok := lists[listName]; !ok {
-		service.Bot().SendPlainMsg(ctx, "在 namespace("+gEntity.Namespace+") 中未找到 list("+listName+")")
+		retMsg = "在 namespace(" + gEntity.Namespace + ") 中未找到 list(" + listName + ")"
 		return
 	}
 	// 获取 list
@@ -144,7 +147,7 @@ func (s *sGroup) KickFromListReturnRes(ctx context.Context, groupId int64, listN
 	// 获取群成员列表
 	membersArr, err := service.Bot().GetGroupMemberList(ctx, groupId, true)
 	if err != nil {
-		service.Bot().SendPlainMsg(ctx, "获取群成员列表失败")
+		retMsg = "获取群成员列表失败"
 		return
 	}
 	// 局部变量
@@ -165,13 +168,12 @@ func (s *sGroup) KickFromListReturnRes(ctx context.Context, groupId int64, listN
 	}
 	// 不需要执行踢出
 	if len(kickMap) == 0 {
-		service.Bot().SendPlainMsg(ctx, "list("+listName+") 中的 group("+gconv.String(groupId)+
-			") member 无需踢出")
+		retMsg = "list(" + listName + ") 中的 group(" + gconv.String(groupId) + ") member 无需踢出"
 		return
 	}
 	// 踢人过程
-	service.Bot().SendPlainMsg(ctx, "正在踢出 list("+listName+") 中的 group("+gconv.String(groupId)+
-		") member\n共 "+gconv.String(listMapLen)+" 条，有 "+gconv.String(len(kickMap))+" 条需要踢出")
+	retMsg = "正在踢出 list(" + listName + ") 中的 group(" + gconv.String(groupId) +
+		") member\n共 " + gconv.String(listMapLen) + " 条，有 " + gconv.String(len(kickMap)) + " 条需要踢出"
 	for k := range kickMap {
 		// 踢人
 		service.Bot().Kick(ctx, groupId, gconv.Int64(k))
@@ -182,7 +184,7 @@ func (s *sGroup) KickFromListReturnRes(ctx context.Context, groupId int64, listN
 	// 获取群成员列表
 	membersArr, err = service.Bot().GetGroupMemberList(ctx, groupId, true)
 	if err != nil {
-		service.Bot().SendPlainMsg(ctx, "获取群成员列表失败")
+		retMsg = "获取群成员列表失败"
 		return
 	}
 	// 局部变量
@@ -202,11 +204,13 @@ func (s *sGroup) KickFromListReturnRes(ctx context.Context, groupId int64, listN
 		}
 	}
 	// 回执
-	service.Bot().SendPlainMsg(ctx, "已踢出 list("+listName+") 中的 group("+gconv.String(groupId)+
-		") member\n共 "+gconv.String(listMapLen)+" 条，有 "+gconv.String(len(kickMap))+" 条未踢出")
+	retMsg = "已踢出 list(" + listName + ") 中的 group(" + gconv.String(groupId) +
+		") member\n共 " + gconv.String(listMapLen) + " 条，有 " + gconv.String(len(kickMap)) + " 条未踢出"
+	return
 }
 
-func (s *sGroup) KeepFromListReturnRes(ctx context.Context, groupId int64, listName string) {
+func (s *sGroup) KeepFromListReturnRes(ctx context.Context,
+	groupId int64, listName string) (retMsg string) {
 	// 参数合法性校验
 	if groupId < 1 {
 		return
@@ -227,7 +231,7 @@ func (s *sGroup) KeepFromListReturnRes(ctx context.Context, groupId int64, listN
 	// 是否存在 list
 	lists := service.Namespace().GetNamespaceList(ctx, gEntity.Namespace)
 	if _, ok := lists[listName]; !ok {
-		service.Bot().SendPlainMsg(ctx, "在 namespace("+gEntity.Namespace+") 中未找到 list("+listName+")")
+		retMsg = "在 namespace(" + gEntity.Namespace + ") 中未找到 list(" + listName + ")"
 		return
 	}
 	// 获取 list
@@ -236,7 +240,7 @@ func (s *sGroup) KeepFromListReturnRes(ctx context.Context, groupId int64, listN
 	// 获取群成员列表
 	membersArr, err := service.Bot().GetGroupMemberList(ctx, groupId, true)
 	if err != nil {
-		service.Bot().SendPlainMsg(ctx, "获取群成员列表失败")
+		retMsg = "获取群成员列表失败"
 		return
 	}
 	// 局部变量
@@ -257,13 +261,12 @@ func (s *sGroup) KeepFromListReturnRes(ctx context.Context, groupId int64, listN
 	}
 	// 不需要执行踢出
 	if len(kickMap) == 0 {
-		service.Bot().SendPlainMsg(ctx, "list("+listName+") 中的 group("+gconv.String(groupId)+
-			") member 无需踢出")
+		retMsg = "list(" + listName + ") 中的 group(" + gconv.String(groupId) + ") member 无需踢出"
 		return
 	}
 	// 踢人过程
-	service.Bot().SendPlainMsg(ctx, "正在踢出不在 list("+listName+") 中的 group("+gconv.String(groupId)+
-		") member\n共 "+gconv.String(listMapLen)+" 条，有 "+gconv.String(len(kickMap))+" 条需要踢出")
+	retMsg = "正在踢出不在 list(" + listName + ") 中的 group(" + gconv.String(groupId) +
+		") member\n共 " + gconv.String(listMapLen) + " 条，有 " + gconv.String(len(kickMap)) + " 条需要踢出"
 	for k := range kickMap {
 		// 踢人
 		service.Bot().Kick(ctx, groupId, gconv.Int64(k))
@@ -274,7 +277,7 @@ func (s *sGroup) KeepFromListReturnRes(ctx context.Context, groupId int64, listN
 	// 获取群成员列表
 	membersArr, err = service.Bot().GetGroupMemberList(ctx, groupId, true)
 	if err != nil {
-		service.Bot().SendPlainMsg(ctx, "获取群成员列表失败")
+		retMsg = "获取群成员列表失败"
 		return
 	}
 	// 局部变量
@@ -294,11 +297,12 @@ func (s *sGroup) KeepFromListReturnRes(ctx context.Context, groupId int64, listN
 		}
 	}
 	// 回执
-	service.Bot().SendPlainMsg(ctx, "已踢出不在 list("+listName+") 中的 group("+gconv.String(groupId)+
-		") member\n共 "+gconv.String(listMapLen)+" 条，有 "+gconv.String(len(kickMap))+" 条未踢出")
+	retMsg = "已踢出不在 list(" + listName + ") 中的 group(" + gconv.String(groupId) +
+		") member\n共 " + gconv.String(listMapLen) + " 条，有 " + gconv.String(len(kickMap)) + " 条未踢出"
+	return
 }
 
-func (s *sGroup) CheckExistReturnRes(ctx context.Context) {
+func (s *sGroup) CheckExistReturnRes(ctx context.Context) (retMsg string) {
 	pageNum, pageSize := 1, 10
 	deleted := 0
 	msg := ""
@@ -320,7 +324,7 @@ func (s *sGroup) CheckExistReturnRes(ctx context.Context) {
 				continue
 			}
 			if err != nil && err.Error() != "群聊不存在" {
-				service.Bot().SendPlainMsg(ctx, "获取群信息失败")
+				retMsg = "获取群信息失败"
 				return
 			}
 			// 记录信息
@@ -340,5 +344,6 @@ func (s *sGroup) CheckExistReturnRes(ctx context.Context) {
 		pageNum++
 	}
 	// 回执
-	service.Bot().SendPlainMsg(ctx, "已删除 "+gconv.String(deleted)+" 条不存在的 group"+msg)
+	retMsg = "已删除 " + gconv.String(deleted) + " 条不存在的 group" + msg
+	return
 }

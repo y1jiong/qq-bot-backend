@@ -9,7 +9,8 @@ import (
 	"qq-bot-backend/internal/service"
 )
 
-func (s *sGroup) SetLogLeaveListReturnRes(ctx context.Context, groupId int64, listName string) {
+func (s *sGroup) SetLogLeaveListReturnRes(ctx context.Context,
+	groupId int64, listName string) (retMsg string) {
 	// 参数合法性校验
 	if groupId < 1 {
 		return
@@ -30,7 +31,7 @@ func (s *sGroup) SetLogLeaveListReturnRes(ctx context.Context, groupId int64, li
 	// 是否存在 list
 	lists := service.Namespace().GetNamespaceList(ctx, gEntity.Namespace)
 	if _, ok := lists[listName]; !ok {
-		service.Bot().SendPlainMsg(ctx, "在 namespace("+gEntity.Namespace+") 中未找到 list("+listName+")")
+		retMsg = "在 namespace(" + gEntity.Namespace + ") 中未找到 list(" + listName + ")"
 		return
 	}
 	// 数据处理
@@ -56,10 +57,11 @@ func (s *sGroup) SetLogLeaveListReturnRes(ctx context.Context, groupId int64, li
 		return
 	}
 	// 回执
-	service.Bot().SendPlainMsg(ctx, "已设置 group("+gconv.String(groupId)+") 离群记录 list("+listName+")")
+	retMsg = "已设置 group(" + gconv.String(groupId) + ") 离群记录 list(" + listName + ")"
+	return
 }
 
-func (s *sGroup) RemoveLogLeaveListReturnRes(ctx context.Context, groupId int64) {
+func (s *sGroup) RemoveLogLeaveListReturnRes(ctx context.Context, groupId int64) (retMsg string) {
 	// 参数合法性校验
 	if groupId < 1 {
 		return
@@ -84,7 +86,7 @@ func (s *sGroup) RemoveLogLeaveListReturnRes(ctx context.Context, groupId int64)
 		return
 	}
 	if _, ok := settingJson.CheckGet(logLeaveListKey); !ok {
-		service.Bot().SendPlainMsg(ctx, "并未设置离群记录 list")
+		retMsg = "并未设置离群记录 list"
 		return
 	}
 	settingJson.Del(logLeaveListKey)
@@ -104,5 +106,6 @@ func (s *sGroup) RemoveLogLeaveListReturnRes(ctx context.Context, groupId int64)
 		return
 	}
 	// 回执
-	service.Bot().SendPlainMsg(ctx, "已移除 group("+gconv.String(groupId)+") 离群记录 list")
+	retMsg = "已移除 group(" + gconv.String(groupId) + ") 离群记录 list"
+	return
 }

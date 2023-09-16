@@ -10,7 +10,8 @@ import (
 	"regexp"
 )
 
-func (s *sGroup) SetAutoSetListReturnRes(ctx context.Context, groupId int64, listName string) {
+func (s *sGroup) SetAutoSetListReturnRes(ctx context.Context,
+	groupId int64, listName string) (retMsg string) {
 	// 参数合法性校验
 	if groupId < 1 {
 		return
@@ -31,7 +32,7 @@ func (s *sGroup) SetAutoSetListReturnRes(ctx context.Context, groupId int64, lis
 	// 是否存在 list
 	lists := service.Namespace().GetNamespaceList(ctx, gEntity.Namespace)
 	if _, ok := lists[listName]; !ok {
-		service.Bot().SendPlainMsg(ctx, "在 namespace("+gEntity.Namespace+") 中未找到 list("+listName+")")
+		retMsg = "在 namespace(" + gEntity.Namespace + ") 中未找到 list(" + listName + ")"
 		return
 	}
 	// 数据处理
@@ -57,11 +58,11 @@ func (s *sGroup) SetAutoSetListReturnRes(ctx context.Context, groupId int64, lis
 		return
 	}
 	// 回执
-	service.Bot().SendPlainMsg(ctx, "已设置 group("+gconv.String(groupId)+") 群名片自动设置 list("+listName+")")
+	retMsg = "已设置 group(" + gconv.String(groupId) + ") 群名片自动设置 list(" + listName + ")"
 	return
 }
 
-func (s *sGroup) RemoveAutoSetListReturnRes(ctx context.Context, groupId int64) {
+func (s *sGroup) RemoveAutoSetListReturnRes(ctx context.Context, groupId int64) (retMsg string) {
 	// 参数合法性校验
 	if groupId < 1 {
 		return
@@ -86,7 +87,7 @@ func (s *sGroup) RemoveAutoSetListReturnRes(ctx context.Context, groupId int64) 
 		return
 	}
 	if _, ok := settingJson.CheckGet(cardAutoSetListKey); !ok {
-		service.Bot().SendPlainMsg(ctx, "并未设置群名片自动设置 list")
+		retMsg = "并未设置群名片自动设置 list"
 		return
 	}
 	settingJson.Del(cardAutoSetListKey)
@@ -106,10 +107,12 @@ func (s *sGroup) RemoveAutoSetListReturnRes(ctx context.Context, groupId int64) 
 		return
 	}
 	// 回执
-	service.Bot().SendPlainMsg(ctx, "已移除 group("+gconv.String(groupId)+") 群名片自动设置 list")
+	retMsg = "已移除 group(" + gconv.String(groupId) + ") 群名片自动设置 list"
+	return
 }
 
-func (s *sGroup) CheckCardWithRegexpReturnRes(ctx context.Context, groupId int64, listName, exp string) {
+func (s *sGroup) CheckCardWithRegexpReturnRes(ctx context.Context,
+	groupId int64, listName, exp string) (retMsg string) {
 	// 参数合法性校验
 	if groupId < 1 {
 		return
@@ -130,20 +133,20 @@ func (s *sGroup) CheckCardWithRegexpReturnRes(ctx context.Context, groupId int64
 	// 是否存在 list
 	lists := service.Namespace().GetNamespaceList(ctx, gEntity.Namespace)
 	if _, ok := lists[listName]; !ok {
-		service.Bot().SendPlainMsg(ctx, "在 namespace("+gEntity.Namespace+") 中未找到 list("+listName+")")
+		retMsg = "在 namespace(" + gEntity.Namespace + ") 中未找到 list(" + listName + ")"
 		return
 	}
 	// 获取群成员列表
 	membersArr, err := service.Bot().GetGroupMemberList(ctx, groupId, true)
 	if err != nil {
-		service.Bot().SendPlainMsg(ctx, "获取群成员列表失败")
+		retMsg = "获取群成员列表失败"
 		return
 	}
 	// compile regexp
 	exp = service.Codec().DecodeCqCode(exp)
 	reg, err := regexp.Compile(exp)
 	if err != nil {
-		service.Bot().SendPlainMsg(ctx, "正则表达式编译失败")
+		retMsg = "正则表达式编译失败"
 		return
 	}
 	// 局部变量
@@ -169,12 +172,13 @@ func (s *sGroup) CheckCardWithRegexpReturnRes(ctx context.Context, groupId int64
 		return
 	}
 	// 回执
-	service.Bot().SendPlainMsg(ctx,
-		"已将 group("+gconv.String(groupId)+") 中不符合群名片规则的 member 导出到 list("+listName+") "+
-			gconv.String(len(membersMap))+" 条\n共 "+gconv.String(totalLen)+" 条")
+	retMsg = "已将 group(" + gconv.String(groupId) + ") 中不符合群名片规则的 member 导出到 list(" + listName + ") " +
+		gconv.String(len(membersMap)) + " 条\n共 " + gconv.String(totalLen) + " 条"
+	return
 }
 
-func (s *sGroup) CheckCardByListReturnRes(ctx context.Context, groupId int64, toList, fromList string) {
+func (s *sGroup) CheckCardByListReturnRes(ctx context.Context,
+	groupId int64, toList, fromList string) (retMsg string) {
 	// 参数合法性校验
 	if groupId < 1 {
 		return
@@ -195,11 +199,11 @@ func (s *sGroup) CheckCardByListReturnRes(ctx context.Context, groupId int64, to
 	// 是否存在 list
 	lists := service.Namespace().GetNamespaceList(ctx, gEntity.Namespace)
 	if _, ok := lists[toList]; !ok {
-		service.Bot().SendPlainMsg(ctx, "在 namespace("+gEntity.Namespace+") 中未找到 list("+toList+")")
+		retMsg = "在 namespace(" + gEntity.Namespace + ") 中未找到 list(" + toList + ")"
 		return
 	}
 	if _, ok := lists[fromList]; !ok {
-		service.Bot().SendPlainMsg(ctx, "在 namespace("+gEntity.Namespace+") 中未找到 list("+fromList+")")
+		retMsg = "在 namespace(" + gEntity.Namespace + ") 中未找到 list(" + fromList + ")"
 		return
 	}
 	// 获取群成员列表
@@ -232,12 +236,12 @@ func (s *sGroup) CheckCardByListReturnRes(ctx context.Context, groupId int64, to
 		return
 	}
 	// 回执
-	service.Bot().SendPlainMsg(ctx,
-		"已将 group("+gconv.String(groupId)+") 中不符合群名片规则的 member 导出到 list("+toList+") "+
-			gconv.String(len(membersMap))+" 条\n共 "+gconv.String(totalLen)+" 条")
+	retMsg = "已将 group(" + gconv.String(groupId) + ") 中不符合群名片规则的 member 导出到 list(" + toList + ") " +
+		gconv.String(len(membersMap)) + " 条\n共 " + gconv.String(totalLen) + " 条"
+	return
 }
 
-func (s *sGroup) LockCardReturnRes(ctx context.Context, groupId int64) {
+func (s *sGroup) LockCardReturnRes(ctx context.Context, groupId int64) (retMsg string) {
 	// 参数合法性校验
 	if groupId < 1 {
 		return
@@ -262,7 +266,7 @@ func (s *sGroup) LockCardReturnRes(ctx context.Context, groupId int64) {
 		return
 	}
 	if _, ok := settingJson.CheckGet(cardLockKey); ok {
-		service.Bot().SendPlainMsg(ctx, "group("+gconv.String(groupId)+") 群名片已锁定")
+		retMsg = "group(" + gconv.String(groupId) + ") 群名片已锁定"
 		return
 	}
 	settingJson.Set(cardLockKey, true)
@@ -282,10 +286,11 @@ func (s *sGroup) LockCardReturnRes(ctx context.Context, groupId int64) {
 		return
 	}
 	// 回执
-	service.Bot().SendPlainMsg(ctx, "已设置 group("+gconv.String(groupId)+") 群名片锁定")
+	retMsg = "已设置 group(" + gconv.String(groupId) + ") 群名片锁定"
+	return
 }
 
-func (s *sGroup) UnlockCardReturnRes(ctx context.Context, groupId int64) {
+func (s *sGroup) UnlockCardReturnRes(ctx context.Context, groupId int64) (retMsg string) {
 	// 参数合法性校验
 	if groupId < 1 {
 		return
@@ -310,7 +315,7 @@ func (s *sGroup) UnlockCardReturnRes(ctx context.Context, groupId int64) {
 		return
 	}
 	if _, ok := settingJson.CheckGet(cardLockKey); !ok {
-		service.Bot().SendPlainMsg(ctx, "group("+gconv.String(groupId)+") 群名片未锁定")
+		retMsg = "group(" + gconv.String(groupId) + ") 群名片未锁定"
 		return
 	}
 	settingJson.Del(cardLockKey)
@@ -330,5 +335,6 @@ func (s *sGroup) UnlockCardReturnRes(ctx context.Context, groupId int64) {
 		return
 	}
 	// 回执
-	service.Bot().SendPlainMsg(ctx, "已设置 group("+gconv.String(groupId)+") 群名片解锁")
+	retMsg = "已设置 group(" + gconv.String(groupId) + ") 群名片解锁"
+	return
 }

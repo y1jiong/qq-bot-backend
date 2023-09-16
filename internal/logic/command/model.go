@@ -5,7 +5,7 @@ import (
 	"qq-bot-backend/internal/service"
 )
 
-func tryModelSet(ctx context.Context, cmd string) (catch bool) {
+func tryModelSet(ctx context.Context, cmd string) (catch bool, retMsg string) {
 	// 权限校验
 	if !service.User().IsSystemTrustUser(ctx, service.Bot().GetUserId(ctx)) {
 		return

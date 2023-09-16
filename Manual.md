@@ -19,7 +19,8 @@ v1.3
 | /list append {list_name} {json}      | 用 json 追加 list_name 的数据                                | 同上                                             |
 | /list set {list_name} {json}         | 用 json 覆盖 list_name 的数据                                | 同上                                             |
 | /list reset {list_name}              | 重置 list_name 的数据                                        | 同上                                             |
-| /list rm {list_name}                 | 删除 list_name（删除后原 list_name 不可使用）                | 同上                                             |
+| /list rm {list_name}                 | 删除 list_name（删除后原 list_name 不可使用，只能恢复）      | 同上                                             |
+| /list recover {list_name}            | 恢复 list_name                                               | 同上                                             |
 
 ## Group
 
@@ -77,8 +78,8 @@ v1.3
 | ---------------------------------------------------- | ------------------------------------------------------------ | ---------------------------------------------- |
 | /group card check {list_name} with {regexp}          | 使用 regexp 正则匹配群名片，将不匹配的成员写入 list_name 中  | 需要 group admin 和 namespace admin 及以上权限 |
 | /group card check {to_list_name} by {from_list_name} | 使用 from_list_name uid:card 匹配群名片，将不匹配的成员写入 to_list_name 中 | 同上                                           |
-| /group card set auto_set {list_name}                 | 设置入群自动修改群名片 list_name；若不包含，那么不修改       | 同上                                           |
-| /group card rm auto_set                              | 清除设置的自动修改群名片 list_name                           | 同上                                           |
+| /group card set auto-set {list_name}                 | 设置入群自动修改群名片 list_name；若不包含，那么不修改       | 同上                                           |
+| /group card rm auto-set                              | 清除设置的自动修改群名片 list_name                           | 同上                                           |
 | /group card lock                                     | 锁定群名片，不让修改（实验性功能）                           | 同上                                           |
 | /group card unlock                                   | 解锁群名片（实验性功能）                                     | 同上                                           |
 

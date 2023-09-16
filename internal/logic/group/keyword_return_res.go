@@ -10,7 +10,8 @@ import (
 	"qq-bot-backend/internal/service"
 )
 
-func (s *sGroup) AddKeywordProcessReturnRes(ctx context.Context, groupId int64, processName string, args ...string) {
+func (s *sGroup) AddKeywordProcessReturnRes(ctx context.Context,
+	groupId int64, processName string, args ...string) (retMsg string) {
 	// 参数合法性校验
 	if groupId < 1 {
 		return
@@ -42,7 +43,7 @@ func (s *sGroup) AddKeywordProcessReturnRes(ctx context.Context, groupId int64, 
 			// 是否存在 list
 			lists := service.Namespace().GetNamespaceList(ctx, gEntity.Namespace)
 			if _, ok := lists[args[0]]; !ok {
-				service.Bot().SendPlainMsg(ctx, "在 namespace("+gEntity.Namespace+") 中未找到 list("+args[0]+")")
+				retMsg = "在 namespace(" + gEntity.Namespace + ") 中未找到 list(" + args[0] + ")"
 				return
 			}
 			// 继续处理
@@ -54,7 +55,7 @@ func (s *sGroup) AddKeywordProcessReturnRes(ctx context.Context, groupId int64, 
 			// 是否存在 list
 			lists := service.Namespace().GetNamespaceList(ctx, gEntity.Namespace)
 			if _, ok := lists[args[0]]; !ok {
-				service.Bot().SendPlainMsg(ctx, "在 namespace("+gEntity.Namespace+") 中未找到 list("+args[0]+")")
+				retMsg = "在 namespace(" + gEntity.Namespace + ") 中未找到 list(" + args[0] + ")"
 				return
 			}
 			// 继续处理
@@ -64,7 +65,7 @@ func (s *sGroup) AddKeywordProcessReturnRes(ctx context.Context, groupId int64, 
 			// 是否存在 list
 			lists := service.Namespace().GetNamespaceList(ctx, gEntity.Namespace)
 			if _, ok := lists[args[0]]; !ok {
-				service.Bot().SendPlainMsg(ctx, "在 namespace("+gEntity.Namespace+") 中未找到 list("+args[0]+")")
+				retMsg = "在 namespace(" + gEntity.Namespace + ") 中未找到 list(" + args[0] + ")"
 				return
 			}
 			// 继续处理
@@ -95,14 +96,15 @@ func (s *sGroup) AddKeywordProcessReturnRes(ctx context.Context, groupId int64, 
 	}
 	// 回执
 	if len(args) > 0 {
-		service.Bot().SendPlainMsg(ctx,
-			"已添加 group("+gconv.String(groupId)+") 关键词检查 "+processName+"("+args[0]+")")
+		retMsg = "已添加 group(" + gconv.String(groupId) + ") 关键词检查 " + processName + "(" + args[0] + ")"
 	} else {
-		service.Bot().SendPlainMsg(ctx, "已启用 group("+gconv.String(groupId)+") 关键词检查 "+processName)
+		retMsg = "已启用 group(" + gconv.String(groupId) + ") 关键词检查 " + processName
 	}
+	return
 }
 
-func (s *sGroup) RemoveKeywordProcessReturnRes(ctx context.Context, groupId int64, processName string, args ...string) {
+func (s *sGroup) RemoveKeywordProcessReturnRes(ctx context.Context,
+	groupId int64, processName string, args ...string) (retMsg string) {
 	// 参数合法性校验
 	if groupId < 1 {
 		return
@@ -133,7 +135,7 @@ func (s *sGroup) RemoveKeywordProcessReturnRes(ctx context.Context, groupId int6
 			// 移除某个黑名单
 			blacklists := settingJson.Get(keywordBlacklistsMapKey).MustMap(make(map[string]any))
 			if _, ok := blacklists[args[0]]; !ok {
-				service.Bot().SendPlainMsg(ctx, "在 "+consts.BlacklistCmd+" 中未找到 list("+args[0]+")")
+				retMsg = "在 " + consts.BlacklistCmd + " 中未找到 list(" + args[0] + ")"
 				return
 			}
 			delete(blacklists, args[0])
@@ -142,7 +144,7 @@ func (s *sGroup) RemoveKeywordProcessReturnRes(ctx context.Context, groupId int6
 			// 移除某个白名单
 			whitelists := settingJson.Get(keywordWhitelistsMapKey).MustMap(make(map[string]any))
 			if _, ok := whitelists[args[0]]; !ok {
-				service.Bot().SendPlainMsg(ctx, "在 "+consts.WhitelistCmd+" 中未找到 list("+args[0]+")")
+				retMsg = "在 " + consts.WhitelistCmd + " 中未找到 list(" + args[0] + ")"
 				return
 			}
 			delete(whitelists, args[0])
@@ -153,7 +155,7 @@ func (s *sGroup) RemoveKeywordProcessReturnRes(ctx context.Context, groupId int6
 		case consts.ReplyCmd:
 			// 移除回复列表
 			if _, ok := settingJson.CheckGet(keywordReplyListKey); !ok {
-				service.Bot().SendPlainMsg(ctx, "并未设置 "+consts.ReplyCmd+" list")
+				retMsg = "并未设置 " + consts.ReplyCmd + " list"
 				return
 			}
 			settingJson.Del(keywordReplyListKey)
@@ -161,7 +163,7 @@ func (s *sGroup) RemoveKeywordProcessReturnRes(ctx context.Context, groupId int6
 			// 删除 processName
 			processMap := settingJson.Get(keywordProcessMapKey).MustMap(make(map[string]any))
 			if _, ok := processMap[processName]; !ok {
-				service.Bot().SendPlainMsg(ctx, "在 "+approvalProcessMapKey+" 中未找到 "+processName)
+				retMsg = "在 " + approvalProcessMapKey + " 中未找到 " + processName
 				return
 			}
 			delete(processMap, processName)
@@ -185,9 +187,9 @@ func (s *sGroup) RemoveKeywordProcessReturnRes(ctx context.Context, groupId int6
 	}
 	// 回执
 	if len(args) > 0 {
-		service.Bot().SendPlainMsg(ctx,
-			"已移除 group("+gconv.String(groupId)+") 关键词检查 "+processName+"("+args[0]+")")
+		retMsg = "已移除 group(" + gconv.String(groupId) + ") 关键词检查 " + processName + "(" + args[0] + ")"
 	} else {
-		service.Bot().SendPlainMsg(ctx, "已禁用 group("+gconv.String(groupId)+") 关键词检查 "+processName)
+		retMsg = "已禁用 group(" + gconv.String(groupId) + ") 关键词检查 " + processName
 	}
+	return
 }
