@@ -17,12 +17,12 @@ func (s *sGroup) IsEnabledAntiRecall(ctx context.Context, groupId int64) (enable
 		return
 	}
 	// 获取 group
-	gEntity := getGroup(ctx, groupId)
-	if gEntity == nil {
+	groupE := getGroup(ctx, groupId)
+	if groupE == nil {
 		return
 	}
 	// 数据处理
-	settingJson, err := sj.NewJson([]byte(gEntity.SettingJson))
+	settingJson, err := sj.NewJson([]byte(groupE.SettingJson))
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return
@@ -37,12 +37,12 @@ func (s *sGroup) GetMessageNotificationGroupId(ctx context.Context, groupId int6
 		return
 	}
 	// 获取 group
-	gEntity := getGroup(ctx, groupId)
-	if gEntity == nil {
+	groupE := getGroup(ctx, groupId)
+	if groupE == nil {
 		return
 	}
 	// 数据处理
-	settingJson, err := sj.NewJson([]byte(gEntity.SettingJson))
+	settingJson, err := sj.NewJson([]byte(groupE.SettingJson))
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return

@@ -1,6 +1,6 @@
 # Manual
 
-v1.3
+v1.4
 
 {required} [optional]
 

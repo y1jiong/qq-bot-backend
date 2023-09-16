@@ -19,18 +19,18 @@ func (s *sGroup) ExportGroupMemberListReturnRes(ctx context.Context,
 		return
 	}
 	// 获取 group
-	gEntity := getGroup(ctx, groupId)
-	if gEntity == nil {
+	groupE := getGroup(ctx, groupId)
+	if groupE == nil {
 		return
 	}
 	// 权限校验
-	if !service.Namespace().IsNamespaceOwnerOrAdmin(ctx, gEntity.Namespace, service.Bot().GetUserId(ctx)) {
+	if !service.Namespace().IsNamespaceOwnerOrAdmin(ctx, groupE.Namespace, service.Bot().GetUserId(ctx)) {
 		return
 	}
 	// 是否存在 list
-	lists := service.Namespace().GetNamespaceList(ctx, gEntity.Namespace)
+	lists := service.Namespace().GetNamespaceList(ctx, groupE.Namespace)
 	if _, ok := lists[listName]; !ok {
-		retMsg = "在 namespace(" + gEntity.Namespace + ") 中未找到 list(" + listName + ")"
+		retMsg = "在 namespace(" + groupE.Namespace + ") 中未找到 list(" + listName + ")"
 		return
 	}
 	// 获取群成员列表

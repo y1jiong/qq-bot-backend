@@ -8,6 +8,7 @@ package service
 import (
 	"context"
 
+	sj "github.com/bitly/go-simplejson"
 	"github.com/gogf/gf/v2/net/ghttp"
 )
 
@@ -15,6 +16,7 @@ type (
 	IBot interface {
 		CtxWithWebSocket(parent context.Context, ws *ghttp.WebSocket) context.Context
 		CtxNewWebSocketMutex(parent context.Context) context.Context
+		CtxWithReqJson(ctx context.Context, reqJson *sj.Json) context.Context
 		Process(ctx context.Context, rawJson []byte, nextProcess func(ctx context.Context))
 		IsGroupOwnerOrAdmin(ctx context.Context) (yes bool)
 		GetPostType(ctx context.Context) string

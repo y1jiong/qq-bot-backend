@@ -22,12 +22,12 @@ func (s *sGroup) GetApprovalProcess(ctx context.Context, groupId int64) (process
 		return
 	}
 	// 获取 group
-	gEntity := getGroup(ctx, groupId)
-	if gEntity == nil {
+	groupE := getGroup(ctx, groupId)
+	if groupE == nil {
 		return
 	}
 	// 数据处理
-	settingJson, err := sj.NewJson([]byte(gEntity.SettingJson))
+	settingJson, err := sj.NewJson([]byte(groupE.SettingJson))
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return
@@ -42,12 +42,12 @@ func (s *sGroup) GetApprovalWhitelists(ctx context.Context, groupId int64) (whit
 		return
 	}
 	// 获取 group
-	gEntity := getGroup(ctx, groupId)
-	if gEntity == nil {
+	groupE := getGroup(ctx, groupId)
+	if groupE == nil {
 		return
 	}
 	// 数据处理
-	settingJson, err := sj.NewJson([]byte(gEntity.SettingJson))
+	settingJson, err := sj.NewJson([]byte(groupE.SettingJson))
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return
@@ -62,12 +62,12 @@ func (s *sGroup) GetApprovalBlacklists(ctx context.Context, groupId int64) (blac
 		return
 	}
 	// 获取 group
-	gEntity := getGroup(ctx, groupId)
-	if gEntity == nil {
+	groupE := getGroup(ctx, groupId)
+	if groupE == nil {
 		return
 	}
 	// 数据处理
-	settingJson, err := sj.NewJson([]byte(gEntity.SettingJson))
+	settingJson, err := sj.NewJson([]byte(groupE.SettingJson))
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return
@@ -82,12 +82,12 @@ func (s *sGroup) GetApprovalRegexp(ctx context.Context, groupId int64) (exp stri
 		return
 	}
 	// 获取 group
-	gEntity := getGroup(ctx, groupId)
-	if gEntity == nil {
+	groupE := getGroup(ctx, groupId)
+	if groupE == nil {
 		return
 	}
 	// 数据处理
-	settingJson, err := sj.NewJson([]byte(gEntity.SettingJson))
+	settingJson, err := sj.NewJson([]byte(groupE.SettingJson))
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return
@@ -102,12 +102,12 @@ func (s *sGroup) GetApprovalNotificationGroupId(ctx context.Context, groupId int
 		return
 	}
 	// 获取 group
-	gEntity := getGroup(ctx, groupId)
-	if gEntity == nil {
+	groupE := getGroup(ctx, groupId)
+	if groupE == nil {
 		return
 	}
 	// 数据处理
-	settingJson, err := sj.NewJson([]byte(gEntity.SettingJson))
+	settingJson, err := sj.NewJson([]byte(groupE.SettingJson))
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return
@@ -122,12 +122,12 @@ func (s *sGroup) IsEnabledApprovalAutoPass(ctx context.Context, groupId int64) (
 		return
 	}
 	// 获取 group
-	gEntity := getGroup(ctx, groupId)
-	if gEntity == nil {
+	groupE := getGroup(ctx, groupId)
+	if groupE == nil {
 		return
 	}
 	// 数据处理
-	settingJson, err := sj.NewJson([]byte(gEntity.SettingJson))
+	settingJson, err := sj.NewJson([]byte(groupE.SettingJson))
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return
@@ -142,12 +142,12 @@ func (s *sGroup) IsEnabledApprovalAutoReject(ctx context.Context, groupId int64)
 		return
 	}
 	// 获取 group
-	gEntity := getGroup(ctx, groupId)
-	if gEntity == nil {
+	groupE := getGroup(ctx, groupId)
+	if groupE == nil {
 		return
 	}
 	// 数据处理
-	settingJson, err := sj.NewJson([]byte(gEntity.SettingJson))
+	settingJson, err := sj.NewJson([]byte(groupE.SettingJson))
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return

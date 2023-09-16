@@ -19,12 +19,12 @@ func (s *sGroup) GetKeywordProcess(ctx context.Context, groupId int64) (process 
 		return
 	}
 	// 获取 group
-	gEntity := getGroup(ctx, groupId)
-	if gEntity == nil {
+	groupE := getGroup(ctx, groupId)
+	if groupE == nil {
 		return
 	}
 	// 数据处理
-	settingJson, err := sj.NewJson([]byte(gEntity.SettingJson))
+	settingJson, err := sj.NewJson([]byte(groupE.SettingJson))
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return
@@ -39,12 +39,12 @@ func (s *sGroup) GetKeywordWhitelists(ctx context.Context, groupId int64) (white
 		return
 	}
 	// 获取 group
-	gEntity := getGroup(ctx, groupId)
-	if gEntity == nil {
+	groupE := getGroup(ctx, groupId)
+	if groupE == nil {
 		return
 	}
 	// 数据处理
-	settingJson, err := sj.NewJson([]byte(gEntity.SettingJson))
+	settingJson, err := sj.NewJson([]byte(groupE.SettingJson))
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return
@@ -59,12 +59,12 @@ func (s *sGroup) GetKeywordBlacklists(ctx context.Context, groupId int64) (black
 		return
 	}
 	// 获取 group
-	gEntity := getGroup(ctx, groupId)
-	if gEntity == nil {
+	groupE := getGroup(ctx, groupId)
+	if groupE == nil {
 		return
 	}
 	// 数据处理
-	settingJson, err := sj.NewJson([]byte(gEntity.SettingJson))
+	settingJson, err := sj.NewJson([]byte(groupE.SettingJson))
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return
@@ -79,12 +79,12 @@ func (s *sGroup) GetKeywordReplyList(ctx context.Context, groupId int64) (listNa
 		return
 	}
 	// 获取 group
-	gEntity := getGroup(ctx, groupId)
-	if gEntity == nil {
+	groupE := getGroup(ctx, groupId)
+	if groupE == nil {
 		return
 	}
 	// 数据处理
-	settingJson, err := sj.NewJson([]byte(gEntity.SettingJson))
+	settingJson, err := sj.NewJson([]byte(groupE.SettingJson))
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return

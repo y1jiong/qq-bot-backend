@@ -25,27 +25,28 @@ var (
 	legalTokenNameRe = regexp.MustCompile(`^\S{1,16}$`)
 )
 
-func (s *sToken) IsCorrectToken(ctx context.Context, token string) (correct bool, name string) {
+func (s *sToken) IsCorrectToken(ctx context.Context, token string) (correct bool, name string, ownerId int64) {
 	// 过滤非法 token
 	if !legalTokenRe.MatchString(token) {
 		return
 	}
 	// 数据库查询
-	var tEntity *entity.Token
+	var tokenE *entity.Token
 	err := dao.Token.Ctx(ctx).
 		Fields(dao.Token.Columns().Name).
 		Where(dao.Token.Columns().Token, token).
-		Scan(&tEntity)
+		Scan(&tokenE)
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return
 	}
-	if tEntity == nil {
+	if tokenE == nil {
 		return
 	}
 	// 数据处理
 	correct = true
-	name = tEntity.Name
+	name = tokenE.Name
+	ownerId = tokenE.OwnerId
 	return
 }
 

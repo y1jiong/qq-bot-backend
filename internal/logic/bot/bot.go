@@ -58,7 +58,7 @@ func (s *sBot) webSocketMutexFromCtx(ctx context.Context) *sync.Mutex {
 	return nil
 }
 
-func (s *sBot) ctxWithReqJson(ctx context.Context, reqJson *sj.Json) context.Context {
+func (s *sBot) CtxWithReqJson(ctx context.Context, reqJson *sj.Json) context.Context {
 	return context.WithValue(ctx, ctxKeyForReqJson, reqJson)
 }
 
@@ -88,7 +88,7 @@ func (s *sBot) Process(ctx context.Context, rawJson []byte, nextProcess func(ctx
 	if err != nil {
 		return
 	}
-	ctx = s.ctxWithReqJson(ctx, reqJson)
+	ctx = s.CtxWithReqJson(ctx, reqJson)
 	// debug mode
 	if service.Cfg().IsEnabledDebug(ctx) && s.GetPostType(ctx) != "meta_event" {
 		g.Log().Info(ctx, "\n", rawJson)

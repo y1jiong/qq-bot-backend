@@ -31,11 +31,11 @@ const (
 	listMapKey  = "lists"
 )
 
-func getNamespace(ctx context.Context, namespace string) (nEntity *entity.Namespace) {
+func getNamespace(ctx context.Context, namespace string) (namespaceE *entity.Namespace) {
 	// 数据库查询
 	err := dao.Namespace.Ctx(ctx).
 		Where(dao.Namespace.Columns().Namespace, namespace).
-		Scan(&nEntity)
+		Scan(&namespaceE)
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return
@@ -43,23 +43,23 @@ func getNamespace(ctx context.Context, namespace string) (nEntity *entity.Namesp
 	return
 }
 
-func isNamespaceOwner(userId int64, nEntity *entity.Namespace) (yes bool) {
+func isNamespaceOwner(userId int64, namespaceE *entity.Namespace) (yes bool) {
 	// 判断 owner
-	if userId != nEntity.OwnerId {
+	if userId != namespaceE.OwnerId {
 		return
 	}
 	yes = true
 	return
 }
 
-func isNamespaceOwnerOrAdmin(ctx context.Context, userId int64, nEntity *entity.Namespace) (yes bool) {
+func isNamespaceOwnerOrAdmin(ctx context.Context, userId int64, namespaceE *entity.Namespace) (yes bool) {
 	// 判断 owner
-	if userId == nEntity.OwnerId {
+	if userId == namespaceE.OwnerId {
 		yes = true
 		return
 	}
 	// 解析 setting json
-	settingJson, err := sj.NewJson([]byte(nEntity.SettingJson))
+	settingJson, err := sj.NewJson([]byte(namespaceE.SettingJson))
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return
@@ -79,11 +79,11 @@ func (s *sNamespace) IsNamespaceOwnerOrAdmin(ctx context.Context, namespace stri
 		return
 	}
 	// 过程
-	nEntity := getNamespace(ctx, namespace)
-	if nEntity == nil {
+	namespaceE := getNamespace(ctx, namespace)
+	if namespaceE == nil {
 		return
 	}
-	return isNamespaceOwnerOrAdmin(ctx, userId, nEntity)
+	return isNamespaceOwnerOrAdmin(ctx, userId, namespaceE)
 }
 
 func (s *sNamespace) AddNamespaceList(ctx context.Context, namespace, listName string) {
@@ -92,12 +92,12 @@ func (s *sNamespace) AddNamespaceList(ctx context.Context, namespace, listName s
 		return
 	}
 	// 获取 namespace
-	nEntity := getNamespace(ctx, namespace)
-	if nEntity == nil {
+	namespaceE := getNamespace(ctx, namespace)
+	if namespaceE == nil {
 		return
 	}
 	// 数据处理
-	settingJson, err := sj.NewJson([]byte(nEntity.SettingJson))
+	settingJson, err := sj.NewJson([]byte(namespaceE.SettingJson))
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return
@@ -127,12 +127,12 @@ func (s *sNamespace) RemoveNamespaceList(ctx context.Context, namespace, listNam
 		return
 	}
 	// 获取 namespace
-	nEntity := getNamespace(ctx, namespace)
-	if nEntity == nil {
+	namespaceE := getNamespace(ctx, namespace)
+	if namespaceE == nil {
 		return
 	}
 	// 数据处理
-	settingJson, err := sj.NewJson([]byte(nEntity.SettingJson))
+	settingJson, err := sj.NewJson([]byte(namespaceE.SettingJson))
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return
@@ -165,12 +165,12 @@ func (s *sNamespace) GetNamespaceList(ctx context.Context, namespace string) (li
 		return
 	}
 	// 获取 namespace
-	nEntity := getNamespace(ctx, namespace)
-	if nEntity == nil {
+	namespaceE := getNamespace(ctx, namespace)
+	if namespaceE == nil {
 		return
 	}
 	// 数据处理
-	settingJson, err := sj.NewJson([]byte(nEntity.SettingJson))
+	settingJson, err := sj.NewJson([]byte(namespaceE.SettingJson))
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return

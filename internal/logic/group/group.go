@@ -18,11 +18,11 @@ func init() {
 	service.RegisterGroup(New())
 }
 
-func getGroup(ctx context.Context, groupId int64) (gEntity *entity.Group) {
+func getGroup(ctx context.Context, groupId int64) (groupE *entity.Group) {
 	// 数据库查询
 	err := dao.Group.Ctx(ctx).
 		Where(dao.Group.Columns().GroupId, groupId).
-		Scan(&gEntity)
+		Scan(&groupE)
 	if err != nil {
 		g.Log().Error(ctx, err)
 	}

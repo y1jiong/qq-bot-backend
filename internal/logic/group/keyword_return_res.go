@@ -21,16 +21,16 @@ func (s *sGroup) AddKeywordProcessReturnRes(ctx context.Context,
 		return
 	}
 	// 获取 group
-	gEntity := getGroup(ctx, groupId)
-	if gEntity == nil {
+	groupE := getGroup(ctx, groupId)
+	if groupE == nil {
 		return
 	}
 	// 权限校验
-	if !service.Namespace().IsNamespaceOwnerOrAdmin(ctx, gEntity.Namespace, service.Bot().GetUserId(ctx)) {
+	if !service.Namespace().IsNamespaceOwnerOrAdmin(ctx, groupE.Namespace, service.Bot().GetUserId(ctx)) {
 		return
 	}
 	// 数据处理
-	settingJson, err := sj.NewJson([]byte(gEntity.SettingJson))
+	settingJson, err := sj.NewJson([]byte(groupE.SettingJson))
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return
@@ -41,9 +41,9 @@ func (s *sGroup) AddKeywordProcessReturnRes(ctx context.Context,
 		case consts.BlacklistCmd:
 			// 添加一个黑名单
 			// 是否存在 list
-			lists := service.Namespace().GetNamespaceList(ctx, gEntity.Namespace)
+			lists := service.Namespace().GetNamespaceList(ctx, groupE.Namespace)
 			if _, ok := lists[args[0]]; !ok {
-				retMsg = "在 namespace(" + gEntity.Namespace + ") 中未找到 list(" + args[0] + ")"
+				retMsg = "在 namespace(" + groupE.Namespace + ") 中未找到 list(" + args[0] + ")"
 				return
 			}
 			// 继续处理
@@ -53,9 +53,9 @@ func (s *sGroup) AddKeywordProcessReturnRes(ctx context.Context,
 		case consts.ReplyCmd:
 			// 添加回复列表
 			// 是否存在 list
-			lists := service.Namespace().GetNamespaceList(ctx, gEntity.Namespace)
+			lists := service.Namespace().GetNamespaceList(ctx, groupE.Namespace)
 			if _, ok := lists[args[0]]; !ok {
-				retMsg = "在 namespace(" + gEntity.Namespace + ") 中未找到 list(" + args[0] + ")"
+				retMsg = "在 namespace(" + groupE.Namespace + ") 中未找到 list(" + args[0] + ")"
 				return
 			}
 			// 继续处理
@@ -63,9 +63,9 @@ func (s *sGroup) AddKeywordProcessReturnRes(ctx context.Context,
 		case consts.WhitelistCmd:
 			// 添加一个白名单
 			// 是否存在 list
-			lists := service.Namespace().GetNamespaceList(ctx, gEntity.Namespace)
+			lists := service.Namespace().GetNamespaceList(ctx, groupE.Namespace)
 			if _, ok := lists[args[0]]; !ok {
-				retMsg = "在 namespace(" + gEntity.Namespace + ") 中未找到 list(" + args[0] + ")"
+				retMsg = "在 namespace(" + groupE.Namespace + ") 中未找到 list(" + args[0] + ")"
 				return
 			}
 			// 继续处理
@@ -114,16 +114,16 @@ func (s *sGroup) RemoveKeywordProcessReturnRes(ctx context.Context,
 		return
 	}
 	// 获取 group
-	gEntity := getGroup(ctx, groupId)
-	if gEntity == nil {
+	groupE := getGroup(ctx, groupId)
+	if groupE == nil {
 		return
 	}
 	// 权限校验
-	if !service.Namespace().IsNamespaceOwnerOrAdmin(ctx, gEntity.Namespace, service.Bot().GetUserId(ctx)) {
+	if !service.Namespace().IsNamespaceOwnerOrAdmin(ctx, groupE.Namespace, service.Bot().GetUserId(ctx)) {
 		return
 	}
 	// 数据处理
-	settingJson, err := sj.NewJson([]byte(gEntity.SettingJson))
+	settingJson, err := sj.NewJson([]byte(groupE.SettingJson))
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return

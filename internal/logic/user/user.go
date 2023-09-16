@@ -26,25 +26,25 @@ const (
 	rawKey       = "raw"
 )
 
-func getUser(ctx context.Context, userId int64) (uEntity *entity.User) {
+func getUser(ctx context.Context, userId int64) (userE *entity.User) {
 	// 数据库查询
 	err := dao.User.Ctx(ctx).
 		Where(dao.User.Columns().UserId, userId).
-		Scan(&uEntity)
+		Scan(&userE)
 	if err != nil {
 		g.Log().Error(ctx, err)
 	}
 	return
 }
 
-func createUser(ctx context.Context, userId int64) (uEntity *entity.User, err error) {
-	uEntity = &entity.User{
+func createUser(ctx context.Context, userId int64) (userE *entity.User, err error) {
+	userE = &entity.User{
 		UserId:      userId,
 		SettingJson: "{}",
 	}
 	// 数据库插入
 	_, err = dao.User.Ctx(ctx).
-		Data(uEntity).
+		Data(userE).
 		OmitEmpty().
 		Insert()
 	return
@@ -56,12 +56,12 @@ func (s *sUser) IsSystemTrustUser(ctx context.Context, userId int64) (yes bool) 
 		return
 	}
 	// 获取 user
-	uEntity := getUser(ctx, userId)
-	if uEntity == nil {
+	userE := getUser(ctx, userId)
+	if userE == nil {
 		return
 	}
 	// 数据处理
-	settingJson, err := sj.NewJson([]byte(uEntity.SettingJson))
+	settingJson, err := sj.NewJson([]byte(userE.SettingJson))
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return
@@ -76,12 +76,12 @@ func (s *sUser) CouldOpToken(ctx context.Context, userId int64) (yes bool) {
 		return
 	}
 	// 获取 user
-	uEntity := getUser(ctx, userId)
-	if uEntity == nil {
+	userE := getUser(ctx, userId)
+	if userE == nil {
 		return
 	}
 	// 数据处理
-	settingJson, err := sj.NewJson([]byte(uEntity.SettingJson))
+	settingJson, err := sj.NewJson([]byte(userE.SettingJson))
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return
@@ -96,12 +96,12 @@ func (s *sUser) CouldOpNamespace(ctx context.Context, userId int64) (yes bool) {
 		return
 	}
 	// 获取 user
-	uEntity := getUser(ctx, userId)
-	if uEntity == nil {
+	userE := getUser(ctx, userId)
+	if userE == nil {
 		return
 	}
 	// 数据处理
-	settingJson, err := sj.NewJson([]byte(uEntity.SettingJson))
+	settingJson, err := sj.NewJson([]byte(userE.SettingJson))
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return
@@ -116,12 +116,12 @@ func (s *sUser) CouldGetRawMsg(ctx context.Context, userId int64) (yes bool) {
 		return
 	}
 	// 获取 user
-	uEntity := getUser(ctx, userId)
-	if uEntity == nil {
+	userE := getUser(ctx, userId)
+	if userE == nil {
 		return
 	}
 	// 数据处理
-	settingJson, err := sj.NewJson([]byte(uEntity.SettingJson))
+	settingJson, err := sj.NewJson([]byte(userE.SettingJson))
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return

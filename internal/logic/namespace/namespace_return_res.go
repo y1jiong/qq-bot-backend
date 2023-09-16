@@ -23,14 +23,14 @@ func (s *sNamespace) AddNewNamespaceReturnRes(ctx context.Context, namespace str
 		return
 	}
 	// 初始化 namespace 对象
-	nEntity := entity.Namespace{
+	namespaceE := entity.Namespace{
 		Namespace:   namespace,
 		OwnerId:     service.Bot().GetUserId(ctx),
 		SettingJson: "{}",
 	}
 	// 数据库插入
 	_, err := dao.Namespace.Ctx(ctx).
-		Data(nEntity).
+		Data(namespaceE).
 		OmitEmpty().
 		Insert()
 	if err != nil {
@@ -50,13 +50,13 @@ func (s *sNamespace) RemoveNamespaceReturnRes(ctx context.Context, namespace str
 		return
 	}
 	// 获取 namespace 对象
-	nEntity := getNamespace(ctx, namespace)
-	if nEntity == nil {
+	namespaceE := getNamespace(ctx, namespace)
+	if namespaceE == nil {
 		retMsg = "未找到 namespace(" + namespace + ")"
 		return
 	}
 	// 判断 owner
-	if !isNamespaceOwner(service.Bot().GetUserId(ctx), nEntity) {
+	if !isNamespaceOwner(service.Bot().GetUserId(ctx), namespaceE) {
 		retMsg = "未找到 namespace(" + namespace + ")"
 		return
 	}
@@ -79,19 +79,19 @@ func (s *sNamespace) QueryNamespaceReturnRes(ctx context.Context, namespace stri
 		return
 	}
 	// 获取 namespace 对象
-	nEntity := getNamespace(ctx, namespace)
-	if nEntity == nil {
+	namespaceE := getNamespace(ctx, namespace)
+	if namespaceE == nil {
 		return
 	}
 	// 判断 owner or admin
-	if !isNamespaceOwnerOrAdmin(ctx, service.Bot().GetUserId(ctx), nEntity) {
+	if !isNamespaceOwnerOrAdmin(ctx, service.Bot().GetUserId(ctx), namespaceE) {
 		return
 	}
 	// 回执
-	retMsg = dao.Namespace.Columns().Namespace + ": " + nEntity.Namespace + "\n" +
-		dao.Namespace.Columns().OwnerId + ": " + gconv.String(nEntity.OwnerId) + "\n" +
-		dao.Namespace.Columns().SettingJson + ": " + nEntity.SettingJson + "\n" +
-		dao.Namespace.Columns().UpdatedAt + ": " + nEntity.UpdatedAt.String()
+	retMsg = dao.Namespace.Columns().Namespace + ": " + namespaceE.Namespace + "\n" +
+		dao.Namespace.Columns().OwnerId + ": " + gconv.String(namespaceE.OwnerId) + "\n" +
+		dao.Namespace.Columns().SettingJson + ": " + namespaceE.SettingJson + "\n" +
+		dao.Namespace.Columns().UpdatedAt + ": " + namespaceE.UpdatedAt.String()
 	return
 }
 
@@ -141,16 +141,16 @@ func (s *sNamespace) AddNamespaceAdminReturnRes(ctx context.Context,
 		return
 	}
 	// 获取 namespace 对象
-	nEntity := getNamespace(ctx, namespace)
-	if nEntity == nil {
+	namespaceE := getNamespace(ctx, namespace)
+	if namespaceE == nil {
 		return
 	}
 	// 判断 owner
-	if !isNamespaceOwner(service.Bot().GetUserId(ctx), nEntity) {
+	if !isNamespaceOwner(service.Bot().GetUserId(ctx), namespaceE) {
 		return
 	}
 	// 数据处理
-	settingJson, err := sj.NewJson([]byte(nEntity.SettingJson))
+	settingJson, err := sj.NewJson([]byte(namespaceE.SettingJson))
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return
@@ -187,16 +187,16 @@ func (s *sNamespace) RemoveNamespaceAdminReturnRes(ctx context.Context,
 		return
 	}
 	// 获取 namespace
-	nEntity := getNamespace(ctx, namespace)
-	if nEntity == nil {
+	namespaceE := getNamespace(ctx, namespace)
+	if namespaceE == nil {
 		return
 	}
 	// 判断是否是 owner
-	if !isNamespaceOwner(service.Bot().GetUserId(ctx), nEntity) {
+	if !isNamespaceOwner(service.Bot().GetUserId(ctx), namespaceE) {
 		return
 	}
 	// 数据处理
-	settingJson, err := sj.NewJson([]byte(nEntity.SettingJson))
+	settingJson, err := sj.NewJson([]byte(namespaceE.SettingJson))
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return
@@ -204,7 +204,7 @@ func (s *sNamespace) RemoveNamespaceAdminReturnRes(ctx context.Context,
 	// 获取 admin map
 	admins := settingJson.Get(adminMapKey).MustMap(make(map[string]any))
 	if _, ok := admins[gconv.String(userId)]; !ok {
-		retMsg = "在 namespace(" + nEntity.Namespace + ") 的 " + adminMapKey + " 中未找到 user(" + gconv.String(userId) + ")"
+		retMsg = "在 namespace(" + namespaceE.Namespace + ") 的 " + adminMapKey + " 中未找到 user(" + gconv.String(userId) + ")"
 		return
 	}
 	// 删除 userId 的 admin 权限
@@ -236,16 +236,16 @@ func (s *sNamespace) ResetNamespaceAdminReturnRes(ctx context.Context, namespace
 		return
 	}
 	// 获取 namespace
-	nEntity := getNamespace(ctx, namespace)
-	if nEntity == nil {
+	namespaceE := getNamespace(ctx, namespace)
+	if namespaceE == nil {
 		return
 	}
 	// 判断是否是 owner
-	if !isNamespaceOwner(service.Bot().GetUserId(ctx), nEntity) {
+	if !isNamespaceOwner(service.Bot().GetUserId(ctx), namespaceE) {
 		return
 	}
 	// 数据处理
-	settingJson, err := sj.NewJson([]byte(nEntity.SettingJson))
+	settingJson, err := sj.NewJson([]byte(namespaceE.SettingJson))
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return

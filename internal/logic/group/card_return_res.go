@@ -21,22 +21,22 @@ func (s *sGroup) SetAutoSetListReturnRes(ctx context.Context,
 		return
 	}
 	// 获取 group
-	gEntity := getGroup(ctx, groupId)
-	if gEntity == nil {
+	groupE := getGroup(ctx, groupId)
+	if groupE == nil {
 		return
 	}
 	// 权限校验
-	if !service.Namespace().IsNamespaceOwnerOrAdmin(ctx, gEntity.Namespace, service.Bot().GetUserId(ctx)) {
+	if !service.Namespace().IsNamespaceOwnerOrAdmin(ctx, groupE.Namespace, service.Bot().GetUserId(ctx)) {
 		return
 	}
 	// 是否存在 list
-	lists := service.Namespace().GetNamespaceList(ctx, gEntity.Namespace)
+	lists := service.Namespace().GetNamespaceList(ctx, groupE.Namespace)
 	if _, ok := lists[listName]; !ok {
-		retMsg = "在 namespace(" + gEntity.Namespace + ") 中未找到 list(" + listName + ")"
+		retMsg = "在 namespace(" + groupE.Namespace + ") 中未找到 list(" + listName + ")"
 		return
 	}
 	// 数据处理
-	settingJson, err := sj.NewJson([]byte(gEntity.SettingJson))
+	settingJson, err := sj.NewJson([]byte(groupE.SettingJson))
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return
@@ -72,16 +72,16 @@ func (s *sGroup) RemoveAutoSetListReturnRes(ctx context.Context, groupId int64) 
 		return
 	}
 	// 获取 group
-	gEntity := getGroup(ctx, groupId)
-	if gEntity == nil {
+	groupE := getGroup(ctx, groupId)
+	if groupE == nil {
 		return
 	}
 	// 权限校验
-	if !service.Namespace().IsNamespaceOwnerOrAdmin(ctx, gEntity.Namespace, service.Bot().GetUserId(ctx)) {
+	if !service.Namespace().IsNamespaceOwnerOrAdmin(ctx, groupE.Namespace, service.Bot().GetUserId(ctx)) {
 		return
 	}
 	// 数据处理
-	settingJson, err := sj.NewJson([]byte(gEntity.SettingJson))
+	settingJson, err := sj.NewJson([]byte(groupE.SettingJson))
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return
@@ -122,18 +122,18 @@ func (s *sGroup) CheckCardWithRegexpReturnRes(ctx context.Context,
 		return
 	}
 	// 获取 group
-	gEntity := getGroup(ctx, groupId)
-	if gEntity == nil {
+	groupE := getGroup(ctx, groupId)
+	if groupE == nil {
 		return
 	}
 	// 权限校验
-	if !service.Namespace().IsNamespaceOwnerOrAdmin(ctx, gEntity.Namespace, service.Bot().GetUserId(ctx)) {
+	if !service.Namespace().IsNamespaceOwnerOrAdmin(ctx, groupE.Namespace, service.Bot().GetUserId(ctx)) {
 		return
 	}
 	// 是否存在 list
-	lists := service.Namespace().GetNamespaceList(ctx, gEntity.Namespace)
+	lists := service.Namespace().GetNamespaceList(ctx, groupE.Namespace)
 	if _, ok := lists[listName]; !ok {
-		retMsg = "在 namespace(" + gEntity.Namespace + ") 中未找到 list(" + listName + ")"
+		retMsg = "在 namespace(" + groupE.Namespace + ") 中未找到 list(" + listName + ")"
 		return
 	}
 	// 获取群成员列表
@@ -188,22 +188,22 @@ func (s *sGroup) CheckCardByListReturnRes(ctx context.Context,
 		return
 	}
 	// 获取 group
-	gEntity := getGroup(ctx, groupId)
-	if gEntity == nil {
+	groupE := getGroup(ctx, groupId)
+	if groupE == nil {
 		return
 	}
 	// 权限校验
-	if !service.Namespace().IsNamespaceOwnerOrAdmin(ctx, gEntity.Namespace, service.Bot().GetUserId(ctx)) {
+	if !service.Namespace().IsNamespaceOwnerOrAdmin(ctx, groupE.Namespace, service.Bot().GetUserId(ctx)) {
 		return
 	}
 	// 是否存在 list
-	lists := service.Namespace().GetNamespaceList(ctx, gEntity.Namespace)
+	lists := service.Namespace().GetNamespaceList(ctx, groupE.Namespace)
 	if _, ok := lists[toList]; !ok {
-		retMsg = "在 namespace(" + gEntity.Namespace + ") 中未找到 list(" + toList + ")"
+		retMsg = "在 namespace(" + groupE.Namespace + ") 中未找到 list(" + toList + ")"
 		return
 	}
 	if _, ok := lists[fromList]; !ok {
-		retMsg = "在 namespace(" + gEntity.Namespace + ") 中未找到 list(" + fromList + ")"
+		retMsg = "在 namespace(" + groupE.Namespace + ") 中未找到 list(" + fromList + ")"
 		return
 	}
 	// 获取群成员列表
@@ -251,16 +251,16 @@ func (s *sGroup) LockCardReturnRes(ctx context.Context, groupId int64) (retMsg s
 		return
 	}
 	// 获取 group
-	gEntity := getGroup(ctx, groupId)
-	if gEntity == nil {
+	groupE := getGroup(ctx, groupId)
+	if groupE == nil {
 		return
 	}
 	// 权限校验
-	if !service.Namespace().IsNamespaceOwnerOrAdmin(ctx, gEntity.Namespace, service.Bot().GetUserId(ctx)) {
+	if !service.Namespace().IsNamespaceOwnerOrAdmin(ctx, groupE.Namespace, service.Bot().GetUserId(ctx)) {
 		return
 	}
 	// 数据处理
-	settingJson, err := sj.NewJson([]byte(gEntity.SettingJson))
+	settingJson, err := sj.NewJson([]byte(groupE.SettingJson))
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return
@@ -300,16 +300,16 @@ func (s *sGroup) UnlockCardReturnRes(ctx context.Context, groupId int64) (retMsg
 		return
 	}
 	// 获取 group
-	gEntity := getGroup(ctx, groupId)
-	if gEntity == nil {
+	groupE := getGroup(ctx, groupId)
+	if groupE == nil {
 		return
 	}
 	// 权限校验
-	if !service.Namespace().IsNamespaceOwnerOrAdmin(ctx, gEntity.Namespace, service.Bot().GetUserId(ctx)) {
+	if !service.Namespace().IsNamespaceOwnerOrAdmin(ctx, groupE.Namespace, service.Bot().GetUserId(ctx)) {
 		return
 	}
 	// 数据处理
-	settingJson, err := sj.NewJson([]byte(gEntity.SettingJson))
+	settingJson, err := sj.NewJson([]byte(groupE.SettingJson))
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return

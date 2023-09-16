@@ -28,7 +28,7 @@ func (c *cBot) Websocket(r *ghttp.Request) {
 		// token debug 验证模式
 		var pass bool
 		var name string
-		pass, name = service.Token().IsCorrectToken(ctx, token)
+		pass, name, _ = service.Token().IsCorrectToken(ctx, token)
 		// debug mode
 		if !pass && token != service.Cfg().GetDebugToken(ctx) {
 			r.Response.WriteHeader(http.StatusForbidden)
@@ -42,7 +42,7 @@ func (c *cBot) Websocket(r *ghttp.Request) {
 	} else {
 		// token 正常验证模式
 		var pass bool
-		pass, tokenName = service.Token().IsCorrectToken(ctx, token)
+		pass, tokenName, _ = service.Token().IsCorrectToken(ctx, token)
 		if !pass {
 			r.Response.WriteHeader(http.StatusForbidden)
 			return

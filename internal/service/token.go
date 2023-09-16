@@ -11,7 +11,7 @@ import (
 
 type (
 	IToken interface {
-		IsCorrectToken(ctx context.Context, token string) (correct bool, name string)
+		IsCorrectToken(ctx context.Context, token string) (correct bool, name string, ownerId int64)
 		UpdateLoginTime(ctx context.Context, token string)
 		AddNewTokenReturnRes(ctx context.Context, name, token string) (retMsg string)
 		RemoveTokenReturnRes(ctx context.Context, name string) (retMsg string)

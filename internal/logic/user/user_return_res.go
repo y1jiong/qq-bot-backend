@@ -14,16 +14,16 @@ func (s *sUser) QueryUserReturnRes(ctx context.Context, userId int64) (retMsg st
 		return
 	}
 	// 获取 user
-	uEntity := getUser(ctx, userId)
-	if uEntity == nil {
+	userE := getUser(ctx, userId)
+	if userE == nil {
 		// 回执
 		retMsg = "查无此人"
 		return
 	}
 	// 回执
-	retMsg = dao.User.Columns().UserId + ": " + gconv.String(uEntity.UserId) + "\n" +
-		dao.User.Columns().SettingJson + ": " + uEntity.SettingJson + "\n" +
-		dao.User.Columns().UpdatedAt + ": " + uEntity.UpdatedAt.String()
+	retMsg = dao.User.Columns().UserId + ": " + gconv.String(userE.UserId) + "\n" +
+		dao.User.Columns().SettingJson + ": " + userE.SettingJson + "\n" +
+		dao.User.Columns().UpdatedAt + ": " + userE.UpdatedAt.String()
 	return
 }
 
@@ -33,18 +33,18 @@ func (s *sUser) SystemTrustUserReturnRes(ctx context.Context, userId int64) (ret
 		return
 	}
 	// 获取 user
-	uEntity := getUser(ctx, userId)
-	if uEntity == nil {
+	userE := getUser(ctx, userId)
+	if userE == nil {
 		// 如果没有获取到 user 则默认创建
 		var err error
-		uEntity, err = createUser(ctx, userId)
+		userE, err = createUser(ctx, userId)
 		if err != nil {
 			g.Log().Error(ctx, err)
 			return
 		}
 	}
 	// 数据处理
-	settingJson, err := sj.NewJson([]byte(uEntity.SettingJson))
+	settingJson, err := sj.NewJson([]byte(userE.SettingJson))
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return
@@ -80,12 +80,12 @@ func (s *sUser) SystemDistrustUserReturnRes(ctx context.Context, userId int64) (
 		return
 	}
 	// 获取 user
-	uEntity := getUser(ctx, userId)
-	if uEntity == nil {
+	userE := getUser(ctx, userId)
+	if userE == nil {
 		return
 	}
 	// 数据处理
-	settingJson, err := sj.NewJson([]byte(uEntity.SettingJson))
+	settingJson, err := sj.NewJson([]byte(userE.SettingJson))
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return
@@ -121,18 +121,18 @@ func (s *sUser) GrantOpTokenReturnRes(ctx context.Context, userId int64) (retMsg
 		return
 	}
 	// 获取 user
-	uEntity := getUser(ctx, userId)
-	if uEntity == nil {
+	userE := getUser(ctx, userId)
+	if userE == nil {
 		// 如果没有获取到 user 则默认创建
 		var err error
-		uEntity, err = createUser(ctx, userId)
+		userE, err = createUser(ctx, userId)
 		if err != nil {
 			g.Log().Error(ctx, err)
 			return
 		}
 	}
 	// 数据处理
-	settingJson, err := sj.NewJson([]byte(uEntity.SettingJson))
+	settingJson, err := sj.NewJson([]byte(userE.SettingJson))
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return
@@ -168,12 +168,12 @@ func (s *sUser) RevokeOpTokenReturnRes(ctx context.Context, userId int64) (retMs
 		return
 	}
 	// 获取 user
-	uEntity := getUser(ctx, userId)
-	if uEntity == nil {
+	userE := getUser(ctx, userId)
+	if userE == nil {
 		return
 	}
 	// 数据处理
-	settingJson, err := sj.NewJson([]byte(uEntity.SettingJson))
+	settingJson, err := sj.NewJson([]byte(userE.SettingJson))
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return
@@ -209,18 +209,18 @@ func (s *sUser) GrantOpNamespaceReturnRes(ctx context.Context, userId int64) (re
 		return
 	}
 	// 获取 user
-	uEntity := getUser(ctx, userId)
-	if uEntity == nil {
+	userE := getUser(ctx, userId)
+	if userE == nil {
 		// 如果没有获取到 user 则默认创建
 		var err error
-		uEntity, err = createUser(ctx, userId)
+		userE, err = createUser(ctx, userId)
 		if err != nil {
 			g.Log().Error(ctx, err)
 			return
 		}
 	}
 	// 数据处理
-	settingJson, err := sj.NewJson([]byte(uEntity.SettingJson))
+	settingJson, err := sj.NewJson([]byte(userE.SettingJson))
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return
@@ -256,12 +256,12 @@ func (s *sUser) RevokeOpNamespaceReturnRes(ctx context.Context, userId int64) (r
 		return
 	}
 	// 获取 user
-	uEntity := getUser(ctx, userId)
-	if uEntity == nil {
+	userE := getUser(ctx, userId)
+	if userE == nil {
 		return
 	}
 	// 数据处理
-	settingJson, err := sj.NewJson([]byte(uEntity.SettingJson))
+	settingJson, err := sj.NewJson([]byte(userE.SettingJson))
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return
@@ -297,18 +297,18 @@ func (s *sUser) GrantGetRawMsgReturnRes(ctx context.Context, userId int64) (retM
 		return
 	}
 	// 获取 user
-	uEntity := getUser(ctx, userId)
-	if uEntity == nil {
+	userE := getUser(ctx, userId)
+	if userE == nil {
 		// 如果没有获取到 user 则默认创建
 		var err error
-		uEntity, err = createUser(ctx, userId)
+		userE, err = createUser(ctx, userId)
 		if err != nil {
 			g.Log().Error(ctx, err)
 			return
 		}
 	}
 	// 数据处理
-	settingJson, err := sj.NewJson([]byte(uEntity.SettingJson))
+	settingJson, err := sj.NewJson([]byte(userE.SettingJson))
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return
@@ -344,12 +344,12 @@ func (s *sUser) RevokeGetRawMsgReturnRes(ctx context.Context, userId int64) (ret
 		return
 	}
 	// 获取 user
-	uEntity := getUser(ctx, userId)
-	if uEntity == nil {
+	userE := getUser(ctx, userId)
+	if userE == nil {
 		return
 	}
 	// 数据处理
-	settingJson, err := sj.NewJson([]byte(uEntity.SettingJson))
+	settingJson, err := sj.NewJson([]byte(userE.SettingJson))
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return

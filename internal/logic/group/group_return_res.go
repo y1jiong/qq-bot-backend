@@ -23,34 +23,34 @@ func (s *sGroup) BindNamespaceReturnRes(ctx context.Context,
 		return
 	}
 	// 获取 group
-	gEntity := getGroup(ctx, groupId)
+	groupE := getGroup(ctx, groupId)
 	var err error
-	if gEntity == nil {
+	if groupE == nil {
 		// 初始化 group 对象
-		gEntity = &entity.Group{
+		groupE = &entity.Group{
 			GroupId:     groupId,
 			Namespace:   namespace,
 			SettingJson: "{}",
 		}
 		// 数据库插入
 		_, err = dao.Group.Ctx(ctx).
-			Data(gEntity).
+			Data(groupE).
 			OmitEmpty().
 			Insert()
 	} else {
-		if gEntity.Namespace != "" {
-			retMsg = "当前 group(" + gconv.String(groupId) + ") 已经绑定了 namespace(" + gEntity.Namespace + ")"
+		if groupE.Namespace != "" {
+			retMsg = "当前 group(" + gconv.String(groupId) + ") 已经绑定了 namespace(" + groupE.Namespace + ")"
 			return
 		}
 		// 重置 setting
-		gEntity = &entity.Group{
+		groupE = &entity.Group{
 			Namespace:   namespace,
 			SettingJson: "{}",
 		}
 		// 数据库更新
 		_, err = dao.Group.Ctx(ctx).
 			Where(dao.Group.Columns().GroupId, groupId).
-			Data(gEntity).
+			Data(groupE).
 			OmitEmpty().
 			Update()
 	}
@@ -73,12 +73,12 @@ func (s *sGroup) UnbindReturnRes(ctx context.Context, groupId int64) (retMsg str
 		return
 	}
 	// 获取 group
-	gEntity := getGroup(ctx, groupId)
-	if gEntity == nil || gEntity.Namespace == "" {
+	groupE := getGroup(ctx, groupId)
+	if groupE == nil || groupE.Namespace == "" {
 		return
 	}
 	// 权限校验
-	if !service.Namespace().IsNamespaceOwnerOrAdmin(ctx, gEntity.Namespace, service.Bot().GetUserId(ctx)) {
+	if !service.Namespace().IsNamespaceOwnerOrAdmin(ctx, groupE.Namespace, service.Bot().GetUserId(ctx)) {
 		return
 	}
 	// 数据库更新
@@ -101,18 +101,18 @@ func (s *sGroup) QueryGroupReturnRes(ctx context.Context, groupId int64) (retMsg
 		return
 	}
 	// 获取 group
-	gEntity := getGroup(ctx, groupId)
-	if gEntity == nil {
+	groupE := getGroup(ctx, groupId)
+	if groupE == nil {
 		return
 	}
 	// 权限校验
-	if !service.Namespace().IsNamespaceOwnerOrAdmin(ctx, gEntity.Namespace, service.Bot().GetUserId(ctx)) {
+	if !service.Namespace().IsNamespaceOwnerOrAdmin(ctx, groupE.Namespace, service.Bot().GetUserId(ctx)) {
 		return
 	}
 	// 回执
-	retMsg = dao.Group.Columns().Namespace + ": " + gEntity.Namespace + "\n" +
-		dao.Group.Columns().SettingJson + ": " + gEntity.SettingJson + "\n" +
-		dao.Group.Columns().UpdatedAt + ": " + gEntity.UpdatedAt.String()
+	retMsg = dao.Group.Columns().Namespace + ": " + groupE.Namespace + "\n" +
+		dao.Group.Columns().SettingJson + ": " + groupE.SettingJson + "\n" +
+		dao.Group.Columns().UpdatedAt + ": " + groupE.UpdatedAt.String()
 	return
 }
 
@@ -127,18 +127,18 @@ func (s *sGroup) KickFromListReturnRes(ctx context.Context,
 		return
 	}
 	// 获取 group
-	gEntity := getGroup(ctx, groupId)
-	if gEntity == nil {
+	groupE := getGroup(ctx, groupId)
+	if groupE == nil {
 		return
 	}
 	// 权限校验
-	if !service.Namespace().IsNamespaceOwnerOrAdmin(ctx, gEntity.Namespace, service.Bot().GetUserId(ctx)) {
+	if !service.Namespace().IsNamespaceOwnerOrAdmin(ctx, groupE.Namespace, service.Bot().GetUserId(ctx)) {
 		return
 	}
 	// 是否存在 list
-	lists := service.Namespace().GetNamespaceList(ctx, gEntity.Namespace)
+	lists := service.Namespace().GetNamespaceList(ctx, groupE.Namespace)
 	if _, ok := lists[listName]; !ok {
-		retMsg = "在 namespace(" + gEntity.Namespace + ") 中未找到 list(" + listName + ")"
+		retMsg = "在 namespace(" + groupE.Namespace + ") 中未找到 list(" + listName + ")"
 		return
 	}
 	// 获取 list
@@ -220,18 +220,18 @@ func (s *sGroup) KeepFromListReturnRes(ctx context.Context,
 		return
 	}
 	// 获取 group
-	gEntity := getGroup(ctx, groupId)
-	if gEntity == nil {
+	groupE := getGroup(ctx, groupId)
+	if groupE == nil {
 		return
 	}
 	// 权限校验
-	if !service.Namespace().IsNamespaceOwnerOrAdmin(ctx, gEntity.Namespace, service.Bot().GetUserId(ctx)) {
+	if !service.Namespace().IsNamespaceOwnerOrAdmin(ctx, groupE.Namespace, service.Bot().GetUserId(ctx)) {
 		return
 	}
 	// 是否存在 list
-	lists := service.Namespace().GetNamespaceList(ctx, gEntity.Namespace)
+	lists := service.Namespace().GetNamespaceList(ctx, groupE.Namespace)
 	if _, ok := lists[listName]; !ok {
-		retMsg = "在 namespace(" + gEntity.Namespace + ") 中未找到 list(" + listName + ")"
+		retMsg = "在 namespace(" + groupE.Namespace + ") 中未找到 list(" + listName + ")"
 		return
 	}
 	// 获取 list
@@ -307,16 +307,16 @@ func (s *sGroup) CheckExistReturnRes(ctx context.Context) (retMsg string) {
 	deleted := 0
 	msg := ""
 	for {
-		var gEntity []*entity.Group
+		var groupE []*entity.Group
 		err := dao.Group.Ctx(ctx).
 			Fields(dao.Group.Columns().GroupId).
 			Page(pageNum, pageSize).
-			Scan(&gEntity)
+			Scan(&groupE)
 		if err != nil {
 			g.Log().Error(ctx, err)
 			return
 		}
-		for _, v := range gEntity {
+		for _, v := range groupE {
 			vGroupId := v.GroupId
 			_, err = service.Bot().GetGroupInfo(ctx, vGroupId, true)
 			// 判断群是否已经解散
@@ -338,7 +338,7 @@ func (s *sGroup) CheckExistReturnRes(ctx context.Context) (retMsg string) {
 			deleted++
 		}
 		// 结束条件
-		if len(gEntity) < pageSize {
+		if len(groupE) < pageSize {
 			break
 		}
 		pageNum++

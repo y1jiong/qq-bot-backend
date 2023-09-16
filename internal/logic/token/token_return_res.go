@@ -16,25 +16,25 @@ func (s *sToken) AddNewTokenReturnRes(ctx context.Context, name, token string) (
 		return
 	}
 	// 数据库查存在
-	var tokenEntity *entity.Token
+	var tokenE *entity.Token
 	err := dao.Token.Ctx(ctx).
 		Where(dao.Token.Columns().Name, name).
-		Scan(&tokenEntity)
+		Scan(&tokenE)
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return
 	}
 	var exist bool
 	// 判断是否存在
-	if tokenEntity != nil {
+	if tokenE != nil {
 		// 判断所有人是否一致
-		if tokenEntity.OwnerId != owner {
+		if tokenE.OwnerId != owner {
 			retMsg = "token(" + name + ") 已被占用"
 			return
 		}
 		exist = true
 	}
-	tokenEntity = &entity.Token{
+	tokenE = &entity.Token{
 		Name:    name,
 		Token:   token,
 		OwnerId: owner,
@@ -42,7 +42,7 @@ func (s *sToken) AddNewTokenReturnRes(ctx context.Context, name, token string) (
 	if !exist {
 		// 数据库插入
 		_, err = dao.Token.Ctx(ctx).
-			Data(tokenEntity).
+			Data(tokenE).
 			OmitEmpty().
 			Insert()
 		if err != nil {
@@ -56,7 +56,7 @@ func (s *sToken) AddNewTokenReturnRes(ctx context.Context, name, token string) (
 	} else {
 		// 数据库更新
 		_, err = dao.Token.Ctx(ctx).
-			Data(tokenEntity).
+			Data(tokenE).
 			OmitEmpty().
 			Where(dao.Token.Columns().Name, name).
 			Update()
