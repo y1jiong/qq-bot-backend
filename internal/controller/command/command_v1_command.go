@@ -34,8 +34,8 @@ func (c *ControllerV1) Command(ctx context.Context, req *v1.CommandReq) (res *v1
 	}
 	// 验证签名
 	{
-		// tokenName+token+timestamp+command 的 sha1 值的 base64 值
-		s := tokenName + req.Token + gconv.String(req.Timestamp) + req.Command
+		// tokenName+token+timestamp+command+groupId 的 sha1 值的 base64 值
+		s := tokenName + req.Token + gconv.String(req.Timestamp) + req.Command + gconv.String(req.GroupId)
 		if gbase64.EncodeString(gsha1.Encrypt(s)) != req.Signature {
 			err = gerror.NewCode(gcode.New(http.StatusBadRequest, "", nil), "signature error")
 			return
