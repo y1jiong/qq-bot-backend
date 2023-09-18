@@ -53,10 +53,9 @@ func (s *sToken) IsCorrectToken(ctx context.Context, token string) (correct bool
 func (s *sToken) UpdateLoginTime(ctx context.Context, token string) {
 	// 数据库更新
 	_, err := dao.Token.Ctx(ctx).
-		Data(g.Map{
-			dao.Token.Columns().LastLoginAt: gtime.Now(),
-		}).
+		Data(dao.Token.Columns().LastLoginAt, gtime.Now()).
 		Where(dao.Token.Columns().Token, token).
+		Unscoped().
 		Update()
 	if err != nil {
 		g.Log().Error(ctx, err)
