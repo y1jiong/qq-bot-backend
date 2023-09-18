@@ -2,9 +2,10 @@ package command
 
 import (
 	"context"
+	"crypto/hmac"
+	"crypto/sha1"
 	"encoding/json"
 	sj "github.com/bitly/go-simplejson"
-	"github.com/gogf/gf/v2/crypto/gsha1"
 	"github.com/gogf/gf/v2/encoding/gbase64"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/os/gtime"
@@ -34,9 +35,13 @@ func (c *ControllerV1) Command(ctx context.Context, req *v1.CommandReq) (res *v1
 	}
 	// 验证签名
 	{
-		// tokenName+token+timestamp+command+groupId 的 sha1 值的 base64 值
-		s := tokenName + req.Token + gconv.String(req.Timestamp) + req.Command + gconv.String(req.GroupId)
-		if gbase64.EncodeString(gsha1.Encrypt(s)) != req.Signature {
+		// 以 timestamp+command+groupId 为原文，以 tokenName 为 key 的 HmacSha1 值的 base64 值
+		s := gconv.String(req.Timestamp) + req.Command + gconv.String(req.GroupId)
+		// HmacSha1
+		hmacSha1 := hmac.New(sha1.New, []byte(tokenName))
+		hmacSha1.Write([]byte(s))
+		macBase64 := gbase64.Encode(hmacSha1.Sum(nil))
+		if hmac.Equal(macBase64, []byte(req.Signature)) {
 			err = gerror.NewCode(gcode.New(http.StatusBadRequest, "", nil), "signature error")
 			return
 		}
