@@ -3,6 +3,7 @@ package token
 import (
 	"context"
 	"github.com/gogf/gf/v2/frame/g"
+	"github.com/gogf/gf/v2/util/gconv"
 	"qq-bot-backend/internal/dao"
 	"qq-bot-backend/internal/model/entity"
 	"qq-bot-backend/internal/service"
@@ -79,10 +80,7 @@ func (s *sToken) RemoveTokenReturnRes(ctx context.Context, name string) (retMsg 
 	}
 	// 数据库查存在
 	one, err := dao.Token.Ctx(ctx).
-		Where(g.Map{
-			dao.Token.Columns().Name:    name,
-			dao.Token.Columns().OwnerId: service.Bot().GetUserId(ctx),
-		}).
+		Where(dao.Token.Columns().Name, name).
 		One()
 	if err != nil {
 		g.Log().Error(ctx, err)
@@ -139,5 +137,37 @@ func (s *sToken) QueryTokenReturnRes(ctx context.Context) (retMsg string) {
 		}
 	}
 	retMsg = msg.String()
+	return
+}
+
+func (s *sToken) ChangeTokenOwnerReturnRes(ctx context.Context, name, ownerId string) (retMsg string) {
+	// 过滤非法 name
+	if !legalTokenNameRe.MatchString(name) {
+		return
+	}
+	// 数据库查存在
+	var tokenE *entity.Token
+	err := dao.Token.Ctx(ctx).
+		Where(dao.Token.Columns().Name, name).
+		Scan(&tokenE)
+	if err != nil {
+		g.Log().Error(ctx, err)
+		return
+	}
+	if tokenE == nil {
+		retMsg = "未找到 token(" + name + ")"
+		return
+	}
+	// 数据库更新
+	_, err = dao.Token.Ctx(ctx).
+		Data(dao.Token.Columns().OwnerId, gconv.Int64(ownerId)).
+		Where(dao.Token.Columns().Name, name).
+		Update()
+	if err != nil {
+		g.Log().Error(ctx, err)
+		return
+	}
+	// 回执
+	retMsg = "已将 token(" + name + ") 的所有者修改为 " + ownerId
 	return
 }

@@ -16,6 +16,7 @@ type (
 		AddNewTokenReturnRes(ctx context.Context, name, token string) (retMsg string)
 		RemoveTokenReturnRes(ctx context.Context, name string) (retMsg string)
 		QueryTokenReturnRes(ctx context.Context) (retMsg string)
+		ChangeTokenOwnerReturnRes(ctx context.Context, name, ownerId string) (retMsg string)
 	}
 )
 

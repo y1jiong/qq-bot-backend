@@ -22,6 +22,9 @@ func tryToken(ctx context.Context, cmd string) (catch bool, retMsg string) {
 			// /token rm <name>
 			retMsg = service.Token().RemoveTokenReturnRes(ctx, next[2])
 			catch = true
+		case "chown":
+			// /token chown <name> <owner_id>
+			catch, retMsg = tryTokenChown(ctx, next[2])
 		}
 	case endBranchRe.MatchString(cmd):
 		switch cmd {
@@ -42,6 +45,18 @@ func tryTokenAdd(ctx context.Context, cmd string) (catch bool, retMsg string) {
 	dv := doubleValueCmdEndRe.FindStringSubmatch(cmd)
 	// 执行
 	retMsg = service.Token().AddNewTokenReturnRes(ctx, dv[1], dv[2])
+	catch = true
+	return
+}
+
+func tryTokenChown(ctx context.Context, cmd string) (catch bool, retMsg string) {
+	if !doubleValueCmdEndRe.MatchString(cmd) {
+		return
+	}
+	// /token chown <name> <owner_id>
+	dv := doubleValueCmdEndRe.FindStringSubmatch(cmd)
+	// 执行
+	retMsg = service.Token().ChangeTokenOwnerReturnRes(ctx, dv[1], dv[2])
 	catch = true
 	return
 }
