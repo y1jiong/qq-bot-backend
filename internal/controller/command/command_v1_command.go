@@ -21,27 +21,27 @@ import (
 )
 
 func (c *ControllerV1) Command(ctx context.Context, req *v1.CommandReq) (res *v1.CommandRes, err error) {
-	// 验证 token
-	pass, tokenName, ownerId := service.Token().IsCorrectToken(ctx, req.Token)
-	if !pass {
-		err = gerror.NewCode(gcode.New(http.StatusForbidden, "", nil), "permission denied")
-		return
-	}
 	// 验证消息是否过期
 	msgTime := gtime.New(time.Unix(req.Timestamp, 0))
 	if gtime.Now().Sub(msgTime) > 5*time.Second {
 		err = gerror.NewCode(gcode.New(http.StatusBadRequest, "", nil), "message expired")
 		return
 	}
+	// 验证 token
+	pass, tokenName, ownerId := service.Token().IsCorrectToken(ctx, req.Token)
+	if !pass {
+		err = gerror.NewCode(gcode.New(http.StatusForbidden, "", nil), "permission denied")
+		return
+	}
 	// 验证签名
 	{
-		// 以 timestamp+command+groupId 为原文，以 tokenName 为 key 的 HmacSha1 值的 base64 值
-		s := gconv.String(req.Timestamp) + req.Command + gconv.String(req.GroupId)
+		// 以 token+command+group_id+timestamp 为原文，以 token_name 为 key 的 HmacSha1 值的 base64 值
+		s := req.Token + req.Command + gconv.String(req.GroupId) + gconv.String(req.Timestamp)
 		// HmacSha1
 		hmacSha1 := hmac.New(sha1.New, []byte(tokenName))
 		hmacSha1.Write([]byte(s))
 		macBase64 := gbase64.Encode(hmacSha1.Sum(nil))
-		if hmac.Equal(macBase64, []byte(req.Signature)) {
+		if !hmac.Equal(macBase64, []byte(req.Signature)) {
 			err = gerror.NewCode(gcode.New(http.StatusBadRequest, "", nil), "signature error")
 			return
 		}

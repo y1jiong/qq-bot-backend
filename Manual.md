@@ -124,13 +124,14 @@ v1.4
 
 ## Extra
 
-| Command                   | Description                    | Comment                         |
-| ------------------------- | ------------------------------ | ------------------------------- |
-| /raw {message}            | 获取 message 的原始信息        | 需要系统授予的获取 raw 的权限   |
-| /model set {model}        | 设置机型                       | 需要受系统信任                  |
-| /token add {name} {token} | 添加可让 user 接入本系统的令牌 | 需要系统授予的操作 token 的权限 |
-| /token rm {name}          | 删除令牌                       | 需要系统授予的操作 token 的权限 |
-| /token query              | 查询自己所有的令牌             | 需要系统授予的操作 token 的权限 |
+| Command                        | Description                    | Comment                         |
+| ------------------------------ | ------------------------------ | ------------------------------- |
+| /raw {message}                 | 获取 message 的原始信息        | 需要系统授予的获取 raw 的权限   |
+| /model set {model}             | 设置机型                       | 需要受系统信任                  |
+| /token add {name} {token}      | 添加可让 user 接入本系统的令牌 | 需要系统授予的操作 token 的权限 |
+| /token rm {name}               | 删除令牌                       | 需要系统授予的操作 token 的权限 |
+| /token query                   | 查询自己所有的令牌             | 需要系统授予的操作 token 的权限 |
+| /token chown {name} {owner_id} | 修改令牌所有者                 | 需要系统授予的操作 token 的权限 |
 
 ## Advanced features
 
