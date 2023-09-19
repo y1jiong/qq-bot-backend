@@ -12,8 +12,8 @@ import (
 
 type (
 	IFile interface {
-		GetCachedFileFromId(ctx context.Context, id string) (content string, err error)
-		SetCachedFile(ctx context.Context, content string, duration time.Duration) (id string, err error)
+		GetCachedFileById(ctx context.Context, id string) (content string, err error)
+		SetCacheFile(ctx context.Context, content string, duration time.Duration) (id string, err error)
 		GetCachedFileUrl(ctx context.Context, id string) (url string, err error)
 	}
 )

@@ -15,7 +15,7 @@ const (
 	fileCachePrefix = "file:cache:"
 )
 
-func (s *sFile) GetCachedFileFromId(ctx context.Context, id string) (content string, err error) {
+func (s *sFile) GetCachedFileById(ctx context.Context, id string) (content string, err error) {
 	v, err := gcache.Get(ctx, fileCachePrefix+id)
 	if err != nil {
 		return
@@ -28,7 +28,7 @@ func (s *sFile) GetCachedFileFromId(ctx context.Context, id string) (content str
 	return
 }
 
-func (s *sFile) SetCachedFile(ctx context.Context, content string, duration time.Duration) (id string, err error) {
+func (s *sFile) SetCacheFile(ctx context.Context, content string, duration time.Duration) (id string, err error) {
 	id = guid.S()
 	err = gcache.Set(ctx, fileCachePrefix+id, content, duration)
 	return

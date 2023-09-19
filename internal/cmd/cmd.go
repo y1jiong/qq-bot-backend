@@ -23,7 +23,7 @@ var (
 			})
 			s.Group("/file/{id}", func(group *ghttp.RouterGroup) {
 				group.Middleware(service.Middleware().ErrCodeToHttpStatus)
-				group.Bind(controller.File.GetCachedFileFromId)
+				group.Bind(controller.File.GetCachedFileById)
 			})
 			s.Group("/api", func(group *ghttp.RouterGroup) {
 				group.Middleware(ghttp.MiddlewareCORS, ghttp.MiddlewareHandlerResponse,

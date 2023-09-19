@@ -11,10 +11,10 @@ var (
 
 type cFile struct{}
 
-func (c *cFile) GetCachedFileFromId(r *ghttp.Request) {
+func (c *cFile) GetCachedFileById(r *ghttp.Request) {
 	ctx := r.Context()
 	id := r.Get("id").String()
-	content, err := service.File().GetCachedFileFromId(ctx, id)
+	content, err := service.File().GetCachedFileById(ctx, id)
 	if err != nil {
 		r.SetError(err)
 		return

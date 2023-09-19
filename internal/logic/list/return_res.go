@@ -139,7 +139,7 @@ func (s *sList) ExportListReturnRes(ctx context.Context, listName string) (retMs
 		dao.List.Columns().ListJson + ": " + listE.ListJson + "\n" +
 		dao.List.Columns().UpdatedAt + ": " + listE.UpdatedAt.String()
 	// 回执
-	id, err := service.File().SetCachedFile(ctx, msg, time.Minute)
+	id, err := service.File().SetCacheFile(ctx, msg, time.Minute)
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return
