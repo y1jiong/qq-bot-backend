@@ -2,8 +2,7 @@ package list
 
 import (
 	"context"
-	"encoding/json"
-	sj "github.com/bitly/go-simplejson"
+	"github.com/bytedance/sonic"
 	"github.com/gogf/gf/v2/frame/g"
 	"qq-bot-backend/internal/dao"
 	"qq-bot-backend/internal/model/entity"
@@ -48,12 +47,15 @@ func (s *sList) GetListData(ctx context.Context, listName string) (listMap map[s
 		return
 	}
 	// 数据处理
-	listJson, err := sj.NewJson([]byte(listE.ListJson))
+	listJson, err := sonic.GetFromString(listE.ListJson)
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return
 	}
-	listMap = listJson.MustMap(make(map[string]any))
+	listMap, _ = listJson.Map()
+	if listMap == nil {
+		listMap = make(map[string]any)
+	}
 	return
 }
 
@@ -68,7 +70,7 @@ func (s *sList) AppendListData(ctx context.Context, listName string, newMap map[
 	}
 	n = len(listMap)
 	// 保存数据
-	listBytes, err := json.Marshal(listMap)
+	listBytes, err := sonic.ConfigStd.Marshal(listMap)
 	if err != nil {
 		return
 	}

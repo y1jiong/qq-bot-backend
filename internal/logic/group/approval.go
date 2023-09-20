@@ -2,7 +2,7 @@ package group
 
 import (
 	"context"
-	sj "github.com/bitly/go-simplejson"
+	"github.com/bytedance/sonic"
 	"github.com/gogf/gf/v2/frame/g"
 )
 
@@ -27,12 +27,15 @@ func (s *sGroup) GetApprovalProcess(ctx context.Context, groupId int64) (process
 		return
 	}
 	// 数据处理
-	settingJson, err := sj.NewJson([]byte(groupE.SettingJson))
+	settingJson, err := sonic.GetFromString(groupE.SettingJson)
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return
 	}
-	process = settingJson.Get(approvalProcessMapKey).MustMap(make(map[string]any))
+	process, _ = settingJson.Get(approvalProcessMapKey).Map()
+	if process == nil {
+		process = make(map[string]any)
+	}
 	return
 }
 
@@ -47,12 +50,15 @@ func (s *sGroup) GetApprovalWhitelists(ctx context.Context, groupId int64) (whit
 		return
 	}
 	// 数据处理
-	settingJson, err := sj.NewJson([]byte(groupE.SettingJson))
+	settingJson, err := sonic.GetFromString(groupE.SettingJson)
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return
 	}
-	whitelists = settingJson.Get(approvalWhitelistsMapKey).MustMap(make(map[string]any))
+	whitelists, _ = settingJson.Get(approvalWhitelistsMapKey).Map()
+	if whitelists == nil {
+		whitelists = make(map[string]any)
+	}
 	return
 }
 
@@ -67,12 +73,15 @@ func (s *sGroup) GetApprovalBlacklists(ctx context.Context, groupId int64) (blac
 		return
 	}
 	// 数据处理
-	settingJson, err := sj.NewJson([]byte(groupE.SettingJson))
+	settingJson, err := sonic.GetFromString(groupE.SettingJson)
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return
 	}
-	blacklists = settingJson.Get(approvalBlacklistsMapKey).MustMap(make(map[string]any))
+	blacklists, _ = settingJson.Get(approvalBlacklistsMapKey).Map()
+	if blacklists == nil {
+		blacklists = make(map[string]any)
+	}
 	return
 }
 
@@ -87,12 +96,12 @@ func (s *sGroup) GetApprovalRegexp(ctx context.Context, groupId int64) (exp stri
 		return
 	}
 	// 数据处理
-	settingJson, err := sj.NewJson([]byte(groupE.SettingJson))
+	settingJson, err := sonic.GetFromString(groupE.SettingJson)
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return
 	}
-	exp = settingJson.Get(approvalRegexpKey).MustString()
+	exp, _ = settingJson.Get(approvalRegexpKey).StrictString()
 	return
 }
 
@@ -107,12 +116,12 @@ func (s *sGroup) GetApprovalNotificationGroupId(ctx context.Context, groupId int
 		return
 	}
 	// 数据处理
-	settingJson, err := sj.NewJson([]byte(groupE.SettingJson))
+	settingJson, err := sonic.GetFromString(groupE.SettingJson)
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return
 	}
-	notificationGroupId = settingJson.Get(approvalNotificationGroupIdKey).MustInt64()
+	notificationGroupId, _ = settingJson.Get(approvalNotificationGroupIdKey).StrictInt64()
 	return
 }
 
@@ -127,12 +136,13 @@ func (s *sGroup) IsEnabledApprovalAutoPass(ctx context.Context, groupId int64) (
 		return
 	}
 	// 数据处理
-	settingJson, err := sj.NewJson([]byte(groupE.SettingJson))
+	settingJson, err := sonic.GetFromString(groupE.SettingJson)
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return
 	}
-	enabled = !settingJson.Get(approvalDisabledAutoPassKey).MustBool()
+	enabled, _ = settingJson.Get(approvalDisabledAutoPassKey).Bool()
+	enabled = !enabled
 	return
 }
 
@@ -147,11 +157,12 @@ func (s *sGroup) IsEnabledApprovalAutoReject(ctx context.Context, groupId int64)
 		return
 	}
 	// 数据处理
-	settingJson, err := sj.NewJson([]byte(groupE.SettingJson))
+	settingJson, err := sonic.GetFromString(groupE.SettingJson)
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return
 	}
-	enabled = !settingJson.Get(approvalDisabledAutoRejectKey).MustBool()
+	enabled, _ = settingJson.Get(approvalDisabledAutoRejectKey).Bool()
+	enabled = !enabled
 	return
 }

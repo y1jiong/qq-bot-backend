@@ -2,7 +2,7 @@ package group
 
 import (
 	"context"
-	sj "github.com/bitly/go-simplejson"
+	"github.com/bytedance/sonic"
 	"github.com/gogf/gf/v2/frame/g"
 )
 
@@ -22,12 +22,12 @@ func (s *sGroup) GetCardAutoSetList(ctx context.Context, groupId int64) (listNam
 		return
 	}
 	// 数据处理
-	settingJson, err := sj.NewJson([]byte(groupE.SettingJson))
+	settingJson, err := sonic.GetFromString(groupE.SettingJson)
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return
 	}
-	listName = settingJson.Get(cardAutoSetListKey).MustString()
+	listName, _ = settingJson.Get(cardAutoSetListKey).StrictString()
 	return
 }
 
@@ -42,11 +42,11 @@ func (s *sGroup) IsCardLocked(ctx context.Context, groupId int64) (locked bool) 
 		return
 	}
 	// 数据处理
-	settingJson, err := sj.NewJson([]byte(groupE.SettingJson))
+	settingJson, err := sonic.GetFromString(groupE.SettingJson)
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return
 	}
-	locked = settingJson.Get(cardLockKey).MustBool()
+	locked, _ = settingJson.Get(cardLockKey).Bool()
 	return
 }

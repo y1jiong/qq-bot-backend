@@ -85,12 +85,14 @@ v1.4
 
 ## Group Message
 
-| Command                                    | Description      | Comment                                        |
-| ------------------------------------------ | ---------------- | ---------------------------------------------- |
-| /group message enable anti-recall          | 启用群反撤回     | 需要 group admin 和 namespace admin 及以上权限 |
-| /group message disable anti-recall         | 禁用群反撤回     | 同上                                           |
-| /group message set notification {group_id} | 指定群消息通知群 | 同上                                           |
-| /group message rm notification             | 移除群消息通知群 | 同上                                           |
+| Command                                    | Description        | Comment                                        |
+| ------------------------------------------ | ------------------ | ---------------------------------------------- |
+| /group message enable anti-recall          | 启用群反撤回       | 需要 group admin 和 namespace admin 及以上权限 |
+| /group message disable anti-recall         | 禁用群反撤回       | 同上                                           |
+| /group message set notification {group_id} | 指定群消息通知群   | 同上                                           |
+| /group message rm notification             | 移除群消息通知群   | 同上                                           |
+| /group message set only-anti-recall-member | 设置仅反撤回群成员 | 同上                                           |
+| /group message rm only-anti-recall-member  | 取消仅反撤回群成员 | 同上                                           |
 
 ## Group Log
 

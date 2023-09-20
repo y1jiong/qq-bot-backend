@@ -1,4 +1,4 @@
-package third_party
+package thirdparty
 
 import "qq-bot-backend/internal/service"
 

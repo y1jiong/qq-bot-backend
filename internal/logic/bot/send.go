@@ -44,7 +44,7 @@ func (s *sBot) SendMessage(ctx context.Context, messageType string, uid, gid int
 	}
 	resJson, err := sonic.ConfigStd.Marshal(res)
 	if err != nil {
-		g.Log().Warning(ctx, err)
+		g.Log().Error(ctx, err)
 		return
 	}
 	err = s.writeMessage(ctx, websocket.TextMessage, resJson)
@@ -87,7 +87,7 @@ func (s *sBot) SendFileToGroup(ctx context.Context, gid int64, filePath, name, f
 	}
 	resJson, err := sonic.ConfigStd.Marshal(res)
 	if err != nil {
-		g.Log().Warning(ctx, err)
+		g.Log().Error(ctx, err)
 		return
 	}
 	err = s.writeMessage(ctx, websocket.TextMessage, resJson)
@@ -119,7 +119,7 @@ func (s *sBot) SendFileToUser(ctx context.Context, uid int64, filePath, name str
 	}
 	resJson, err := sonic.ConfigStd.Marshal(res)
 	if err != nil {
-		g.Log().Warning(ctx, err)
+		g.Log().Error(ctx, err)
 		return
 	}
 	err = s.writeMessage(ctx, websocket.TextMessage, resJson)
@@ -149,7 +149,7 @@ func (s *sBot) SendFile(ctx context.Context, name, url string) {
 	}
 	resJson, err := sonic.ConfigStd.Marshal(res)
 	if err != nil {
-		g.Log().Warning(ctx, err)
+		g.Log().Error(ctx, err)
 		return
 	}
 	// callback
@@ -209,7 +209,7 @@ func (s *sBot) ApproveJoinGroup(ctx context.Context, flag, subType string, appro
 	}
 	resJson, err := sonic.ConfigStd.Marshal(res)
 	if err != nil {
-		g.Log().Warning(ctx, err)
+		g.Log().Error(ctx, err)
 		return
 	}
 	// 发送响应
@@ -243,7 +243,7 @@ func (s *sBot) SetModel(ctx context.Context, model string) {
 	}
 	resJson, err := sonic.ConfigStd.Marshal(res)
 	if err != nil {
-		g.Log().Warning(ctx, err)
+		g.Log().Error(ctx, err)
 		return
 	}
 	// callback
@@ -284,7 +284,7 @@ func (s *sBot) RecallMessage(ctx context.Context, msgId int64) {
 	}
 	resJson, err := sonic.ConfigStd.Marshal(res)
 	if err != nil {
-		g.Log().Warning(ctx, err)
+		g.Log().Error(ctx, err)
 		return
 	}
 	err = s.writeMessage(ctx, websocket.TextMessage, resJson)
@@ -322,7 +322,7 @@ func (s *sBot) MutePrototype(ctx context.Context, groupId, userId int64, seconds
 	}
 	resJson, err := sonic.ConfigStd.Marshal(res)
 	if err != nil {
-		g.Log().Warning(ctx, err)
+		g.Log().Error(ctx, err)
 		return
 	}
 	err = s.writeMessage(ctx, websocket.TextMessage, resJson)
@@ -358,7 +358,7 @@ func (s *sBot) SetGroupCard(ctx context.Context, groupId, userId int64, card str
 	}
 	resJson, err := sonic.ConfigStd.Marshal(res)
 	if err != nil {
-		g.Log().Warning(ctx, err)
+		g.Log().Error(ctx, err)
 		return
 	}
 	err = s.writeMessage(ctx, websocket.TextMessage, resJson)
@@ -393,7 +393,7 @@ func (s *sBot) Kick(ctx context.Context, groupId, userId int64, reject ...bool) 
 	}
 	resJson, err := sonic.ConfigStd.Marshal(res)
 	if err != nil {
-		g.Log().Warning(ctx, err)
+		g.Log().Error(ctx, err)
 		return
 	}
 	err = s.writeMessage(ctx, websocket.TextMessage, resJson)

@@ -46,9 +46,11 @@ type (
 		RemoveLogLeaveListReturnRes(ctx context.Context, groupId int64) (retMsg string)
 		IsEnabledAntiRecall(ctx context.Context, groupId int64) (enabled bool)
 		GetMessageNotificationGroupId(ctx context.Context, groupId int64) (notificationGroupId int64)
+		IsSetOnlyAntiRecallMember(ctx context.Context, groupId int64) (set bool)
 		SetAntiRecallReturnRes(ctx context.Context, groupId int64, enable bool) (retMsg string)
 		SetMessageNotificationReturnRes(ctx context.Context, groupId int64, notificationGroupId int64) (retMsg string)
 		RemoveMessageNotificationReturnRes(ctx context.Context, groupId int64) (retMsg string)
+		SetOnlyAntiRecallMemberReturnRes(ctx context.Context, groupId int64, enable bool) (retMsg string)
 	}
 )
 

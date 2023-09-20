@@ -2,7 +2,8 @@ package namespace
 
 import (
 	"context"
-	sj "github.com/bitly/go-simplejson"
+	"github.com/bytedance/sonic"
+	"github.com/bytedance/sonic/ast"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/util/gconv"
 	"qq-bot-backend/internal/dao"
@@ -59,17 +60,13 @@ func isNamespaceOwnerOrAdmin(ctx context.Context, userId int64, namespaceE *enti
 		return
 	}
 	// 解析 setting json
-	settingJson, err := sj.NewJson([]byte(namespaceE.SettingJson))
+	settingJson, err := sonic.GetFromString(namespaceE.SettingJson)
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return
 	}
-	// 获取 admin map
-	admins := settingJson.Get(adminMapKey).MustMap(make(map[string]any))
 	// 判断 admin
-	if _, ok := admins[gconv.String(userId)]; ok {
-		yes = true
-	}
+	yes = settingJson.Get(adminMapKey).Get(gconv.String(userId)).Valid()
 	return
 }
 
@@ -97,16 +94,14 @@ func (s *sNamespace) AddNamespaceList(ctx context.Context, namespace, listName s
 		return
 	}
 	// 数据处理
-	settingJson, err := sj.NewJson([]byte(namespaceE.SettingJson))
+	settingJson, err := sonic.GetFromString(namespaceE.SettingJson)
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return
 	}
-	listMap := settingJson.Get(listMapKey).MustMap(make(map[string]any))
-	listMap[listName] = nil
+	_, _ = settingJson.Get(listMapKey).Set(listName, ast.NewNull())
 	// 保存数据
-	settingJson.Set(listMapKey, listMap)
-	settingBytes, err := settingJson.Encode()
+	settingBytes, err := settingJson.MarshalJSON()
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return
@@ -132,19 +127,17 @@ func (s *sNamespace) RemoveNamespaceList(ctx context.Context, namespace, listNam
 		return
 	}
 	// 数据处理
-	settingJson, err := sj.NewJson([]byte(namespaceE.SettingJson))
+	settingJson, err := sonic.GetFromString(namespaceE.SettingJson)
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return
 	}
-	lists := settingJson.Get(listMapKey).MustMap(make(map[string]any))
-	if _, ok := lists[listName]; !ok {
+	if !settingJson.Get(listMapKey).Get(listName).Valid() {
 		return
 	}
-	delete(lists, listName)
+	_, _ = settingJson.Get(listMapKey).Unset(listName)
 	// 保存数据
-	settingJson.Set(listMapKey, lists)
-	settingBytes, err := settingJson.Encode()
+	settingBytes, err := settingJson.MarshalJSON()
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return
@@ -170,11 +163,14 @@ func (s *sNamespace) GetNamespaceList(ctx context.Context, namespace string) (li
 		return
 	}
 	// 数据处理
-	settingJson, err := sj.NewJson([]byte(namespaceE.SettingJson))
+	settingJson, err := sonic.GetFromString(namespaceE.SettingJson)
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return
 	}
-	lists = settingJson.Get(listMapKey).MustMap(make(map[string]any))
+	lists, _ = settingJson.Get(listMapKey).Map()
+	if lists == nil {
+		lists = make(map[string]any)
+	}
 	return
 }

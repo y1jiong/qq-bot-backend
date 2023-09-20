@@ -94,7 +94,7 @@ func isMatchRegexp(ctx context.Context, groupId int64, comment string) (match bo
 	// 匹配正则
 	re, err := regexp.Compile(exp)
 	if err != nil {
-		g.Log().Warning(ctx, err)
+		g.Log().Error(ctx, err)
 		return
 	}
 	ans := re.FindStringSubmatch(comment)

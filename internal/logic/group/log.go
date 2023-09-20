@@ -2,7 +2,7 @@ package group
 
 import (
 	"context"
-	sj "github.com/bitly/go-simplejson"
+	"github.com/bytedance/sonic"
 	"github.com/gogf/gf/v2/frame/g"
 )
 
@@ -21,11 +21,11 @@ func (s *sGroup) GetLogLeaveList(ctx context.Context, groupId int64) (listName s
 		return
 	}
 	// 数据处理
-	settingJson, err := sj.NewJson([]byte(groupE.SettingJson))
+	settingJson, err := sonic.GetFromString(groupE.SettingJson)
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return
 	}
-	listName = settingJson.Get(logLeaveListKey).MustString()
+	listName, _ = settingJson.Get(logLeaveListKey).StrictString()
 	return
 }

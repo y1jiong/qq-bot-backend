@@ -64,6 +64,13 @@ func tryGroupMessageSet(ctx context.Context, cmd string) (catch bool, retMsg str
 			retMsg = service.Group().SetMessageNotificationReturnRes(ctx, service.Bot().GetGroupId(ctx), gconv.Int64(next[2]))
 			catch = true
 		}
+	case endBranchRe.MatchString(cmd):
+		switch cmd {
+		case "only-anti-recall-member":
+			// /group message set only-anti-recall-member
+			retMsg = service.Group().SetOnlyAntiRecallMemberReturnRes(ctx, service.Bot().GetGroupId(ctx), true)
+			catch = true
+		}
 	}
 	return
 }
@@ -75,6 +82,10 @@ func tryGroupMessageRemove(ctx context.Context, cmd string) (catch bool, retMsg 
 		case "notification":
 			// /group message rm notification
 			retMsg = service.Group().RemoveMessageNotificationReturnRes(ctx, service.Bot().GetGroupId(ctx))
+			catch = true
+		case "only-anti-recall-member":
+			// /group message rm only-anti-recall-member
+			retMsg = service.Group().SetOnlyAntiRecallMemberReturnRes(ctx, service.Bot().GetGroupId(ctx), false)
 			catch = true
 		}
 	}

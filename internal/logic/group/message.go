@@ -2,13 +2,14 @@ package group
 
 import (
 	"context"
-	sj "github.com/bitly/go-simplejson"
+	"github.com/bytedance/sonic"
 	"github.com/gogf/gf/v2/frame/g"
 )
 
 const (
 	messageNotificationGroupIdKey = "messageNotificationGroupId"
 	antiRecallKey                 = "antiRecall"
+	antiRecallOnlyMemberKey       = "antiRecallOnlyMember"
 )
 
 func (s *sGroup) IsEnabledAntiRecall(ctx context.Context, groupId int64) (enabled bool) {
@@ -22,12 +23,12 @@ func (s *sGroup) IsEnabledAntiRecall(ctx context.Context, groupId int64) (enable
 		return
 	}
 	// 数据处理
-	settingJson, err := sj.NewJson([]byte(groupE.SettingJson))
+	settingJson, err := sonic.GetFromString(groupE.SettingJson)
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return
 	}
-	enabled = settingJson.Get(antiRecallKey).MustBool()
+	enabled, _ = settingJson.Get(antiRecallKey).Bool()
 	return
 }
 
@@ -42,11 +43,31 @@ func (s *sGroup) GetMessageNotificationGroupId(ctx context.Context, groupId int6
 		return
 	}
 	// 数据处理
-	settingJson, err := sj.NewJson([]byte(groupE.SettingJson))
+	settingJson, err := sonic.GetFromString(groupE.SettingJson)
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return
 	}
-	notificationGroupId = settingJson.Get(messageNotificationGroupIdKey).MustInt64()
+	notificationGroupId, _ = settingJson.Get(messageNotificationGroupIdKey).StrictInt64()
+	return
+}
+
+func (s *sGroup) IsSetOnlyAntiRecallMember(ctx context.Context, groupId int64) (set bool) {
+	// 参数合法性校验
+	if groupId < 1 {
+		return
+	}
+	// 获取 group
+	groupE := getGroup(ctx, groupId)
+	if groupE == nil {
+		return
+	}
+	// 数据处理
+	settingJson, err := sonic.GetFromString(groupE.SettingJson)
+	if err != nil {
+		g.Log().Error(ctx, err)
+		return
+	}
+	set, _ = settingJson.Get(antiRecallOnlyMemberKey).Bool()
 	return
 }

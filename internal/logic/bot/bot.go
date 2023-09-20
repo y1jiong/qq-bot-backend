@@ -87,12 +87,13 @@ func (s *sBot) Process(ctx context.Context, rawJson []byte, nextProcess func(ctx
 	// ctx 携带 reqJson
 	reqJson, err := sonic.Get(rawJson)
 	if err != nil {
+		g.Log().Error(ctx, err)
 		return
 	}
 	ctx = s.CtxWithReqJson(ctx, &reqJson)
 	// debug mode
 	if service.Cfg().IsEnabledDebug(ctx) && s.GetPostType(ctx) != "meta_event" {
-		g.Log().Info(ctx, "\n", reqJson)
+		g.Log().Info(ctx, "\n", string(rawJson))
 	}
 	// 捕捉 echo
 	if s.catchEcho(ctx) {
@@ -136,12 +137,12 @@ func (s *sBot) IsGroupOwnerOrAdmin(ctx context.Context) (yes bool) {
 	if role == "" {
 		member, err := s.GetGroupMemberInfo(ctx, s.GetGroupId(ctx), s.GetUserId(ctx))
 		if err != nil {
-			g.Log().Warning(ctx, err)
+			g.Log().Error(ctx, err)
 			return
 		}
-		role, err = member.Get("sender").Get("role").StrictString()
+		role, err = member.Get("role").StrictString()
 		if err != nil {
-			g.Log().Warning(ctx, err)
+			g.Log().Error(ctx, err)
 			return
 		}
 		params := []ast.Pair{
@@ -150,9 +151,9 @@ func (s *sBot) IsGroupOwnerOrAdmin(ctx context.Context) (yes bool) {
 				Value: ast.NewString(role),
 			},
 		}
-		ok, err := s.reqJsonFromCtx(ctx).Set("sender", ast.NewObject(params))
-		if err != nil || !ok {
-			g.Log().Warning(ctx, err)
+		_, err = s.reqJsonFromCtx(ctx).Set("sender", ast.NewObject(params))
+		if err != nil {
+			g.Log().Error(ctx, err)
 			return
 		}
 	}

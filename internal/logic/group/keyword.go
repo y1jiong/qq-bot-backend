@@ -2,7 +2,7 @@ package group
 
 import (
 	"context"
-	sj "github.com/bitly/go-simplejson"
+	"github.com/bytedance/sonic"
 	"github.com/gogf/gf/v2/frame/g"
 )
 
@@ -24,12 +24,15 @@ func (s *sGroup) GetKeywordProcess(ctx context.Context, groupId int64) (process 
 		return
 	}
 	// 数据处理
-	settingJson, err := sj.NewJson([]byte(groupE.SettingJson))
+	settingJson, err := sonic.GetFromString(groupE.SettingJson)
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return
 	}
-	process = settingJson.Get(keywordProcessMapKey).MustMap(make(map[string]any))
+	process, _ = settingJson.Get(keywordProcessMapKey).Map()
+	if process == nil {
+		process = make(map[string]any)
+	}
 	return
 }
 
@@ -44,12 +47,15 @@ func (s *sGroup) GetKeywordWhitelists(ctx context.Context, groupId int64) (white
 		return
 	}
 	// 数据处理
-	settingJson, err := sj.NewJson([]byte(groupE.SettingJson))
+	settingJson, err := sonic.GetFromString(groupE.SettingJson)
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return
 	}
-	whitelists = settingJson.Get(keywordWhitelistsMapKey).MustMap(make(map[string]any))
+	whitelists, _ = settingJson.Get(keywordWhitelistsMapKey).Map()
+	if whitelists == nil {
+		whitelists = make(map[string]any)
+	}
 	return
 }
 
@@ -64,12 +70,15 @@ func (s *sGroup) GetKeywordBlacklists(ctx context.Context, groupId int64) (black
 		return
 	}
 	// 数据处理
-	settingJson, err := sj.NewJson([]byte(groupE.SettingJson))
+	settingJson, err := sonic.GetFromString(groupE.SettingJson)
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return
 	}
-	blacklists = settingJson.Get(keywordBlacklistsMapKey).MustMap(make(map[string]any))
+	blacklists, _ = settingJson.Get(keywordBlacklistsMapKey).Map()
+	if blacklists == nil {
+		blacklists = make(map[string]any)
+	}
 	return
 }
 
@@ -84,11 +93,11 @@ func (s *sGroup) GetKeywordReplyList(ctx context.Context, groupId int64) (listNa
 		return
 	}
 	// 数据处理
-	settingJson, err := sj.NewJson([]byte(groupE.SettingJson))
+	settingJson, err := sonic.GetFromString(groupE.SettingJson)
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return
 	}
-	listName = settingJson.Get(keywordReplyListKey).MustString()
+	listName, _ = settingJson.Get(keywordReplyListKey).StrictString()
 	return
 }

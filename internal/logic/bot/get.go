@@ -118,7 +118,7 @@ func (s *sBot) GetGroupMemberInfo(ctx context.Context, groupId, userId int64) (m
 	}
 	resJson, err := sonic.ConfigStd.Marshal(res)
 	if err != nil {
-		g.Log().Warning(ctx, err)
+		g.Log().Error(ctx, err)
 		return
 	}
 	// callback
@@ -171,7 +171,7 @@ func (s *sBot) GetGroupMemberList(ctx context.Context, groupId int64, noCache ..
 	}
 	resJson, err := sonic.ConfigStd.Marshal(res)
 	if err != nil {
-		g.Log().Warning(ctx, err)
+		g.Log().Error(ctx, err)
 		return
 	}
 	// callback
@@ -228,7 +228,7 @@ func (s *sBot) RequestMessage(ctx context.Context, messageId int64) (messageMap 
 	}
 	resJson, err := sonic.ConfigStd.Marshal(res)
 	if err != nil {
-		g.Log().Warning(ctx, err)
+		g.Log().Error(ctx, err)
 		return
 	}
 	// callback
@@ -285,7 +285,7 @@ func (s *sBot) GetGroupInfo(ctx context.Context, groupId int64, noCache ...bool)
 	}
 	resJson, err := sonic.ConfigStd.Marshal(res)
 	if err != nil {
-		g.Log().Warning(ctx, err)
+		g.Log().Error(ctx, err)
 		return
 	}
 	// callback

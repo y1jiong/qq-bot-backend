@@ -16,7 +16,7 @@ import (
 	_ "qq-bot-backend/internal/logic/module"
 	_ "qq-bot-backend/internal/logic/namespace"
 	_ "qq-bot-backend/internal/logic/process"
-	_ "qq-bot-backend/internal/logic/third-party"
+	_ "qq-bot-backend/internal/logic/thirdparty"
 	_ "qq-bot-backend/internal/logic/token"
 	_ "qq-bot-backend/internal/logic/user"
 )
