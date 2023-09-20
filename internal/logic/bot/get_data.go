@@ -2,13 +2,14 @@ package bot
 
 import (
 	"context"
-	sj "github.com/bitly/go-simplejson"
+	"github.com/bytedance/sonic/ast"
 )
 
-func (s *sBot) getData(ctx context.Context) *sj.Json {
+func (s *sBot) getData(ctx context.Context) *ast.Node {
 	return s.reqJsonFromCtx(ctx).Get("data")
 }
 
 func (s *sBot) getFileFromData(ctx context.Context) string {
-	return s.getData(ctx).Get("file").MustString()
+	v, _ := s.getData(ctx).Get("file").StrictString()
+	return v
 }

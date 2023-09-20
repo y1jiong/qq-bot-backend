@@ -4,8 +4,7 @@ import (
 	"context"
 	"crypto/hmac"
 	"crypto/sha1"
-	"encoding/json"
-	sj "github.com/bitly/go-simplejson"
+	"github.com/bytedance/sonic"
 	"github.com/gogf/gf/v2/encoding/gbase64"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/os/gtime"
@@ -59,15 +58,12 @@ func (c *ControllerV1) Command(ctx context.Context, req *v1.CommandReq) (res *v1
 		UserId:  ownerId,
 		GroupId: req.GroupId,
 	}
-	rawJson, err := json.Marshal(innerReq)
+	rawJson, err := sonic.ConfigStd.Marshal(innerReq)
 	if err != nil {
 		return
 	}
-	reqJson, err := sj.NewJson(rawJson)
-	if err != nil {
-		return
-	}
-	ctx = service.Bot().CtxWithReqJson(ctx, reqJson)
+	reqJson, _ := sonic.Get(rawJson)
+	ctx = service.Bot().CtxWithReqJson(ctx, &reqJson)
 	// 处理命令
 	catch, retMsg := service.Command().TryCommand(ctx)
 	if !catch {

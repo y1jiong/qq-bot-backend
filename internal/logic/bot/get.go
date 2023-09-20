@@ -2,7 +2,8 @@ package bot
 
 import (
 	"context"
-	sj "github.com/bitly/go-simplejson"
+	"github.com/bytedance/sonic"
+	"github.com/bytedance/sonic/ast"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/util/gconv"
 	"github.com/gogf/gf/v2/util/guid"
@@ -11,85 +12,164 @@ import (
 )
 
 func (s *sBot) getEcho(ctx context.Context) string {
-	return s.reqJsonFromCtx(ctx).Get("echo").MustString()
+	v, _ := s.reqJsonFromCtx(ctx).Get("echo").StrictString()
+	return v
 }
 
 func (s *sBot) getEchoStatus(ctx context.Context) string {
-	return s.reqJsonFromCtx(ctx).Get("status").MustString()
+	v, _ := s.reqJsonFromCtx(ctx).Get("status").StrictString()
+	return v
 }
 
 func (s *sBot) getEchoFailedMsg(ctx context.Context) string {
-	return s.reqJsonFromCtx(ctx).Get("wording").MustString()
+	v, _ := s.reqJsonFromCtx(ctx).Get("wording").StrictString()
+	return v
 }
 
 func (s *sBot) GetPostType(ctx context.Context) string {
-	return s.reqJsonFromCtx(ctx).Get("post_type").MustString()
+	v, _ := s.reqJsonFromCtx(ctx).Get("post_type").StrictString()
+	return v
 }
 
 func (s *sBot) GetMsgType(ctx context.Context) string {
-	return s.reqJsonFromCtx(ctx).Get("message_type").MustString()
+	v, _ := s.reqJsonFromCtx(ctx).Get("message_type").StrictString()
+	return v
 }
 
 func (s *sBot) GetRequestType(ctx context.Context) string {
-	return s.reqJsonFromCtx(ctx).Get("request_type").MustString()
+	v, _ := s.reqJsonFromCtx(ctx).Get("request_type").StrictString()
+	return v
 }
 
 func (s *sBot) GetNoticeType(ctx context.Context) string {
-	return s.reqJsonFromCtx(ctx).Get("notice_type").MustString()
+	v, _ := s.reqJsonFromCtx(ctx).Get("notice_type").StrictString()
+	return v
 }
 
 func (s *sBot) GetSubType(ctx context.Context) string {
-	return s.reqJsonFromCtx(ctx).Get("sub_type").MustString()
+	v, _ := s.reqJsonFromCtx(ctx).Get("sub_type").StrictString()
+	return v
 }
 
 func (s *sBot) GetMsgId(ctx context.Context) int64 {
-	return s.reqJsonFromCtx(ctx).Get("message_id").MustInt64()
+	v, _ := s.reqJsonFromCtx(ctx).Get("message_id").StrictInt64()
+	return v
 }
 
 func (s *sBot) GetMessage(ctx context.Context) string {
-	return s.reqJsonFromCtx(ctx).Get("message").MustString()
+	v, _ := s.reqJsonFromCtx(ctx).Get("message").StrictString()
+	return v
 }
 
 func (s *sBot) GetUserId(ctx context.Context) int64 {
-	return s.reqJsonFromCtx(ctx).Get("user_id").MustInt64()
+	v, _ := s.reqJsonFromCtx(ctx).Get("user_id").StrictInt64()
+	return v
 }
 
 func (s *sBot) GetGroupId(ctx context.Context) int64 {
-	return s.reqJsonFromCtx(ctx).Get("group_id").MustInt64()
+	v, _ := s.reqJsonFromCtx(ctx).Get("group_id").StrictInt64()
+	return v
 }
 
 func (s *sBot) GetComment(ctx context.Context) string {
-	return s.reqJsonFromCtx(ctx).Get("comment").MustString()
+	v, _ := s.reqJsonFromCtx(ctx).Get("comment").StrictString()
+	return v
 }
 
 func (s *sBot) GetFlag(ctx context.Context) string {
-	return s.reqJsonFromCtx(ctx).Get("flag").MustString()
+	v, _ := s.reqJsonFromCtx(ctx).Get("flag").StrictString()
+	return v
 }
 
 func (s *sBot) GetTimestamp(ctx context.Context) int64 {
-	return s.reqJsonFromCtx(ctx).Get("time").MustInt64()
+	v, _ := s.reqJsonFromCtx(ctx).Get("time").StrictInt64()
+	return v
 }
 
 func (s *sBot) GetOperatorId(ctx context.Context) int64 {
-	return s.reqJsonFromCtx(ctx).Get("operator_id").MustInt64()
+	v, _ := s.reqJsonFromCtx(ctx).Get("operator_id").StrictInt64()
+	return v
+}
+
+func (s *sBot) GetGroupMemberInfo(ctx context.Context, groupId, userId int64) (member ast.Node, err error) {
+	// echo sign
+	echoSign := guid.S()
+	// 参数
+	res := struct {
+		Action string `json:"action"`
+		Echo   string `json:"echo"`
+		Params struct {
+			GroupId int64 `json:"group_id"`
+			UserId  int64 `json:"user_id"`
+			NoCache bool  `json:"no_cache"`
+		} `json:"params"`
+	}{
+		Action: "get_group_member_info",
+		Echo:   echoSign,
+		Params: struct {
+			GroupId int64 `json:"group_id"`
+			UserId  int64 `json:"user_id"`
+			NoCache bool  `json:"no_cache"`
+		}{
+			GroupId: groupId,
+			UserId:  userId,
+			NoCache: false,
+		},
+	}
+	resJson, err := sonic.ConfigStd.Marshal(res)
+	if err != nil {
+		g.Log().Warning(ctx, err)
+		return
+	}
+	// callback
+	wg := sync.WaitGroup{}
+	callback := func(ctx context.Context, rsyncCtx context.Context) {
+		defer wg.Done()
+		if err = s.defaultEchoProcess(rsyncCtx); err != nil {
+			return
+		}
+		member = *s.getData(rsyncCtx)
+	}
+	wg.Add(1)
+	// echo
+	err = s.pushEchoCache(ctx, echoSign, callback)
+	if err != nil {
+		g.Log().Error(ctx, err)
+		return
+	}
+	// 发送响应
+	err = s.writeMessage(ctx, websocket.TextMessage, resJson)
+	if err != nil {
+		g.Log().Warning(ctx, err)
+		return
+	}
+	wg.Wait()
+	return
 }
 
 func (s *sBot) GetGroupMemberList(ctx context.Context, groupId int64, noCache ...bool) (members []any, err error) {
-	// 初始化响应
-	resJson := sj.New()
-	resJson.Set("action", "get_group_member_list")
 	// echo sign
 	echoSign := guid.S()
-	resJson.Set("echo", echoSign)
 	// 参数
-	params := make(map[string]any)
-	params["group_id"] = groupId
-	if len(noCache) > 0 && noCache[0] {
-		params["no_cache"] = true
+	res := struct {
+		Action string `json:"action"`
+		Echo   string `json:"echo"`
+		Params struct {
+			GroupId int64 `json:"group_id"`
+			NoCache bool  `json:"no_cache"`
+		} `json:"params"`
+	}{
+		Action: "get_group_member_list",
+		Echo:   echoSign,
+		Params: struct {
+			GroupId int64 `json:"group_id"`
+			NoCache bool  `json:"no_cache"`
+		}{
+			GroupId: groupId,
+			NoCache: true,
+		},
 	}
-	// 参数打包
-	resJson.Set("params", params)
-	res, err := resJson.Encode()
+	resJson, err := sonic.ConfigStd.Marshal(res)
 	if err != nil {
 		g.Log().Warning(ctx, err)
 		return
@@ -102,7 +182,7 @@ func (s *sBot) GetGroupMemberList(ctx context.Context, groupId int64, noCache ..
 			return
 		}
 		received := s.getData(rsyncCtx)
-		members = received.MustArray()
+		members, _ = received.Array()
 	}
 	wg.Add(1)
 	// echo
@@ -112,7 +192,7 @@ func (s *sBot) GetGroupMemberList(ctx context.Context, groupId int64, noCache ..
 		return
 	}
 	// 发送响应
-	err = s.writeMessage(ctx, websocket.TextMessage, res)
+	err = s.writeMessage(ctx, websocket.TextMessage, resJson)
 	if err != nil {
 		g.Log().Warning(ctx, err)
 		return
@@ -122,24 +202,31 @@ func (s *sBot) GetGroupMemberList(ctx context.Context, groupId int64, noCache ..
 }
 
 func (s *sBot) GetCardOldNew(ctx context.Context) (oldCard, newCard string) {
-	oldCard = s.reqJsonFromCtx(ctx).Get("card_old").MustString()
-	newCard = s.reqJsonFromCtx(ctx).Get("card_new").MustString()
+	oldCard, _ = s.reqJsonFromCtx(ctx).Get("card_old").StrictString()
+	newCard, _ = s.reqJsonFromCtx(ctx).Get("card_new").StrictString()
 	return
 }
 
 func (s *sBot) RequestMessage(ctx context.Context, messageId int64) (messageMap map[string]any, err error) {
-	// 初始化响应
-	resJson := sj.New()
-	resJson.Set("action", "get_msg")
 	// echo sign
 	echoSign := guid.S()
-	resJson.Set("echo", echoSign)
 	// 参数
-	params := make(map[string]any)
-	params["message_id"] = gconv.String(messageId)
-	// 参数打包
-	resJson.Set("params", params)
-	res, err := resJson.Encode()
+	res := struct {
+		Action string `json:"action"`
+		Echo   string `json:"echo"`
+		Params struct {
+			MessageId string `json:"message_id"`
+		} `json:"params"`
+	}{
+		Action: "get_msg",
+		Echo:   echoSign,
+		Params: struct {
+			MessageId string `json:"message_id"`
+		}{
+			MessageId: gconv.String(messageId),
+		},
+	}
+	resJson, err := sonic.ConfigStd.Marshal(res)
 	if err != nil {
 		g.Log().Warning(ctx, err)
 		return
@@ -152,7 +239,7 @@ func (s *sBot) RequestMessage(ctx context.Context, messageId int64) (messageMap 
 			return
 		}
 		received := s.getData(rsyncCtx)
-		messageMap = received.MustMap()
+		messageMap, _ = received.Map()
 	}
 	wg.Add(1)
 	// echo
@@ -162,7 +249,7 @@ func (s *sBot) RequestMessage(ctx context.Context, messageId int64) (messageMap 
 		return
 	}
 	// 发送响应
-	err = s.writeMessage(ctx, websocket.TextMessage, res)
+	err = s.writeMessage(ctx, websocket.TextMessage, resJson)
 	if err != nil {
 		g.Log().Warning(ctx, err)
 		return
@@ -172,21 +259,31 @@ func (s *sBot) RequestMessage(ctx context.Context, messageId int64) (messageMap 
 }
 
 func (s *sBot) GetGroupInfo(ctx context.Context, groupId int64, noCache ...bool) (infoMap map[string]any, err error) {
-	// 初始化响应
-	resJson := sj.New()
-	resJson.Set("action", "get_group_info")
 	// echo sign
 	echoSign := guid.S()
-	resJson.Set("echo", echoSign)
 	// 参数
-	params := make(map[string]any)
-	params["group_id"] = groupId
-	if len(noCache) > 0 && noCache[0] {
-		params["no_cache"] = true
+	res := struct {
+		Action string `json:"action"`
+		Echo   string `json:"echo"`
+		Params struct {
+			GroupId int64 `json:"group_id"`
+			NoCache bool  `json:"no_cache"`
+		} `json:"params"`
+	}{
+		Action: "get_group_info",
+		Echo:   echoSign,
+		Params: struct {
+			GroupId int64 `json:"group_id"`
+			NoCache bool  `json:"no_cache"`
+		}{
+			GroupId: groupId,
+			NoCache: false,
+		},
 	}
-	// 参数打包
-	resJson.Set("params", params)
-	res, err := resJson.Encode()
+	if len(noCache) > 0 && noCache[0] {
+		res.Params.NoCache = true
+	}
+	resJson, err := sonic.ConfigStd.Marshal(res)
 	if err != nil {
 		g.Log().Warning(ctx, err)
 		return
@@ -199,7 +296,7 @@ func (s *sBot) GetGroupInfo(ctx context.Context, groupId int64, noCache ...bool)
 			return
 		}
 		received := s.getData(rsyncCtx)
-		infoMap = received.MustMap()
+		infoMap, _ = received.Map()
 	}
 	wg.Add(1)
 	// echo
@@ -209,7 +306,7 @@ func (s *sBot) GetGroupInfo(ctx context.Context, groupId int64, noCache ...bool)
 		return
 	}
 	// 发送响应
-	err = s.writeMessage(ctx, websocket.TextMessage, res)
+	err = s.writeMessage(ctx, websocket.TextMessage, resJson)
 	if err != nil {
 		g.Log().Warning(ctx, err)
 		return

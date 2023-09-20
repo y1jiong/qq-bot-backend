@@ -8,7 +8,7 @@ package service
 import (
 	"context"
 
-	sj "github.com/bitly/go-simplejson"
+	"github.com/bytedance/sonic/ast"
 	"github.com/gogf/gf/v2/net/ghttp"
 )
 
@@ -16,7 +16,7 @@ type (
 	IBot interface {
 		CtxWithWebSocket(parent context.Context, ws *ghttp.WebSocket) context.Context
 		CtxNewWebSocketMutex(parent context.Context) context.Context
-		CtxWithReqJson(ctx context.Context, reqJson *sj.Json) context.Context
+		CtxWithReqJson(ctx context.Context, reqJson *ast.Node) context.Context
 		Process(ctx context.Context, rawJson []byte, nextProcess func(ctx context.Context))
 		IsGroupOwnerOrAdmin(ctx context.Context) (yes bool)
 		GetPostType(ctx context.Context) string
@@ -32,6 +32,7 @@ type (
 		GetFlag(ctx context.Context) string
 		GetTimestamp(ctx context.Context) int64
 		GetOperatorId(ctx context.Context) int64
+		GetGroupMemberInfo(ctx context.Context, groupId, userId int64) (member ast.Node, err error)
 		GetGroupMemberList(ctx context.Context, groupId int64, noCache ...bool) (members []any, err error)
 		GetCardOldNew(ctx context.Context) (oldCard, newCard string)
 		RequestMessage(ctx context.Context, messageId int64) (messageMap map[string]any, err error)

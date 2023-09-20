@@ -3,7 +3,8 @@ package bot
 import (
 	"context"
 	"errors"
-	sj "github.com/bitly/go-simplejson"
+	"github.com/bytedance/sonic"
+	"github.com/bytedance/sonic/ast"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/net/ghttp"
 	"github.com/gogf/gf/v2/os/gcache"
@@ -58,13 +59,13 @@ func (s *sBot) webSocketMutexFromCtx(ctx context.Context) *sync.Mutex {
 	return nil
 }
 
-func (s *sBot) CtxWithReqJson(ctx context.Context, reqJson *sj.Json) context.Context {
+func (s *sBot) CtxWithReqJson(ctx context.Context, reqJson *ast.Node) context.Context {
 	return context.WithValue(ctx, ctxKeyForReqJson, reqJson)
 }
 
-func (s *sBot) reqJsonFromCtx(ctx context.Context) *sj.Json {
+func (s *sBot) reqJsonFromCtx(ctx context.Context) *ast.Node {
 	if v := ctx.Value(ctxKeyForReqJson); v != nil {
-		return v.(*sj.Json)
+		return v.(*ast.Node)
 	}
 	return nil
 }
@@ -84,14 +85,14 @@ func (s *sBot) Process(ctx context.Context, rawJson []byte, nextProcess func(ctx
 		panic("context does not include websocket")
 	}
 	// ctx 携带 reqJson
-	reqJson, err := sj.NewJson(rawJson)
+	reqJson, err := sonic.Get(rawJson)
 	if err != nil {
 		return
 	}
-	ctx = s.CtxWithReqJson(ctx, reqJson)
+	ctx = s.CtxWithReqJson(ctx, &reqJson)
 	// debug mode
 	if service.Cfg().IsEnabledDebug(ctx) && s.GetPostType(ctx) != "meta_event" {
-		g.Log().Info(ctx, "\n", rawJson)
+		g.Log().Info(ctx, "\n", reqJson)
 	}
 	// 捕捉 echo
 	if s.catchEcho(ctx) {
@@ -130,11 +131,32 @@ func (s *sBot) defaultEchoProcess(rsyncCtx context.Context) (err error) {
 }
 
 func (s *sBot) IsGroupOwnerOrAdmin(ctx context.Context) (yes bool) {
-	role := s.reqJsonFromCtx(ctx).Get("sender").Get("role").MustString()
-	if role == "owner" || role == "admin" {
-		yes = true
+	role, _ := s.reqJsonFromCtx(ctx).Get("sender").Get("role").StrictString()
+	// lazy load user role
+	if role == "" {
+		member, err := s.GetGroupMemberInfo(ctx, s.GetGroupId(ctx), s.GetUserId(ctx))
+		if err != nil {
+			g.Log().Warning(ctx, err)
+			return
+		}
+		role, err = member.Get("sender").Get("role").StrictString()
+		if err != nil {
+			g.Log().Warning(ctx, err)
+			return
+		}
+		params := []ast.Pair{
+			{
+				Key:   "role",
+				Value: ast.NewString(role),
+			},
+		}
+		ok, err := s.reqJsonFromCtx(ctx).Set("sender", ast.NewObject(params))
+		if err != nil || !ok {
+			g.Log().Warning(ctx, err)
+			return
+		}
 	}
-	return
+	return role == "owner" || role == "admin"
 }
 
 func (s *sBot) pushEchoCache(ctx context.Context, echoSign string, callbackFunc func(ctx context.Context, rsyncCtx context.Context)) (err error) {

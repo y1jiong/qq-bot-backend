@@ -15,6 +15,9 @@ default: check linux-amd64v3
 .PHONY: all
 all: check linux windows darwin
 
+.PHONY: amd64v3
+amd64v3: linux-amd64v3 windows-amd64v3
+
 .PHONY: linux
 linux: linux-amd64 linux-amd64v3 linux-arm64 linux-armv7
 
