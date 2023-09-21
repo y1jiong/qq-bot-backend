@@ -27,15 +27,16 @@ func (c *ControllerV1) Command(ctx context.Context, req *v1.CommandReq) (res *v1
 		return
 	}
 	// 验证 token
-	pass, tokenName, ownerId := service.Token().IsCorrectToken(ctx, req.Token)
+	pass, tokenName, ownerId, botId := service.Token().IsCorrectToken(ctx, req.Token)
 	if !pass {
 		err = gerror.NewCode(gcode.New(http.StatusForbidden, "", nil), "permission denied")
 		return
 	}
 	// 验证签名
 	{
-		// 以 token+command+group_id+timestamp 为原文，以 token_name 为 key 的 HmacSha1 值的 base64 值
-		s := req.Token + req.Command + gconv.String(req.GroupId) + gconv.String(req.Timestamp)
+		// 以 token+command+group_id+timestamp+message_sync 为原文，以 token_name 为 key 的 HmacSha1 值的 base64 值
+		s := req.Token + req.Command + gconv.String(req.GroupId) +
+			gconv.String(req.Timestamp) + gconv.String(req.MessageSync)
 		// HmacSha1
 		hmacSha1 := hmac.New(sha1.New, []byte(tokenName))
 		hmacSha1.Write([]byte(s))
@@ -58,10 +59,10 @@ func (c *ControllerV1) Command(ctx context.Context, req *v1.CommandReq) (res *v1
 		GroupId: req.GroupId,
 	}
 	rawJson, err := sonic.ConfigStd.Marshal(innerReq)
-	g.Log().Info(ctx, tokenName+" access successfully with "+string(rawJson))
 	if err != nil {
 		return
 	}
+	g.Log().Info(ctx, tokenName+" access successfully with "+string(rawJson))
 	reqJson, _ := sonic.Get(rawJson)
 	ctx = service.Bot().CtxWithReqJson(ctx, &reqJson)
 	// 处理命令
@@ -71,6 +72,17 @@ func (c *ControllerV1) Command(ctx context.Context, req *v1.CommandReq) (res *v1
 		return
 	}
 	// 响应
+	if req.MessageSync && req.GroupId != 0 {
+		// 加载 botId 对应的 ws 连接
+		botCtx := service.Bot().LoadConnectionPool(botId)
+		if botCtx != nil {
+			service.Bot().SendMessage(botCtx, "", 0, req.GroupId, retMsg, true)
+		} else {
+			err = gerror.NewCode(
+				gcode.New(http.StatusInternalServerError, "", nil),
+				"bot not connected")
+		}
+	}
 	res = &v1.CommandRes{
 		Message: retMsg,
 	}

@@ -91,6 +91,11 @@ func (s *sBot) GetOperatorId(ctx context.Context) int64 {
 	return v
 }
 
+func (s *sBot) GetSelfId(ctx context.Context) int64 {
+	v, _ := s.reqJsonFromCtx(ctx).Get("self_id").StrictInt64()
+	return v
+}
+
 func (s *sBot) GetGroupMemberInfo(ctx context.Context, groupId, userId int64) (member ast.Node, err error) {
 	// echo sign
 	echoSign := guid.S()
@@ -297,6 +302,50 @@ func (s *sBot) GetGroupInfo(ctx context.Context, groupId int64, noCache ...bool)
 		}
 		received := s.getData(rsyncCtx)
 		infoMap, _ = received.Map()
+	}
+	wg.Add(1)
+	// echo
+	err = s.pushEchoCache(ctx, echoSign, callback)
+	if err != nil {
+		g.Log().Error(ctx, err)
+		return
+	}
+	// 发送响应
+	err = s.writeMessage(ctx, websocket.TextMessage, resJson)
+	if err != nil {
+		g.Log().Warning(ctx, err)
+		return
+	}
+	wg.Wait()
+	return
+}
+
+func (s *sBot) GetLoginInfo(ctx context.Context) (userId int64, nickname string) {
+	// echo sign
+	echoSign := guid.S()
+	// 参数
+	res := struct {
+		Action string `json:"action"`
+		Echo   string `json:"echo"`
+	}{
+		Action: "get_login_info",
+		Echo:   echoSign,
+	}
+	resJson, err := sonic.ConfigStd.Marshal(res)
+	if err != nil {
+		g.Log().Error(ctx, err)
+		return
+	}
+	// callback
+	wg := sync.WaitGroup{}
+	callback := func(ctx context.Context, rsyncCtx context.Context) {
+		defer wg.Done()
+		if err = s.defaultEchoProcess(rsyncCtx); err != nil {
+			return
+		}
+		received := s.getData(rsyncCtx)
+		userId, _ = received.Get("user_id").StrictInt64()
+		nickname, _ = received.Get("nickname").StrictString()
 	}
 	wg.Add(1)
 	// echo

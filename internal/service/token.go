@@ -11,12 +11,14 @@ import (
 
 type (
 	IToken interface {
-		IsCorrectToken(ctx context.Context, token string) (correct bool, name string, ownerId int64)
+		IsCorrectToken(ctx context.Context, token string) (correct bool, name string, ownerId, botId int64)
 		UpdateLoginTime(ctx context.Context, token string)
 		AddNewTokenReturnRes(ctx context.Context, name, token string) (retMsg string)
 		RemoveTokenReturnRes(ctx context.Context, name string) (retMsg string)
 		QueryTokenReturnRes(ctx context.Context) (retMsg string)
 		ChangeTokenOwnerReturnRes(ctx context.Context, name, ownerId string) (retMsg string)
+		BindTokenBotId(ctx context.Context, name, botId string) (retMsg string)
+		UnbindTokenBotId(ctx context.Context, name string) (retMsg string)
 	}
 )
 

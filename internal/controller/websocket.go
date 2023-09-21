@@ -3,6 +3,7 @@ package controller
 import (
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/net/ghttp"
+	"github.com/gogf/gf/v2/util/gconv"
 	"net/http"
 	"qq-bot-backend/internal/service"
 	"strings"
@@ -23,12 +24,15 @@ func (c *cBot) Websocket(r *ghttp.Request) {
 		return
 	}
 	token := authorizations[1]
-	var tokenName string
+	var (
+		tokenName string
+		botId     int64
+	)
 	if service.Cfg().IsEnabledDebug(ctx) {
 		// token debug 验证模式
 		var pass bool
 		var name string
-		pass, name, _ = service.Token().IsCorrectToken(ctx, token)
+		pass, name, _, botId = service.Token().IsCorrectToken(ctx, token)
 		// debug mode
 		if !pass && token != service.Cfg().GetDebugToken(ctx) {
 			r.Response.WriteHeader(http.StatusForbidden)
@@ -42,7 +46,7 @@ func (c *cBot) Websocket(r *ghttp.Request) {
 	} else {
 		// token 正常验证模式
 		var pass bool
-		pass, tokenName, _ = service.Token().IsCorrectToken(ctx, token)
+		pass, tokenName, _, botId = service.Token().IsCorrectToken(ctx, token)
 		if !pass {
 			r.Response.WriteHeader(http.StatusForbidden)
 			return
@@ -55,17 +59,27 @@ func (c *cBot) Websocket(r *ghttp.Request) {
 	if err != nil {
 		return
 	}
-	g.Log().Info(ctx, tokenName+" Connected")
+	g.Log().Info(ctx, tokenName+" connected")
 	// context 携带 WebSocket 对象
 	ctx = service.Bot().CtxWithWebSocket(ctx, ws)
 	// 并发 ws 写锁
 	ctx = service.Bot().CtxNewWebSocketMutex(ctx)
+	// 加入连接池
+	if botId != 0 {
+		service.Bot().JoinConnectionPool(ctx, botId)
+		g.Log().Info(ctx, tokenName+"("+gconv.String(botId)+")"+" joined connection pool")
+	}
 	// 消息循环
 	for {
 		var wsReq []byte
 		_, wsReq, err = ws.ReadMessage()
 		if err != nil {
-			g.Log().Info(ctx, tokenName+" Disconnected")
+			// 离开连接池
+			if botId != 0 {
+				service.Bot().LeaveConnectionPool(botId)
+				g.Log().Info(ctx, tokenName+"("+gconv.String(botId)+")"+" left connection pool")
+			}
+			g.Log().Info(ctx, tokenName+" disconnected")
 			return
 		}
 		// 异步处理 WebSocket 请求

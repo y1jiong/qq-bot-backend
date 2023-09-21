@@ -129,9 +129,17 @@ func (s *sToken) QueryTokenReturnRes(ctx context.Context) (retMsg string) {
 		msg.WriteString(": ")
 		msg.WriteString(v.CreatedAt.String())
 		msg.WriteString("\n")
+		msg.WriteString(dao.Token.Columns().UpdatedAt)
+		msg.WriteString(": ")
+		msg.WriteString(v.UpdatedAt.String())
+		msg.WriteString("\n")
 		msg.WriteString(dao.Token.Columns().LastLoginAt)
 		msg.WriteString(": ")
 		msg.WriteString(v.LastLoginAt.String())
+		msg.WriteString("\n")
+		msg.WriteString(dao.Token.Columns().BindingBotId)
+		msg.WriteString(": ")
+		msg.WriteString(gconv.String(v.BindingBotId))
 		if i != tEntitiesLen-1 {
 			msg.WriteString("\n---\n")
 		}
@@ -169,5 +177,69 @@ func (s *sToken) ChangeTokenOwnerReturnRes(ctx context.Context, name, ownerId st
 	}
 	// 回执
 	retMsg = "已将 token(" + name + ") 的所有者修改为 " + ownerId
+	return
+}
+
+func (s *sToken) BindTokenBotId(ctx context.Context, name, botId string) (retMsg string) {
+	// 过滤非法 name
+	if !legalTokenNameRe.MatchString(name) {
+		return
+	}
+	// 数据库查存在
+	var tokenE *entity.Token
+	err := dao.Token.Ctx(ctx).
+		Where(dao.Token.Columns().Name, name).
+		Scan(&tokenE)
+	if err != nil {
+		g.Log().Error(ctx, err)
+		return
+	}
+	if tokenE == nil {
+		retMsg = "未找到 token(" + name + ")"
+		return
+	}
+	// 数据库更新
+	_, err = dao.Token.Ctx(ctx).
+		Data(dao.Token.Columns().BindingBotId, gconv.Int64(botId)).
+		Where(dao.Token.Columns().Name, name).
+		Update()
+	if err != nil {
+		g.Log().Error(ctx, err)
+		return
+	}
+	// 回执
+	retMsg = "已将 token(" + name + ") 绑定的 bot_id 修改为 " + botId
+	return
+}
+
+func (s *sToken) UnbindTokenBotId(ctx context.Context, name string) (retMsg string) {
+	// 过滤非法 name
+	if !legalTokenNameRe.MatchString(name) {
+		return
+	}
+	// 数据库查存在
+	var tokenE *entity.Token
+	err := dao.Token.Ctx(ctx).
+		Where(dao.Token.Columns().Name, name).
+		Scan(&tokenE)
+	if err != nil {
+		g.Log().Error(ctx, err)
+		return
+	}
+	if tokenE == nil {
+		retMsg = "未找到 token(" + name + ")"
+		return
+	}
+	// 数据库更新
+	_, err = dao.Token.Ctx(ctx).
+		Data(dao.Token.Columns().BindingBotId, nil).
+		Where(dao.Token.Columns().Name, name).
+		Update()
+	if err != nil {
+		g.Log().Error(ctx, err)
+		return
+	}
+	// 回执
+	retMsg = "已将 token(" + name + ") 解绑 bot_id"
 	return
 }

@@ -133,7 +133,9 @@ v1.4
 | /token add {name} {token}      | 添加可让 user 接入本系统的令牌 | 需要系统授予的操作 token 的权限 |
 | /token rm {name}               | 删除令牌                       | 需要系统授予的操作 token 的权限 |
 | /token query                   | 查询自己所有的令牌             | 需要系统授予的操作 token 的权限 |
-| /token chown {name} {owner_id} | 修改令牌所有者                 | 需要系统授予的操作 token 的权限 |
+| /token chown {owner_id} {name} | 修改令牌所有者                 | 需要系统授予的操作 token 的权限 |
+| /token bind {bot_id} {name}    | 绑定令牌使用的机器人账号       | 需要系统授予的操作 token 的权限 |
+| /token unbind {name}           | 解绑令牌使用的机器人账号       | 需要系统授予的操作 token 的权限 |
 
 ## Advanced features
 

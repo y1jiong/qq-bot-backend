@@ -32,6 +32,10 @@ const (
 	echoTimeout             = echoDuration + 10*time.Second
 )
 
+var (
+	connectionPool = sync.Map{}
+)
+
 type echoModel struct {
 	LastContext  context.Context
 	CallbackFunc func(ctx context.Context, rsyncCtx context.Context)
@@ -66,6 +70,21 @@ func (s *sBot) CtxWithReqJson(ctx context.Context, reqJson *ast.Node) context.Co
 func (s *sBot) reqJsonFromCtx(ctx context.Context) *ast.Node {
 	if v := ctx.Value(ctxKeyForReqJson); v != nil {
 		return v.(*ast.Node)
+	}
+	return nil
+}
+
+func (s *sBot) JoinConnectionPool(ctx context.Context, key int64) {
+	connectionPool.Store(key, ctx)
+}
+
+func (s *sBot) LeaveConnectionPool(key int64) {
+	connectionPool.Delete(key)
+}
+
+func (s *sBot) LoadConnectionPool(key int64) context.Context {
+	if v, ok := connectionPool.Load(key); ok {
+		return v.(context.Context)
 	}
 	return nil
 }

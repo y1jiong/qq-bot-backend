@@ -20,7 +20,7 @@ func (s *sBot) SendMessage(ctx context.Context, messageType string, uid, gid int
 	res := struct {
 		Action string `json:"action"`
 		Params struct {
-			MessageType string `json:"message_type"`
+			MessageType string `json:"message_type,omitempty"`
 			Message     string `json:"message"`
 			AutoEscape  bool   `json:"auto_escape,omitempty"`
 			UserId      int64  `json:"user_id,omitempty"`
@@ -29,7 +29,7 @@ func (s *sBot) SendMessage(ctx context.Context, messageType string, uid, gid int
 	}{
 		Action: "send_msg",
 		Params: struct {
-			MessageType string `json:"message_type"`
+			MessageType string `json:"message_type,omitempty"`
 			Message     string `json:"message"`
 			AutoEscape  bool   `json:"auto_escape,omitempty"`
 			UserId      int64  `json:"user_id,omitempty"`
