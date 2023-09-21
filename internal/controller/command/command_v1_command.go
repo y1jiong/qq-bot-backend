@@ -72,15 +72,21 @@ func (c *ControllerV1) Command(ctx context.Context, req *v1.CommandReq) (res *v1
 		return
 	}
 	// 响应
-	if req.MessageSync && req.GroupId != 0 {
-		// 加载 botId 对应的 ws 连接
-		botCtx := service.Bot().LoadConnectionPool(botId)
-		if botCtx != nil {
-			service.Bot().SendMessage(botCtx, "", 0, req.GroupId, retMsg, true)
+	if req.MessageSync {
+		if req.GroupId != 0 && service.Group().IsBinding(ctx, req.GroupId) {
+			// 加载 botId 对应的 ws 连接
+			botCtx := service.Bot().LoadConnectionPool(botId)
+			if botCtx != nil {
+				service.Bot().SendMessage(botCtx, "", 0, req.GroupId, retMsg, true)
+			} else {
+				err = gerror.NewCode(
+					gcode.New(http.StatusInternalServerError, "", nil),
+					"bot not connected")
+			}
 		} else {
 			err = gerror.NewCode(
-				gcode.New(http.StatusInternalServerError, "", nil),
-				"bot not connected")
+				gcode.New(http.StatusBadRequest, "", nil),
+				"group not binding")
 		}
 	}
 	res = &v1.CommandRes{

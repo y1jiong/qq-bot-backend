@@ -29,6 +29,7 @@ type (
 		LockCardReturnRes(ctx context.Context, groupId int64) (retMsg string)
 		UnlockCardReturnRes(ctx context.Context, groupId int64) (retMsg string)
 		ExportGroupMemberListReturnRes(ctx context.Context, groupId int64, listName string) (retMsg string)
+		IsBinding(ctx context.Context, groupId int64) bool
 		BindNamespaceReturnRes(ctx context.Context, groupId int64, namespace string) (retMsg string)
 		UnbindReturnRes(ctx context.Context, groupId int64) (retMsg string)
 		QueryGroupReturnRes(ctx context.Context, groupId int64) (retMsg string)
