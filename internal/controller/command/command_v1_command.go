@@ -62,11 +62,18 @@ func (c *ControllerV1) Command(ctx context.Context, req *v1.CommandReq) (res *v1
 	if err != nil {
 		return
 	}
-	g.Log().Info(ctx, tokenName+" access successfully with "+string(rawJson))
 	reqJson, _ := sonic.Get(rawJson)
-	ctx = service.Bot().CtxWithReqJson(ctx, &reqJson)
+	// 加载 botId 对应的 botCtx
+	botCtx := service.Bot().LoadConnectionPool(botId)
+	if botCtx == nil {
+		err = gerror.NewCode(gcode.New(http.StatusInternalServerError, "", nil),
+			"bot not connected")
+		return
+	}
+	g.Log().Info(ctx, tokenName+" access successfully with "+string(rawJson))
+	botCtx = service.Bot().CtxWithReqJson(botCtx, &reqJson)
 	// 处理命令
-	catch, retMsg := service.Command().TryCommand(ctx)
+	catch, retMsg := service.Command().TryCommand(botCtx)
 	if !catch {
 		err = gerror.NewCode(gcode.New(http.StatusBadRequest, "", nil), "command not found")
 		return
@@ -79,21 +86,14 @@ func (c *ControllerV1) Command(ctx context.Context, req *v1.CommandReq) (res *v1
 	if !req.MessageSync {
 		return
 	}
-	if req.GroupId == 0 || !service.Group().IsBinding(ctx, req.GroupId) {
+	if req.GroupId == 0 || !service.Group().IsBinding(botCtx, req.GroupId) {
 		err = gerror.NewCode(gcode.New(http.StatusBadRequest, "", nil),
 			"group not binding")
 		return
 	}
-	if !service.Bot().IsGroupOwnerOrAdmin(ctx) {
+	if !service.Bot().IsGroupOwnerOrAdmin(botCtx) {
 		err = gerror.NewCode(gcode.New(http.StatusForbidden, "", nil),
 			"permission denied")
-		return
-	}
-	// 加载 botId 对应的 ctx
-	botCtx := service.Bot().LoadConnectionPool(botId)
-	if botCtx == nil {
-		err = gerror.NewCode(gcode.New(http.StatusInternalServerError, "", nil),
-			"bot not connected")
 		return
 	}
 	// 发送消息
