@@ -47,7 +47,6 @@ func (c *ControllerV1) Command(ctx context.Context, req *v1.CommandReq) (res *v1
 	}
 	// 记录登录时间
 	service.Token().UpdateLoginTime(ctx, req.Token)
-	g.Log().Info(ctx, tokenName+" access successfully")
 	// 初始化内部请求
 	innerReq := struct {
 		Message string `json:"message"`
@@ -59,6 +58,7 @@ func (c *ControllerV1) Command(ctx context.Context, req *v1.CommandReq) (res *v1
 		GroupId: req.GroupId,
 	}
 	rawJson, err := sonic.ConfigStd.Marshal(innerReq)
+	g.Log().Info(ctx, tokenName+" access successfully with "+string(rawJson))
 	if err != nil {
 		return
 	}

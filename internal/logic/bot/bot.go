@@ -93,7 +93,7 @@ func (s *sBot) Process(ctx context.Context, rawJson []byte, nextProcess func(ctx
 	ctx = s.CtxWithReqJson(ctx, &reqJson)
 	// debug mode
 	if service.Cfg().IsEnabledDebug(ctx) && s.GetPostType(ctx) != "meta_event" {
-		g.Log().Info(ctx, "\n", string(rawJson))
+		g.Log().Info(ctx, "\n", rawJson)
 	}
 	// 捕捉 echo
 	if s.catchEcho(ctx) {
@@ -137,7 +137,7 @@ func (s *sBot) IsGroupOwnerOrAdmin(ctx context.Context) (yes bool) {
 	if role == "" {
 		member, err := s.GetGroupMemberInfo(ctx, s.GetGroupId(ctx), s.GetUserId(ctx))
 		if err != nil {
-			g.Log().Error(ctx, err)
+			g.Log().Warning(ctx, err)
 			return
 		}
 		role, err = member.Get("role").StrictString()
