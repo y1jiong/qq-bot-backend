@@ -20,21 +20,37 @@ import (
 )
 
 func (c *ControllerV1) Command(ctx context.Context, req *v1.CommandReq) (res *v1.CommandRes, err error) {
-	// 验证消息是否过期
-	msgTime := gtime.New(time.Unix(req.Timestamp, 0))
-	if gtime.Now().Sub(msgTime) > 5*time.Second {
-		err = gerror.NewCode(gcode.New(http.StatusBadRequest, "", nil), "message expired")
-		return
+	// 验证请求时间有效性
+	{
+		msgTime := gtime.New(time.Unix(req.Timestamp, 0))
+		if diff := gtime.Now().Sub(msgTime); diff > 5*time.Second {
+			err = gerror.NewCode(gcode.New(http.StatusBadRequest, "", nil),
+				"message expired")
+			return
+		} else if diff < -5*time.Second {
+			err = gerror.NewCode(gcode.New(http.StatusTooEarly, "", nil),
+				http.StatusText(http.StatusTooEarly))
+			return
+		}
 	}
 	// 验证 token
 	pass, tokenName, ownerId, botId := service.Token().IsCorrectToken(ctx, req.Token)
 	if !pass {
-		err = gerror.NewCode(gcode.New(http.StatusForbidden, "", nil), "permission denied")
+		err = gerror.NewCode(gcode.New(http.StatusForbidden, "", nil),
+			"permission denied")
+		return
+	}
+	// 防止重放攻击
+	if limit, _ := service.Module().AutoLimit(ctx,
+		"api.command", req.Signature, 1, 10*time.Second); limit {
+		err = gerror.NewCode(gcode.New(http.StatusConflict, "", nil),
+			http.StatusText(http.StatusConflict))
 		return
 	}
 	// 验证签名
 	{
-		// 以 token+command+group_id+timestamp+message_sync 为原文，以 token_name 为 key 的 HmacSha1 值的 base64 值
+		// 以 token+command+group_id+timestamp+message_sync 为原文，
+		// 以 token_name 为 key 的 HmacSha1 值的 base64 值
 		s := req.Token + req.Command + gconv.String(req.GroupId) +
 			gconv.String(req.Timestamp) + gconv.String(req.MessageSync)
 		// HmacSha1
@@ -42,7 +58,8 @@ func (c *ControllerV1) Command(ctx context.Context, req *v1.CommandReq) (res *v1
 		hmacSha1.Write([]byte(s))
 		macBase64 := gbase64.Encode(hmacSha1.Sum(nil))
 		if !hmac.Equal(macBase64, []byte(req.Signature)) {
-			err = gerror.NewCode(gcode.New(http.StatusBadRequest, "", nil), "signature error")
+			err = gerror.NewCode(gcode.New(http.StatusBadRequest, "", nil),
+				"signature error")
 			return
 		}
 	}
@@ -75,7 +92,8 @@ func (c *ControllerV1) Command(ctx context.Context, req *v1.CommandReq) (res *v1
 	// 处理命令
 	catch, retMsg := service.Command().TryCommand(botCtx)
 	if !catch {
-		err = gerror.NewCode(gcode.New(http.StatusBadRequest, "", nil), "command not found")
+		err = gerror.NewCode(gcode.New(http.StatusBadRequest, "", nil),
+			"command not found")
 		return
 	}
 	// 响应
@@ -94,6 +112,13 @@ func (c *ControllerV1) Command(ctx context.Context, req *v1.CommandReq) (res *v1
 	if !service.Bot().IsGroupOwnerOrAdmin(botCtx) {
 		err = gerror.NewCode(gcode.New(http.StatusForbidden, "", nil),
 			"permission denied")
+		return
+	}
+	// 一分钟只能发送两条消息
+	if limit, _ := service.Module().AutoLimit(ctx,
+		"send_msg", gconv.String(req.GroupId), 2, time.Minute); limit {
+		err = gerror.NewCode(gcode.New(http.StatusTooManyRequests, "", nil),
+			http.StatusText(http.StatusTooManyRequests))
 		return
 	}
 	// 发送消息
