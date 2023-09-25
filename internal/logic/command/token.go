@@ -6,13 +6,13 @@ import (
 )
 
 func tryToken(ctx context.Context, cmd string) (catch bool, retMsg string) {
-	// 权限校验
-	if !service.User().CouldOpToken(ctx, service.Bot().GetUserId(ctx)) {
-		return
-	}
 	// 继续处理
 	switch {
 	case nextBranchRe.MatchString(cmd):
+		// 权限校验
+		if !service.User().CouldOpToken(ctx, service.Bot().GetUserId(ctx)) {
+			return
+		}
 		next := nextBranchRe.FindStringSubmatch(cmd)
 		switch next[1] {
 		case "add":
@@ -32,12 +32,16 @@ func tryToken(ctx context.Context, cmd string) (catch bool, retMsg string) {
 			// /token unbind <name>
 			retMsg = service.Token().UnbindTokenBotId(ctx, next[2])
 			catch = true
+		case "query":
+			// /token query <name>
+			retMsg = service.Token().QueryTokenReturnRes(ctx, next[2])
+			catch = true
 		}
 	case endBranchRe.MatchString(cmd):
 		switch cmd {
 		case "query":
 			// /token query
-			retMsg = service.Token().QueryTokenReturnRes(ctx)
+			retMsg = service.Token().QueryOwnTokenReturnRes(ctx)
 			catch = true
 		}
 	}

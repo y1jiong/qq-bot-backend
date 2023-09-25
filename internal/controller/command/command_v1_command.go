@@ -49,10 +49,11 @@ func (c *ControllerV1) Command(ctx context.Context, req *v1.CommandReq) (res *v1
 	}
 	// 验证签名
 	{
-		// 以 token+command+group_id+timestamp+message_sync 为原文，
+		// 以 token+command+group_id+timestamp+message_sync+async 为原文，
 		// 以 token_name 为 key 的 HmacSha1 值的 base64 值
 		s := req.Token + req.Command + gconv.String(req.GroupId) +
-			gconv.String(req.Timestamp) + gconv.String(req.MessageSync)
+			gconv.String(req.Timestamp) + gconv.String(req.MessageSync) +
+			gconv.String(req.Async)
 		// HmacSha1
 		hmacSha1 := hmac.New(sha1.New, []byte(tokenName))
 		hmacSha1.Write([]byte(s))
@@ -65,6 +66,13 @@ func (c *ControllerV1) Command(ctx context.Context, req *v1.CommandReq) (res *v1
 	}
 	// 记录登录时间
 	service.Token().UpdateLoginTime(ctx, req.Token)
+	// 加载 botId 对应的 botCtx
+	botCtx := service.Bot().LoadConnectionPool(botId)
+	if botCtx == nil {
+		err = gerror.NewCode(gcode.New(http.StatusInternalServerError, "", nil),
+			"bot not connected")
+		return
+	}
 	// 初始化内部请求
 	innerReq := struct {
 		Message string `json:"message"`
@@ -80,28 +88,28 @@ func (c *ControllerV1) Command(ctx context.Context, req *v1.CommandReq) (res *v1
 		return
 	}
 	reqJson, _ := sonic.Get(rawJson)
-	// 加载 botId 对应的 botCtx
-	botCtx := service.Bot().LoadConnectionPool(botId)
-	if botCtx == nil {
-		err = gerror.NewCode(gcode.New(http.StatusInternalServerError, "", nil),
-			"bot not connected")
-		return
-	}
-	g.Log().Info(ctx, tokenName+" access successfully with "+string(rawJson))
 	botCtx = service.Bot().CtxWithReqJson(botCtx, &reqJson)
-	// 处理命令
-	catch, retMsg := service.Command().TryCommand(botCtx)
-	if !catch {
-		err = gerror.NewCode(gcode.New(http.StatusBadRequest, "", nil),
-			"command not found")
-		return
+	g.Log().Info(ctx, tokenName+" access successfully with "+string(rawJson))
+	var retMsg string
+	// 异步执行
+	if req.Async {
+		go service.Command().TryCommand(botCtx)
+		retMsg = "async"
+	} else {
+		var catch bool
+		catch, retMsg = service.Command().TryCommand(botCtx)
+		if !catch {
+			err = gerror.NewCode(gcode.New(http.StatusBadRequest, "", nil),
+				"command not found")
+			return
+		}
 	}
 	// 响应
 	res = &v1.CommandRes{
 		Message: retMsg,
 	}
 	// 检查是否需要同步消息
-	if !req.MessageSync {
+	if !req.MessageSync || req.Async {
 		return
 	}
 	if req.GroupId == 0 || !service.Group().IsBinding(botCtx, req.GroupId) {

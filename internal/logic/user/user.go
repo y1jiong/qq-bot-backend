@@ -2,7 +2,7 @@ package user
 
 import (
 	"context"
-	sj "github.com/bitly/go-simplejson"
+	"github.com/bytedance/sonic"
 	"github.com/gogf/gf/v2/frame/g"
 	"qq-bot-backend/internal/dao"
 	"qq-bot-backend/internal/model/entity"
@@ -61,12 +61,12 @@ func (s *sUser) IsSystemTrustUser(ctx context.Context, userId int64) (yes bool) 
 		return
 	}
 	// 数据处理
-	settingJson, err := sj.NewJson([]byte(userE.SettingJson))
+	settingJson, err := sonic.GetFromString(userE.SettingJson)
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return
 	}
-	yes = settingJson.Get(trustKey).MustBool()
+	yes, _ = settingJson.Get(trustKey).Bool()
 	return
 }
 
@@ -81,12 +81,12 @@ func (s *sUser) CouldOpToken(ctx context.Context, userId int64) (yes bool) {
 		return
 	}
 	// 数据处理
-	settingJson, err := sj.NewJson([]byte(userE.SettingJson))
+	settingJson, err := sonic.GetFromString(userE.SettingJson)
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return
 	}
-	yes = settingJson.Get(tokenKey).MustBool()
+	yes, _ = settingJson.Get(tokenKey).Bool()
 	return
 }
 
@@ -101,12 +101,12 @@ func (s *sUser) CouldOpNamespace(ctx context.Context, userId int64) (yes bool) {
 		return
 	}
 	// 数据处理
-	settingJson, err := sj.NewJson([]byte(userE.SettingJson))
+	settingJson, err := sonic.GetFromString(userE.SettingJson)
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return
 	}
-	yes = settingJson.Get(namespaceKey).MustBool()
+	yes, _ = settingJson.Get(namespaceKey).Bool()
 	return
 }
 
@@ -121,11 +121,11 @@ func (s *sUser) CouldGetRawMsg(ctx context.Context, userId int64) (yes bool) {
 		return
 	}
 	// 数据处理
-	settingJson, err := sj.NewJson([]byte(userE.SettingJson))
+	settingJson, err := sonic.GetFromString(userE.SettingJson)
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return
 	}
-	yes = settingJson.Get(rawKey).MustBool()
+	yes, _ = settingJson.Get(rawKey).Bool()
 	return
 }

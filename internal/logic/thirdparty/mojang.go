@@ -2,7 +2,7 @@ package thirdparty
 
 import (
 	"context"
-	sj "github.com/bitly/go-simplejson"
+	"github.com/bytedance/sonic"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/net/gclient"
 	"io"
@@ -52,13 +52,13 @@ func (s *sThirdParty) QueryMinecraftGenuineUser(ctx context.Context, name string
 	if err != nil {
 		return
 	}
-	resJson, err := sj.NewJson(rawJson)
+	resJson, err := sonic.Get(rawJson)
 	if err != nil {
 		return
 	}
 	// 导出正确的 name 和 uuid
-	realName = resJson.Get("name").MustString()
-	uuid = resJson.Get("id").MustString()
+	realName, _ = resJson.Get("name").StrictString()
+	uuid, _ = resJson.Get("id").StrictString()
 	// 判断正版
 	if uuid != "" {
 		genuine = true

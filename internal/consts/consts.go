@@ -11,11 +11,13 @@ const (
 )
 
 var (
+	GitTag      = ""
 	GitCommit   = ""
 	BuildTime   = ""
 	Description = "Version: " + Version +
 		"\nGo Version: " + runtime.Version() +
 		"\nGoFrame Version: " + gf.VERSION +
+		"\nGit Tag: " + GitTag +
 		"\nGit Commit: " + GitCommit +
 		"\nBuild Time: " + BuildTime
 )
