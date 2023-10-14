@@ -75,13 +75,15 @@ func (c *ControllerV1) Command(ctx context.Context, req *v1.CommandReq) (res *v1
 	}
 	// 初始化内部请求
 	innerReq := struct {
-		Message string `json:"message"`
-		UserId  int64  `json:"user_id"`
-		GroupId int64  `json:"group_id"`
+		Message string   `json:"message"`
+		UserId  int64    `json:"user_id"`
+		GroupId int64    `json:"group_id"`
+		ApiReq  struct{} `json:"api_req"`
 	}{
 		Message: req.Command,
 		UserId:  ownerId,
 		GroupId: req.GroupId,
+		ApiReq:  struct{}{},
 	}
 	rawJson, err := sonic.ConfigStd.Marshal(innerReq)
 	if err != nil {

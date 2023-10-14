@@ -11,6 +11,10 @@ import (
 	"sync"
 )
 
+func (s *sBot) isApiReq(ctx context.Context) bool {
+	return s.reqJsonFromCtx(ctx).Get("api_req").Exists()
+}
+
 func (s *sBot) getEcho(ctx context.Context) string {
 	v, _ := s.reqJsonFromCtx(ctx).Get("echo").StrictString()
 	return v

@@ -45,6 +45,7 @@ type (
 		SendMessage(ctx context.Context, messageType string, uid, gid int64, msg string, plain bool)
 		SendPlainMsg(ctx context.Context, msg string)
 		SendMsg(ctx context.Context, msg string)
+		SendMsgIfNotApiReq(ctx context.Context, msg string)
 		SendFileToGroup(ctx context.Context, gid int64, filePath, name, folder string)
 		SendFileToUser(ctx context.Context, uid int64, filePath, name string)
 		SendFile(ctx context.Context, name, url string)

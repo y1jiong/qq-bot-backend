@@ -61,6 +61,13 @@ func (s *sBot) SendMsg(ctx context.Context, msg string) {
 	s.SendMessage(ctx, s.GetMsgType(ctx), s.GetUserId(ctx), s.GetGroupId(ctx), msg, false)
 }
 
+func (s *sBot) SendMsgIfNotApiReq(ctx context.Context, msg string) {
+	if s.isApiReq(ctx) {
+		return
+	}
+	s.SendMsg(ctx, msg)
+}
+
 func (s *sBot) SendFileToGroup(ctx context.Context, gid int64, filePath, name, folder string) {
 	// 参数
 	res := struct {
