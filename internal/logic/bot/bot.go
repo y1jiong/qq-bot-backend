@@ -150,35 +150,6 @@ func (s *sBot) defaultEchoProcess(rsyncCtx context.Context) (err error) {
 	return
 }
 
-func (s *sBot) IsGroupOwnerOrAdmin(ctx context.Context) (yes bool) {
-	role, _ := s.reqJsonFromCtx(ctx).Get("sender").Get("role").StrictString()
-	// lazy load user role
-	if role == "" {
-		member, err := s.GetGroupMemberInfo(ctx, s.GetGroupId(ctx), s.GetUserId(ctx))
-		if err != nil {
-			g.Log().Warning(ctx, err)
-			return
-		}
-		role, err = member.Get("role").StrictString()
-		if err != nil {
-			g.Log().Error(ctx, err)
-			return
-		}
-		params := []ast.Pair{
-			{
-				Key:   "role",
-				Value: ast.NewString(role),
-			},
-		}
-		_, err = s.reqJsonFromCtx(ctx).Set("sender", ast.NewObject(params))
-		if err != nil {
-			g.Log().Error(ctx, err)
-			return
-		}
-	}
-	return role == "owner" || role == "admin"
-}
-
 func (s *sBot) pushEchoCache(ctx context.Context, echoSign string, callbackFunc func(ctx context.Context, rsyncCtx context.Context)) (err error) {
 	echoKey := echoPrefix + echoSign
 	// 检查超时

@@ -306,8 +306,9 @@ func (s *sGroup) KeepFromListReturnRes(ctx context.Context,
 
 func (s *sGroup) CheckExistReturnRes(ctx context.Context) (retMsg string) {
 	pageNum, pageSize := 1, 10
-	deleted := 0
 	msg := ""
+	waitForDelGroups := make([]int64, 0)
+	loginUserId, _ := service.Bot().GetLoginInfo(ctx)
 	for {
 		var groupE []*entity.Group
 		err := dao.Group.Ctx(ctx).
@@ -321,9 +322,12 @@ func (s *sGroup) CheckExistReturnRes(ctx context.Context) (retMsg string) {
 		for _, v := range groupE {
 			vGroupId := v.GroupId
 			_, err = service.Bot().GetGroupInfo(ctx, vGroupId, true)
-			// 判断群是否已经解散
+			// 判断群是否已经解散或者登录账号不在群内
 			if err == nil {
-				continue
+				_, err = service.Bot().GetGroupMemberInfo(ctx, vGroupId, loginUserId)
+				if err == nil {
+					continue
+				}
 			}
 			if err != nil && err.Error() != "群聊不存在" {
 				retMsg = "获取群信息失败"
@@ -331,13 +335,8 @@ func (s *sGroup) CheckExistReturnRes(ctx context.Context) (retMsg string) {
 			}
 			// 记录信息
 			msg += "\ngroup(" + gconv.String(vGroupId) + ")"
-			// 删除 group
-			_, err = dao.Group.Ctx(ctx).Where(dao.Group.Columns().GroupId, vGroupId).Delete()
-			if err != nil {
-				g.Log().Error(ctx, err)
-				return
-			}
-			deleted++
+			// 放入待删除数组
+			waitForDelGroups = append(waitForDelGroups, vGroupId)
 		}
 		// 结束条件
 		if len(groupE) < pageSize {
@@ -345,7 +344,13 @@ func (s *sGroup) CheckExistReturnRes(ctx context.Context) (retMsg string) {
 		}
 		pageNum++
 	}
+	// 删除 groups
+	_, err := dao.Group.Ctx(ctx).Where(dao.Group.Columns().GroupId, waitForDelGroups).Delete()
+	if err != nil {
+		g.Log().Error(ctx, err)
+		return
+	}
 	// 回执
-	retMsg = "已删除 " + gconv.String(deleted) + " 条不存在的 group" + msg
+	retMsg = "已删除 " + gconv.String(len(waitForDelGroups)) + " 条不适用的 group" + msg
 	return
 }
