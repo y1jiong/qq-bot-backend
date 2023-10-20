@@ -8,6 +8,7 @@ import (
 	"qq-bot-backend/internal/dao"
 	"qq-bot-backend/internal/model/entity"
 	"qq-bot-backend/internal/service"
+	"strings"
 	"time"
 )
 
@@ -306,7 +307,7 @@ func (s *sGroup) KeepFromListReturnRes(ctx context.Context,
 
 func (s *sGroup) CheckExistReturnRes(ctx context.Context) (retMsg string) {
 	pageNum, pageSize := 1, 10
-	msg := ""
+	var msgBuilder strings.Builder
 	waitForDelGroups := make([]int64, 0)
 	loginUserId, _ := service.Bot().GetLoginInfo(ctx)
 	for {
@@ -334,7 +335,7 @@ func (s *sGroup) CheckExistReturnRes(ctx context.Context) (retMsg string) {
 				return
 			}
 			// 记录信息
-			msg += "\ngroup(" + gconv.String(vGroupId) + ")"
+			msgBuilder.WriteString("\ngroup(" + gconv.String(vGroupId) + ")")
 			// 放入待删除数组
 			waitForDelGroups = append(waitForDelGroups, vGroupId)
 		}
@@ -351,6 +352,6 @@ func (s *sGroup) CheckExistReturnRes(ctx context.Context) (retMsg string) {
 		return
 	}
 	// 回执
-	retMsg = "已删除 " + gconv.String(len(waitForDelGroups)) + " 条不适用的 group" + msg
+	retMsg = "已删除 " + gconv.String(len(waitForDelGroups)) + " 条不适用的 group" + msgBuilder.String()
 	return
 }
