@@ -21,9 +21,9 @@ func init() {
 
 var (
 	commandPrefixRe     = regexp.MustCompile(`^/(.+)$`)
-	nextBranchRe        = regexp.MustCompile(`^(\S+) (.+)$`)
+	nextBranchRe        = regexp.MustCompile(`^(\S+)\s+(.+)$`)
 	endBranchRe         = regexp.MustCompile(`^\S+$`)
-	doubleValueCmdEndRe = regexp.MustCompile(`^(\S+) (\S+)$`)
+	doubleValueCmdEndRe = regexp.MustCompile(`^(\S+)\s+(\S+)$`)
 )
 
 func (s *sCommand) TryCommand(ctx context.Context) (catch bool, retMsg string) {
