@@ -2,6 +2,7 @@ package bot
 
 import (
 	"context"
+	"errors"
 	"github.com/bytedance/sonic"
 	"github.com/bytedance/sonic/ast"
 	"github.com/gogf/gf/v2/frame/g"
@@ -132,16 +133,21 @@ func (s *sBot) GetGroupMemberInfo(ctx context.Context, groupId, userId int64) (m
 	}
 	// callback
 	wg := sync.WaitGroup{}
+	wgDone := sync.OnceFunc(wg.Done)
 	callback := func(ctx context.Context, rsyncCtx context.Context) {
-		defer wg.Done()
+		defer wgDone()
 		if err = s.defaultEchoProcess(rsyncCtx); err != nil {
 			return
 		}
 		member = *s.getData(rsyncCtx)
 	}
+	timeout := func(ctx context.Context) {
+		defer wgDone()
+		err = errors.New("echo timeout")
+	}
 	wg.Add(1)
 	// echo
-	err = s.pushEchoCache(ctx, echoSign, callback)
+	err = s.pushEchoCache(ctx, echoSign, callback, timeout)
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return
@@ -185,17 +191,22 @@ func (s *sBot) GetGroupMemberList(ctx context.Context, groupId int64, noCache ..
 	}
 	// callback
 	wg := sync.WaitGroup{}
+	wgDone := sync.OnceFunc(wg.Done)
 	callback := func(ctx context.Context, rsyncCtx context.Context) {
-		defer wg.Done()
+		defer wgDone()
 		if err = s.defaultEchoProcess(rsyncCtx); err != nil {
 			return
 		}
 		received := s.getData(rsyncCtx)
 		members, _ = received.Array()
 	}
+	timeout := func(ctx context.Context) {
+		defer wgDone()
+		err = errors.New("echo timeout")
+	}
 	wg.Add(1)
 	// echo
-	err = s.pushEchoCache(ctx, echoSign, callback)
+	err = s.pushEchoCache(ctx, echoSign, callback, timeout)
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return
@@ -242,17 +253,22 @@ func (s *sBot) RequestMessage(ctx context.Context, messageId int64) (messageMap 
 	}
 	// callback
 	wg := sync.WaitGroup{}
+	wgDone := sync.OnceFunc(wg.Done)
 	callback := func(ctx context.Context, rsyncCtx context.Context) {
-		defer wg.Done()
+		defer wgDone()
 		if err = s.defaultEchoProcess(rsyncCtx); err != nil {
 			return
 		}
 		received := s.getData(rsyncCtx)
 		messageMap, _ = received.Map()
 	}
+	timeout := func(ctx context.Context) {
+		defer wgDone()
+		err = errors.New("echo timeout")
+	}
 	wg.Add(1)
 	// echo
-	err = s.pushEchoCache(ctx, echoSign, callback)
+	err = s.pushEchoCache(ctx, echoSign, callback, timeout)
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return
@@ -299,17 +315,22 @@ func (s *sBot) GetGroupInfo(ctx context.Context, groupId int64, noCache ...bool)
 	}
 	// callback
 	wg := sync.WaitGroup{}
+	wgDone := sync.OnceFunc(wg.Done)
 	callback := func(ctx context.Context, rsyncCtx context.Context) {
-		defer wg.Done()
+		defer wgDone()
 		if err = s.defaultEchoProcess(rsyncCtx); err != nil {
 			return
 		}
 		received := s.getData(rsyncCtx)
 		infoMap, _ = received.Map()
 	}
+	timeout := func(ctx context.Context) {
+		defer wgDone()
+		err = errors.New("echo timeout")
+	}
 	wg.Add(1)
 	// echo
-	err = s.pushEchoCache(ctx, echoSign, callback)
+	err = s.pushEchoCache(ctx, echoSign, callback, timeout)
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return
@@ -342,8 +363,9 @@ func (s *sBot) GetLoginInfo(ctx context.Context) (userId int64, nickname string)
 	}
 	// callback
 	wg := sync.WaitGroup{}
+	wgDone := sync.OnceFunc(wg.Done)
 	callback := func(ctx context.Context, rsyncCtx context.Context) {
-		defer wg.Done()
+		defer wgDone()
 		if err = s.defaultEchoProcess(rsyncCtx); err != nil {
 			return
 		}
@@ -351,9 +373,12 @@ func (s *sBot) GetLoginInfo(ctx context.Context) (userId int64, nickname string)
 		userId, _ = received.Get("user_id").StrictInt64()
 		nickname, _ = received.Get("nickname").StrictString()
 	}
+	timeout := func(ctx context.Context) {
+		defer wgDone()
+	}
 	wg.Add(1)
 	// echo
-	err = s.pushEchoCache(ctx, echoSign, callback)
+	err = s.pushEchoCache(ctx, echoSign, callback, timeout)
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return

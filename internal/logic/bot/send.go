@@ -174,8 +174,11 @@ func (s *sBot) SendFile(ctx context.Context, name, url string) {
 		userId := s.GetUserId(ctx)
 		s.SendFileToUser(ctx, userId, filePath, name)
 	}
+	timeout := func(ctx context.Context) {
+		s.SendPlainMsg(ctx, "上传文件超时")
+	}
 	// echo
-	err = s.pushEchoCache(ctx, echoSign, callback)
+	err = s.pushEchoCache(ctx, echoSign, callback, timeout)
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return
@@ -261,8 +264,11 @@ func (s *sBot) SetModel(ctx context.Context, model string) {
 		}
 		s.SendPlainMsg(ctx, "已更改机型为 '"+model+"'")
 	}
+	timeout := func(ctx context.Context) {
+		s.SendPlainMsg(ctx, "更改机型超时")
+	}
 	// echo
-	err = s.pushEchoCache(ctx, echoSign, callback)
+	err = s.pushEchoCache(ctx, echoSign, callback, timeout)
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return

@@ -39,6 +39,7 @@ var (
 type echoModel struct {
 	LastContext  context.Context
 	CallbackFunc func(ctx context.Context, rsyncCtx context.Context)
+	TimeoutFunc  func(ctx context.Context)
 }
 
 func (s *sBot) CtxWithWebSocket(parent context.Context, ws *ghttp.WebSocket) context.Context {
@@ -132,8 +133,14 @@ func (s *sBot) catchEcho(ctx context.Context) (catch bool) {
 		if echo == nil {
 			return
 		}
-		echo.CallbackFunc(echo.LastContext, ctx)
 		catch = true
+		if echo.CallbackFunc == nil {
+			if echo.TimeoutFunc != nil {
+				echo.TimeoutFunc(echo.LastContext)
+			}
+			return
+		}
+		echo.CallbackFunc(echo.LastContext, ctx)
 	}
 	return
 }
@@ -150,7 +157,9 @@ func (s *sBot) defaultEchoProcess(rsyncCtx context.Context) (err error) {
 	return
 }
 
-func (s *sBot) pushEchoCache(ctx context.Context, echoSign string, callbackFunc func(ctx context.Context, rsyncCtx context.Context)) (err error) {
+func (s *sBot) pushEchoCache(ctx context.Context, echoSign string,
+	callbackFunc func(ctx context.Context, rsyncCtx context.Context),
+	timeoutFunc func(ctx context.Context)) (err error) {
 	echoKey := echoPrefix + echoSign
 	// 检查超时
 	go func() {
@@ -163,16 +172,31 @@ func (s *sBot) pushEchoCache(ctx context.Context, echoSign string, callbackFunc 
 		if !contain {
 			return
 		}
-		_, e = gcache.Remove(ctx, echoKey)
+		v, e := gcache.Remove(ctx, echoKey)
 		if e != nil {
 			g.Log().Error(ctx, e)
+			return
 		}
-		s.SendPlainMsg(ctx, "echo 超时")
+		// 执行超时回调
+		if v == nil {
+			return
+		}
+		var echo *echoModel
+		e = v.Scan(&echo)
+		if e != nil {
+			g.Log().Error(ctx, e)
+			return
+		}
+		if echo == nil || echo.TimeoutFunc == nil {
+			return
+		}
+		echo.TimeoutFunc(echo.LastContext)
 	}()
 	// 放入缓存
 	err = gcache.Set(ctx, echoKey, echoModel{
 		LastContext:  ctx,
 		CallbackFunc: callbackFunc,
+		TimeoutFunc:  timeoutFunc,
 	}, echoTimeout)
 	return
 }
