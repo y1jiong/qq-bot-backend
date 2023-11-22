@@ -59,8 +59,12 @@ func (s *sCommand) TryCommand(ctx context.Context) (catch bool, retMsg string) {
 			// /user <>
 			catch, retMsg = tryUser(ctx, next[2])
 		case "raw":
+			// 权限校验
+			if !service.User().CouldGetRawMsg(ctx, service.Bot().GetUserId(ctx)) {
+				return
+			}
 			// /raw <>
-			catch, retMsg = tryRaw(ctx, next[2])
+			catch, retMsg = true, next[2]
 		case "model":
 			// /model <>
 			catch, retMsg = tryModelSet(ctx, next[2])
