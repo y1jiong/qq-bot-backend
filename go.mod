@@ -5,8 +5,8 @@ go 1.21
 require (
 	github.com/bitly/go-simplejson v0.5.1
 	github.com/bytedance/sonic v1.10.2
-	github.com/gogf/gf/contrib/drivers/pgsql/v2 v2.5.6
-	github.com/gogf/gf/v2 v2.5.6
+	github.com/gogf/gf/contrib/drivers/pgsql/v2 v2.5.7
+	github.com/gogf/gf/v2 v2.5.7
 	github.com/gorilla/websocket v1.5.1
 	github.com/lukesampson/figlet v0.0.0-20190211215653-8a3ef4a6ac42
 	github.com/nsf/termbox-go v1.1.1
