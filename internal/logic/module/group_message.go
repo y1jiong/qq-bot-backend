@@ -35,7 +35,7 @@ func (s *sModule) TryUndoMessageRecall(ctx context.Context) (catch bool) {
 	// 获取撤回消息
 	message := gconv.String(messageMap["message"])
 	// 防止过度触发反撤回
-	s.AutoMute(ctx, "recall", groupId, service.Bot().GetUserId(ctx),
+	s.AutoMute(ctx, "recall", groupId, userId,
 		2, 5, 5, gconv.Duration("1m"))
 	// 反撤回
 	notificationGroupId := service.Group().GetMessageNotificationGroupId(ctx, groupId)

@@ -345,11 +345,13 @@ func (s *sGroup) CheckExistReturnRes(ctx context.Context) (retMsg string) {
 		}
 		pageNum++
 	}
-	// 删除 groups
-	_, err := dao.Group.Ctx(ctx).Where(dao.Group.Columns().GroupId, waitForDelGroups).Delete()
-	if err != nil {
-		g.Log().Error(ctx, err)
-		return
+	if len(waitForDelGroups) > 0 {
+		// 删除 groups
+		_, err := dao.Group.Ctx(ctx).Where(dao.Group.Columns().GroupId, waitForDelGroups).Delete()
+		if err != nil {
+			g.Log().Error(ctx, err)
+			return
+		}
 	}
 	// 回执
 	retMsg = "已删除 " + gconv.String(len(waitForDelGroups)) + " 条不适用的 group" + msgBuilder.String()
