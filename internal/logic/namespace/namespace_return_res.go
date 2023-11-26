@@ -2,6 +2,7 @@ package namespace
 
 import (
 	"context"
+	"fmt"
 	sj "github.com/bitly/go-simplejson"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/util/gconv"
@@ -119,15 +120,11 @@ func (s *sNamespace) QueryOwnNamespaceReturnRes(ctx context.Context) (retMsg str
 	nEntitiesLen := len(nEntities)
 	var msg strings.Builder
 	for i, v := range nEntities {
-		msg.WriteString(dao.Namespace.Columns().Namespace)
-		msg.WriteString(": ")
-		msg.WriteString(v.Namespace)
-		msg.WriteString("\n")
-		msg.WriteString(dao.Namespace.Columns().CreatedAt)
-		msg.WriteString(": ")
-		msg.WriteString(v.CreatedAt.String())
+		msg.WriteString(fmt.Sprintf("%s: %s\n%s: %s",
+			dao.Namespace.Columns().Namespace, v.Namespace,
+			dao.Namespace.Columns().CreatedAt, v.CreatedAt.String()))
 		if i != nEntitiesLen-1 {
-			msg.WriteString("\n---\n")
+			msg.WriteString("\n")
 		}
 	}
 	retMsg = msg.String()

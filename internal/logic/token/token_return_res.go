@@ -2,6 +2,7 @@ package token
 
 import (
 	"context"
+	"fmt"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/util/gconv"
 	"qq-bot-backend/internal/dao"
@@ -122,27 +123,13 @@ func (s *sToken) QueryTokenReturnRes(ctx context.Context, name string) (retMsg s
 		return
 	}
 	// 回执
-	var msg strings.Builder
-	msg.WriteString(dao.Token.Columns().Name)
-	msg.WriteString(": ")
-	msg.WriteString(tokenE.Name)
-	msg.WriteString("\n")
-	msg.WriteString(dao.Token.Columns().CreatedAt)
-	msg.WriteString(": ")
-	msg.WriteString(tokenE.CreatedAt.String())
-	msg.WriteString("\n")
-	msg.WriteString(dao.Token.Columns().UpdatedAt)
-	msg.WriteString(": ")
-	msg.WriteString(tokenE.UpdatedAt.String())
-	msg.WriteString("\n")
-	msg.WriteString(dao.Token.Columns().LastLoginAt)
-	msg.WriteString(": ")
-	msg.WriteString(tokenE.LastLoginAt.String())
-	msg.WriteString("\n")
-	msg.WriteString(dao.Token.Columns().BindingBotId)
-	msg.WriteString(": ")
-	msg.WriteString(gconv.String(tokenE.BindingBotId))
-	retMsg = msg.String()
+	retMsg = fmt.Sprintf("%s: %s\n%s: %d\n%s: %s\n%s: %s\n%s: %s\n%s: %d",
+		dao.Token.Columns().Name, tokenE.Name,
+		dao.Token.Columns().OwnerId, tokenE.OwnerId,
+		dao.Token.Columns().CreatedAt, tokenE.CreatedAt.String(),
+		dao.Token.Columns().UpdatedAt, tokenE.UpdatedAt.String(),
+		dao.Token.Columns().LastLoginAt, tokenE.LastLoginAt.String(),
+		dao.Token.Columns().BindingBotId, tokenE.BindingBotId)
 	return
 }
 
@@ -161,30 +148,14 @@ func (s *sToken) QueryOwnTokenReturnRes(ctx context.Context) (retMsg string) {
 		return
 	}
 	// 回执
-	var msg strings.Builder
 	tEntitiesLen := len(tEntities)
+	var msg strings.Builder
 	for i, v := range tEntities {
-		msg.WriteString(dao.Token.Columns().Name)
-		msg.WriteString(": ")
-		msg.WriteString(v.Name)
-		msg.WriteString("\n")
-		msg.WriteString(dao.Token.Columns().CreatedAt)
-		msg.WriteString(": ")
-		msg.WriteString(v.CreatedAt.String())
-		msg.WriteString("\n")
-		msg.WriteString(dao.Token.Columns().UpdatedAt)
-		msg.WriteString(": ")
-		msg.WriteString(v.UpdatedAt.String())
-		msg.WriteString("\n")
-		msg.WriteString(dao.Token.Columns().LastLoginAt)
-		msg.WriteString(": ")
-		msg.WriteString(v.LastLoginAt.String())
-		msg.WriteString("\n")
-		msg.WriteString(dao.Token.Columns().BindingBotId)
-		msg.WriteString(": ")
-		msg.WriteString(gconv.String(v.BindingBotId))
+		msg.WriteString(fmt.Sprintf("%s: %s\n%s: %s",
+			dao.Token.Columns().Name, v.Name,
+			dao.Token.Columns().CreatedAt, v.CreatedAt.String()))
 		if i != tEntitiesLen-1 {
-			msg.WriteString("\n---\n")
+			msg.WriteString("\n")
 		}
 	}
 	retMsg = msg.String()
