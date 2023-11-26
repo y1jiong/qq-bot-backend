@@ -36,6 +36,7 @@ func getList(ctx context.Context, listName string) (listE *entity.List) {
 	return
 }
 
+// GetListData 获取 list 数据，返回的 map 一定不为 nil
 func (s *sList) GetListData(ctx context.Context, listName string) (listMap map[string]any) {
 	// 参数合法性校验
 	if !legalListNameRe.MatchString(listName) {

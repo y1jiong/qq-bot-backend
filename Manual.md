@@ -22,6 +22,14 @@ v1.5
 | /list rm {list_name}                 | 删除 list_name（删除后原 list_name 不可使用，只能恢复）      | 同上                                             |
 | /list recover {list_name}            | 恢复 list_name                                               | 同上                                             |
 
+## List Operation
+
+| Command                | Description                            | Comment                         |
+| ---------------------- | -------------------------------------- | ------------------------------- |
+| /list op {A} U {B} {C} | 并集运算 `A` Union `B` equals `C`      | 需要 namespace admin 或更高权限 |
+| /list op {A} I {B} {C} | 交集运算 `A` Intersect `B` equals `C`  | 同上                            |
+| /list op {A} D {B} {C} | 差集运算 `A` Difference `B` equals `C` | 同上                            |
+
 ## Group
 
 | Command                 | Description                                                  | Comment                                        |

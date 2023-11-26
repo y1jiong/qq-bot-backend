@@ -3,6 +3,7 @@ package command
 import (
 	"context"
 	"qq-bot-backend/internal/service"
+	"strings"
 )
 
 func tryList(ctx context.Context, cmd string) (catch bool, retMsg string) {
@@ -53,6 +54,9 @@ func tryList(ctx context.Context, cmd string) (catch bool, retMsg string) {
 			// /list recover <list_name>
 			retMsg = service.List().RecoverListReturnRes(ctx, next[2])
 			catch = true
+		case "op":
+			// /list op <>
+			catch, retMsg = tryListOp(ctx, next[2])
 		}
 	}
 	return
@@ -123,6 +127,32 @@ func tryListLeave(ctx context.Context, cmd string) (catch bool, retMsg string) {
 		// /list leave <list_name> <key>
 		retMsg = service.List().RemoveListDataReturnRes(ctx, next[1], next[2])
 		catch = true
+	}
+	return
+}
+
+func tryListOp(ctx context.Context, cmd string) (catch bool, retMsg string) {
+	args := strings.Fields(cmd)
+	if len(args) != 4 {
+		return
+	}
+	catch = true
+	switch args[1] {
+	case "U":
+		// /list op <A> U <B> <C>
+		// `A` Union `B` equals `C`
+		retMsg = service.List().UnionListReturnRes(ctx, args[0], args[2], args[3])
+	case "I":
+		// /list op <A> I <B> <C>
+		// `A` Intersect `B` equals `C`
+		retMsg = service.List().IntersectListReturnRes(ctx, args[0], args[2], args[3])
+	case "D":
+		// /list op <A> D <B> <C>
+		// `A` Difference `B` equals `C`
+		retMsg = service.List().DifferenceListReturnRes(ctx, args[0], args[2], args[3])
+	default:
+		catch = false
+		return
 	}
 	return
 }

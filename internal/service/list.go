@@ -11,8 +11,15 @@ import (
 
 type (
 	IList interface {
+		// GetListData 获取 list 数据，返回的 map 一定不为 nil
 		GetListData(ctx context.Context, listName string) (listMap map[string]any)
 		AppendListData(ctx context.Context, listName string, newMap map[string]any) (n int, err error)
+		UnionOp(ctx context.Context, A, B, C string) (n int, err error)
+		IntersectOp(ctx context.Context, A, B, C string) (n int, err error)
+		DifferenceOp(ctx context.Context, A, B, C string) (n int, err error)
+		UnionListReturnRes(ctx context.Context, A, B, C string) (retMsg string)
+		IntersectListReturnRes(ctx context.Context, A, B, C string) (retMsg string)
+		DifferenceListReturnRes(ctx context.Context, A, B, C string) (retMsg string)
 		AddListReturnRes(ctx context.Context, listName, namespace string) (retMsg string)
 		RemoveListReturnRes(ctx context.Context, listName string) (retMsg string)
 		RecoverListReturnRes(ctx context.Context, listName string) (retMsg string)
