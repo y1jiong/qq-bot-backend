@@ -219,7 +219,7 @@ func (s *sToken) ChangeTokenOwnerReturnRes(ctx context.Context, name, ownerId st
 		return
 	}
 	// 回执
-	retMsg = "已将 token(" + name + ") 的所有者修改为 " + ownerId
+	retMsg = "已将 token(" + name + ") 的 owner 修改为 " + ownerId
 	return
 }
 

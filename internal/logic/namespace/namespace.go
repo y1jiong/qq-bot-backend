@@ -99,6 +99,9 @@ func (s *sNamespace) AddNamespaceList(ctx context.Context, namespace, listName s
 		g.Log().Error(ctx, err)
 		return
 	}
+	if !settingJson.Get(listMapKey).Valid() {
+		_, _ = settingJson.Set(listMapKey, ast.NewNull())
+	}
 	_, _ = settingJson.Get(listMapKey).Set(listName, ast.NewNull())
 	// 保存数据
 	settingBytes, err := settingJson.MarshalJSON()

@@ -28,6 +28,15 @@ func tryNamespace(ctx context.Context, cmd string) (catch bool, retMsg string) {
 			// 继续处理
 			retMsg = service.Namespace().RemoveNamespaceReturnRes(ctx, next[2])
 			catch = true
+		case "chown":
+			// /namespace chown <owner_id> <namespace>
+			// 继续处理
+			if !doubleValueCmdEndRe.MatchString(next[2]) {
+				return
+			}
+			dv := doubleValueCmdEndRe.FindStringSubmatch(next[2])
+			retMsg = service.Namespace().ChangeNamespaceOwnerReturnRes(ctx, dv[2], dv[1])
+			catch = true
 		default:
 			// /namespace <namespace> <>
 			catch, retMsg = tryNamespaceReset(ctx, next[1], next[2])

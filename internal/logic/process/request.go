@@ -11,7 +11,9 @@ func processRequest(ctx context.Context) {
 		switch service.Bot().GetSubType(ctx) {
 		case "add":
 			// 申请入群
-			service.Module().TryApproveAddGroup(ctx)
+			go service.Module().TryApproveAddGroup(ctx)
+			// 记录申请入群日志
+			go service.Module().TryLogApproval(ctx)
 		case "invite":
 			// 群邀请
 		}

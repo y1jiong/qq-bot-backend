@@ -13,8 +13,8 @@ func processMessage(ctx context.Context) {
 		switch subType {
 		case "normal":
 			// 群聊
-			service.Module().TryKeywordRecall(ctx)
-			service.Module().TryKeywordReply(ctx)
+			go service.Module().TryKeywordRecall(ctx)
+			go service.Module().TryKeywordReply(ctx)
 		case "anonymous":
 			// 匿名
 		case "notice":

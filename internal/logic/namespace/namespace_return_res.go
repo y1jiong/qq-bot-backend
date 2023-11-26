@@ -55,7 +55,7 @@ func (s *sNamespace) RemoveNamespaceReturnRes(ctx context.Context, namespace str
 		retMsg = "未找到 namespace(" + namespace + ")"
 		return
 	}
-	// 判断 owner
+	// 权限校验 判断 owner
 	if !isNamespaceOwner(service.Bot().GetUserId(ctx), namespaceE) {
 		retMsg = "未找到 namespace(" + namespace + ")"
 		return
@@ -83,7 +83,7 @@ func (s *sNamespace) QueryNamespaceReturnRes(ctx context.Context, namespace stri
 	if namespaceE == nil {
 		return
 	}
-	// 判断 owner or admin
+	// 权限校验 判断 owner or admin
 	if !isNamespaceOwnerOrAdmin(ctx, service.Bot().GetUserId(ctx), namespaceE) {
 		return
 	}
@@ -145,8 +145,9 @@ func (s *sNamespace) AddNamespaceAdminReturnRes(ctx context.Context,
 	if namespaceE == nil {
 		return
 	}
-	// 判断 owner
-	if !isNamespaceOwner(service.Bot().GetUserId(ctx), namespaceE) {
+	// 权限校验 判断 owner 或者 namespace op
+	if !isNamespaceOwner(service.Bot().GetUserId(ctx), namespaceE) &&
+		!service.User().CouldOpNamespace(ctx, service.Bot().GetUserId(ctx)) {
 		return
 	}
 	// 数据处理
@@ -191,8 +192,9 @@ func (s *sNamespace) RemoveNamespaceAdminReturnRes(ctx context.Context,
 	if namespaceE == nil {
 		return
 	}
-	// 判断是否是 owner
-	if !isNamespaceOwner(service.Bot().GetUserId(ctx), namespaceE) {
+	// 权限校验 判断 owner 或者 namespace op
+	if !isNamespaceOwner(service.Bot().GetUserId(ctx), namespaceE) &&
+		!service.User().CouldOpNamespace(ctx, service.Bot().GetUserId(ctx)) {
 		return
 	}
 	// 数据处理
@@ -240,7 +242,7 @@ func (s *sNamespace) ResetNamespaceAdminReturnRes(ctx context.Context, namespace
 	if namespaceE == nil {
 		return
 	}
-	// 判断是否是 owner
+	// 权限校验 判断 owner
 	if !isNamespaceOwner(service.Bot().GetUserId(ctx), namespaceE) {
 		return
 	}
@@ -268,5 +270,35 @@ func (s *sNamespace) ResetNamespaceAdminReturnRes(ctx context.Context, namespace
 	}
 	// 回执
 	retMsg = "已重置 namespace(" + namespace + ") 的 admin"
+	return
+}
+
+func (s *sNamespace) ChangeNamespaceOwnerReturnRes(ctx context.Context,
+	namespace, ownerId string) (retMsg string) {
+	// 参数合法性校验
+	if !legalNamespaceNameRe.MatchString(namespace) {
+		return
+	}
+	// 获取 namespace
+	namespaceE := getNamespace(ctx, namespace)
+	if namespaceE == nil {
+		return
+	}
+	// 权限校验 判断 owner 或者 namespace op
+	if !isNamespaceOwner(service.Bot().GetUserId(ctx), namespaceE) &&
+		!service.User().CouldOpNamespace(ctx, service.Bot().GetUserId(ctx)) {
+		return
+	}
+	// 数据库更新
+	_, err := dao.Namespace.Ctx(ctx).
+		Data(dao.Namespace.Columns().OwnerId, ownerId).
+		Where(dao.Namespace.Columns().Namespace, namespace).
+		Update()
+	if err != nil {
+		g.Log().Error(ctx, err)
+		return
+	}
+	// 回执
+	retMsg = "已将 namespace(" + namespace + ") 的 owner 修改为 user(" + ownerId + ")"
 	return
 }

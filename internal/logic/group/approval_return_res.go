@@ -80,7 +80,7 @@ func (s *sGroup) AddApprovalProcessReturnRes(ctx context.Context,
 			settingJson.Set(approvalRegexpKey, args[0])
 		case consts.NotificationCmd:
 			if v, ok := settingJson.CheckGet(approvalNotificationGroupIdKey); ok {
-				retMsg = "早已设置 group(" + gconv.String(groupId) + ") 群入群审批通知群为 group(" +
+				retMsg = "早已设置 group(" + gconv.String(groupId) + ") 群入群审核通知群为 group(" +
 					gconv.String(v.MustInt64()) + ")"
 				return
 			}
@@ -131,9 +131,9 @@ func (s *sGroup) AddApprovalProcessReturnRes(ctx context.Context,
 	}
 	// 回执
 	if len(args) > 0 {
-		retMsg = "已添加 group(" + gconv.String(groupId) + ") 入群审批 " + processName + "(" + args[0] + ")"
+		retMsg = "已添加 group(" + gconv.String(groupId) + ") 入群审核 " + processName + "(" + args[0] + ")"
 	} else {
-		retMsg = "已启用 group(" + gconv.String(groupId) + ") 入群审批 " + processName
+		retMsg = "已启用 group(" + gconv.String(groupId) + ") 入群审核 " + processName
 	}
 	return
 }
@@ -233,9 +233,9 @@ func (s *sGroup) RemoveApprovalProcessReturnRes(ctx context.Context,
 	}
 	// 回执
 	if len(args) > 0 {
-		retMsg = "已移除 group(" + gconv.String(groupId) + ") 入群审批 " + processName + "(" + args[0] + ")"
+		retMsg = "已移除 group(" + gconv.String(groupId) + ") 入群审核 " + processName + "(" + args[0] + ")"
 	} else {
-		retMsg = "已禁用 group(" + gconv.String(groupId) + ") 入群审批 " + processName
+		retMsg = "已禁用 group(" + gconv.String(groupId) + ") 入群审核 " + processName
 	}
 	return
 }

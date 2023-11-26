@@ -47,8 +47,10 @@ func (s *sGroup) ExportGroupMemberListReturnRes(ctx context.Context,
 		if vv, ok := v.(map[string]any); ok {
 			// 写入数据
 			membersMap[gconv.String(vv["user_id"])] = struct {
+				Card     string `json:"card"`
 				JoinTime string `json:"join_time"`
 			}{
+				Card:     gconv.String(vv["card"]),
 				JoinTime: gtime.New(gconv.Int(vv["join_time"])).String(),
 			}
 		}

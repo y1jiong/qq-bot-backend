@@ -18,6 +18,7 @@ type (
 		TryKeywordRecall(ctx context.Context) (catch bool)
 		TryKeywordReply(ctx context.Context) (catch bool)
 		TryLogLeave(ctx context.Context) (catch bool)
+		TryLogApproval(ctx context.Context) (catch bool)
 		TryUndoMessageRecall(ctx context.Context) (catch bool)
 		AutoLimit(ctx context.Context, kind, key string, limitTimes int, duration time.Duration) (limited bool, times int)
 		MultiContains(str string, m map[string]any) (contains bool, hit string, mValue string)

@@ -16,13 +16,13 @@ func (s *sModule) TryApproveAddGroup(ctx context.Context) (catch bool) {
 	process := service.Group().GetApprovalProcess(ctx, groupId)
 	// 预处理
 	if len(process) < 1 {
-		// 没有入群审批策略，跳过审批功能
+		// 没有入群审核策略，跳过审核功能
 		return
 	}
-	comment := service.Bot().GetComment(ctx)
-	// 默认通过审批
+	// 默认通过审核
 	pass := true
 	// 局部变量
+	comment := service.Bot().GetComment(ctx)
 	userId := service.Bot().GetUserId(ctx)
 	var extra string
 	// 处理
@@ -46,14 +46,14 @@ func (s *sModule) TryApproveAddGroup(ctx context.Context) (catch bool) {
 	var logMsg string
 	if (!pass && service.Group().IsEnabledApprovalAutoReject(ctx, groupId)) ||
 		(pass && service.Group().IsEnabledApprovalAutoPass(ctx, groupId)) {
-		// 在不通过和启用自动通过的条件下发送审批回执
-		// 审批请求回执
+		// 在不通过和启用自动通过的条件下发送审核回执
+		// 审核请求回执
 		service.Bot().ApproveJoinGroup(ctx,
 			service.Bot().GetFlag(ctx),
 			service.Bot().GetSubType(ctx),
 			pass,
 			"Auto-rejection")
-		// 打印审批日志
+		// 打印审核日志
 		if pass {
 			logMsg = fmt.Sprintf("approve user(%v) join group(%v) with %v",
 				userId,

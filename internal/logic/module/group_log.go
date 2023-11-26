@@ -48,3 +48,34 @@ func (s *sModule) TryLogLeave(ctx context.Context) (catch bool) {
 		operatorId)
 	return
 }
+
+func (s *sModule) TryLogApproval(ctx context.Context) (catch bool) {
+	// 获取当前 group log approval list
+	groupId := service.Bot().GetGroupId(ctx)
+	listName := service.Group().GetLogApprovalList(ctx, groupId)
+	// 预处理
+	if listName == "" {
+		// 没有设置 approval list
+		return
+	}
+	// 处理
+	catch = true
+	userId := service.Bot().GetUserId(ctx)
+	// 初始化数据
+	one := struct {
+		Comment string `json:"comment"`
+		Time    string `json:"time"`
+	}{
+		Comment: service.Bot().GetComment(ctx),
+		Time:    gtime.New(service.Bot().GetTimestamp(ctx)).String(),
+	}
+	listMap := make(map[string]any)
+	listMap[gconv.String(userId)] = one
+	// 保存数据
+	_, err := service.List().AppendListData(ctx, listName, listMap)
+	if err != nil {
+		g.Log().Error(ctx, err)
+		return
+	}
+	return
+}
