@@ -12,7 +12,6 @@ import (
 type (
 	IMiddleware interface {
 		ErrCodeToHttpStatus(r *ghttp.Request)
-		// AccessIntervalControl 访问间隔控制
 		RateLimit(r *ghttp.Request)
 	}
 )

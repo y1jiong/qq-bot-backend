@@ -17,7 +17,7 @@ func (s *sBot) SendMessage(ctx context.Context, messageType string, uid, gid int
 		uid = 0
 	}
 	// 参数
-	res := struct {
+	req := struct {
 		Action string `json:"action"`
 		Params struct {
 			MessageType string `json:"message_type,omitempty"`
@@ -42,12 +42,12 @@ func (s *sBot) SendMessage(ctx context.Context, messageType string, uid, gid int
 			GroupId:     gid,
 		},
 	}
-	resJson, err := sonic.ConfigStd.Marshal(res)
+	reqJson, err := sonic.ConfigStd.Marshal(req)
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return
 	}
-	err = s.writeMessage(ctx, websocket.TextMessage, resJson)
+	err = s.writeMessage(ctx, websocket.TextMessage, reqJson)
 	if err != nil {
 		g.Log().Warning(ctx, err)
 	}
@@ -61,16 +61,16 @@ func (s *sBot) SendMsg(ctx context.Context, msg string) {
 	s.SendMessage(ctx, s.GetMsgType(ctx), s.GetUserId(ctx), s.GetGroupId(ctx), msg, false)
 }
 
-func (s *sBot) SendMsgIfNotApiReq(ctx context.Context, msg string) {
+func (s *sBot) SendPlainMsgIfNotApiReq(ctx context.Context, msg string) {
 	if s.isApiReq(ctx) {
 		return
 	}
-	s.SendMsg(ctx, msg)
+	s.SendPlainMsg(ctx, msg)
 }
 
 func (s *sBot) SendFileToGroup(ctx context.Context, gid int64, filePath, name, folder string) {
 	// 参数
-	res := struct {
+	req := struct {
 		Action string `json:"action"`
 		Params struct {
 			GroupId int64  `json:"group_id"`
@@ -92,12 +92,12 @@ func (s *sBot) SendFileToGroup(ctx context.Context, gid int64, filePath, name, f
 			Folder:  folder,
 		},
 	}
-	resJson, err := sonic.ConfigStd.Marshal(res)
+	reqJson, err := sonic.ConfigStd.Marshal(req)
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return
 	}
-	err = s.writeMessage(ctx, websocket.TextMessage, resJson)
+	err = s.writeMessage(ctx, websocket.TextMessage, reqJson)
 	if err != nil {
 		g.Log().Warning(ctx, err)
 	}
@@ -105,7 +105,7 @@ func (s *sBot) SendFileToGroup(ctx context.Context, gid int64, filePath, name, f
 
 func (s *sBot) SendFileToUser(ctx context.Context, uid int64, filePath, name string) {
 	// 参数
-	res := struct {
+	req := struct {
 		Action string `json:"action"`
 		Params struct {
 			UserId int64  `json:"user_id"`
@@ -124,12 +124,12 @@ func (s *sBot) SendFileToUser(ctx context.Context, uid int64, filePath, name str
 			Name:   name,
 		},
 	}
-	resJson, err := sonic.ConfigStd.Marshal(res)
+	reqJson, err := sonic.ConfigStd.Marshal(req)
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return
 	}
-	err = s.writeMessage(ctx, websocket.TextMessage, resJson)
+	err = s.writeMessage(ctx, websocket.TextMessage, reqJson)
 	if err != nil {
 		g.Log().Warning(ctx, err)
 	}
@@ -139,7 +139,7 @@ func (s *sBot) SendFile(ctx context.Context, name, url string) {
 	// echo sign
 	echoSign := guid.S()
 	// 参数
-	res := struct {
+	req := struct {
 		Action string `json:"action"`
 		Echo   string `json:"echo"`
 		Params struct {
@@ -154,7 +154,7 @@ func (s *sBot) SendFile(ctx context.Context, name, url string) {
 			Url: url,
 		},
 	}
-	resJson, err := sonic.ConfigStd.Marshal(res)
+	reqJson, err := sonic.ConfigStd.Marshal(req)
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return
@@ -162,7 +162,7 @@ func (s *sBot) SendFile(ctx context.Context, name, url string) {
 	// callback
 	callback := func(ctx context.Context, rsyncCtx context.Context) {
 		if err = s.defaultEchoProcess(rsyncCtx); err != nil {
-			s.SendPlainMsg(ctx, err.Error())
+			s.SendPlainMsgIfNotApiReq(ctx, err.Error())
 			return
 		}
 		filePath := s.getFileFromData(rsyncCtx)
@@ -175,7 +175,7 @@ func (s *sBot) SendFile(ctx context.Context, name, url string) {
 		s.SendFileToUser(ctx, userId, filePath, name)
 	}
 	timeout := func(ctx context.Context) {
-		s.SendPlainMsg(ctx, "上传文件超时")
+		s.SendPlainMsgIfNotApiReq(ctx, "上传文件超时")
 	}
 	// echo
 	err = s.pushEchoCache(ctx, echoSign, callback, timeout)
@@ -183,7 +183,7 @@ func (s *sBot) SendFile(ctx context.Context, name, url string) {
 		g.Log().Error(ctx, err)
 		return
 	}
-	err = s.writeMessage(ctx, websocket.TextMessage, resJson)
+	err = s.writeMessage(ctx, websocket.TextMessage, reqJson)
 	if err != nil {
 		g.Log().Warning(ctx, err)
 	}
@@ -195,7 +195,7 @@ func (s *sBot) ApproveJoinGroup(ctx context.Context, flag, subType string, appro
 		reason = ""
 	}
 	// 参数
-	res := struct {
+	req := struct {
 		Action string `json:"action"`
 		Params struct {
 			Flag    string `json:"flag"`
@@ -217,13 +217,13 @@ func (s *sBot) ApproveJoinGroup(ctx context.Context, flag, subType string, appro
 			Reason:  reason,
 		},
 	}
-	resJson, err := sonic.ConfigStd.Marshal(res)
+	reqJson, err := sonic.ConfigStd.Marshal(req)
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return
 	}
 	// 发送响应
-	err = s.writeMessage(ctx, websocket.TextMessage, resJson)
+	err = s.writeMessage(ctx, websocket.TextMessage, reqJson)
 	if err != nil {
 		g.Log().Warning(ctx, err)
 	}
@@ -233,7 +233,7 @@ func (s *sBot) SetModel(ctx context.Context, model string) {
 	// echo sign
 	echoSign := guid.S()
 	// 参数
-	res := struct {
+	req := struct {
 		Action string `json:"action"`
 		Echo   string `json:"echo"`
 		Params struct {
@@ -251,7 +251,7 @@ func (s *sBot) SetModel(ctx context.Context, model string) {
 			ModelShow: model,
 		},
 	}
-	resJson, err := sonic.ConfigStd.Marshal(res)
+	reqJson, err := sonic.ConfigStd.Marshal(req)
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return
@@ -259,13 +259,13 @@ func (s *sBot) SetModel(ctx context.Context, model string) {
 	// callback
 	callback := func(ctx context.Context, rsyncCtx context.Context) {
 		if err = s.defaultEchoProcess(rsyncCtx); err != nil {
-			s.SendPlainMsg(ctx, err.Error())
+			s.SendPlainMsgIfNotApiReq(ctx, err.Error())
 			return
 		}
-		s.SendPlainMsg(ctx, "已更改机型为 '"+model+"'")
+		s.SendPlainMsgIfNotApiReq(ctx, "已更改机型为 '"+model+"'")
 	}
 	timeout := func(ctx context.Context) {
-		s.SendPlainMsg(ctx, "更改机型超时")
+		s.SendPlainMsgIfNotApiReq(ctx, "更改机型超时")
 	}
 	// echo
 	err = s.pushEchoCache(ctx, echoSign, callback, timeout)
@@ -274,7 +274,7 @@ func (s *sBot) SetModel(ctx context.Context, model string) {
 		return
 	}
 	// 发送响应
-	err = s.writeMessage(ctx, websocket.TextMessage, resJson)
+	err = s.writeMessage(ctx, websocket.TextMessage, reqJson)
 	if err != nil {
 		g.Log().Warning(ctx, err)
 	}
@@ -282,7 +282,7 @@ func (s *sBot) SetModel(ctx context.Context, model string) {
 
 func (s *sBot) RecallMessage(ctx context.Context, msgId int64) {
 	// 参数
-	res := struct {
+	req := struct {
 		Action string `json:"action"`
 		Params struct {
 			MessageId int64 `json:"message_id"`
@@ -295,12 +295,12 @@ func (s *sBot) RecallMessage(ctx context.Context, msgId int64) {
 			MessageId: msgId,
 		},
 	}
-	resJson, err := sonic.ConfigStd.Marshal(res)
+	reqJson, err := sonic.ConfigStd.Marshal(req)
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return
 	}
-	err = s.writeMessage(ctx, websocket.TextMessage, resJson)
+	err = s.writeMessage(ctx, websocket.TextMessage, reqJson)
 	if err != nil {
 		g.Log().Warning(ctx, err)
 	}
@@ -314,7 +314,7 @@ func (s *sBot) MutePrototype(ctx context.Context, groupId, userId int64, seconds
 		seconds = 2591940
 	}
 	// 参数
-	res := struct {
+	req := struct {
 		Action string `json:"action"`
 		Params struct {
 			GroupId  int64 `json:"group_id"`
@@ -333,12 +333,12 @@ func (s *sBot) MutePrototype(ctx context.Context, groupId, userId int64, seconds
 			Duration: seconds,
 		},
 	}
-	resJson, err := sonic.ConfigStd.Marshal(res)
+	reqJson, err := sonic.ConfigStd.Marshal(req)
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return
 	}
-	err = s.writeMessage(ctx, websocket.TextMessage, resJson)
+	err = s.writeMessage(ctx, websocket.TextMessage, reqJson)
 	if err != nil {
 		g.Log().Warning(ctx, err)
 	}
@@ -350,7 +350,7 @@ func (s *sBot) Mute(ctx context.Context, seconds int) {
 
 func (s *sBot) SetGroupCard(ctx context.Context, groupId, userId int64, card string) {
 	// 参数
-	res := struct {
+	req := struct {
 		Action string `json:"action"`
 		Params struct {
 			GroupId int64  `json:"group_id"`
@@ -369,12 +369,12 @@ func (s *sBot) SetGroupCard(ctx context.Context, groupId, userId int64, card str
 			Card:    card,
 		},
 	}
-	resJson, err := sonic.ConfigStd.Marshal(res)
+	reqJson, err := sonic.ConfigStd.Marshal(req)
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return
 	}
-	err = s.writeMessage(ctx, websocket.TextMessage, resJson)
+	err = s.writeMessage(ctx, websocket.TextMessage, reqJson)
 	if err != nil {
 		g.Log().Warning(ctx, err)
 	}
@@ -382,7 +382,7 @@ func (s *sBot) SetGroupCard(ctx context.Context, groupId, userId int64, card str
 
 func (s *sBot) Kick(ctx context.Context, groupId, userId int64, reject ...bool) {
 	// 参数
-	res := struct {
+	req := struct {
 		Action string `json:"action"`
 		Params struct {
 			GroupId          int64 `json:"group_id"`
@@ -402,14 +402,14 @@ func (s *sBot) Kick(ctx context.Context, groupId, userId int64, reject ...bool) 
 		},
 	}
 	if len(reject) > 0 && reject[0] {
-		res.Params.RejectAddRequest = true
+		req.Params.RejectAddRequest = true
 	}
-	resJson, err := sonic.ConfigStd.Marshal(res)
+	reqJson, err := sonic.ConfigStd.Marshal(req)
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return
 	}
-	err = s.writeMessage(ctx, websocket.TextMessage, resJson)
+	err = s.writeMessage(ctx, websocket.TextMessage, reqJson)
 	if err != nil {
 		g.Log().Warning(ctx, err)
 	}

@@ -175,7 +175,7 @@ func (s *sGroup) KickFromListReturnRes(ctx context.Context,
 	// 踢人过程
 	retMsg = "正在踢出 list(" + listName + ") 中的 group(" + gconv.String(groupId) +
 		") member\n共 " + gconv.String(listMapLen) + " 条，有 " + gconv.String(len(kickMap)) + " 条需要踢出"
-	service.Bot().SendMsgIfNotApiReq(ctx, retMsg)
+	service.Bot().SendPlainMsgIfNotApiReq(ctx, retMsg)
 	for k := range kickMap {
 		// 踢人
 		service.Bot().Kick(ctx, groupId, gconv.Int64(k))
@@ -269,7 +269,7 @@ func (s *sGroup) KeepFromListReturnRes(ctx context.Context,
 	// 踢人过程
 	retMsg = "正在踢出不在 list(" + listName + ") 中的 group(" + gconv.String(groupId) +
 		") member\n共 " + gconv.String(listMapLen) + " 条，有 " + gconv.String(len(kickMap)) + " 条需要踢出"
-	service.Bot().SendMsgIfNotApiReq(ctx, retMsg)
+	service.Bot().SendPlainMsgIfNotApiReq(ctx, retMsg)
 	for k := range kickMap {
 		// 踢人
 		service.Bot().Kick(ctx, groupId, gconv.Int64(k))

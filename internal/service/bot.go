@@ -21,7 +21,6 @@ type (
 		LeaveConnectionPool(key int64)
 		LoadConnectionPool(key int64) context.Context
 		Process(ctx context.Context, rawJson []byte, nextProcess func(ctx context.Context))
-		IsGroupOwnerOrAdmin(ctx context.Context) (yes bool)
 		GetPostType(ctx context.Context) string
 		GetMsgType(ctx context.Context) string
 		GetRequestType(ctx context.Context) string
@@ -42,10 +41,11 @@ type (
 		RequestMessage(ctx context.Context, messageId int64) (messageMap map[string]any, err error)
 		GetGroupInfo(ctx context.Context, groupId int64, noCache ...bool) (infoMap map[string]any, err error)
 		GetLoginInfo(ctx context.Context) (userId int64, nickname string)
+		IsGroupOwnerOrAdmin(ctx context.Context) (yes bool)
 		SendMessage(ctx context.Context, messageType string, uid, gid int64, msg string, plain bool)
 		SendPlainMsg(ctx context.Context, msg string)
 		SendMsg(ctx context.Context, msg string)
-		SendMsgIfNotApiReq(ctx context.Context, msg string)
+		SendPlainMsgIfNotApiReq(ctx context.Context, msg string)
 		SendFileToGroup(ctx context.Context, gid int64, filePath, name, folder string)
 		SendFileToUser(ctx context.Context, uid int64, filePath, name string)
 		SendFile(ctx context.Context, name, url string)

@@ -105,7 +105,7 @@ func (s *sBot) GetGroupMemberInfo(ctx context.Context, groupId, userId int64) (m
 	// echo sign
 	echoSign := guid.S()
 	// 参数
-	res := struct {
+	req := struct {
 		Action string `json:"action"`
 		Echo   string `json:"echo"`
 		Params struct {
@@ -126,7 +126,7 @@ func (s *sBot) GetGroupMemberInfo(ctx context.Context, groupId, userId int64) (m
 			NoCache: false,
 		},
 	}
-	resJson, err := sonic.ConfigStd.Marshal(res)
+	reqJson, err := sonic.ConfigStd.Marshal(req)
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return
@@ -153,7 +153,7 @@ func (s *sBot) GetGroupMemberInfo(ctx context.Context, groupId, userId int64) (m
 		return
 	}
 	// 发送响应
-	err = s.writeMessage(ctx, websocket.TextMessage, resJson)
+	err = s.writeMessage(ctx, websocket.TextMessage, reqJson)
 	if err != nil {
 		g.Log().Warning(ctx, err)
 		return
@@ -166,7 +166,7 @@ func (s *sBot) GetGroupMemberList(ctx context.Context, groupId int64, noCache ..
 	// echo sign
 	echoSign := guid.S()
 	// 参数
-	res := struct {
+	req := struct {
 		Action string `json:"action"`
 		Echo   string `json:"echo"`
 		Params struct {
@@ -184,7 +184,7 @@ func (s *sBot) GetGroupMemberList(ctx context.Context, groupId int64, noCache ..
 			NoCache: true,
 		},
 	}
-	resJson, err := sonic.ConfigStd.Marshal(res)
+	reqJson, err := sonic.ConfigStd.Marshal(req)
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return
@@ -212,7 +212,7 @@ func (s *sBot) GetGroupMemberList(ctx context.Context, groupId int64, noCache ..
 		return
 	}
 	// 发送响应
-	err = s.writeMessage(ctx, websocket.TextMessage, resJson)
+	err = s.writeMessage(ctx, websocket.TextMessage, reqJson)
 	if err != nil {
 		g.Log().Warning(ctx, err)
 		return
@@ -231,7 +231,7 @@ func (s *sBot) RequestMessage(ctx context.Context, messageId int64) (messageMap 
 	// echo sign
 	echoSign := guid.S()
 	// 参数
-	res := struct {
+	req := struct {
 		Action string `json:"action"`
 		Echo   string `json:"echo"`
 		Params struct {
@@ -246,7 +246,7 @@ func (s *sBot) RequestMessage(ctx context.Context, messageId int64) (messageMap 
 			MessageId: gconv.String(messageId),
 		},
 	}
-	resJson, err := sonic.ConfigStd.Marshal(res)
+	reqJson, err := sonic.ConfigStd.Marshal(req)
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return
@@ -274,7 +274,7 @@ func (s *sBot) RequestMessage(ctx context.Context, messageId int64) (messageMap 
 		return
 	}
 	// 发送响应
-	err = s.writeMessage(ctx, websocket.TextMessage, resJson)
+	err = s.writeMessage(ctx, websocket.TextMessage, reqJson)
 	if err != nil {
 		g.Log().Warning(ctx, err)
 		return
@@ -287,7 +287,7 @@ func (s *sBot) GetGroupInfo(ctx context.Context, groupId int64, noCache ...bool)
 	// echo sign
 	echoSign := guid.S()
 	// 参数
-	res := struct {
+	req := struct {
 		Action string `json:"action"`
 		Echo   string `json:"echo"`
 		Params struct {
@@ -306,9 +306,9 @@ func (s *sBot) GetGroupInfo(ctx context.Context, groupId int64, noCache ...bool)
 		},
 	}
 	if len(noCache) > 0 && noCache[0] {
-		res.Params.NoCache = true
+		req.Params.NoCache = true
 	}
-	resJson, err := sonic.ConfigStd.Marshal(res)
+	reqJson, err := sonic.ConfigStd.Marshal(req)
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return
@@ -336,7 +336,7 @@ func (s *sBot) GetGroupInfo(ctx context.Context, groupId int64, noCache ...bool)
 		return
 	}
 	// 发送响应
-	err = s.writeMessage(ctx, websocket.TextMessage, resJson)
+	err = s.writeMessage(ctx, websocket.TextMessage, reqJson)
 	if err != nil {
 		g.Log().Warning(ctx, err)
 		return
@@ -349,14 +349,14 @@ func (s *sBot) GetLoginInfo(ctx context.Context) (userId int64, nickname string)
 	// echo sign
 	echoSign := guid.S()
 	// 参数
-	res := struct {
+	req := struct {
 		Action string `json:"action"`
 		Echo   string `json:"echo"`
 	}{
 		Action: "get_login_info",
 		Echo:   echoSign,
 	}
-	resJson, err := sonic.ConfigStd.Marshal(res)
+	reqJson, err := sonic.ConfigStd.Marshal(req)
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return
@@ -384,7 +384,7 @@ func (s *sBot) GetLoginInfo(ctx context.Context) (userId int64, nickname string)
 		return
 	}
 	// 发送响应
-	err = s.writeMessage(ctx, websocket.TextMessage, resJson)
+	err = s.writeMessage(ctx, websocket.TextMessage, reqJson)
 	if err != nil {
 		g.Log().Warning(ctx, err)
 		return
