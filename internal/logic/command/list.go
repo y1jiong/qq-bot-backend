@@ -110,12 +110,10 @@ func tryListAppend(ctx context.Context, cmd string) (catch bool, retMsg string) 
 func tryListSet(ctx context.Context, cmd string) (catch bool, retMsg string) {
 	switch {
 	case nextBranchRe.MatchString(cmd):
+		// /list set <list_name> <json>
 		next := nextBranchRe.FindStringSubmatch(cmd)
-		if endBranchRe.MatchString(next[2]) {
-			// /list set <list_name> <json>
-			retMsg = service.List().SetListDataReturnRes(ctx, next[1], next[2])
-			catch = true
-		}
+		retMsg = service.List().SetListDataReturnRes(ctx, next[1], next[2])
+		catch = true
 	}
 	return
 }
