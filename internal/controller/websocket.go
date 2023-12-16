@@ -67,7 +67,7 @@ func (c *cBot) Websocket(r *ghttp.Request) {
 	// 加入连接池
 	if botId != 0 {
 		service.Bot().JoinConnectionPool(ctx, botId)
-		g.Log().Info(ctx, tokenName+"("+gconv.String(botId)+")"+" joined connection pool")
+		g.Log().Info(ctx, tokenName+"("+gconv.String(botId)+") joined connection pool")
 	}
 	// 消息循环
 	for {
@@ -77,7 +77,7 @@ func (c *cBot) Websocket(r *ghttp.Request) {
 			// 离开连接池
 			if botId != 0 {
 				service.Bot().LeaveConnectionPool(botId)
-				g.Log().Info(ctx, tokenName+"("+gconv.String(botId)+")"+" left connection pool")
+				g.Log().Info(ctx, tokenName+"("+gconv.String(botId)+") left connection pool")
 			}
 			g.Log().Info(ctx, tokenName+" disconnected")
 			return
