@@ -29,10 +29,10 @@ func (s *sModule) TryKeywordRecall(ctx context.Context) (catch bool) {
 	hit := ""
 	// 处理
 	if _, ok := process[consts.BlacklistCmd]; ok {
-		shouldRecall, hit = isInKeywordLists(ctx, msg, service.Group().GetKeywordBlacklists(ctx, groupId))
+		shouldRecall, hit = isOnKeywordLists(ctx, msg, service.Group().GetKeywordBlacklists(ctx, groupId))
 	}
 	if _, ok := process[consts.WhitelistCmd]; ok && shouldRecall {
-		in, _ := isInKeywordLists(ctx, msg, service.Group().GetKeywordWhitelists(ctx, groupId))
+		in, _ := isOnKeywordLists(ctx, msg, service.Group().GetKeywordWhitelists(ctx, groupId))
 		shouldRecall = !in
 	}
 	// 结果处理
@@ -63,7 +63,7 @@ func (s *sModule) TryKeywordRecall(ctx context.Context) (catch bool) {
 	return
 }
 
-func isInKeywordLists(ctx context.Context, msg string, lists map[string]any) (in bool, hit string) {
+func isOnKeywordLists(ctx context.Context, msg string, lists map[string]any) (in bool, hit string) {
 	for k := range lists {
 		blacklist := service.List().GetListData(ctx, k)
 		if contains, hitStr, _ := service.Module().MultiContains(msg, blacklist); contains {

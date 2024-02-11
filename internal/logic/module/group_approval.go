@@ -25,6 +25,7 @@ func (s *sModule) TryApproveAddGroup(ctx context.Context) (catch bool) {
 	comment := service.Bot().GetComment(ctx)
 	userId := service.Bot().GetUserId(ctx)
 	var extra string
+	isOnBlacklist := false
 	// 处理
 	if _, ok := process[consts.McCmd]; ok {
 		// mc 正版验证
@@ -36,17 +37,23 @@ func (s *sModule) TryApproveAddGroup(ctx context.Context) (catch bool) {
 	}
 	if _, ok := process[consts.WhitelistCmd]; ok && pass {
 		// 白名单
-		pass = isInApprovalWhitelist(ctx, groupId, userId, extra)
+		pass = isOnApprovalWhitelist(ctx, groupId, userId, extra)
 	}
 	if _, ok := process[consts.BlacklistCmd]; ok && pass {
 		// 黑名单
-		pass = isNotInApprovalBlacklist(ctx, groupId, userId, extra)
+		pass = isNotOnApprovalBlacklist(ctx, groupId, userId, extra)
+		isOnBlacklist = !pass
 	}
 	// 回执与日志
 	var logMsg string
 	if (!pass && service.Group().IsEnabledApprovalAutoReject(ctx, groupId)) ||
-		(pass && service.Group().IsEnabledApprovalAutoPass(ctx, groupId)) {
-		// 在不通过和启用自动通过的条件下发送审核回执
+		(pass && service.Group().IsEnabledApprovalAutoPass(ctx, groupId)) ||
+		isOnBlacklist {
+		if isOnBlacklist {
+			// 黑名单拒绝
+			pass = false
+		}
+		// 在开启自动通过、自动拒绝和黑名单的条件下发送审核回执
 		// 审核请求回执
 		service.Bot().ApproveJoinGroup(ctx,
 			service.Bot().GetFlag(ctx),
@@ -120,7 +127,7 @@ func verifyMinecraftGenuine(ctx context.Context, comment string) (genuine bool, 
 	return
 }
 
-func isInApprovalWhitelist(ctx context.Context, groupId, userId int64, extra string) (in bool) {
+func isOnApprovalWhitelist(ctx context.Context, groupId, userId int64, extra string) (in bool) {
 	// 获取白名单组
 	whitelists := service.Group().GetApprovalWhitelists(ctx, groupId)
 	for k := range whitelists {
@@ -157,7 +164,7 @@ func isInApprovalWhitelist(ctx context.Context, groupId, userId int64, extra str
 	return
 }
 
-func isNotInApprovalBlacklist(ctx context.Context, groupId, userId int64, extra string) (notIn bool) {
+func isNotOnApprovalBlacklist(ctx context.Context, groupId, userId int64, extra string) (notIn bool) {
 	// 默认不在黑名单内
 	notIn = true
 	// 获取黑名单组
