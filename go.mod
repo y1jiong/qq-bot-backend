@@ -1,6 +1,6 @@
 module qq-bot-backend
 
-go 1.21
+go 1.22
 
 require (
 	github.com/bitly/go-simplejson v0.5.1

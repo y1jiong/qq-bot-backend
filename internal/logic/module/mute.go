@@ -16,7 +16,7 @@ func (s *sModule) AutoMute(ctx context.Context, kind string, groupId, userId int
 	// 最终禁言分钟数
 	muteMinutes := 1
 	// 执行幂次运算
-	for i := 0; i < times; i++ {
+	for range times {
 		muteMinutes *= baseMinutes
 		if limitMinutes > 0 && muteMinutes > limitMinutes {
 			muteMinutes = limitMinutes
