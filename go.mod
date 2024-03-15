@@ -4,7 +4,7 @@ go 1.22
 
 require (
 	github.com/bitly/go-simplejson v0.5.1
-	github.com/bytedance/sonic v1.11.2
+	github.com/bytedance/sonic v1.11.3
 	github.com/gogf/gf/contrib/drivers/pgsql/v2 v2.6.4
 	github.com/gogf/gf/v2 v2.6.4
 	github.com/gorilla/websocket v1.5.1
