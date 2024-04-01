@@ -136,14 +136,14 @@ func (s *sModule) TryKeywordReply(ctx context.Context) (catch bool) {
 		switch method {
 		case http.MethodGet:
 			// Webhook
-			replyMsg, err = service.Bot().SendGetWebhook(ctx, urlLink)
+			replyMsg, err = s.WebhookGet(ctx, urlLink)
 		case http.MethodPost:
 			payload = strings.ReplaceAll(payload, "{message}", url.QueryEscape(msg))
 			payload = strings.ReplaceAll(payload, "{userId}", gconv.String(userId))
 			payload = strings.ReplaceAll(payload, "{groupId}", gconv.String(groupId))
 			payload = strings.ReplaceAll(payload, "{remain}", url.QueryEscape(remain))
 			// Webhook
-			replyMsg, err = service.Bot().SendPostWebhook(ctx, urlLink, payload)
+			replyMsg, err = s.WebhookPost(ctx, urlLink, payload)
 		}
 		if err != nil {
 			g.Log().Notice(ctx, "webhook", method, urlLink, err)
