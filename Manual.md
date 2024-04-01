@@ -154,3 +154,32 @@ v1.5
 1. 当 group keyword 使用的 key 有**空格**（转义后为`%20`）时，会对 key 的字符串以**空格**拆分。当检查的文本全部包含拆分字符串，则匹配成功。
 
    e.g. key: `砍 并夕夕` 文本1：`帮我并夕夕砍一刀`（匹配成功）文本2：`是兄弟就来砍我`（匹配失败）
+
+2. 群关键字回复支持 Webhook。
+
+   Webhook 支持 `GET` 和 `POST` 方法。
+
+   **协议头**
+
+   * `GET`：`webhook://` 或 `webhook:get://`
+   * `POST`：`webhook:post://`
+
+   使用协议头作为回复内容的开头，将会执行协议头之后的 url。
+
+   **可用的参数**
+
+   * `GET`：`{message}` 用户发送的消息；`{userId}` 用户 ID；`{groupId}` 群 ID。
+
+     e.g. `/list join example get webhook://https://example.com/{groupId}/{userId}/{message}`
+
+   * `POST`：
+
+     e.g. `/list join example post webhook:post://https://example.com`
+
+     ```json
+     {"group_id":10000,"user_id":10086,"message":"post"}
+     ```
+
+   **注意**：要触发 Webhook，消息必须以 Keyword 开头。
+
+   例如：`bb` 是 Keyword。用户发送 `bb 123`，触发 Webhook；用户发送 `aa bb`，不会触发 Webhook。

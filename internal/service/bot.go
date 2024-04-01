@@ -56,6 +56,8 @@ type (
 		Mute(ctx context.Context, seconds int)
 		SetGroupCard(ctx context.Context, groupId, userId int64, card string)
 		Kick(ctx context.Context, groupId, userId int64, reject ...bool)
+		SendGetWebhook(ctx context.Context, url string) (body string, err error)
+		SendPostWebhook(ctx context.Context, url string, payload any) (body string, err error)
 	}
 )
 

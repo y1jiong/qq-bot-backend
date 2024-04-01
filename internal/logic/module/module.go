@@ -2,6 +2,7 @@ package module
 
 import (
 	"qq-bot-backend/internal/service"
+	"regexp"
 	"strings"
 )
 
@@ -14,6 +15,10 @@ func New() *sModule {
 func init() {
 	service.RegisterModule(New())
 }
+
+var (
+	webhookPrefixRe = regexp.MustCompile(`^webhook:?([Gg][Ee][Tt]|[Pp][Oo][Ss][Tt])?://(.+)$`)
+)
 
 func (s *sModule) MultiContains(str string, m map[string]any) (contains bool, hit string, mValue string) {
 	for k, v := range m {
