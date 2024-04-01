@@ -10,6 +10,7 @@ import (
 	"qq-bot-backend/internal/consts"
 	"qq-bot-backend/internal/service"
 	"strings"
+	"time"
 )
 
 func (s *sModule) TryKeywordRecall(ctx context.Context) (catch bool) {
@@ -99,7 +100,7 @@ func (s *sModule) TryKeywordReply(ctx context.Context) (catch bool) {
 	// 限速
 	kind := "replyG"
 	gid := gconv.String(groupId)
-	if limited, _ := s.AutoLimit(ctx, kind, gid, 2, gconv.Duration("1m")); limited {
+	if limited, _ := s.AutoLimit(ctx, kind, gid, 5, time.Minute); limited {
 		g.Log().Info(ctx, kind, gid, "is limited")
 		return
 	}

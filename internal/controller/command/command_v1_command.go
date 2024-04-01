@@ -124,9 +124,9 @@ func (c *ControllerV1) Command(ctx context.Context, req *v1.CommandReq) (res *v1
 			"permission denied")
 		return
 	}
-	// 一分钟只能发送两条消息
+	// 一分钟只能发送五条消息
 	if limit, _ := service.Module().AutoLimit(ctx,
-		"send_msg", gconv.String(req.GroupId), 2, time.Minute); limit {
+		"send_msg", gconv.String(req.GroupId), 5, time.Minute); limit {
 		err = gerror.NewCode(gcode.New(http.StatusTooManyRequests, "", nil),
 			http.StatusText(http.StatusTooManyRequests))
 		return
