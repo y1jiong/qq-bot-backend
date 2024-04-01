@@ -117,6 +117,8 @@ func (s *sModule) TryKeywordReply(ctx context.Context) (catch bool) {
 		urlLink := service.Codec().DecodeCqCode(subMatch[2])
 		// Arguments
 		var err error
+		msg = service.Codec().DecodeCqCode(msg)
+		hit = service.Codec().DecodeCqCode(hit)
 		remain := strings.Replace(msg, hit, "", 1)
 		urlLink = strings.ReplaceAll(urlLink, "{message}", url.QueryEscape(msg))
 		urlLink = strings.ReplaceAll(urlLink, "{userId}", gconv.String(userId))
