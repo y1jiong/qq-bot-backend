@@ -168,7 +168,7 @@ v1.5
 
    **可用的参数**
 
-   * `GET`：`{message}` 用户发送的消息；`{userId}` 用户 ID；`{groupId}` 群 ID。
+   * `GET`：`{message}` 用户发送的消息；`{userId}` 用户 ID；`{groupId}` 群 ID；`{remain}` 除去 Keyword 剩下的字符串。
 
      e.g. `/list join example get webhook://https://example.com/{groupId}/{userId}/{message}`
 
@@ -177,7 +177,7 @@ v1.5
      e.g. `/list join example post webhook:post://https://example.com`
 
      ```json
-     {"group_id":10000,"user_id":10086,"message":"post"}
+     {"group_id":10000,"user_id":10086,"message":"post","remain":""}
      ```
 
    **注意**：要触发 Webhook，消息必须以 Keyword 开头。

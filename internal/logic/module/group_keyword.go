@@ -117,11 +117,13 @@ func (s *sModule) TryKeywordReply(ctx context.Context) (catch bool) {
 			"user("+gconv.String(userId)+") in group("+gconv.String(service.Bot().GetGroupId(ctx))+") call webhook "+url)
 		// Arguments
 		var err error
+		remain := strings.Replace(msg, hit, "", 1)
 		switch method {
 		case "get", "":
 			url = strings.ReplaceAll(url, "{message}", msg)
 			url = strings.ReplaceAll(url, "{userId}", gconv.String(userId))
 			url = strings.ReplaceAll(url, "{groupId}", gconv.String(groupId))
+			url = strings.ReplaceAll(url, "{remain}", remain)
 			// Webhook
 			replyMsg, err = service.Bot().SendGetWebhook(ctx, url)
 		case "post":
@@ -129,10 +131,12 @@ func (s *sModule) TryKeywordReply(ctx context.Context) (catch bool) {
 				GroupId int64  `json:"group_id"`
 				UserId  int64  `json:"user_id"`
 				Message string `json:"message"`
+				Remain  string `json:"remain"`
 			}{
 				GroupId: groupId,
 				UserId:  userId,
 				Message: msg,
+				Remain:  remain,
 			}
 			var payloadJson []byte
 			payloadJson, err = sonic.ConfigStd.Marshal(payload)
