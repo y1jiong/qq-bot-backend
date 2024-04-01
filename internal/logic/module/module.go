@@ -17,7 +17,7 @@ func init() {
 }
 
 var (
-	webhookPrefixRe = regexp.MustCompile(`^webhook:?([Gg][Ee][Tt]|[Pp][Oo][Ss][Tt])?://(.+)$`)
+	webhookPrefixRe = regexp.MustCompile(`^webhook(?::([Gg][Ee][Tt]|[Pp][Oo][Ss][Tt]))?(?:<(.+)>)?://(.+)$`)
 )
 
 func (s *sModule) MultiContains(str string, m map[string]any) (contains bool, hit string, mValue string) {
