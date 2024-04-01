@@ -6,6 +6,7 @@ import (
 	"github.com/bytedance/sonic"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/util/gconv"
+	"net/url"
 	"qq-bot-backend/internal/consts"
 	"qq-bot-backend/internal/service"
 	"strings"
@@ -110,22 +111,25 @@ func (s *sModule) TryKeywordReply(ctx context.Context) (catch bool) {
 			return
 		}
 		// Url
-		method := strings.ToLower(webhookPrefixRe.FindStringSubmatch(value)[1])
-		url := webhookPrefixRe.FindStringSubmatch(value)[2]
-		// Log
-		g.Log().Info(ctx,
-			"user("+gconv.String(userId)+") in group("+gconv.String(service.Bot().GetGroupId(ctx))+") call webhook "+url)
+		subMatch := webhookPrefixRe.FindStringSubmatch(value)
+		method := strings.ToLower(subMatch[1])
+		urlLink := service.Codec().DecodeCqCode(subMatch[2])
 		// Arguments
 		var err error
 		remain := strings.Replace(msg, hit, "", 1)
+		urlLink = strings.ReplaceAll(urlLink, "{message}", url.QueryEscape(msg))
+		urlLink = strings.ReplaceAll(urlLink, "{userId}", gconv.String(userId))
+		urlLink = strings.ReplaceAll(urlLink, "{groupId}", gconv.String(groupId))
+		urlLink = strings.ReplaceAll(urlLink, "{remain}", url.QueryEscape(remain))
+		// Log
+		g.Log().Info(ctx,
+			"user("+gconv.String(userId)+") in group("+gconv.String(service.Bot().GetGroupId(ctx))+
+				") call webhook "+urlLink)
+		// Log end
 		switch method {
 		case "get", "":
-			url = strings.ReplaceAll(url, "{message}", msg)
-			url = strings.ReplaceAll(url, "{userId}", gconv.String(userId))
-			url = strings.ReplaceAll(url, "{groupId}", gconv.String(groupId))
-			url = strings.ReplaceAll(url, "{remain}", remain)
 			// Webhook
-			replyMsg, err = service.Bot().SendGetWebhook(ctx, url)
+			replyMsg, err = service.Bot().SendGetWebhook(ctx, urlLink)
 		case "post":
 			payload := struct {
 				GroupId int64  `json:"group_id"`
@@ -145,10 +149,10 @@ func (s *sModule) TryKeywordReply(ctx context.Context) (catch bool) {
 				return
 			}
 			// Webhook
-			replyMsg, err = service.Bot().SendPostWebhook(ctx, url, payloadJson)
+			replyMsg, err = service.Bot().SendPostWebhook(ctx, urlLink, payloadJson)
 		}
 		if err != nil {
-			g.Log().Notice(ctx, "webhook", url, err)
+			g.Log().Notice(ctx, "webhook", urlLink, err)
 			return
 		}
 		// 内容为空，不回复
