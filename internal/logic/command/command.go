@@ -26,9 +26,8 @@ var (
 	doubleValueCmdEndRe = regexp.MustCompile(`^(\S+)\s+(\S+)$`)
 )
 
-func (s *sCommand) TryCommand(ctx context.Context) (catch bool, retMsg string) {
-	msg := service.Bot().GetMessage(ctx)
-	if !commandPrefixRe.MatchString(msg) {
+func (s *sCommand) TryCommand(ctx context.Context, message string) (catch bool, retMsg string) {
+	if !commandPrefixRe.MatchString(message) {
 		return
 	}
 	// 暂停状态时的权限校验
@@ -39,9 +38,9 @@ func (s *sCommand) TryCommand(ctx context.Context) (catch bool, retMsg string) {
 	}
 	// 命令 log
 	g.Log().Info(ctx,
-		"user("+gconv.String(userId)+") in group("+gconv.String(service.Bot().GetGroupId(ctx))+") send cmd "+msg)
+		"user("+gconv.String(userId)+") in group("+gconv.String(service.Bot().GetGroupId(ctx))+") send cmd "+message)
 	// 继续处理
-	cmd := commandPrefixRe.FindStringSubmatch(msg)[1]
+	cmd := commandPrefixRe.FindStringSubmatch(message)[1]
 	switch {
 	case nextBranchRe.MatchString(cmd):
 		next := nextBranchRe.FindStringSubmatch(cmd)

@@ -11,7 +11,7 @@ import (
 
 type (
 	ICommand interface {
-		TryCommand(ctx context.Context) (catch bool, retMsg string)
+		TryCommand(ctx context.Context, message string) (catch bool, retMsg string)
 	}
 )
 

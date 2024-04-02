@@ -23,8 +23,8 @@ type (
 		AutoLimit(ctx context.Context, kind, key string, limitTimes int, duration time.Duration) (limited bool, times int)
 		MultiContains(str string, m map[string]any) (contains bool, hit string, mValue string)
 		AutoMute(ctx context.Context, kind string, groupId, userId int64, limitTimes, baseMinutes, limitMinutes int, duration time.Duration)
-		WebhookGet(ctx context.Context, url string) (body string, err error)
-		WebhookPost(ctx context.Context, url string, payload any) (body string, err error)
+		WebhookGetHeadConnectOptionsTrace(ctx context.Context, method, url string) (body string, err error)
+		WebhookPostPutPatchDelete(ctx context.Context, method, url string, payload any) (body string, err error)
 	}
 )
 

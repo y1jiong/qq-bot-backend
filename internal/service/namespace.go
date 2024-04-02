@@ -15,6 +15,8 @@ type (
 		AddNamespaceList(ctx context.Context, namespace, listName string)
 		RemoveNamespaceList(ctx context.Context, namespace, listName string)
 		GetNamespaceList(ctx context.Context, namespace string) (lists map[string]any)
+		GetNamespaceListIncludingPublic(ctx context.Context, namespace string) (lists map[string]any)
+		IsPublicNamespace(namespace string) (yes bool)
 		AddNewNamespaceReturnRes(ctx context.Context, namespace string) (retMsg string)
 		RemoveNamespaceReturnRes(ctx context.Context, namespace string) (retMsg string)
 		QueryNamespaceReturnRes(ctx context.Context, namespace string) (retMsg string)

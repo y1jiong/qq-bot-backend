@@ -75,12 +75,10 @@ func (c *ControllerV1) Command(ctx context.Context, req *v1.CommandReq) (res *v1
 	}
 	// 初始化内部请求
 	innerReq := struct {
-		Message string   `json:"message"`
 		UserId  int64    `json:"user_id"`
 		GroupId int64    `json:"group_id"`
 		ApiReq  struct{} `json:"api_req"`
 	}{
-		Message: req.Command,
 		UserId:  ownerId,
 		GroupId: req.GroupId,
 		ApiReq:  struct{}{},
@@ -95,11 +93,11 @@ func (c *ControllerV1) Command(ctx context.Context, req *v1.CommandReq) (res *v1
 	var retMsg string
 	// 异步执行
 	if req.Async {
-		go service.Command().TryCommand(botCtx)
+		go service.Command().TryCommand(botCtx, req.Command)
 		retMsg = "async"
 	} else {
 		var catch bool
-		catch, retMsg = service.Command().TryCommand(botCtx)
+		catch, retMsg = service.Command().TryCommand(botCtx, req.Command)
 		if !catch {
 			err = gerror.NewCode(gcode.New(http.StatusBadRequest, "", nil),
 				"command not found")

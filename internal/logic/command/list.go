@@ -14,16 +14,20 @@ func tryList(ctx context.Context, cmd string) (catch bool, retMsg string) {
 		case "join":
 			// /list join <>
 			catch, retMsg = tryListJoin(ctx, next[2])
-		case "len":
-			// /list len <list_name>
-			retMsg = service.List().QueryListLenReturnRes(ctx, next[2])
+		case "leave":
+			// /list leave <>
+			catch, retMsg = tryListLeave(ctx, next[2])
+		case "glance":
+			// /list glance <list_name>
+			retMsg = service.List().GlanceListDataReturnRes(ctx, next[2])
 			catch = true
 		case "query":
 			// /list query <>
 			catch, retMsg = tryListQuery(ctx, next[2])
-		case "leave":
-			// /list leave <>
-			catch, retMsg = tryListLeave(ctx, next[2])
+		case "len":
+			// /list len <list_name>
+			retMsg = service.List().QueryListLenReturnRes(ctx, next[2])
+			catch = true
 		case "export":
 			// /list export <list_name>
 			retMsg = service.List().ExportListReturnRes(ctx, next[2])

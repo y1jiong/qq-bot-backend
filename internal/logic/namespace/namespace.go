@@ -32,6 +32,10 @@ const (
 	listMapKey  = "lists"
 )
 
+const (
+	publicNamespace = "public"
+)
+
 func getNamespace(ctx context.Context, namespace string) (namespaceE *entity.Namespace) {
 	// 数据库查询
 	err := dao.Namespace.Ctx(ctx).
@@ -176,4 +180,53 @@ func (s *sNamespace) GetNamespaceList(ctx context.Context, namespace string) (li
 		lists = make(map[string]any)
 	}
 	return
+}
+
+func (s *sNamespace) GetNamespaceListIncludingPublic(ctx context.Context, namespace string) (lists map[string]any) {
+	// 参数合法性校验
+	if !legalNamespaceNameRe.MatchString(namespace) {
+		return
+	}
+	// 获取 namespace
+	namespaceE := getNamespace(ctx, namespace)
+	if namespaceE == nil {
+		return
+	}
+	// 数据处理
+	settingJson, err := sonic.GetFromString(namespaceE.SettingJson)
+	if err != nil {
+		g.Log().Error(ctx, err)
+		return
+	}
+	lists, _ = settingJson.Get(listMapKey).Map()
+	if lists == nil {
+		lists = make(map[string]any)
+	}
+	// 加载公共 list
+	namespaceE = getNamespace(ctx, publicNamespace)
+	if namespaceE == nil {
+		return
+	}
+	settingJson, err = sonic.GetFromString(namespaceE.SettingJson)
+	if err != nil {
+		g.Log().Notice(ctx, err)
+		return
+	}
+	publicLists, _ := settingJson.Get(listMapKey).Map()
+	if publicLists == nil {
+		return
+	}
+	for k, v := range publicLists {
+		lists[k] = v
+	}
+	return
+}
+
+func (s *sNamespace) IsPublicNamespace(namespace string) (yes bool) {
+	// 参数合法性校验
+	if !legalNamespaceNameRe.MatchString(namespace) {
+		return
+	}
+	// 判断
+	return namespace == publicNamespace
 }

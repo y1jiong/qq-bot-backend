@@ -38,6 +38,18 @@ func (s *sGroup) AddKeywordProcessReturnRes(ctx context.Context,
 	if len(args) > 0 {
 		// 处理 args
 		switch processName {
+		case consts.ReplyCmd:
+			// 添加回复列表
+			// 是否存在 list
+			lists := service.Namespace().GetNamespaceListIncludingPublic(ctx, groupE.Namespace)
+			if _, ok := lists[args[0]]; !ok {
+				retMsg = "在 namespace(" + groupE.Namespace + ") 中未找到 list(" + args[0] + ")"
+				return
+			}
+			// 继续处理
+			replyLists := settingJson.Get(keywordReplyListsKey).MustMap(make(map[string]any))
+			replyLists[args[0]] = nil
+			settingJson.Set(keywordReplyListsKey, replyLists)
 		case consts.BlacklistCmd:
 			// 添加一个黑名单
 			// 是否存在 list
@@ -50,16 +62,6 @@ func (s *sGroup) AddKeywordProcessReturnRes(ctx context.Context,
 			blacklists := settingJson.Get(keywordBlacklistsMapKey).MustMap(make(map[string]any))
 			blacklists[args[0]] = nil
 			settingJson.Set(keywordBlacklistsMapKey, blacklists)
-		case consts.ReplyCmd:
-			// 添加回复列表
-			// 是否存在 list
-			lists := service.Namespace().GetNamespaceList(ctx, groupE.Namespace)
-			if _, ok := lists[args[0]]; !ok {
-				retMsg = "在 namespace(" + groupE.Namespace + ") 中未找到 list(" + args[0] + ")"
-				return
-			}
-			// 继续处理
-			settingJson.Set(keywordReplyListKey, args[0])
 		case consts.WhitelistCmd:
 			// 添加一个白名单
 			// 是否存在 list
@@ -131,6 +133,15 @@ func (s *sGroup) RemoveKeywordProcessReturnRes(ctx context.Context,
 	if len(args) > 0 {
 		// 处理 args
 		switch processName {
+		case consts.ReplyCmd:
+			// 移除回复列表
+			replyLists := settingJson.Get(keywordReplyListsKey).MustMap(make(map[string]any))
+			if _, ok := replyLists[args[0]]; !ok {
+				retMsg = "在 " + consts.ReplyCmd + " 中未找到 list(" + args[0] + ")"
+				return
+			}
+			delete(replyLists, args[0])
+			settingJson.Set(keywordReplyListsKey, replyLists)
 		case consts.BlacklistCmd:
 			// 移除某个黑名单
 			blacklists := settingJson.Get(keywordBlacklistsMapKey).MustMap(make(map[string]any))
@@ -151,24 +162,14 @@ func (s *sGroup) RemoveKeywordProcessReturnRes(ctx context.Context,
 			settingJson.Set(keywordWhitelistsMapKey, whitelists)
 		}
 	} else {
-		switch processName {
-		case consts.ReplyCmd:
-			// 移除回复列表
-			if _, ok := settingJson.CheckGet(keywordReplyListKey); !ok {
-				retMsg = "并未设置 " + consts.ReplyCmd + " list"
-				return
-			}
-			settingJson.Del(keywordReplyListKey)
-		default:
-			// 删除 processName
-			processMap := settingJson.Get(keywordProcessMapKey).MustMap(make(map[string]any))
-			if _, ok := processMap[processName]; !ok {
-				retMsg = "在 " + approvalProcessMapKey + " 中未找到 " + processName
-				return
-			}
-			delete(processMap, processName)
-			settingJson.Set(keywordProcessMapKey, processMap)
+		// 删除 processName
+		processMap := settingJson.Get(keywordProcessMapKey).MustMap(make(map[string]any))
+		if _, ok := processMap[processName]; !ok {
+			retMsg = "在 " + approvalProcessMapKey + " 中未找到 " + processName
+			return
 		}
+		delete(processMap, processName)
+		settingJson.Set(keywordProcessMapKey, processMap)
 	}
 	// 保存数据
 	settingBytes, err := settingJson.Encode()

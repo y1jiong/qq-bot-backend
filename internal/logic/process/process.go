@@ -44,7 +44,7 @@ func (s *sProcess) Process(ctx context.Context) {
 		return
 	}
 	// 优先处理命令
-	if catch, retMsg := service.Command().TryCommand(ctx); catch {
+	if catch, retMsg := service.Command().TryCommand(ctx, service.Bot().GetMessage(ctx)); catch {
 		// 处理成功放弃后续逻辑
 		if retMsg != "" {
 			service.Bot().SendPlainMsg(ctx, retMsg)

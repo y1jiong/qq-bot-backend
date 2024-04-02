@@ -10,7 +10,7 @@ const (
 	keywordProcessMapKey    = "keywordProcess"
 	keywordWhitelistsMapKey = "keywordWhitelists"
 	keywordBlacklistsMapKey = "keywordBlacklists"
-	keywordReplyListKey     = "keywordReplyList"
+	keywordReplyListsKey    = "keywordReplyLists"
 )
 
 func (s *sGroup) GetKeywordProcess(ctx context.Context, groupId int64) (process map[string]any) {
@@ -82,7 +82,7 @@ func (s *sGroup) GetKeywordBlacklists(ctx context.Context, groupId int64) (black
 	return
 }
 
-func (s *sGroup) GetKeywordReplyList(ctx context.Context, groupId int64) (listName string) {
+func (s *sGroup) GetKeywordReplyLists(ctx context.Context, groupId int64) (replyLists map[string]any) {
 	// 参数合法性校验
 	if groupId < 1 {
 		return
@@ -98,6 +98,9 @@ func (s *sGroup) GetKeywordReplyList(ctx context.Context, groupId int64) (listNa
 		g.Log().Error(ctx, err)
 		return
 	}
-	listName, _ = settingJson.Get(keywordReplyListKey).StrictString()
+	replyLists, _ = settingJson.Get(keywordReplyListsKey).Map()
+	if replyLists == nil {
+		replyLists = make(map[string]any)
+	}
 	return
 }

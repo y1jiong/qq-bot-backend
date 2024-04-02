@@ -9,6 +9,7 @@ import (
 	"qq-bot-backend/internal/dao"
 	"qq-bot-backend/internal/model/entity"
 	"qq-bot-backend/internal/service"
+	"strings"
 	"time"
 )
 
@@ -432,5 +433,36 @@ func (s *sList) AppendListDataReturnRes(ctx context.Context, listName, newListSt
 	// 回执
 	retMsg = "已追加 list(" + listName + ") 的数据 " + gconv.String(appendLen) +
 		" 条\n共 " + gconv.String(totalLen) + " 条"
+	return
+}
+
+func (s *sList) GlanceListDataReturnRes(ctx context.Context, listName string) (retMsg string) {
+	// 参数合法性校验
+	if !legalListNameRe.MatchString(listName) {
+		return
+	}
+	// 获取 list
+	listE := getList(ctx, listName)
+	if listE == nil {
+		return
+	}
+	// 权限校验
+	if !service.Namespace().IsNamespaceOwnerOrAdmin(ctx, listE.Namespace, service.Bot().GetUserId(ctx)) &&
+		!service.Namespace().IsPublicNamespace(listE.Namespace) {
+		return
+	}
+	// 数据处理
+	listJson, err := sj.NewJson([]byte(listE.ListJson))
+	if err != nil {
+		g.Log().Error(ctx, err)
+		return
+	}
+	listMap := listJson.MustMap(make(map[string]any))
+	var msgBuilder strings.Builder
+	for k := range listMap {
+		msgBuilder.WriteString(k + "\n")
+	}
+	// 回执
+	retMsg = strings.TrimRight(msgBuilder.String(), "\n")
 	return
 }

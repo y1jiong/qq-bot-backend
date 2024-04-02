@@ -1,8 +1,8 @@
 package module
 
 import (
+	"context"
 	"qq-bot-backend/internal/service"
-	"regexp"
 	"strings"
 )
 
@@ -15,10 +15,6 @@ func New() *sModule {
 func init() {
 	service.RegisterModule(New())
 }
-
-var (
-	webhookPrefixRe = regexp.MustCompile(`^webhook(?::([Gg][Ee][Tt]|[Pp][Oo][Ss][Tt]))?(?:<(.+)>)?://(.+)$`)
-)
 
 func (s *sModule) MultiContains(str string, m map[string]any) (contains bool, hit string, mValue string) {
 	for k, v := range m {
@@ -35,7 +31,24 @@ func (s *sModule) MultiContains(str string, m map[string]any) (contains bool, hi
 			if vv, ok := v.(string); ok {
 				mValue = vv
 			}
-			return
+			if strings.HasPrefix(str, k) {
+				return
+			}
+		}
+	}
+	return
+}
+
+func (s *sModule) isOnKeywordLists(ctx context.Context, msg string, lists map[string]any) (in bool, hit, value string) {
+	for k := range lists {
+		listMap := service.List().GetListData(ctx, k)
+		if contains, hitStr, valueStr := s.MultiContains(msg, listMap); contains {
+			in = true
+			hit = hitStr
+			value = valueStr
+			if strings.HasPrefix(msg, hit) {
+				return
+			}
 		}
 	}
 	return

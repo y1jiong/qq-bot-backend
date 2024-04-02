@@ -1,6 +1,4 @@
-# Manual
-
-v1.5
+v1.6
 
 {required} [optional]
 
@@ -21,6 +19,7 @@ v1.5
 | /list reset {list_name}              | 重置 list_name 的数据                                        | 同上                                             |
 | /list rm {list_name}                 | 删除 list_name（删除后原 list_name 不可使用，只能恢复）      | 同上                                             |
 | /list recover {list_name}            | 恢复 list_name                                               | 同上                                             |
+| /list glance {list_name}             | 快速查询 list_name 里的所有 key                              | 同上或 list_name 处于 public namespace           |
 
 ## List Operation
 
@@ -73,10 +72,10 @@ v1.5
 | /group keyword enable whitelist          | 关键词检查启用白名单                                         | 同上                                           |
 | /group keyword add blacklist {list_name} | 新增关键词检查黑名单 list_name（可以多次指定不同的 list_name 最终采用并集查找） | 同上                                           |
 | /group keyword add whitelist {list_name} | 新增关键词检查白名单 list_name（可以多次指定不同的 list_name 最终采用并集查找） | 同上                                           |
-| /group keyword set reply {list_name}     | 设置关键词回复列表 list_name                                 | 同上                                           |
+| /group keyword add reply {list_name}     | 新增关键词回复列表 list_name（可以多次指定不同的 list_name 最终采用并集查找） | 同上                                           |
 | /group keyword rm blacklist {list_name}  | 移除关键词检查黑名单 list_name                               | 同上                                           |
 | /group keyword rm whitelist {list_name}  | 移除关键词检查白名单 list_name                               | 同上                                           |
-| /group keyword rm reply                  | 移除关键词回复列表                                           | 同上                                           |
+| /group keyword rm reply {list_name}      | 移除关键词回复列表 list_name                                 | 同上                                           |
 | /group keyword disable blacklist         | 关键词检查禁用黑名单                                         | 同上                                           |
 | /group keyword disable whitelist         | 关键词检查禁用白名单                                         | 同上                                           |
 
@@ -157,12 +156,14 @@ v1.5
 
 2. 群关键字回复支持 Webhook。
 
-   Webhook 支持 `GET` 和 `POST` 方法。
+   Webhook 支持 `GET`、`POST`、`PUT` 和 `DELETE` 方法。
 
    **协议头**
 
    * `GET`：`webhook://` 或 `webhook:get://`
    * `POST`：`webhook:post://`
+   * `PUT`：`webhook:put://`
+   * `DELETE`：`webhook:delete://`
 
    使用协议头作为回复内容的开头，将会执行协议头之后的 url。
 
@@ -176,7 +177,7 @@ v1.5
 
      e.g. `/list join example get webhook://https://example.com/{groupId}/{userId}/{message}`
 
-   * `POST`：
+   * `POST`、`PUT`、`DELETE`：
 
      template: `webhook:post<request body>://url`
 
@@ -187,3 +188,17 @@ v1.5
    **注意**：要触发 Webhook，消息必须以 Keyword 开头。
 
    例如：`bb` 是 Keyword。用户发送 `bb 123`，触发 Webhook；用户发送 `aa bb`，不会触发 Webhook。
+
+3. 群关键字回复支持 Commands 命令组合
+
+   **协议头**
+
+   `command://` 或 `cmd://`
+
+   使用协议头作为回复内容的开头，将会执行协议头之后的 Commands。
+
+   多个命令用 `&&` 分隔。**注意！**`&&`前后必须各有一个*空格*！
+
+   e.g. `/list join example cmd cmd:///list glance example && /list len example`
+
+   **注意**：要触发 Commands 命令组合，消息必须全字匹配 Keyword。

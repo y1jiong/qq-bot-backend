@@ -33,7 +33,7 @@ type (
 		GetKeywordProcess(ctx context.Context, groupId int64) (process map[string]any)
 		GetKeywordWhitelists(ctx context.Context, groupId int64) (whitelists map[string]any)
 		GetKeywordBlacklists(ctx context.Context, groupId int64) (blacklists map[string]any)
-		GetKeywordReplyList(ctx context.Context, groupId int64) (listName string)
+		GetKeywordReplyLists(ctx context.Context, groupId int64) (replyLists map[string]any)
 		AddKeywordProcessReturnRes(ctx context.Context, groupId int64, processName string, args ...string) (retMsg string)
 		RemoveKeywordProcessReturnRes(ctx context.Context, groupId int64, processName string, args ...string) (retMsg string)
 		GetLogLeaveList(ctx context.Context, groupId int64) (listName string)
