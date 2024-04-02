@@ -118,6 +118,6 @@ func (s *sModule) keywordReplyCommand(ctx context.Context, message, hit, text st
 		}
 		replyBuilder.WriteString(tmp + "\n")
 	}
-	replyMsg = replyBuilder.String()
+	replyMsg = strings.TrimRight(replyBuilder.String(), "\n")
 	return
 }

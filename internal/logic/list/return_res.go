@@ -460,7 +460,7 @@ func (s *sList) GlanceListDataReturnRes(ctx context.Context, listName string) (r
 	listMap := listJson.MustMap(make(map[string]any))
 	var msgBuilder strings.Builder
 	for k := range listMap {
-		msgBuilder.WriteString(k + "\n")
+		msgBuilder.WriteString("\"" + k + "\"\n")
 	}
 	// 回执
 	retMsg = strings.TrimRight(msgBuilder.String(), "\n")
