@@ -173,17 +173,21 @@ v1.6
 
    * `GET`：
 
-     template: `webhook://url`
+     template: `webhook@response json path@://url`
+    
+     `@response json path@` 可以省略。
 
-     e.g. `/list join example get webhook://https://example.com/{groupId}/{userId}/{message}`
+     e.g. `/list join example get webhook@data.text@://https://example.com/{groupId}/{userId}/{message}`
 
    * `POST`、`PUT`、`DELETE`：
 
-     template: `webhook:post<request body>://url`
+     template: `webhook:post<request body>@response json path@://url`
 
      `<request body>` 可以省略。
 
-     e.g. `/list join example post webhook:post<{"group_id":{groupId},"user_id":{userId},"message":"{message}","remain":"{remain}"}>://https://example.com`
+     `@response json path@` 可以省略。
+
+     e.g. `/list join example post webhook:post<{"group_id":{groupId},"user_id":{userId},"message":"{message}","remain":"{remain}"}>@data.text@://https://example.com/{groupId}/{userId}/{message}`
 
    **注意**：要触发 Webhook，消息必须以 Keyword 开头。
 
