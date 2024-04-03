@@ -28,8 +28,8 @@ var (
 
 // setting json key
 const (
-	adminMapKey = "admins"
-	listMapKey  = "lists"
+	adminsMapKey = "admins"
+	listsMapKey  = "lists"
 )
 
 const (
@@ -70,7 +70,7 @@ func isNamespaceOwnerOrAdmin(ctx context.Context, userId int64, namespaceE *enti
 		return
 	}
 	// 判断 admin
-	yes = settingJson.Get(adminMapKey).Get(gconv.String(userId)).Valid()
+	yes = settingJson.Get(adminsMapKey).Get(gconv.String(userId)).Valid()
 	return
 }
 
@@ -103,10 +103,10 @@ func (s *sNamespace) AddNamespaceList(ctx context.Context, namespace, listName s
 		g.Log().Error(ctx, err)
 		return
 	}
-	if !settingJson.Get(listMapKey).Valid() {
-		_, _ = settingJson.Set(listMapKey, ast.NewNull())
+	if !settingJson.Get(listsMapKey).Valid() {
+		_, _ = settingJson.Set(listsMapKey, ast.NewNull())
 	}
-	_, _ = settingJson.Get(listMapKey).Set(listName, ast.NewNull())
+	_, _ = settingJson.Get(listsMapKey).Set(listName, ast.NewNull())
 	// 保存数据
 	settingBytes, err := settingJson.MarshalJSON()
 	if err != nil {
@@ -139,10 +139,10 @@ func (s *sNamespace) RemoveNamespaceList(ctx context.Context, namespace, listNam
 		g.Log().Error(ctx, err)
 		return
 	}
-	if !settingJson.Get(listMapKey).Get(listName).Valid() {
+	if !settingJson.Get(listsMapKey).Get(listName).Valid() {
 		return
 	}
-	_, _ = settingJson.Get(listMapKey).Unset(listName)
+	_, _ = settingJson.Get(listsMapKey).Unset(listName)
 	// 保存数据
 	settingBytes, err := settingJson.MarshalJSON()
 	if err != nil {
@@ -159,7 +159,7 @@ func (s *sNamespace) RemoveNamespaceList(ctx context.Context, namespace, listNam
 	}
 }
 
-func (s *sNamespace) GetNamespaceList(ctx context.Context, namespace string) (lists map[string]any) {
+func (s *sNamespace) GetNamespaceLists(ctx context.Context, namespace string) (lists map[string]any) {
 	// 参数合法性校验
 	if !legalNamespaceNameRe.MatchString(namespace) {
 		return
@@ -175,14 +175,14 @@ func (s *sNamespace) GetNamespaceList(ctx context.Context, namespace string) (li
 		g.Log().Error(ctx, err)
 		return
 	}
-	lists, _ = settingJson.Get(listMapKey).Map()
+	lists, _ = settingJson.Get(listsMapKey).Map()
 	if lists == nil {
 		lists = make(map[string]any)
 	}
 	return
 }
 
-func (s *sNamespace) GetNamespaceListIncludingPublic(ctx context.Context, namespace string) (lists map[string]any) {
+func (s *sNamespace) GetNamespaceListsIncludingPublic(ctx context.Context, namespace string) (lists map[string]any) {
 	// 参数合法性校验
 	if !legalNamespaceNameRe.MatchString(namespace) {
 		return
@@ -198,7 +198,7 @@ func (s *sNamespace) GetNamespaceListIncludingPublic(ctx context.Context, namesp
 		g.Log().Error(ctx, err)
 		return
 	}
-	lists, _ = settingJson.Get(listMapKey).Map()
+	lists, _ = settingJson.Get(listsMapKey).Map()
 	if lists == nil {
 		lists = make(map[string]any)
 	}
@@ -212,7 +212,7 @@ func (s *sNamespace) GetNamespaceListIncludingPublic(ctx context.Context, namesp
 		g.Log().Notice(ctx, err)
 		return
 	}
-	publicLists, _ := settingJson.Get(listMapKey).Map()
+	publicLists, _ := settingJson.Get(listsMapKey).Map()
 	if publicLists == nil {
 		return
 	}
@@ -229,4 +229,8 @@ func (s *sNamespace) IsPublicNamespace(namespace string) (yes bool) {
 	}
 	// 判断
 	return namespace == publicNamespace
+}
+
+func (s *sNamespace) GetPublicNamespaceLists(ctx context.Context) (lists map[string]any) {
+	return s.GetNamespaceLists(ctx, publicNamespace)
 }

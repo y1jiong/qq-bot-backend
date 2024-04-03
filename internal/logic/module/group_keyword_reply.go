@@ -17,7 +17,7 @@ var (
 	commandPrefixRe = regexp.MustCompile(`^(?:command|cmd)://(.+)$`)
 )
 
-func (s *sModule) TryKeywordReply(ctx context.Context) (catch bool) {
+func (s *sModule) TryGroupKeywordReply(ctx context.Context) (catch bool) {
 	// 获取基础信息
 	msg := service.Bot().GetMessage(ctx)
 	groupId := service.Bot().GetGroupId(ctx)
@@ -37,7 +37,7 @@ func (s *sModule) TryKeywordReply(ctx context.Context) (catch bool) {
 	replyMsg := value
 	switch {
 	case webhookPrefixRe.MatchString(value):
-		replyMsg = s.keywordReplyWebhook(ctx, groupId, msg, hit, value)
+		replyMsg = s.keywordReplyWebhook(ctx, service.Bot().GetUserId(ctx), groupId, msg, hit, value)
 	case commandPrefixRe.MatchString(value):
 		replyMsg = s.keywordReplyCommand(ctx, msg, hit, value)
 	}
@@ -51,14 +51,12 @@ func (s *sModule) TryKeywordReply(ctx context.Context) (catch bool) {
 	return
 }
 
-func (s *sModule) keywordReplyWebhook(ctx context.Context, groupId int64,
+func (s *sModule) keywordReplyWebhook(ctx context.Context, userId, groupId int64,
 	message, hit, value string) (replyMsg string) {
 	// 必须以 hit 开头
 	if !strings.HasPrefix(message, hit) {
 		return
 	}
-	// 获取基础信息
-	userId := service.Bot().GetUserId(ctx)
 	// Url
 	subMatch := webhookPrefixRe.FindStringSubmatch(service.Codec().DecodeCqCode(value))
 	method := strings.ToUpper(subMatch[1])
@@ -86,10 +84,10 @@ func (s *sModule) keywordReplyWebhook(ctx context.Context, groupId int64,
 	case http.MethodGet:
 		replyMsg, err = s.WebhookGetHeadConnectOptionsTrace(ctx, method, urlLink)
 	case http.MethodPost, http.MethodPut, http.MethodDelete:
-		payload = strings.ReplaceAll(payload, "{message}", url.QueryEscape(message))
+		payload = strings.ReplaceAll(payload, "{message}", message)
 		payload = strings.ReplaceAll(payload, "{userId}", gconv.String(userId))
 		payload = strings.ReplaceAll(payload, "{groupId}", gconv.String(groupId))
-		payload = strings.ReplaceAll(payload, "{remain}", url.QueryEscape(remain))
+		payload = strings.ReplaceAll(payload, "{remain}", remain)
 		replyMsg, err = s.WebhookPostPutPatchDelete(ctx, method, urlLink, payload)
 	default:
 		return

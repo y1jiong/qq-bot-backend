@@ -1,8 +1,8 @@
 create table token
 (
-    name           varchar(16) not null,
-    token          varchar(48) not null,
-    owner_id       bigint      not null,
+    name           varchar not null,
+    token          varchar not null,
+    owner_id       bigint  not null,
     created_at     timestamp with time zone,
     updated_at     timestamp with time zone,
     deleted_at     timestamp with time zone,

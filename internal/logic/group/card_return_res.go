@@ -30,7 +30,7 @@ func (s *sGroup) SetAutoSetListReturnRes(ctx context.Context,
 		return
 	}
 	// 是否存在 list
-	lists := service.Namespace().GetNamespaceList(ctx, groupE.Namespace)
+	lists := service.Namespace().GetNamespaceLists(ctx, groupE.Namespace)
 	if _, ok := lists[listName]; !ok {
 		retMsg = "在 namespace(" + groupE.Namespace + ") 中未找到 list(" + listName + ")"
 		return
@@ -131,7 +131,7 @@ func (s *sGroup) CheckCardWithRegexpReturnRes(ctx context.Context,
 		return
 	}
 	// 是否存在 list
-	lists := service.Namespace().GetNamespaceList(ctx, groupE.Namespace)
+	lists := service.Namespace().GetNamespaceLists(ctx, groupE.Namespace)
 	if _, ok := lists[listName]; !ok {
 		retMsg = "在 namespace(" + groupE.Namespace + ") 中未找到 list(" + listName + ")"
 		return
@@ -197,7 +197,7 @@ func (s *sGroup) CheckCardByListReturnRes(ctx context.Context,
 		return
 	}
 	// 是否存在 list
-	lists := service.Namespace().GetNamespaceList(ctx, groupE.Namespace)
+	lists := service.Namespace().GetNamespaceLists(ctx, groupE.Namespace)
 	if _, ok := lists[toList]; !ok {
 		retMsg = "在 namespace(" + groupE.Namespace + ") 中未找到 list(" + toList + ")"
 		return

@@ -41,7 +41,7 @@ func (s *sGroup) AddKeywordProcessReturnRes(ctx context.Context,
 		case consts.ReplyCmd:
 			// 添加回复列表
 			// 是否存在 list
-			lists := service.Namespace().GetNamespaceListIncludingPublic(ctx, groupE.Namespace)
+			lists := service.Namespace().GetNamespaceListsIncludingPublic(ctx, groupE.Namespace)
 			if _, ok := lists[args[0]]; !ok {
 				retMsg = "在 namespace(" + groupE.Namespace + ") 中未找到 list(" + args[0] + ")"
 				return
@@ -53,7 +53,7 @@ func (s *sGroup) AddKeywordProcessReturnRes(ctx context.Context,
 		case consts.BlacklistCmd:
 			// 添加一个黑名单
 			// 是否存在 list
-			lists := service.Namespace().GetNamespaceList(ctx, groupE.Namespace)
+			lists := service.Namespace().GetNamespaceLists(ctx, groupE.Namespace)
 			if _, ok := lists[args[0]]; !ok {
 				retMsg = "在 namespace(" + groupE.Namespace + ") 中未找到 list(" + args[0] + ")"
 				return
@@ -65,7 +65,7 @@ func (s *sGroup) AddKeywordProcessReturnRes(ctx context.Context,
 		case consts.WhitelistCmd:
 			// 添加一个白名单
 			// 是否存在 list
-			lists := service.Namespace().GetNamespaceList(ctx, groupE.Namespace)
+			lists := service.Namespace().GetNamespaceLists(ctx, groupE.Namespace)
 			if _, ok := lists[args[0]]; !ok {
 				retMsg = "在 namespace(" + groupE.Namespace + ") 中未找到 list(" + args[0] + ")"
 				return

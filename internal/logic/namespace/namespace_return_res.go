@@ -154,11 +154,11 @@ func (s *sNamespace) AddNamespaceAdminReturnRes(ctx context.Context,
 		return
 	}
 	// 获取 admin map
-	admins := settingJson.Get(adminMapKey).MustMap(make(map[string]any))
+	admins := settingJson.Get(adminsMapKey).MustMap(make(map[string]any))
 	// 添加 userId 的 admin 权限
 	admins[gconv.String(userId)] = nil
 	// 保存数据
-	settingJson.Set(adminMapKey, admins)
+	settingJson.Set(adminsMapKey, admins)
 	settingBytes, err := settingJson.Encode()
 	if err != nil {
 		g.Log().Error(ctx, err)
@@ -201,15 +201,15 @@ func (s *sNamespace) RemoveNamespaceAdminReturnRes(ctx context.Context,
 		return
 	}
 	// 获取 admin map
-	admins := settingJson.Get(adminMapKey).MustMap(make(map[string]any))
+	admins := settingJson.Get(adminsMapKey).MustMap(make(map[string]any))
 	if _, ok := admins[gconv.String(userId)]; !ok {
-		retMsg = "在 namespace(" + namespaceE.Namespace + ") 的 " + adminMapKey + " 中未找到 user(" + gconv.String(userId) + ")"
+		retMsg = "在 namespace(" + namespaceE.Namespace + ") 的 " + adminsMapKey + " 中未找到 user(" + gconv.String(userId) + ")"
 		return
 	}
 	// 删除 userId 的 admin 权限
 	delete(admins, gconv.String(userId))
 	// 保存数据
-	settingJson.Set(adminMapKey, admins)
+	settingJson.Set(adminsMapKey, admins)
 	settingBytes, err := settingJson.Encode()
 	if err != nil {
 		g.Log().Error(ctx, err)
@@ -250,7 +250,7 @@ func (s *sNamespace) ResetNamespaceAdminReturnRes(ctx context.Context, namespace
 		return
 	}
 	// 重置 admin
-	settingJson.Del(adminMapKey)
+	settingJson.Del(adminsMapKey)
 	settingBytes, err := settingJson.Encode()
 	if err != nil {
 		g.Log().Error(ctx, err)

@@ -1,7 +1,7 @@
 create table "group"
 (
     group_id     bigint not null,
-    namespace    varchar(16),
+    namespace    varchar,
     setting_json jsonb  not null,
     created_at   timestamp with time zone,
     updated_at   timestamp with time zone,

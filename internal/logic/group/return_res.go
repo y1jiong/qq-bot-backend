@@ -137,7 +137,7 @@ func (s *sGroup) KickFromListReturnRes(ctx context.Context,
 		return
 	}
 	// 是否存在 list
-	lists := service.Namespace().GetNamespaceList(ctx, groupE.Namespace)
+	lists := service.Namespace().GetNamespaceLists(ctx, groupE.Namespace)
 	if _, ok := lists[listName]; !ok {
 		retMsg = "在 namespace(" + groupE.Namespace + ") 中未找到 list(" + listName + ")"
 		return
@@ -231,7 +231,7 @@ func (s *sGroup) KeepFromListReturnRes(ctx context.Context,
 		return
 	}
 	// 是否存在 list
-	lists := service.Namespace().GetNamespaceList(ctx, groupE.Namespace)
+	lists := service.Namespace().GetNamespaceLists(ctx, groupE.Namespace)
 	if _, ok := lists[listName]; !ok {
 		retMsg = "在 namespace(" + groupE.Namespace + ") 中未找到 list(" + listName + ")"
 		return
