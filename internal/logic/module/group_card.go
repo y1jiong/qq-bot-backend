@@ -10,8 +10,10 @@ import (
 )
 
 func (s *sModule) TryLockCard(ctx context.Context) (catch bool) {
-	// 获取当前 group card lock
+	// 获取基础信息
+	userId := service.Bot().GetUserId(ctx)
 	groupId := service.Bot().GetGroupId(ctx)
+	// 获取当前 group card lock
 	locked := service.Group().IsCardLocked(ctx, groupId)
 	if !locked {
 		// 不需要锁定
@@ -24,7 +26,7 @@ func (s *sModule) TryLockCard(ctx context.Context) (catch bool) {
 		return
 	}
 	// 防止重复修改群名片
-	cacheKey := "LockCard" + gconv.String(groupId) + ":" + gconv.String(service.Bot().GetUserId(ctx))
+	cacheKey := "LockCard" + gconv.String(groupId) + ":" + gconv.String(userId)
 	cardVar, err := gcache.Get(ctx, cacheKey)
 	if err != nil {
 		g.Log().Warning(ctx, err)
@@ -34,6 +36,11 @@ func (s *sModule) TryLockCard(ctx context.Context) (catch bool) {
 		cardVarStr := cardVar.String()
 		if newCard == cardVarStr {
 			// 名片未改变
+			_, err = gcache.Remove(ctx, cacheKey)
+			if err != nil {
+				g.Log().Warning(ctx, err)
+				return
+			}
 			return
 		}
 		oldCard = cardVarStr
@@ -48,7 +55,7 @@ func (s *sModule) TryLockCard(ctx context.Context) (catch bool) {
 	// 执行锁定
 	service.Bot().SetGroupCard(ctx, groupId, service.Bot().GetUserId(ctx), oldCard)
 	// 发送提示
-	service.Bot().SendPlainMsg(ctx, "名片已锁定，请联系管理员修改")
+	service.Bot().SendMsg(ctx, "[CQ:at,qq="+gconv.String(userId)+"]名片已锁定，请联系管理员修改")
 	return
 }
 

@@ -87,8 +87,8 @@ v1.6
 | /group card check {to_list_name} by {from_list_name} | 使用 from_list_name uid:card 匹配群名片，将不匹配的成员写入 to_list_name 中 | 同上                                           |
 | /group card set auto-set {list_name}                 | 设置入群自动修改群名片 list_name；若不包含，那么不修改       | 同上                                           |
 | /group card rm auto-set                              | 清除设置的自动修改群名片 list_name                           | 同上                                           |
-| /group card lock                                     | 锁定群名片，不让修改（实验性功能）                           | 同上                                           |
-| /group card unlock                                   | 解锁群名片（实验性功能）                                     | 同上                                           |
+| /group card lock                                     | 锁定群名片，不让修改                                         | 同上                                           |
+| /group card unlock                                   | 解锁群名片                                                   | 同上                                           |
 
 ## Group Message
 
