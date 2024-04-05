@@ -164,6 +164,7 @@ v1.6
    * `POST`：`webhook:post://`
    * `PUT`：`webhook:put://`
    * `DELETE`：`webhook:delete://`
+   * `PATCH`：`webhook:patch://`
 
    使用协议头作为回复内容的开头，将会执行协议头之后的 url。
 
@@ -179,7 +180,7 @@ v1.6
 
      e.g. `/list join example get webhook@data.text@://https://example.com/{groupId}/{userId}/{message}`
 
-   * `POST`、`PUT`、`DELETE`：
+   * `POST`、`PUT`、`DELETE`、`PATCH`：
 
      template: `webhook:post<request body>@response json path@://url`
 

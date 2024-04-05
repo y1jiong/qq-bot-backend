@@ -87,7 +87,7 @@ func (s *sModule) keywordReplyWebhook(ctx context.Context, userId, groupId int64
 	switch method {
 	case http.MethodGet:
 		_, body, err = s.WebhookGetHeadConnectOptionsTrace(ctx, method, urlLink)
-	case http.MethodPost, http.MethodPut, http.MethodDelete:
+	case http.MethodPost, http.MethodPut, http.MethodDelete, http.MethodPatch:
 		payload = strings.ReplaceAll(payload, "{message}", message)
 		payload = strings.ReplaceAll(payload, "{userId}", gconv.String(userId))
 		payload = strings.ReplaceAll(payload, "{groupId}", gconv.String(groupId))
