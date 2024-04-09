@@ -9,12 +9,12 @@ import (
 	"context"
 
 	"github.com/bytedance/sonic/ast"
-	"github.com/gogf/gf/v2/net/ghttp"
+	"github.com/gorilla/websocket"
 )
 
 type (
 	IBot interface {
-		CtxWithWebSocket(parent context.Context, ws *ghttp.WebSocket) context.Context
+		CtxWithWebSocket(parent context.Context, ws *websocket.Conn) context.Context
 		CtxNewWebSocketMutex(parent context.Context) context.Context
 		CtxWithReqJson(ctx context.Context, reqJson *ast.Node) context.Context
 		JoinConnectionPool(ctx context.Context, key int64)

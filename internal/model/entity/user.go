@@ -10,9 +10,9 @@ import (
 
 // User is the golang structure for table user.
 type User struct {
-	UserId      int64       `json:"user_id"      ` //
-	SettingJson string      `json:"setting_json" ` //
-	CreatedAt   *gtime.Time `json:"created_at"   ` //
-	UpdatedAt   *gtime.Time `json:"updated_at"   ` //
-	DeletedAt   *gtime.Time `json:"deleted_at"   ` //
+	UserId      int64       `json:"user_id"      orm:"user_id"      ` //
+	SettingJson string      `json:"setting_json" orm:"setting_json" ` //
+	CreatedAt   *gtime.Time `json:"created_at"   orm:"created_at"   ` //
+	UpdatedAt   *gtime.Time `json:"updated_at"   orm:"updated_at"   ` //
+	DeletedAt   *gtime.Time `json:"deleted_at"   orm:"deleted_at"   ` //
 }

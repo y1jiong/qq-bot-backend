@@ -5,8 +5,8 @@ go 1.22
 require (
 	github.com/bitly/go-simplejson v0.5.1
 	github.com/bytedance/sonic v1.11.3
-	github.com/gogf/gf/contrib/drivers/pgsql/v2 v2.6.4
-	github.com/gogf/gf/v2 v2.6.4
+	github.com/gogf/gf/contrib/drivers/pgsql/v2 v2.7.0
+	github.com/gogf/gf/v2 v2.7.0
 	github.com/gorilla/websocket v1.5.1
 	github.com/lukesampson/figlet v0.0.0-20190211215653-8a3ef4a6ac42
 	github.com/nsf/termbox-go v1.1.1
@@ -31,13 +31,13 @@ require (
 	github.com/olekukonko/tablewriter v0.0.5 // indirect
 	github.com/rivo/uniseg v0.4.7 // indirect
 	github.com/twitchyliquid64/golang-asm v0.15.1 // indirect
-	go.opentelemetry.io/otel v1.24.0 // indirect
-	go.opentelemetry.io/otel/metric v1.24.0 // indirect
-	go.opentelemetry.io/otel/sdk v1.24.0 // indirect
-	go.opentelemetry.io/otel/trace v1.24.0 // indirect
+	go.opentelemetry.io/otel v1.25.0 // indirect
+	go.opentelemetry.io/otel/metric v1.25.0 // indirect
+	go.opentelemetry.io/otel/sdk v1.25.0 // indirect
+	go.opentelemetry.io/otel/trace v1.25.0 // indirect
 	golang.org/x/arch v0.7.0 // indirect
-	golang.org/x/net v0.22.0 // indirect
-	golang.org/x/sys v0.18.0 // indirect
+	golang.org/x/net v0.24.0 // indirect
+	golang.org/x/sys v0.19.0 // indirect
 	golang.org/x/text v0.14.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )

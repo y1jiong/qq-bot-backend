@@ -6,8 +6,8 @@ import (
 	"github.com/bytedance/sonic"
 	"github.com/bytedance/sonic/ast"
 	"github.com/gogf/gf/v2/frame/g"
-	"github.com/gogf/gf/v2/net/ghttp"
 	"github.com/gogf/gf/v2/os/gcache"
+	"github.com/gorilla/websocket"
 	"qq-bot-backend/internal/service"
 	"sync"
 	"time"
@@ -42,13 +42,13 @@ type echoModel struct {
 	TimeoutFunc  func(ctx context.Context)
 }
 
-func (s *sBot) CtxWithWebSocket(parent context.Context, ws *ghttp.WebSocket) context.Context {
-	return context.WithValue(parent, ctxKeyForWebSocket, ws)
+func (s *sBot) CtxWithWebSocket(parent context.Context, conn *websocket.Conn) context.Context {
+	return context.WithValue(parent, ctxKeyForWebSocket, conn)
 }
 
-func (s *sBot) webSocketFromCtx(ctx context.Context) *ghttp.WebSocket {
+func (s *sBot) webSocketFromCtx(ctx context.Context) *websocket.Conn {
 	if v := ctx.Value(ctxKeyForWebSocket); v != nil {
-		return v.(*ghttp.WebSocket)
+		return v.(*websocket.Conn)
 	}
 	return nil
 }
