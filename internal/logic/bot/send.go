@@ -74,9 +74,12 @@ func (s *sBot) SendPlainMsgIfNotApiReq(ctx context.Context, msg string) {
 }
 
 func (s *sBot) SendFileToGroup(ctx context.Context, gid int64, filePath, name, folder string) {
+	// echo sign
+	echoSign := guid.S()
 	// 参数
 	req := struct {
 		Action string `json:"action"`
+		Echo   string `json:"echo"`
 		Params struct {
 			GroupId int64  `json:"group_id"`
 			File    string `json:"file"`
@@ -85,6 +88,7 @@ func (s *sBot) SendFileToGroup(ctx context.Context, gid int64, filePath, name, f
 		} `json:"params"`
 	}{
 		Action: "upload_group_file",
+		Echo:   echoSign,
 		Params: struct {
 			GroupId int64  `json:"group_id"`
 			File    string `json:"file"`
@@ -102,6 +106,22 @@ func (s *sBot) SendFileToGroup(ctx context.Context, gid int64, filePath, name, f
 		g.Log().Error(ctx, err)
 		return
 	}
+	// callback
+	callback := func(ctx context.Context, rsyncCtx context.Context) {
+		if err = s.defaultEchoProcess(rsyncCtx); err != nil {
+			s.SendPlainMsgIfNotApiReq(ctx, err.Error())
+			return
+		}
+	}
+	timeout := func(ctx context.Context) {
+		s.SendPlainMsgIfNotApiReq(ctx, "上传至群文件超时")
+	}
+	// echo
+	err = s.pushEchoCache(ctx, echoSign, callback, timeout)
+	if err != nil {
+		g.Log().Error(ctx, err)
+		return
+	}
 	err = s.writeMessage(ctx, websocket.TextMessage, reqJson)
 	if err != nil {
 		g.Log().Warning(ctx, err)
@@ -109,9 +129,12 @@ func (s *sBot) SendFileToGroup(ctx context.Context, gid int64, filePath, name, f
 }
 
 func (s *sBot) SendFileToUser(ctx context.Context, uid int64, filePath, name string) {
+	// echo sign
+	echoSign := guid.S()
 	// 参数
 	req := struct {
 		Action string `json:"action"`
+		Echo   string `json:"echo"`
 		Params struct {
 			UserId int64  `json:"user_id"`
 			File   string `json:"file"`
@@ -119,6 +142,7 @@ func (s *sBot) SendFileToUser(ctx context.Context, uid int64, filePath, name str
 		} `json:"params"`
 	}{
 		Action: "upload_private_file",
+		Echo:   echoSign,
 		Params: struct {
 			UserId int64  `json:"user_id"`
 			File   string `json:"file"`
@@ -130,6 +154,22 @@ func (s *sBot) SendFileToUser(ctx context.Context, uid int64, filePath, name str
 		},
 	}
 	reqJson, err := sonic.ConfigStd.Marshal(req)
+	if err != nil {
+		g.Log().Error(ctx, err)
+		return
+	}
+	// callback
+	callback := func(ctx context.Context, rsyncCtx context.Context) {
+		if err = s.defaultEchoProcess(rsyncCtx); err != nil {
+			s.SendPlainMsgIfNotApiReq(ctx, err.Error())
+			return
+		}
+	}
+	timeout := func(ctx context.Context) {
+		s.SendPlainMsgIfNotApiReq(ctx, "上传文件至私聊超时")
+	}
+	// echo
+	err = s.pushEchoCache(ctx, echoSign, callback, timeout)
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return

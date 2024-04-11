@@ -14,7 +14,7 @@ import (
 
 type (
 	IBot interface {
-		CtxWithWebSocket(parent context.Context, ws *websocket.Conn) context.Context
+		CtxWithWebSocket(parent context.Context, conn *websocket.Conn) context.Context
 		CtxNewWebSocketMutex(parent context.Context) context.Context
 		CtxWithReqJson(ctx context.Context, reqJson *ast.Node) context.Context
 		JoinConnectionPool(ctx context.Context, key int64)

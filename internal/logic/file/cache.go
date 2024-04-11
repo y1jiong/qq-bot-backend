@@ -4,10 +4,10 @@ import (
 	"context"
 	"github.com/gogf/gf/v2/errors/gcode"
 	"github.com/gogf/gf/v2/errors/gerror"
+	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/os/gcache"
 	"github.com/gogf/gf/v2/util/guid"
 	"net/http"
-	"qq-bot-backend/internal/service"
 	"time"
 )
 
@@ -35,10 +35,7 @@ func (s *sFile) SetCacheFile(ctx context.Context, content string, duration time.
 }
 
 func (s *sFile) GetCachedFileUrl(ctx context.Context, id string) (url string, err error) {
-	u, err := service.Cfg().GetUrlPrefix(ctx)
-	if err != nil {
-		return
-	}
-	url = u + "/file/" + id
+	r := g.RequestFromCtx(ctx)
+	url = r.GetSchema() + "://" + r.Host + "/file/" + id
 	return
 }
