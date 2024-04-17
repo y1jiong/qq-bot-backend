@@ -6,7 +6,6 @@ import (
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/util/guid"
 	"github.com/gorilla/websocket"
-	"qq-bot-backend/internal/service"
 )
 
 func (s *sBot) SendMessage(ctx context.Context, messageType string, uid, gid int64, msg string, plain bool) {
@@ -16,10 +15,6 @@ func (s *sBot) SendMessage(ctx context.Context, messageType string, uid, gid int
 	}
 	if gid != 0 {
 		uid = 0
-	}
-	// 预处理
-	if plain {
-		msg = service.Codec().EncodeCqCode(msg)
 	}
 	// 参数
 	req := struct {
