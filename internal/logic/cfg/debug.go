@@ -2,28 +2,27 @@ package cfg
 
 import (
 	"context"
-	"github.com/gogf/gf/v2/container/gvar"
 	"github.com/gogf/gf/v2/frame/g"
 )
 
 func (s *sCfg) IsEnabledDebug(ctx context.Context) bool {
-	debug, err := g.Cfg().Get(ctx, "bot.debug")
+	enabled, err := g.Cfg().Get(ctx, "bot.debug.enabled")
 	if err != nil {
 		g.Log().Warning(ctx, err)
 	}
-	if debug == nil {
-		debug = gvar.New(false)
+	if enabled == nil {
+		return false
 	}
-	return debug.Bool()
+	return enabled.Bool()
 }
 
 func (s *sCfg) GetDebugToken(ctx context.Context) string {
-	debugToken, err := g.Cfg().Get(ctx, "bot.debugToken")
+	token, err := g.Cfg().Get(ctx, "bot.debug.token")
 	if err != nil {
 		g.Log().Warning(ctx, err)
 	}
-	if debugToken == nil {
-		debugToken = gvar.New("")
+	if token == nil {
+		return ""
 	}
-	return debugToken.String()
+	return token.String()
 }

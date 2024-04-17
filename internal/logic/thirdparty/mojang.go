@@ -32,7 +32,7 @@ func (s *sThirdParty) QueryMinecraftGenuineUser(ctx context.Context, name string
 	// 失败重试
 	if err != nil {
 		for range 2 {
-			time.Sleep(service.Cfg().GetRetryIntervalSeconds(ctx) * time.Millisecond)
+			time.Sleep(service.Cfg().GetRetryIntervalSeconds(ctx) * time.Second)
 			res, err = get()
 			if err == nil {
 				break
