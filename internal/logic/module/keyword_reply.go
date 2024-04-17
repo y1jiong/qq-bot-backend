@@ -112,7 +112,7 @@ func (s *sModule) keywordReplyWebhook(ctx context.Context, userId, groupId int64
 	}
 	node, err := sonic.Get([]byte(body), path...)
 	if err != nil {
-		replyMsg = "Wrong json path"
+		replyMsg = "Wrong JSON path"
 		return
 	}
 	if node.Type() != ast.V_STRING {

@@ -370,7 +370,7 @@ func (s *sList) SetListDataReturnRes(ctx context.Context, listName, newListStr s
 	// 数据处理
 	listJson, err := sj.NewJson([]byte(newListStr))
 	if err != nil {
-		retMsg = "反序列化 json 失败"
+		retMsg = "反序列化 JSON 失败"
 		return
 	}
 	listM := listJson.MustMap(make(map[string]any))
@@ -416,7 +416,7 @@ func (s *sList) AppendListDataReturnRes(ctx context.Context, listName, newListSt
 	// 数据处理
 	listJson, err := sj.NewJson([]byte(newListStr))
 	if err != nil {
-		retMsg = "反序列化 json 失败"
+		retMsg = "反序列化 JSON 失败"
 		return
 	}
 	listM := listJson.MustMap(make(map[string]any))
