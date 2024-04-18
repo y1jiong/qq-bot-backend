@@ -82,7 +82,7 @@ func (s *sModule) keywordReplyWebhook(ctx context.Context, userId, groupId int64
 		"user("+gconv.String(userId)+") in group("+gconv.String(service.Bot().GetGroupId(ctx))+
 			") call webhook", method, urlLink)
 	// Log end
-	var body string
+	var body []byte
 	// Webhook
 	switch method {
 	case http.MethodGet:
@@ -102,7 +102,7 @@ func (s *sModule) keywordReplyWebhook(ctx context.Context, userId, groupId int64
 	}
 	// 没有 bodyPath，直接返回 body
 	if len(bodyPath) == 1 && bodyPath[0] == "" {
-		replyMsg = body
+		replyMsg = string(body)
 		return
 	}
 	// 解析 body 获取数据
@@ -110,12 +110,17 @@ func (s *sModule) keywordReplyWebhook(ctx context.Context, userId, groupId int64
 	for i, v := range bodyPath {
 		path[i] = v
 	}
-	node, err := sonic.Get([]byte(body), path...)
+	node, err := sonic.Get(body, path...)
 	if err != nil {
 		replyMsg = "Wrong JSON path"
 		return
 	}
 	if node.Type() != ast.V_STRING {
+		err = node.LoadAll()
+		if err != nil {
+			replyMsg = "Wrong JSON format"
+			return
+		}
 		tmp, _ := node.MarshalJSON()
 		replyMsg = string(tmp)
 		return
