@@ -10,6 +10,7 @@ import (
 	"net/url"
 	"qq-bot-backend/internal/service"
 	"regexp"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -118,6 +119,11 @@ func (s *sModule) keywordReplyWebhook(ctx context.Context, userId, groupId int64
 	// 解析 body 获取数据
 	path := make([]any, len(bodyPath))
 	for i, v := range bodyPath {
+		index, e := strconv.Atoi(v)
+		if e == nil {
+			path[i] = index
+			continue
+		}
 		path[i] = v
 	}
 	node, err := sonic.Get(body, path...)
