@@ -13,7 +13,13 @@ func (s *sModule) TryGroupKeywordReply(ctx context.Context) (catch bool) {
 	msg := service.Bot().GetMessage(ctx)
 	groupId := service.Bot().GetGroupId(ctx)
 	// 匹配关键词
-	contains, hit, value := s.isOnKeywordLists(ctx, msg, service.Group().GetKeywordReplyLists(ctx, groupId))
+	var lists map[string]any
+	if service.Group().IsBinding(ctx, groupId) {
+		lists = service.Group().GetKeywordReplyLists(ctx, groupId)
+	} else {
+		lists = service.Namespace().GetPublicNamespaceLists(ctx)
+	}
+	contains, hit, value := s.isOnKeywordLists(ctx, msg, lists)
 	if !contains || value == "" {
 		return
 	}
