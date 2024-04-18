@@ -6,8 +6,11 @@ import (
 	"qq-bot-backend/internal/consts"
 )
 
-func (s *sModule) WebhookGetHeadConnectOptionsTrace(ctx context.Context, method, url string) (statusCode int, body []byte, err error) {
+func (s *sModule) WebhookGetHeadConnectOptionsTrace(ctx context.Context, header, method, url string) (statusCode int, body []byte, err error) {
 	c := gclient.New()
+	if header != "" {
+		c.SetHeaderRaw(header)
+	}
 	c.SetAgent(consts.ProjName + "/" + consts.Version)
 	resp, err := c.DoRequest(ctx, method, url)
 	if err != nil || resp == nil {
@@ -19,8 +22,11 @@ func (s *sModule) WebhookGetHeadConnectOptionsTrace(ctx context.Context, method,
 	return
 }
 
-func (s *sModule) WebhookPostPutPatchDelete(ctx context.Context, method, url string, payload any) (statusCode int, body []byte, err error) {
+func (s *sModule) WebhookPostPutPatchDelete(ctx context.Context, header, method, url string, payload any) (statusCode int, body []byte, err error) {
 	c := gclient.New()
+	if header != "" {
+		c.SetHeaderRaw(header)
+	}
 	c.SetAgent(consts.ProjName + "/" + consts.Version)
 	resp, err := c.DoRequest(ctx, method, url, payload)
 	if err != nil || resp == nil {

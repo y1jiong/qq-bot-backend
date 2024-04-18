@@ -15,7 +15,7 @@ import (
 )
 
 var (
-	webhookPrefixRe = regexp.MustCompile(`^webhook(?::([A-Za-z]{3,7}))?(?:<(.+)>)?(?:@(.+)@)?://(.+)$`)
+	webhookPrefixRe = regexp.MustCompile(`^webhook(?::([A-Za-z]{3,7}))?(?:#(.+)#)?(?:<(.+)>)?(?:@(.+)@)?://(.+)$`)
 	commandPrefixRe = regexp.MustCompile(`^(?:command|cmd)://(.+)$`)
 )
 
@@ -65,14 +65,23 @@ func (s *sModule) keywordReplyWebhook(ctx context.Context, userId, groupId int64
 	if method == "" {
 		method = http.MethodGet
 	}
-	payload := subMatch[2]
-	bodyPath := strings.Split(subMatch[3], ".")
-	urlLink := subMatch[4]
+	headers := subMatch[2]
+	payload := subMatch[3]
+	bodyPath := strings.Split(subMatch[4], ".")
+	urlLink := subMatch[5]
 	// Arguments
 	var err error
 	message = service.Codec().DecodeCqCode(message)
 	hit = service.Codec().DecodeCqCode(hit)
 	remain := strings.Replace(message, hit, "", 1)
+	// Headers
+	if headers != "" {
+		headers = strings.ReplaceAll(headers, "{message}", message)
+		headers = strings.ReplaceAll(headers, "{userId}", gconv.String(userId))
+		headers = strings.ReplaceAll(headers, "{groupId}", gconv.String(groupId))
+		headers = strings.ReplaceAll(headers, "{remain}", remain)
+	}
+	// Url escape
 	urlLink = strings.ReplaceAll(urlLink, "{message}", url.QueryEscape(message))
 	urlLink = strings.ReplaceAll(urlLink, "{userId}", gconv.String(userId))
 	urlLink = strings.ReplaceAll(urlLink, "{groupId}", gconv.String(groupId))
@@ -86,13 +95,14 @@ func (s *sModule) keywordReplyWebhook(ctx context.Context, userId, groupId int64
 	// Webhook
 	switch method {
 	case http.MethodGet:
-		_, body, err = s.WebhookGetHeadConnectOptionsTrace(ctx, method, urlLink)
+		_, body, err = s.WebhookGetHeadConnectOptionsTrace(ctx, headers, method, urlLink)
 	case http.MethodPost, http.MethodPut, http.MethodDelete, http.MethodPatch:
+		// Payload
 		payload = strings.ReplaceAll(payload, "{message}", message)
 		payload = strings.ReplaceAll(payload, "{userId}", gconv.String(userId))
 		payload = strings.ReplaceAll(payload, "{groupId}", gconv.String(groupId))
 		payload = strings.ReplaceAll(payload, "{remain}", remain)
-		_, body, err = s.WebhookPostPutPatchDelete(ctx, method, urlLink, payload)
+		_, body, err = s.WebhookPostPutPatchDelete(ctx, headers, method, urlLink, payload)
 	default:
 		return
 	}
