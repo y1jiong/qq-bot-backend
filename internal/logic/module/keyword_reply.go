@@ -77,6 +77,7 @@ func (s *sModule) keywordReplyWebhook(ctx context.Context, userId, groupId int64
 	remain := strings.Replace(message, hit, "", 1)
 	// Headers
 	if headers != "" {
+		headers = strings.ReplaceAll(headers, "\\n", "\n")
 		headers = strings.ReplaceAll(headers, "{message}", message)
 		headers = strings.ReplaceAll(headers, "{userId}", gconv.String(userId))
 		headers = strings.ReplaceAll(headers, "{groupId}", gconv.String(groupId))
@@ -99,10 +100,12 @@ func (s *sModule) keywordReplyWebhook(ctx context.Context, userId, groupId int64
 		_, body, err = s.WebhookGetHeadConnectOptionsTrace(ctx, headers, method, urlLink)
 	case http.MethodPost, http.MethodPut, http.MethodDelete, http.MethodPatch:
 		// Payload
-		payload = strings.ReplaceAll(payload, "{message}", message)
+		msg, _ := sonic.ConfigDefault.MarshalToString(message)
+		r, _ := sonic.ConfigDefault.MarshalToString(remain)
+		payload = strings.ReplaceAll(payload, "{message}", msg)
 		payload = strings.ReplaceAll(payload, "{userId}", gconv.String(userId))
 		payload = strings.ReplaceAll(payload, "{groupId}", gconv.String(groupId))
-		payload = strings.ReplaceAll(payload, "{remain}", remain)
+		payload = strings.ReplaceAll(payload, "{remain}", r)
 		_, body, err = s.WebhookPostPutPatchDelete(ctx, headers, method, urlLink, payload)
 	default:
 		return

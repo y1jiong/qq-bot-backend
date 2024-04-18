@@ -71,7 +71,7 @@ func (s *sList) AppendListData(ctx context.Context, listName string, newMap map[
 	}
 	n = len(listMap)
 	// 保存数据
-	listBytes, err := sonic.ConfigStd.Marshal(listMap)
+	listBytes, err := sonic.ConfigDefault.Marshal(listMap)
 	if err != nil {
 		return
 	}

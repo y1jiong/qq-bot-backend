@@ -127,7 +127,7 @@ func (s *sBot) GetGroupMemberInfo(ctx context.Context, groupId, userId int64) (m
 			NoCache: false,
 		},
 	}
-	reqJson, err := sonic.ConfigStd.Marshal(req)
+	reqJson, err := sonic.ConfigDefault.Marshal(req)
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return
@@ -185,7 +185,7 @@ func (s *sBot) GetGroupMemberList(ctx context.Context, groupId int64, noCache ..
 			NoCache: true,
 		},
 	}
-	reqJson, err := sonic.ConfigStd.Marshal(req)
+	reqJson, err := sonic.ConfigDefault.Marshal(req)
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return
@@ -247,7 +247,7 @@ func (s *sBot) RequestMessage(ctx context.Context, messageId int64) (messageMap 
 			MessageId: gconv.String(messageId),
 		},
 	}
-	reqJson, err := sonic.ConfigStd.Marshal(req)
+	reqJson, err := sonic.ConfigDefault.Marshal(req)
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return
@@ -309,7 +309,7 @@ func (s *sBot) GetGroupInfo(ctx context.Context, groupId int64, noCache ...bool)
 	if len(noCache) > 0 && noCache[0] {
 		req.Params.NoCache = true
 	}
-	reqJson, err := sonic.ConfigStd.Marshal(req)
+	reqJson, err := sonic.ConfigDefault.Marshal(req)
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return
@@ -357,7 +357,7 @@ func (s *sBot) GetLoginInfo(ctx context.Context) (userId int64, nickname string)
 		Action: "get_login_info",
 		Echo:   echoSign,
 	}
-	reqJson, err := sonic.ConfigStd.Marshal(req)
+	reqJson, err := sonic.ConfigDefault.Marshal(req)
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return

@@ -83,7 +83,7 @@ func (c *ControllerV1) Command(ctx context.Context, req *v1.CommandReq) (res *v1
 		GroupId: req.GroupId,
 		ApiReq:  struct{}{},
 	}
-	rawJson, err := sonic.ConfigStd.Marshal(innerReq)
+	rawJson, err := sonic.ConfigDefault.Marshal(innerReq)
 	if err != nil {
 		return
 	}

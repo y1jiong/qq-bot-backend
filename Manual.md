@@ -188,7 +188,7 @@ v1.6
 
      `@response json path@` 可以省略。
 
-     e.g. `/list join example post webhook:post#Authorization: Bearer\nX-Id: {userId}#<{"group_id":{groupId},"user_id":{userId},"message":"{message}","remain":"{remain}"}>@data.text@://https://example.com/{groupId}/{userId}/{message}`
+     e.g. `/list join example post webhook:post#Authorization: Bearer\nX-Id: {userId}#<{"group_id":{groupId},"user_id":{userId},"message":{message},"remain":{remain}}>@data.text@://https://example.com/{groupId}/{userId}/{message}`
 
    **注意**：要触发 Webhook，消息必须以 Keyword 开头。
 
