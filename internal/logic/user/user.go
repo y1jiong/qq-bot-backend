@@ -45,12 +45,12 @@ func createUser(ctx context.Context, userId int64) (userE *entity.User, err erro
 	// 数据库插入
 	_, err = dao.User.Ctx(ctx).
 		Data(userE).
-		OmitEmpty().
+		OmitEmptyData().
 		Insert()
 	return
 }
 
-func (s *sUser) IsSystemTrustUser(ctx context.Context, userId int64) (yes bool) {
+func (s *sUser) IsSystemTrustedUser(ctx context.Context, userId int64) (yes bool) {
 	// 参数合法性校验
 	if userId < 1 {
 		return

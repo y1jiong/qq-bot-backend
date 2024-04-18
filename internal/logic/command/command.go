@@ -33,7 +33,7 @@ func (s *sCommand) TryCommand(ctx context.Context, message string) (catch bool, 
 	// 暂停状态时的权限校验
 	userId := service.Bot().GetUserId(ctx)
 	if !service.Process().IsEnabledBotProcess() &&
-		!service.User().IsSystemTrustUser(ctx, userId) {
+		!service.User().IsSystemTrustedUser(ctx, userId) {
 		return
 	}
 	// 命令 log
@@ -76,7 +76,7 @@ func (s *sCommand) TryCommand(ctx context.Context, message string) (catch bool, 
 		}
 	case endBranchRe.MatchString(cmd):
 		// 权限校验
-		if !service.User().IsSystemTrustUser(ctx, service.Bot().GetUserId(ctx)) {
+		if !service.User().IsSystemTrustedUser(ctx, service.Bot().GetUserId(ctx)) {
 			return
 		}
 		switch cmd {

@@ -48,20 +48,14 @@ func getNamespace(ctx context.Context, namespace string) (namespaceE *entity.Nam
 	return
 }
 
-func isNamespaceOwner(userId int64, namespaceE *entity.Namespace) (yes bool) {
-	// 判断 owner
-	if userId != namespaceE.OwnerId {
-		return
-	}
-	yes = true
-	return
+func isNamespaceOwner(userId int64, namespaceE *entity.Namespace) bool {
+	return userId == namespaceE.OwnerId
 }
 
 func isNamespaceOwnerOrAdmin(ctx context.Context, userId int64, namespaceE *entity.Namespace) (yes bool) {
 	// 判断 owner
-	if userId == namespaceE.OwnerId {
-		yes = true
-		return
+	if isNamespaceOwner(userId, namespaceE) {
+		return true
 	}
 	// 解析 setting json
 	settingJson, err := sonic.GetFromString(namespaceE.SettingJson)

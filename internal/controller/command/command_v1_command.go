@@ -117,7 +117,7 @@ func (c *ControllerV1) Command(ctx context.Context, req *v1.CommandReq) (res *v1
 			"group not binding")
 		return
 	}
-	if !service.Bot().IsGroupOwnerOrAdmin(botCtx) {
+	if !service.Bot().IsGroupOwnerOrAdminOrSysTrusted(botCtx) {
 		err = gerror.NewCode(gcode.New(http.StatusForbidden, "", nil),
 			"permission denied")
 		return

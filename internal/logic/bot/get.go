@@ -9,6 +9,7 @@ import (
 	"github.com/gogf/gf/v2/util/gconv"
 	"github.com/gogf/gf/v2/util/guid"
 	"github.com/gorilla/websocket"
+	"qq-bot-backend/internal/service"
 	"sync"
 )
 
@@ -420,4 +421,8 @@ func (s *sBot) IsGroupOwnerOrAdmin(ctx context.Context) (yes bool) {
 		}
 	}
 	return role == "owner" || role == "admin"
+}
+
+func (s *sBot) IsGroupOwnerOrAdminOrSysTrusted(ctx context.Context) bool {
+	return s.IsGroupOwnerOrAdmin(ctx) || service.User().IsSystemTrustedUser(ctx, gconv.Int64(s.GetUserId(ctx)))
 }

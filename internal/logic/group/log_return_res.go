@@ -17,7 +17,7 @@ func (s *sGroup) SetLogLeaveListReturnRes(ctx context.Context,
 		return
 	}
 	// 权限校验
-	if !service.Bot().IsGroupOwnerOrAdmin(ctx) {
+	if !service.Bot().IsGroupOwnerOrAdminOrSysTrusted(ctx) {
 		return
 	}
 	// 获取 group
@@ -72,7 +72,7 @@ func (s *sGroup) RemoveLogLeaveListReturnRes(ctx context.Context, groupId int64)
 		return
 	}
 	// 权限校验
-	if !service.Bot().IsGroupOwnerOrAdmin(ctx) {
+	if !service.Bot().IsGroupOwnerOrAdminOrSysTrusted(ctx) {
 		return
 	}
 	// 获取 group
@@ -126,7 +126,7 @@ func (s *sGroup) SetLogApprovalListReturnRes(ctx context.Context,
 		return
 	}
 	// 权限校验
-	if !service.Bot().IsGroupOwnerOrAdmin(ctx) {
+	if !service.Bot().IsGroupOwnerOrAdminOrSysTrusted(ctx) {
 		return
 	}
 	// 获取 group
@@ -181,7 +181,7 @@ func (s *sGroup) RemoveLogApprovalListReturnRes(ctx context.Context, groupId int
 		return
 	}
 	// 权限校验
-	if !service.Bot().IsGroupOwnerOrAdmin(ctx) {
+	if !service.Bot().IsGroupOwnerOrAdminOrSysTrusted(ctx) {
 		return
 	}
 	// 获取 group

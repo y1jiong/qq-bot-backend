@@ -19,7 +19,7 @@ func (s *sGroup) BindNamespaceReturnRes(ctx context.Context,
 		return
 	}
 	// 权限校验
-	if !service.Bot().IsGroupOwnerOrAdmin(ctx) ||
+	if !service.Bot().IsGroupOwnerOrAdminOrSysTrusted(ctx) ||
 		!service.Namespace().IsNamespaceOwnerOrAdmin(ctx, namespace, service.Bot().GetUserId(ctx)) {
 		return
 	}
@@ -36,7 +36,7 @@ func (s *sGroup) BindNamespaceReturnRes(ctx context.Context,
 		// 数据库插入
 		_, err = dao.Group.Ctx(ctx).
 			Data(groupE).
-			OmitEmpty().
+			OmitEmptyData().
 			Insert()
 	} else {
 		if groupE.Namespace != "" {
@@ -52,7 +52,7 @@ func (s *sGroup) BindNamespaceReturnRes(ctx context.Context,
 		_, err = dao.Group.Ctx(ctx).
 			Where(dao.Group.Columns().GroupId, groupId).
 			Data(groupE).
-			OmitEmpty().
+			OmitEmptyData().
 			Update()
 	}
 	if err != nil {
@@ -70,7 +70,7 @@ func (s *sGroup) UnbindReturnRes(ctx context.Context, groupId int64) (retMsg str
 		return
 	}
 	// 权限校验
-	if !service.Bot().IsGroupOwnerOrAdmin(ctx) {
+	if !service.Bot().IsGroupOwnerOrAdminOrSysTrusted(ctx) {
 		return
 	}
 	// 获取 group
@@ -124,7 +124,7 @@ func (s *sGroup) KickFromListReturnRes(ctx context.Context,
 		return
 	}
 	// 权限校验
-	if !service.Bot().IsGroupOwnerOrAdmin(ctx) {
+	if !service.Bot().IsGroupOwnerOrAdminOrSysTrusted(ctx) {
 		return
 	}
 	// 获取 group
@@ -218,7 +218,7 @@ func (s *sGroup) KeepFromListReturnRes(ctx context.Context,
 		return
 	}
 	// 权限校验
-	if !service.Bot().IsGroupOwnerOrAdmin(ctx) {
+	if !service.Bot().IsGroupOwnerOrAdminOrSysTrusted(ctx) {
 		return
 	}
 	// 获取 group

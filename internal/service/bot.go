@@ -42,6 +42,7 @@ type (
 		GetGroupInfo(ctx context.Context, groupId int64, noCache ...bool) (infoMap map[string]any, err error)
 		GetLoginInfo(ctx context.Context) (userId int64, nickname string)
 		IsGroupOwnerOrAdmin(ctx context.Context) (yes bool)
+		IsGroupOwnerOrAdminOrSysTrusted(ctx context.Context) bool
 		SendMessage(ctx context.Context, messageType string, uid, gid int64, msg string, plain bool)
 		SendPlainMsg(ctx context.Context, msg string)
 		SendMsg(ctx context.Context, msg string)

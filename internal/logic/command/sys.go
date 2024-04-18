@@ -8,7 +8,7 @@ import (
 
 func trySys(ctx context.Context, cmd string) (catch bool, retMsg string) {
 	// 权限校验
-	if !service.User().IsSystemTrustUser(ctx, service.Bot().GetUserId(ctx)) {
+	if !service.User().IsSystemTrustedUser(ctx, service.Bot().GetUserId(ctx)) {
 		return
 	}
 	// 继续处理

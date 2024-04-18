@@ -32,7 +32,7 @@ func (s *sNamespace) AddNewNamespaceReturnRes(ctx context.Context, namespace str
 	// 数据库插入
 	_, err := dao.Namespace.Ctx(ctx).
 		Data(namespaceE).
-		OmitEmpty().
+		OmitEmptyData().
 		Insert()
 	if err != nil {
 		g.Log().Error(ctx, err)

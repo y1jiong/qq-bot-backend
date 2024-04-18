@@ -45,7 +45,7 @@ func (s *sToken) AddNewTokenReturnRes(ctx context.Context, name, token string) (
 		// 数据库插入
 		_, err = dao.Token.Ctx(ctx).
 			Data(tokenE).
-			OmitEmpty().
+			OmitEmptyData().
 			Insert()
 		if err != nil {
 			g.Log().Error(ctx, err)
@@ -59,7 +59,7 @@ func (s *sToken) AddNewTokenReturnRes(ctx context.Context, name, token string) (
 		// 数据库更新
 		_, err = dao.Token.Ctx(ctx).
 			Data(tokenE).
-			OmitEmpty().
+			OmitEmptyData().
 			Where(dao.Token.Columns().Name, name).
 			Update()
 		if err != nil {

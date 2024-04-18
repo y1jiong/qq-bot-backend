@@ -11,7 +11,7 @@ import (
 
 type (
 	IUser interface {
-		IsSystemTrustUser(ctx context.Context, userId int64) (yes bool)
+		IsSystemTrustedUser(ctx context.Context, userId int64) (yes bool)
 		CouldOpToken(ctx context.Context, userId int64) (yes bool)
 		CouldOpNamespace(ctx context.Context, userId int64) (yes bool)
 		CouldGetRawMsg(ctx context.Context, userId int64) (yes bool)

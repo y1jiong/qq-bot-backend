@@ -18,7 +18,7 @@ func (s *sGroup) SetAntiRecallReturnRes(ctx context.Context,
 		return
 	}
 	// 权限校验
-	if !service.Bot().IsGroupOwnerOrAdmin(ctx) {
+	if !service.Bot().IsGroupOwnerOrAdminOrSysTrusted(ctx) {
 		return
 	}
 	// 获取 group
@@ -81,7 +81,7 @@ func (s *sGroup) SetMessageNotificationReturnRes(ctx context.Context,
 		return
 	}
 	// 权限校验
-	if !service.Bot().IsGroupOwnerOrAdmin(ctx) {
+	if !service.Bot().IsGroupOwnerOrAdminOrSysTrusted(ctx) {
 		return
 	}
 	// 获取 group
@@ -137,7 +137,7 @@ func (s *sGroup) RemoveMessageNotificationReturnRes(ctx context.Context, groupId
 		return
 	}
 	// 权限校验
-	if !service.Bot().IsGroupOwnerOrAdmin(ctx) {
+	if !service.Bot().IsGroupOwnerOrAdminOrSysTrusted(ctx) {
 		return
 	}
 	// 获取 group
@@ -186,7 +186,7 @@ func (s *sGroup) SetOnlyAntiRecallMemberReturnRes(ctx context.Context, groupId i
 		return
 	}
 	// 权限校验
-	if !service.Bot().IsGroupOwnerOrAdmin(ctx) {
+	if !service.Bot().IsGroupOwnerOrAdminOrSysTrusted(ctx) {
 		return
 	}
 	// 获取 group

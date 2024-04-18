@@ -31,7 +31,7 @@ func (s *sList) AddListReturnRes(ctx context.Context, listName, namespace string
 	// 数据库插入
 	_, err := dao.List.Ctx(ctx).
 		Data(listE).
-		OmitEmpty().
+		OmitEmptyData().
 		Insert()
 	if err != nil {
 		g.Log().Error(ctx, err)

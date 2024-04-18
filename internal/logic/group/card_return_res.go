@@ -17,7 +17,7 @@ func (s *sGroup) SetAutoSetListReturnRes(ctx context.Context,
 		return
 	}
 	// 权限校验
-	if !service.Bot().IsGroupOwnerOrAdmin(ctx) {
+	if !service.Bot().IsGroupOwnerOrAdminOrSysTrusted(ctx) {
 		return
 	}
 	// 获取 group
@@ -68,7 +68,7 @@ func (s *sGroup) RemoveAutoSetListReturnRes(ctx context.Context, groupId int64) 
 		return
 	}
 	// 权限校验
-	if !service.Bot().IsGroupOwnerOrAdmin(ctx) {
+	if !service.Bot().IsGroupOwnerOrAdminOrSysTrusted(ctx) {
 		return
 	}
 	// 获取 group
@@ -118,7 +118,7 @@ func (s *sGroup) CheckCardWithRegexpReturnRes(ctx context.Context,
 		return
 	}
 	// 权限校验
-	if !service.Bot().IsGroupOwnerOrAdmin(ctx) {
+	if !service.Bot().IsGroupOwnerOrAdminOrSysTrusted(ctx) {
 		return
 	}
 	// 获取 group
@@ -184,7 +184,7 @@ func (s *sGroup) CheckCardByListReturnRes(ctx context.Context,
 		return
 	}
 	// 权限校验
-	if !service.Bot().IsGroupOwnerOrAdmin(ctx) {
+	if !service.Bot().IsGroupOwnerOrAdminOrSysTrusted(ctx) {
 		return
 	}
 	// 获取 group
@@ -247,7 +247,7 @@ func (s *sGroup) LockCardReturnRes(ctx context.Context, groupId int64) (retMsg s
 		return
 	}
 	// 权限校验
-	if !service.Bot().IsGroupOwnerOrAdmin(ctx) {
+	if !service.Bot().IsGroupOwnerOrAdminOrSysTrusted(ctx) {
 		return
 	}
 	// 获取 group
@@ -296,7 +296,7 @@ func (s *sGroup) UnlockCardReturnRes(ctx context.Context, groupId int64) (retMsg
 		return
 	}
 	// 权限校验
-	if !service.Bot().IsGroupOwnerOrAdmin(ctx) {
+	if !service.Bot().IsGroupOwnerOrAdminOrSysTrusted(ctx) {
 		return
 	}
 	// 获取 group
