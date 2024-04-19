@@ -24,11 +24,11 @@ func tryUser(ctx context.Context, cmd string) (catch bool, retMsg string) {
 }
 
 func tryUserJoin(ctx context.Context, cmd string) (catch bool, retMsg string) {
-	if !doubleValueCmdEndRe.MatchString(cmd) {
+	if !dualValueCmdEndRe.MatchString(cmd) {
 		return
 	}
 	// /user join <namespace> <user_id>
-	dv := doubleValueCmdEndRe.FindStringSubmatch(cmd)
+	dv := dualValueCmdEndRe.FindStringSubmatch(cmd)
 	// 执行
 	retMsg = service.Namespace().AddNamespaceAdminReturnRes(ctx, dv[1], gconv.Int64(dv[2]))
 	catch = true
@@ -36,11 +36,11 @@ func tryUserJoin(ctx context.Context, cmd string) (catch bool, retMsg string) {
 }
 
 func tryUserLeave(ctx context.Context, cmd string) (catch bool, retMsg string) {
-	if !doubleValueCmdEndRe.MatchString(cmd) {
+	if !dualValueCmdEndRe.MatchString(cmd) {
 		return
 	}
 	// /user leave <namespace> <user_id>
-	dv := doubleValueCmdEndRe.FindStringSubmatch(cmd)
+	dv := dualValueCmdEndRe.FindStringSubmatch(cmd)
 	// 执行
 	retMsg = service.Namespace().RemoveNamespaceAdminReturnRes(ctx, dv[1], gconv.Int64(dv[2]))
 	catch = true

@@ -43,11 +43,11 @@ func tryList(ctx context.Context, cmd string) (catch bool, retMsg string) {
 			retMsg = service.List().ResetListDataReturnRes(ctx, next[2])
 			catch = true
 		case "add":
-			if !doubleValueCmdEndRe.MatchString(next[2]) {
+			if !dualValueCmdEndRe.MatchString(next[2]) {
 				break
 			}
 			// /list add <list_name> <namespace>
-			dv := doubleValueCmdEndRe.FindStringSubmatch(next[2])
+			dv := dualValueCmdEndRe.FindStringSubmatch(next[2])
 			retMsg = service.List().AddListReturnRes(ctx, dv[1], dv[2])
 			catch = true
 		case "rm":

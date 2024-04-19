@@ -49,11 +49,11 @@ func tryToken(ctx context.Context, cmd string) (catch bool, retMsg string) {
 }
 
 func tryTokenAdd(ctx context.Context, cmd string) (catch bool, retMsg string) {
-	if !doubleValueCmdEndRe.MatchString(cmd) {
+	if !dualValueCmdEndRe.MatchString(cmd) {
 		return
 	}
 	// /token add <name> <token>
-	dv := doubleValueCmdEndRe.FindStringSubmatch(cmd)
+	dv := dualValueCmdEndRe.FindStringSubmatch(cmd)
 	// 执行
 	retMsg = service.Token().AddNewTokenReturnRes(ctx, dv[1], dv[2])
 	catch = true
@@ -61,11 +61,11 @@ func tryTokenAdd(ctx context.Context, cmd string) (catch bool, retMsg string) {
 }
 
 func tryTokenChown(ctx context.Context, cmd string) (catch bool, retMsg string) {
-	if !doubleValueCmdEndRe.MatchString(cmd) {
+	if !dualValueCmdEndRe.MatchString(cmd) {
 		return
 	}
 	// /token chown <owner_id> <name>
-	dv := doubleValueCmdEndRe.FindStringSubmatch(cmd)
+	dv := dualValueCmdEndRe.FindStringSubmatch(cmd)
 	// 执行
 	retMsg = service.Token().ChangeTokenOwnerReturnRes(ctx, dv[2], dv[1])
 	catch = true
@@ -73,11 +73,11 @@ func tryTokenChown(ctx context.Context, cmd string) (catch bool, retMsg string) 
 }
 
 func tryTokenBind(ctx context.Context, cmd string) (catch bool, retMsg string) {
-	if !doubleValueCmdEndRe.MatchString(cmd) {
+	if !dualValueCmdEndRe.MatchString(cmd) {
 		return
 	}
 	// /token bind <bot_id> <name>
-	dv := doubleValueCmdEndRe.FindStringSubmatch(cmd)
+	dv := dualValueCmdEndRe.FindStringSubmatch(cmd)
 	// 执行
 	retMsg = service.Token().BindTokenBotId(ctx, dv[2], dv[1])
 	catch = true

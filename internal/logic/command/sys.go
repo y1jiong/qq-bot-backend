@@ -57,8 +57,8 @@ func trySysCheck(ctx context.Context, cmd string) (catch bool, retMsg string) {
 
 func trySysGrant(ctx context.Context, cmd string) (catch bool, retMsg string) {
 	switch {
-	case doubleValueCmdEndRe.MatchString(cmd):
-		dv := doubleValueCmdEndRe.FindStringSubmatch(cmd)
+	case dualValueCmdEndRe.MatchString(cmd):
+		dv := dualValueCmdEndRe.FindStringSubmatch(cmd)
 		switch dv[1] {
 		case "raw":
 			// /sys grant raw <user_id>
@@ -79,8 +79,8 @@ func trySysGrant(ctx context.Context, cmd string) (catch bool, retMsg string) {
 
 func trySysRevoke(ctx context.Context, cmd string) (catch bool, retMsg string) {
 	switch {
-	case doubleValueCmdEndRe.MatchString(cmd):
-		dv := doubleValueCmdEndRe.FindStringSubmatch(cmd)
+	case dualValueCmdEndRe.MatchString(cmd):
+		dv := dualValueCmdEndRe.FindStringSubmatch(cmd)
 		switch dv[1] {
 		case "raw":
 			// /sys revoke raw <user_id>

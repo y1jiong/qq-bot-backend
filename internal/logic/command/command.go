@@ -7,6 +7,7 @@ import (
 	"qq-bot-backend/internal/consts"
 	"qq-bot-backend/internal/service"
 	"regexp"
+	"strings"
 )
 
 type sCommand struct{}
@@ -20,14 +21,13 @@ func init() {
 }
 
 var (
-	commandPrefixRe     = regexp.MustCompile(`^/(.+)$`)
-	nextBranchRe        = regexp.MustCompile(`^(\S+)\s+(.+)$`)
-	endBranchRe         = regexp.MustCompile(`^\S+$`)
-	doubleValueCmdEndRe = regexp.MustCompile(`^(\S+)\s+(\S+)$`)
+	nextBranchRe      = regexp.MustCompile(`^(\S+)\s+(.+)$`)
+	endBranchRe       = regexp.MustCompile(`^\S+$`)
+	dualValueCmdEndRe = regexp.MustCompile(`^(\S+)\s+(\S+)$`)
 )
 
 func (s *sCommand) TryCommand(ctx context.Context, message string) (catch bool, retMsg string) {
-	if !commandPrefixRe.MatchString(message) {
+	if !strings.HasPrefix(message, "/") {
 		return
 	}
 	// 暂停状态时的权限校验
@@ -37,10 +37,15 @@ func (s *sCommand) TryCommand(ctx context.Context, message string) (catch bool, 
 		return
 	}
 	// 命令 log
-	g.Log().Info(ctx,
-		"user("+gconv.String(userId)+") in group("+gconv.String(service.Bot().GetGroupId(ctx))+") send cmd "+message)
+	defer func() {
+		if !catch {
+			return
+		}
+		g.Log().Info(ctx,
+			"user("+gconv.String(userId)+") in group("+gconv.String(service.Bot().GetGroupId(ctx))+") send cmd "+message)
+	}()
 	// 继续处理
-	cmd := commandPrefixRe.FindStringSubmatch(message)[1]
+	cmd := strings.Replace(message, "/", "", 1)
 	switch {
 	case nextBranchRe.MatchString(cmd):
 		next := nextBranchRe.FindStringSubmatch(cmd)
