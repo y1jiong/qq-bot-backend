@@ -38,9 +38,10 @@ func (s *sModule) TryKeywordReply(ctx context.Context) (catch bool) {
 	}
 	// 匹配成功，回复
 	replyMsg := value
+	noReplyPrefix := false
 	switch {
 	case webhookPrefixRe.MatchString(value):
-		replyMsg = s.keywordReplyWebhook(ctx, userId, 0, msg, hit, value)
+		replyMsg, noReplyPrefix = s.keywordReplyWebhook(ctx, userId, 0, msg, hit, value)
 	case commandPrefixRe.MatchString(value):
 		replyMsg = s.keywordReplyCommand(ctx, msg, hit, value)
 	}
@@ -48,14 +49,16 @@ func (s *sModule) TryKeywordReply(ctx context.Context) (catch bool) {
 	if replyMsg == "" {
 		return
 	}
-	pre := "[CQ:reply,id=" + gconv.String(service.Bot().GetMsgId(ctx)) + "]" + replyMsg
-	service.Bot().SendMsg(ctx, pre)
+	if !noReplyPrefix {
+		replyMsg = "[CQ:reply,id=" + gconv.String(service.Bot().GetMsgId(ctx)) + "]" + replyMsg
+	}
+	service.Bot().SendMsg(ctx, replyMsg)
 	catch = true
 	return
 }
 
 func (s *sModule) keywordReplyWebhook(ctx context.Context, userId, groupId int64,
-	message, hit, value string) (replyMsg string) {
+	message, hit, value string) (replyMsg string, noReplyPrefix bool) {
 	// 必须以 hit 开头
 	if !strings.HasPrefix(message, hit) {
 		return
@@ -136,6 +139,7 @@ func (s *sModule) keywordReplyWebhook(ctx context.Context, userId, groupId int64
 				return
 			}
 			replyMsg = "[CQ:record,file=" + mediumUrl + "]"
+			noReplyPrefix = true
 			return
 		}
 		// 如果是视频
@@ -146,6 +150,7 @@ func (s *sModule) keywordReplyWebhook(ctx context.Context, userId, groupId int64
 				return
 			}
 			replyMsg = "[CQ:video,file=" + mediumUrl + "]"
+			noReplyPrefix = true
 			return
 		}
 	}

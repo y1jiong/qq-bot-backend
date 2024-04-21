@@ -32,9 +32,10 @@ func (s *sModule) TryGroupKeywordReply(ctx context.Context) (catch bool) {
 	}
 	// 匹配成功，回复
 	replyMsg := value
+	noReplyPrefix := false
 	switch {
 	case webhookPrefixRe.MatchString(value):
-		replyMsg = s.keywordReplyWebhook(ctx, service.Bot().GetUserId(ctx), groupId, msg, hit, value)
+		replyMsg, noReplyPrefix = s.keywordReplyWebhook(ctx, service.Bot().GetUserId(ctx), groupId, msg, hit, value)
 	case commandPrefixRe.MatchString(value):
 		replyMsg = s.keywordReplyCommand(ctx, msg, hit, value)
 	}
@@ -42,8 +43,10 @@ func (s *sModule) TryGroupKeywordReply(ctx context.Context) (catch bool) {
 	if replyMsg == "" {
 		return
 	}
-	pre := "[CQ:reply,id=" + gconv.String(service.Bot().GetMsgId(ctx)) + "]" + replyMsg
-	service.Bot().SendMsg(ctx, pre)
+	if !noReplyPrefix {
+		replyMsg = "[CQ:reply,id=" + gconv.String(service.Bot().GetMsgId(ctx)) + "]" + replyMsg
+	}
+	service.Bot().SendMsg(ctx, replyMsg)
 	catch = true
 	return
 }
