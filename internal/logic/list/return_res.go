@@ -140,17 +140,17 @@ func (s *sList) ExportListReturnRes(ctx context.Context, listName string) (retMs
 		dao.List.Columns().ListJson + ": " + listE.ListJson + "\n" +
 		dao.List.Columns().UpdatedAt + ": " + listE.UpdatedAt.String()
 	// 回执
-	id, err := service.File().SetCacheFile(ctx, msg, time.Minute)
+	url, err := service.File().CacheFile(ctx, []byte(msg), time.Minute)
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return
 	}
-	url, err := service.File().GetCachedFileUrl(ctx, id)
+	filePath, err := service.Bot().UploadFile(ctx, url)
 	if err != nil {
-		g.Log().Error(ctx, err)
+		retMsg = "上传文件失败"
 		return
 	}
-	service.Bot().SendFile(ctx, "list("+listName+").txt", url)
+	service.Bot().SendFile(ctx, filePath, "list("+listName+").txt")
 	return
 }
 

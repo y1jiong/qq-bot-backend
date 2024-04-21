@@ -6,7 +6,8 @@ import (
 	"qq-bot-backend/internal/consts"
 )
 
-func (s *sModule) WebhookGetHeadConnectOptionsTrace(ctx context.Context, header, method, url string) (statusCode int, body []byte, err error) {
+func (s *sModule) WebhookGetHeadConnectOptionsTrace(ctx context.Context, header, method, url string) (
+	statusCode int, contentType string, body []byte, err error) {
 	c := gclient.New()
 	if header != "" {
 		c.SetHeaderRaw(header)
@@ -18,11 +19,13 @@ func (s *sModule) WebhookGetHeadConnectOptionsTrace(ctx context.Context, header,
 	}
 	defer resp.Close()
 	statusCode = resp.StatusCode
+	contentType = resp.Header.Get("Content-Type")
 	body = resp.ReadAll()
 	return
 }
 
-func (s *sModule) WebhookPostPutPatchDelete(ctx context.Context, header, method, url string, payload any) (statusCode int, body []byte, err error) {
+func (s *sModule) WebhookPostPutPatchDelete(ctx context.Context, header, method, url string, payload any) (
+	statusCode int, contentType string, body []byte, err error) {
 	c := gclient.New()
 	if header != "" {
 		c.SetHeaderRaw(header)
@@ -34,6 +37,7 @@ func (s *sModule) WebhookPostPutPatchDelete(ctx context.Context, header, method,
 	}
 	defer resp.Close()
 	statusCode = resp.StatusCode
+	contentType = resp.Header.Get("Content-Type")
 	body = resp.ReadAll()
 	return
 }

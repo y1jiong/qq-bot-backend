@@ -2,10 +2,12 @@ package bot
 
 import (
 	"context"
+	"errors"
 	"github.com/bytedance/sonic"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/util/guid"
 	"github.com/gorilla/websocket"
+	"sync"
 )
 
 func (s *sBot) SendMessage(ctx context.Context, messageType string, uid, gid int64, msg string, plain bool) {
@@ -175,7 +177,17 @@ func (s *sBot) SendFileToUser(ctx context.Context, uid int64, filePath, name str
 	}
 }
 
-func (s *sBot) SendFile(ctx context.Context, name, url string) {
+func (s *sBot) SendFile(ctx context.Context, filePath, name string) {
+	groupId := s.GetGroupId(ctx)
+	if groupId != 0 {
+		s.SendFileToGroup(ctx, groupId, filePath, name, "")
+		return
+	}
+	userId := s.GetUserId(ctx)
+	s.SendFileToUser(ctx, userId, filePath, name)
+}
+
+func (s *sBot) UploadFile(ctx context.Context, url string) (filePath string, err error) {
 	// echo sign
 	echoSign := guid.S()
 	// 参数
@@ -200,22 +212,21 @@ func (s *sBot) SendFile(ctx context.Context, name, url string) {
 		return
 	}
 	// callback
+	wg := sync.WaitGroup{}
+	defer wg.Wait()
+	wgDone := sync.OnceFunc(wg.Done)
+	wg.Add(1)
 	callback := func(ctx context.Context, rsyncCtx context.Context) {
+		defer wgDone()
 		if err = s.defaultEchoProcess(rsyncCtx); err != nil {
 			s.SendPlainMsgIfNotApiReq(ctx, err.Error())
 			return
 		}
-		filePath := s.getFileFromData(rsyncCtx)
-		groupId := s.GetGroupId(ctx)
-		if groupId != 0 {
-			s.SendFileToGroup(ctx, groupId, filePath, name, "")
-			return
-		}
-		userId := s.GetUserId(ctx)
-		s.SendFileToUser(ctx, userId, filePath, name)
+		filePath = s.getFileFromData(rsyncCtx)
 	}
 	timeout := func(ctx context.Context) {
-		s.SendPlainMsgIfNotApiReq(ctx, "上传文件超时")
+		defer wgDone()
+		err = errors.New("echo timeout")
 	}
 	// echo
 	err = s.pushEchoCache(ctx, echoSign, callback, timeout)
@@ -227,6 +238,7 @@ func (s *sBot) SendFile(ctx context.Context, name, url string) {
 	if err != nil {
 		g.Log().Warning(ctx, err)
 	}
+	return
 }
 
 func (s *sBot) ApproveJoinGroup(ctx context.Context, flag, subType string, approve bool, reason string) {

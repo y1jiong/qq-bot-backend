@@ -94,10 +94,11 @@ func (s *sModule) keywordReplyWebhook(ctx context.Context, userId, groupId int64
 			") call webhook", method, urlLink)
 	// Log end
 	var body []byte
+	var contentType string
 	// Webhook
 	switch method {
 	case http.MethodGet:
-		_, body, err = s.WebhookGetHeadConnectOptionsTrace(ctx, headers, method, urlLink)
+		_, contentType, body, err = s.WebhookGetHeadConnectOptionsTrace(ctx, headers, method, urlLink)
 	case http.MethodPost, http.MethodPut, http.MethodDelete, http.MethodPatch:
 		// Payload
 		msg, _ := sonic.ConfigDefault.MarshalToString(message)
@@ -106,7 +107,7 @@ func (s *sModule) keywordReplyWebhook(ctx context.Context, userId, groupId int64
 		payload = strings.ReplaceAll(payload, "{userId}", gconv.String(userId))
 		payload = strings.ReplaceAll(payload, "{groupId}", gconv.String(groupId))
 		payload = strings.ReplaceAll(payload, "{remain}", r)
-		_, body, err = s.WebhookPostPutPatchDelete(ctx, headers, method, urlLink, payload)
+		_, contentType, body, err = s.WebhookPostPutPatchDelete(ctx, headers, method, urlLink, payload)
 	default:
 		return
 	}
@@ -114,12 +115,46 @@ func (s *sModule) keywordReplyWebhook(ctx context.Context, userId, groupId int64
 		g.Log().Notice(ctx, "webhook", method, urlLink, err)
 		return
 	}
+	// 媒体文件
+	{
+		var mediumUrl string
+		// 如果是图片
+		if strings.HasPrefix(contentType, "image/") {
+			mediumUrl, err = service.File().CacheFile(ctx, body, 5*time.Minute)
+			if err != nil {
+				replyMsg = "Image cache failed"
+				return
+			}
+			replyMsg = "[CQ:image,file=" + mediumUrl + "]"
+			return
+		}
+		// 如果是音频
+		if strings.HasPrefix(contentType, "audio/") {
+			mediumUrl, err = service.File().CacheFile(ctx, body, 5*time.Minute)
+			if err != nil {
+				replyMsg = "Audio cache failed"
+				return
+			}
+			replyMsg = "[CQ:record,file=" + mediumUrl + "]"
+			return
+		}
+		// 如果是视频
+		if strings.HasPrefix(contentType, "video/") {
+			mediumUrl, err = service.File().CacheFile(ctx, body, 5*time.Minute)
+			if err != nil {
+				replyMsg = "Video cache failed"
+				return
+			}
+			replyMsg = "[CQ:video,file=" + mediumUrl + "]"
+			return
+		}
+	}
 	// 没有 bodyPath，直接返回 body
 	if len(bodyPath) == 1 && bodyPath[0] == "" {
 		replyMsg = string(body)
 		return
 	}
-	// 解析 body 获取数据
+	// 默认视为 JSON 数据
 	path := make([]any, len(bodyPath))
 	for i, v := range bodyPath {
 		index, e := strconv.Atoi(v)
@@ -129,6 +164,7 @@ func (s *sModule) keywordReplyWebhook(ctx context.Context, userId, groupId int64
 		}
 		path[i] = v
 	}
+	// 解析 body 获取数据
 	node, err := sonic.Get(body, path...)
 	if err != nil {
 		replyMsg = "Wrong JSON path"
