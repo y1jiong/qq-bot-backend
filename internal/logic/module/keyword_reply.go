@@ -30,7 +30,7 @@ func (s *sModule) TryKeywordReply(ctx context.Context) (catch bool) {
 		return
 	}
 	// 限速
-	kind := "replyU"
+	const kind = "replyU"
 	uid := gconv.String(userId)
 	if limited, _ := s.AutoLimit(ctx, kind, uid, 5, time.Minute); limited {
 		g.Log().Info(ctx, kind, uid, "is limited")
@@ -91,17 +91,13 @@ func (s *sModule) keywordReplyWebhook(ctx context.Context, userId, groupId int64
 	urlLink = strings.ReplaceAll(urlLink, "{userId}", gconv.String(userId))
 	urlLink = strings.ReplaceAll(urlLink, "{groupId}", gconv.String(groupId))
 	urlLink = strings.ReplaceAll(urlLink, "{remain}", url.QueryEscape(remain))
-	// Log
-	g.Log().Info(ctx,
-		"user("+gconv.String(userId)+") in group("+gconv.String(service.Bot().GetGroupId(ctx))+
-			") call webhook", method, urlLink)
-	// Log end
+	// Call webhook
 	var body []byte
+	var statusCode int
 	var contentType string
-	// Webhook
 	switch method {
 	case http.MethodGet:
-		_, contentType, body, err = s.WebhookGetHeadConnectOptionsTrace(ctx, headers, method, urlLink)
+		statusCode, contentType, body, err = s.WebhookGetHeadConnectOptionsTrace(ctx, headers, method, urlLink)
 	case http.MethodPost, http.MethodPut, http.MethodDelete, http.MethodPatch:
 		// Payload
 		msg, _ := sonic.ConfigDefault.MarshalToString(message)
@@ -110,14 +106,18 @@ func (s *sModule) keywordReplyWebhook(ctx context.Context, userId, groupId int64
 		payload = strings.ReplaceAll(payload, "{userId}", gconv.String(userId))
 		payload = strings.ReplaceAll(payload, "{groupId}", gconv.String(groupId))
 		payload = strings.ReplaceAll(payload, "{remain}", r)
-		_, contentType, body, err = s.WebhookPostPutPatchDelete(ctx, headers, method, urlLink, payload)
+		statusCode, contentType, body, err = s.WebhookPostPutPatchDelete(ctx, headers, method, urlLink, payload)
 	default:
 		return
 	}
 	if err != nil {
-		g.Log().Notice(ctx, "webhook", method, urlLink, err)
+		g.Log().Notice(ctx, "webhook", statusCode, method, urlLink, err)
 		return
 	}
+	// Log
+	g.Log().Info(ctx,
+		"user("+gconv.String(userId)+") in group("+gconv.String(service.Bot().GetGroupId(ctx))+
+			") call webhook", statusCode, method, urlLink)
 	// 媒体文件
 	{
 		var mediumUrl string

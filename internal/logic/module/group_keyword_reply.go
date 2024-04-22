@@ -24,7 +24,7 @@ func (s *sModule) TryGroupKeywordReply(ctx context.Context) (catch bool) {
 		return
 	}
 	// 限速
-	kind := "replyG"
+	const kind = "replyG"
 	gid := gconv.String(groupId)
 	if limited, _ := s.AutoLimit(ctx, kind, gid, 7, time.Minute); limited {
 		g.Log().Info(ctx, kind, gid, "is limited")
