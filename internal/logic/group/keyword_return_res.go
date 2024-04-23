@@ -26,7 +26,7 @@ func (s *sGroup) AddKeywordProcessReturnRes(ctx context.Context,
 		return
 	}
 	// 权限校验
-	if !service.Namespace().IsNamespaceOwnerOrAdmin(ctx, groupE.Namespace, service.Bot().GetUserId(ctx)) {
+	if !service.Namespace().IsNamespaceOwnerOrAdminOrOperator(ctx, groupE.Namespace, service.Bot().GetUserId(ctx)) {
 		return
 	}
 	// 数据处理
@@ -121,7 +121,7 @@ func (s *sGroup) RemoveKeywordProcessReturnRes(ctx context.Context,
 		return
 	}
 	// 权限校验
-	if !service.Namespace().IsNamespaceOwnerOrAdmin(ctx, groupE.Namespace, service.Bot().GetUserId(ctx)) {
+	if !service.Namespace().IsNamespaceOwnerOrAdminOrOperator(ctx, groupE.Namespace, service.Bot().GetUserId(ctx)) {
 		return
 	}
 	// 数据处理

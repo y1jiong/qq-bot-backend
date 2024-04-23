@@ -20,6 +20,7 @@ func (s *sToken) AddNewTokenReturnRes(ctx context.Context, name, token string) (
 	// 数据库查存在
 	var tokenE *entity.Token
 	err := dao.Token.Ctx(ctx).
+		Fields(dao.Token.Columns().OwnerId).
 		Where(dao.Token.Columns().Name, name).
 		Scan(&tokenE)
 	if err != nil {
@@ -112,6 +113,7 @@ func (s *sToken) QueryTokenReturnRes(ctx context.Context, name string) (retMsg s
 	// 数据库查存在
 	var tokenE *entity.Token
 	err := dao.Token.Ctx(ctx).
+		FieldsEx(dao.Token.Columns().Token).
 		Where(dao.Token.Columns().Name, name).
 		Scan(&tokenE)
 	if err != nil {
@@ -136,9 +138,16 @@ func (s *sToken) QueryTokenReturnRes(ctx context.Context, name string) (retMsg s
 func (s *sToken) QueryOwnTokenReturnRes(ctx context.Context) (retMsg string) {
 	// 数据库查询
 	var tEntities []*entity.Token
-	err := dao.Token.Ctx(ctx).
-		Where(dao.Token.Columns().OwnerId, service.Bot().GetUserId(ctx)).
-		Scan(&tEntities)
+	userId := service.Bot().GetUserId(ctx)
+	query := dao.Token.Ctx(ctx).
+		Fields(
+			dao.Token.Columns().Name,
+			dao.Token.Columns().CreatedAt,
+		)
+	if !service.User().CouldOpToken(ctx, userId) {
+		query = query.Where(dao.Token.Columns().OwnerId, userId)
+	}
+	err := query.Scan(&tEntities)
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return
@@ -170,6 +179,7 @@ func (s *sToken) ChangeTokenOwnerReturnRes(ctx context.Context, name, ownerId st
 	// 数据库查存在
 	var tokenE *entity.Token
 	err := dao.Token.Ctx(ctx).
+		Fields(dao.Token.Columns().Name).
 		Where(dao.Token.Columns().Name, name).
 		Scan(&tokenE)
 	if err != nil {
@@ -202,6 +212,7 @@ func (s *sToken) BindTokenBotId(ctx context.Context, name, botId string) (retMsg
 	// 数据库查存在
 	var tokenE *entity.Token
 	err := dao.Token.Ctx(ctx).
+		Fields(dao.Token.Columns().Name).
 		Where(dao.Token.Columns().Name, name).
 		Scan(&tokenE)
 	if err != nil {
@@ -234,6 +245,7 @@ func (s *sToken) UnbindTokenBotId(ctx context.Context, name string) (retMsg stri
 	// 数据库查存在
 	var tokenE *entity.Token
 	err := dao.Token.Ctx(ctx).
+		Fields(dao.Token.Columns().Name).
 		Where(dao.Token.Columns().Name, name).
 		Scan(&tokenE)
 	if err != nil {

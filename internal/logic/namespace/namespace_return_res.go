@@ -105,9 +105,15 @@ func (s *sNamespace) QueryOwnNamespaceReturnRes(ctx context.Context) (retMsg str
 	// 创建数组指针
 	var nEntities []*entity.Namespace
 	// 数据库查询
-	err := dao.Namespace.Ctx(ctx).
-		Where(dao.Namespace.Columns().OwnerId, userId).
-		Scan(&nEntities)
+	query := dao.Namespace.Ctx(ctx).
+		Fields(
+			dao.Namespace.Columns().Namespace,
+			dao.Namespace.Columns().CreatedAt,
+		)
+	if !service.User().CouldOpNamespace(ctx, userId) {
+		query = query.Where(dao.Namespace.Columns().OwnerId, userId)
+	}
+	err := query.Scan(&nEntities)
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return

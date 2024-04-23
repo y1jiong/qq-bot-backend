@@ -27,7 +27,7 @@ func (s *sGroup) AddApprovalProcessReturnRes(ctx context.Context,
 		return
 	}
 	// 权限校验
-	if !service.Namespace().IsNamespaceOwnerOrAdmin(ctx, groupE.Namespace, service.Bot().GetUserId(ctx)) {
+	if !service.Namespace().IsNamespaceOwnerOrAdminOrOperator(ctx, groupE.Namespace, service.Bot().GetUserId(ctx)) {
 		return
 	}
 	// 数据处理
@@ -154,7 +154,7 @@ func (s *sGroup) RemoveApprovalProcessReturnRes(ctx context.Context,
 		return
 	}
 	// 权限校验
-	if !service.Namespace().IsNamespaceOwnerOrAdmin(ctx, groupE.Namespace, service.Bot().GetUserId(ctx)) {
+	if !service.Namespace().IsNamespaceOwnerOrAdminOrOperator(ctx, groupE.Namespace, service.Bot().GetUserId(ctx)) {
 		return
 	}
 	// 数据处理

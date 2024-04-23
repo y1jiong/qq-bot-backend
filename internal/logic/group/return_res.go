@@ -20,7 +20,7 @@ func (s *sGroup) BindNamespaceReturnRes(ctx context.Context,
 	}
 	// 权限校验
 	if !service.Bot().IsGroupOwnerOrAdminOrSysTrusted(ctx) ||
-		!service.Namespace().IsNamespaceOwnerOrAdmin(ctx, namespace, service.Bot().GetUserId(ctx)) {
+		!service.Namespace().IsNamespaceOwnerOrAdminOrOperator(ctx, namespace, service.Bot().GetUserId(ctx)) {
 		return
 	}
 	// 获取 group
@@ -79,7 +79,7 @@ func (s *sGroup) UnbindReturnRes(ctx context.Context, groupId int64) (retMsg str
 		return
 	}
 	// 权限校验
-	if !service.Namespace().IsNamespaceOwnerOrAdmin(ctx, groupE.Namespace, service.Bot().GetUserId(ctx)) {
+	if !service.Namespace().IsNamespaceOwnerOrAdminOrOperator(ctx, groupE.Namespace, service.Bot().GetUserId(ctx)) {
 		return
 	}
 	// 数据库更新
@@ -107,7 +107,7 @@ func (s *sGroup) QueryGroupReturnRes(ctx context.Context, groupId int64) (retMsg
 		return
 	}
 	// 权限校验
-	if !service.Namespace().IsNamespaceOwnerOrAdmin(ctx, groupE.Namespace, service.Bot().GetUserId(ctx)) {
+	if !service.Namespace().IsNamespaceOwnerOrAdminOrOperator(ctx, groupE.Namespace, service.Bot().GetUserId(ctx)) {
 		return
 	}
 	// 回执
@@ -133,7 +133,7 @@ func (s *sGroup) KickFromListReturnRes(ctx context.Context,
 		return
 	}
 	// 权限校验
-	if !service.Namespace().IsNamespaceOwnerOrAdmin(ctx, groupE.Namespace, service.Bot().GetUserId(ctx)) {
+	if !service.Namespace().IsNamespaceOwnerOrAdminOrOperator(ctx, groupE.Namespace, service.Bot().GetUserId(ctx)) {
 		return
 	}
 	// 是否存在 list
@@ -227,7 +227,7 @@ func (s *sGroup) KeepFromListReturnRes(ctx context.Context,
 		return
 	}
 	// 权限校验
-	if !service.Namespace().IsNamespaceOwnerOrAdmin(ctx, groupE.Namespace, service.Bot().GetUserId(ctx)) {
+	if !service.Namespace().IsNamespaceOwnerOrAdminOrOperator(ctx, groupE.Namespace, service.Bot().GetUserId(ctx)) {
 		return
 	}
 	// 是否存在 list

@@ -24,7 +24,7 @@ func (s *sGroup) ExportGroupMemberListReturnRes(ctx context.Context,
 		return
 	}
 	// 权限校验
-	if !service.Namespace().IsNamespaceOwnerOrAdmin(ctx, groupE.Namespace, service.Bot().GetUserId(ctx)) {
+	if !service.Namespace().IsNamespaceOwnerOrAdminOrOperator(ctx, groupE.Namespace, service.Bot().GetUserId(ctx)) {
 		return
 	}
 	// 是否存在 list

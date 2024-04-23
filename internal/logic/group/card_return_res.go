@@ -26,7 +26,7 @@ func (s *sGroup) SetAutoSetListReturnRes(ctx context.Context,
 		return
 	}
 	// 权限校验
-	if !service.Namespace().IsNamespaceOwnerOrAdmin(ctx, groupE.Namespace, service.Bot().GetUserId(ctx)) {
+	if !service.Namespace().IsNamespaceOwnerOrAdminOrOperator(ctx, groupE.Namespace, service.Bot().GetUserId(ctx)) {
 		return
 	}
 	// 是否存在 list
@@ -77,7 +77,7 @@ func (s *sGroup) RemoveAutoSetListReturnRes(ctx context.Context, groupId int64) 
 		return
 	}
 	// 权限校验
-	if !service.Namespace().IsNamespaceOwnerOrAdmin(ctx, groupE.Namespace, service.Bot().GetUserId(ctx)) {
+	if !service.Namespace().IsNamespaceOwnerOrAdminOrOperator(ctx, groupE.Namespace, service.Bot().GetUserId(ctx)) {
 		return
 	}
 	// 数据处理
@@ -127,7 +127,7 @@ func (s *sGroup) CheckCardWithRegexpReturnRes(ctx context.Context,
 		return
 	}
 	// 权限校验
-	if !service.Namespace().IsNamespaceOwnerOrAdmin(ctx, groupE.Namespace, service.Bot().GetUserId(ctx)) {
+	if !service.Namespace().IsNamespaceOwnerOrAdminOrOperator(ctx, groupE.Namespace, service.Bot().GetUserId(ctx)) {
 		return
 	}
 	// 是否存在 list
@@ -193,7 +193,7 @@ func (s *sGroup) CheckCardByListReturnRes(ctx context.Context,
 		return
 	}
 	// 权限校验
-	if !service.Namespace().IsNamespaceOwnerOrAdmin(ctx, groupE.Namespace, service.Bot().GetUserId(ctx)) {
+	if !service.Namespace().IsNamespaceOwnerOrAdminOrOperator(ctx, groupE.Namespace, service.Bot().GetUserId(ctx)) {
 		return
 	}
 	// 是否存在 list
@@ -256,7 +256,7 @@ func (s *sGroup) LockCardReturnRes(ctx context.Context, groupId int64) (retMsg s
 		return
 	}
 	// 权限校验
-	if !service.Namespace().IsNamespaceOwnerOrAdmin(ctx, groupE.Namespace, service.Bot().GetUserId(ctx)) {
+	if !service.Namespace().IsNamespaceOwnerOrAdminOrOperator(ctx, groupE.Namespace, service.Bot().GetUserId(ctx)) {
 		return
 	}
 	// 数据处理
@@ -305,7 +305,7 @@ func (s *sGroup) UnlockCardReturnRes(ctx context.Context, groupId int64) (retMsg
 		return
 	}
 	// 权限校验
-	if !service.Namespace().IsNamespaceOwnerOrAdmin(ctx, groupE.Namespace, service.Bot().GetUserId(ctx)) {
+	if !service.Namespace().IsNamespaceOwnerOrAdminOrOperator(ctx, groupE.Namespace, service.Bot().GetUserId(ctx)) {
 		return
 	}
 	// 数据处理

@@ -81,6 +81,20 @@ func (s *sNamespace) IsNamespaceOwnerOrAdmin(ctx context.Context, namespace stri
 	return isNamespaceOwnerOrAdmin(ctx, userId, namespaceE)
 }
 
+func (s *sNamespace) IsNamespaceOwnerOrAdminOrOperator(ctx context.Context, namespace string, userId int64) (yes bool) {
+	// 参数合法性校验
+	if userId < 1 || !legalNamespaceNameRe.MatchString(namespace) {
+		return
+	}
+	// 过程
+	namespaceE := getNamespace(ctx, namespace)
+	if namespaceE == nil {
+		return
+	}
+	return isNamespaceOwnerOrAdmin(ctx, userId, namespaceE) ||
+		service.User().CouldOpNamespace(ctx, gconv.Int64(userId))
+}
+
 func (s *sNamespace) AddNamespaceList(ctx context.Context, namespace, listName string) {
 	// 参数合法性校验
 	if !legalNamespaceNameRe.MatchString(namespace) {

@@ -19,7 +19,7 @@ func (s *sList) AddListReturnRes(ctx context.Context, listName, namespace string
 		return
 	}
 	// 权限校验
-	if !service.Namespace().IsNamespaceOwnerOrAdmin(ctx, namespace, service.Bot().GetUserId(ctx)) {
+	if !service.Namespace().IsNamespaceOwnerOrAdminOrOperator(ctx, namespace, service.Bot().GetUserId(ctx)) {
 		return
 	}
 	// 初始化 list 对象
@@ -56,7 +56,7 @@ func (s *sList) RemoveListReturnRes(ctx context.Context, listName string) (retMs
 		return
 	}
 	// 权限校验
-	if !service.Namespace().IsNamespaceOwnerOrAdmin(ctx, listE.Namespace, service.Bot().GetUserId(ctx)) {
+	if !service.Namespace().IsNamespaceOwnerOrAdminOrOperator(ctx, listE.Namespace, service.Bot().GetUserId(ctx)) {
 		return
 	}
 	// 数据库软删除
@@ -82,6 +82,10 @@ func (s *sList) RecoverListReturnRes(ctx context.Context, listName string) (retM
 	// 获取 list
 	var listE *entity.List
 	err := dao.List.Ctx(ctx).
+		Fields(
+			dao.List.Columns().Namespace,
+			dao.List.Columns().DeletedAt,
+		).
 		Where(dao.List.Columns().ListName, listName).
 		Unscoped().
 		Scan(&listE)
@@ -93,7 +97,7 @@ func (s *sList) RecoverListReturnRes(ctx context.Context, listName string) (retM
 		return
 	}
 	// 权限校验
-	if !service.Namespace().IsNamespaceOwnerOrAdmin(ctx, listE.Namespace, service.Bot().GetUserId(ctx)) {
+	if !service.Namespace().IsNamespaceOwnerOrAdminOrOperator(ctx, listE.Namespace, service.Bot().GetUserId(ctx)) {
 		return
 	}
 	if listE.DeletedAt == nil {
@@ -131,7 +135,7 @@ func (s *sList) ExportListReturnRes(ctx context.Context, listName string) (retMs
 		return
 	}
 	// 权限校验
-	if !service.Namespace().IsNamespaceOwnerOrAdmin(ctx, listE.Namespace, service.Bot().GetUserId(ctx)) {
+	if !service.Namespace().IsNamespaceOwnerOrAdminOrOperator(ctx, listE.Namespace, service.Bot().GetUserId(ctx)) {
 		return
 	}
 	// 数据处理
@@ -165,7 +169,7 @@ func (s *sList) QueryListLenReturnRes(ctx context.Context, listName string) (ret
 		return
 	}
 	// 权限校验
-	if !service.Namespace().IsNamespaceOwnerOrAdmin(ctx, listE.Namespace, service.Bot().GetUserId(ctx)) {
+	if !service.Namespace().IsNamespaceOwnerOrAdminOrOperator(ctx, listE.Namespace, service.Bot().GetUserId(ctx)) {
 		return
 	}
 	// 数据处理
@@ -191,7 +195,7 @@ func (s *sList) QueryListReturnRes(ctx context.Context, listName string, keys ..
 		return
 	}
 	// 权限校验
-	if !service.Namespace().IsNamespaceOwnerOrAdmin(ctx, listE.Namespace, service.Bot().GetUserId(ctx)) {
+	if !service.Namespace().IsNamespaceOwnerOrAdminOrOperator(ctx, listE.Namespace, service.Bot().GetUserId(ctx)) {
 		return
 	}
 	// 数据处理
@@ -237,7 +241,7 @@ func (s *sList) AddListDataReturnRes(ctx context.Context, listName, key string, 
 		return
 	}
 	// 权限校验
-	if !service.Namespace().IsNamespaceOwnerOrAdmin(ctx, listE.Namespace, service.Bot().GetUserId(ctx)) {
+	if !service.Namespace().IsNamespaceOwnerOrAdminOrOperator(ctx, listE.Namespace, service.Bot().GetUserId(ctx)) {
 		return
 	}
 	// 数据处理
@@ -288,7 +292,7 @@ func (s *sList) RemoveListDataReturnRes(ctx context.Context, listName, key strin
 		return
 	}
 	// 权限校验
-	if !service.Namespace().IsNamespaceOwnerOrAdmin(ctx, listE.Namespace, service.Bot().GetUserId(ctx)) {
+	if !service.Namespace().IsNamespaceOwnerOrAdminOrOperator(ctx, listE.Namespace, service.Bot().GetUserId(ctx)) {
 		return
 	}
 	// 数据处理
@@ -336,7 +340,7 @@ func (s *sList) ResetListDataReturnRes(ctx context.Context, listName string) (re
 		return
 	}
 	// 权限校验
-	if !service.Namespace().IsNamespaceOwnerOrAdmin(ctx, listE.Namespace, service.Bot().GetUserId(ctx)) {
+	if !service.Namespace().IsNamespaceOwnerOrAdminOrOperator(ctx, listE.Namespace, service.Bot().GetUserId(ctx)) {
 		return
 	}
 	// 数据库更新
@@ -364,7 +368,7 @@ func (s *sList) SetListDataReturnRes(ctx context.Context, listName, newListStr s
 		return
 	}
 	// 权限校验
-	if !service.Namespace().IsNamespaceOwnerOrAdmin(ctx, listE.Namespace, service.Bot().GetUserId(ctx)) {
+	if !service.Namespace().IsNamespaceOwnerOrAdminOrOperator(ctx, listE.Namespace, service.Bot().GetUserId(ctx)) {
 		return
 	}
 	// 数据处理
@@ -410,7 +414,7 @@ func (s *sList) AppendListDataReturnRes(ctx context.Context, listName, newListSt
 		return
 	}
 	// 权限校验
-	if !service.Namespace().IsNamespaceOwnerOrAdmin(ctx, listE.Namespace, service.Bot().GetUserId(ctx)) {
+	if !service.Namespace().IsNamespaceOwnerOrAdminOrOperator(ctx, listE.Namespace, service.Bot().GetUserId(ctx)) {
 		return
 	}
 	// 数据处理
@@ -447,7 +451,7 @@ func (s *sList) GlanceListDataReturnRes(ctx context.Context, listName string) (r
 		return
 	}
 	// 权限校验
-	if !service.Namespace().IsNamespaceOwnerOrAdmin(ctx, listE.Namespace, service.Bot().GetUserId(ctx)) &&
+	if !service.Namespace().IsNamespaceOwnerOrAdminOrOperator(ctx, listE.Namespace, service.Bot().GetUserId(ctx)) &&
 		!service.Namespace().IsPublicNamespace(listE.Namespace) {
 		return
 	}

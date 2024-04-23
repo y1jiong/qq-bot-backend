@@ -12,6 +12,7 @@ import (
 type (
 	INamespace interface {
 		IsNamespaceOwnerOrAdmin(ctx context.Context, namespace string, userId int64) (yes bool)
+		IsNamespaceOwnerOrAdminOrOperator(ctx context.Context, namespace string, userId int64) (yes bool)
 		AddNamespaceList(ctx context.Context, namespace, listName string)
 		RemoveNamespaceList(ctx context.Context, namespace, listName string)
 		GetNamespaceLists(ctx context.Context, namespace string) (lists map[string]any)

@@ -21,9 +21,9 @@ func isListOpLegal(ctx context.Context, A, B, C string) (legal bool) {
 	if AE == nil || BE == nil || CE == nil {
 		return
 	}
-	if !service.Namespace().IsNamespaceOwnerOrAdmin(ctx, AE.Namespace, userId) ||
-		!service.Namespace().IsNamespaceOwnerOrAdmin(ctx, BE.Namespace, userId) ||
-		!service.Namespace().IsNamespaceOwnerOrAdmin(ctx, CE.Namespace, userId) {
+	if !service.Namespace().IsNamespaceOwnerOrAdminOrOperator(ctx, AE.Namespace, userId) ||
+		!service.Namespace().IsNamespaceOwnerOrAdminOrOperator(ctx, BE.Namespace, userId) ||
+		!service.Namespace().IsNamespaceOwnerOrAdminOrOperator(ctx, CE.Namespace, userId) {
 		return
 	}
 	legal = true
