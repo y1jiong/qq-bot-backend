@@ -16,6 +16,7 @@ import (
 )
 
 var (
+	atPrefixRe      = regexp.MustCompile(`^\[CQ:at,qq=(\d+)]\s*`)
 	webhookPrefixRe = regexp.MustCompile(`^webhook(?::([A-Za-z]{3,7}))?(?:#(.+)#)?(?:<(.+)>)?(?:@(.+)@)?://(.+)$`)
 	commandPrefixRe = regexp.MustCompile(`^(?:command|cmd)://(.+)$`)
 )
@@ -24,6 +25,13 @@ func (s *sModule) TryKeywordReply(ctx context.Context) (catch bool) {
 	// 获取基础信息
 	msg := service.Bot().GetMessage(ctx)
 	userId := service.Bot().GetUserId(ctx)
+	// 匹配 @bot
+	if atPrefixRe.MatchString(msg) {
+		sub := atPrefixRe.FindStringSubmatch(msg)
+		if sub[1] == gconv.String(service.Bot().GetSelfId(ctx)) {
+			msg = strings.Replace(msg, sub[0], "", 1)
+		}
+	}
 	// 匹配关键词
 	contains, hit, value := s.isOnKeywordLists(ctx, msg, service.Namespace().GetPublicNamespaceLists(ctx))
 	if !contains || value == "" {
