@@ -470,3 +470,51 @@ func (s *sList) GlanceListDataReturnRes(ctx context.Context, listName string) (r
 	retMsg = strings.TrimRight(msgBuilder.String(), "\n")
 	return
 }
+
+func (s *sList) CopyListKeyReturnRes(ctx context.Context, listName, srcKey, dstKey string) (retMsg string) {
+	// 参数合法性校验
+	if !legalListNameRe.MatchString(listName) {
+		return
+	}
+	// 获取 list
+	listE := getList(ctx, listName)
+	if listE == nil {
+		return
+	}
+	// 权限校验
+	if !service.Namespace().IsNamespaceOwnerOrAdminOrOperator(ctx, listE.Namespace, service.Bot().GetUserId(ctx)) {
+		return
+	}
+	// 数据处理
+	listJson, err := sj.NewJson([]byte(listE.ListJson))
+	if err != nil {
+		g.Log().Error(ctx, err)
+		return
+	}
+	// 按照 url escape 解码空格和 %
+	srcKey = service.Codec().DecodeBlank(srcKey)
+	dstKey = service.Codec().DecodeBlank(dstKey)
+	if _, ok := listJson.CheckGet(srcKey); !ok {
+		retMsg = "在 list(" + listName + ") 中未找到 key(" + srcKey + ")"
+		return
+	}
+	listJson.Set(dstKey, listJson.Get(srcKey).Interface())
+	// 保存数据
+	listBytes, err := listJson.Encode()
+	if err != nil {
+		g.Log().Error(ctx, err)
+		return
+	}
+	// 数据库更新
+	_, err = dao.List.Ctx(ctx).
+		Where(dao.List.Columns().ListName, listName).
+		Data(dao.List.Columns().ListJson, string(listBytes)).
+		Update()
+	if err != nil {
+		g.Log().Error(ctx, err)
+		return
+	}
+	// 回执
+	retMsg = "已复制 list(" + listName + ") 的 key(" + srcKey + ") 到 key(" + dstKey + ")"
+	return
+}

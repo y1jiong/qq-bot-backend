@@ -32,6 +32,7 @@ type (
 		SetListDataReturnRes(ctx context.Context, listName, newListStr string) (retMsg string)
 		AppendListDataReturnRes(ctx context.Context, listName, newListStr string) (retMsg string)
 		GlanceListDataReturnRes(ctx context.Context, listName string) (retMsg string)
+		CopyListKeyReturnRes(ctx context.Context, listName, srcKey, dstKey string) (retMsg string)
 	}
 )
 
