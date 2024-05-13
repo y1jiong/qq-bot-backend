@@ -212,14 +212,20 @@ func (s *sList) QueryListReturnRes(ctx context.Context, listName string, keys ..
 			retMsg = "在 list(" + listName + ") 中未找到 key(" + keys[0] + ")"
 			return
 		}
-		viewJson := sj.New()
-		viewJson.Set(keys[0], listJson.Get(keys[0]))
-		msgBytes, err := viewJson.Encode()
-		if err != nil {
-			g.Log().Error(ctx, err)
-			return
+		value := listJson.Get(keys[0]).Interface()
+		if str, ok := value.(string); ok {
+			msg = str
+		} else {
+			viewJson := sj.New()
+			viewJson.Set(keys[0], listJson.Get(keys[0]))
+			var msgBytes []byte
+			msgBytes, err = viewJson.Encode()
+			if err != nil {
+				g.Log().Error(ctx, err)
+				return
+			}
+			msg = string(msgBytes)
 		}
-		msg = string(msgBytes)
 	} else {
 		msg = dao.List.Columns().Namespace + ": " + listE.Namespace + "\n" +
 			dao.List.Columns().ListJson + ": " + listE.ListJson + "\n" +
