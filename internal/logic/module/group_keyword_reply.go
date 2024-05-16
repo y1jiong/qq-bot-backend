@@ -43,7 +43,9 @@ func (s *sModule) TryGroupKeywordReply(ctx context.Context) (catch bool) {
 	noReplyPrefix := false
 	switch {
 	case webhookPrefixRe.MatchString(value):
-		replyMsg, noReplyPrefix = s.keywordReplyWebhook(ctx, service.Bot().GetUserId(ctx), groupId, msg, hit, value)
+		replyMsg, noReplyPrefix = s.keywordReplyWebhook(ctx,
+			service.Bot().GetUserId(ctx), groupId, service.Bot().GetNickname(ctx),
+			msg, hit, value)
 	case commandPrefixRe.MatchString(value):
 		replyMsg = s.keywordReplyCommand(ctx, msg, hit, value)
 	}

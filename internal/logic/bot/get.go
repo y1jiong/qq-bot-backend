@@ -102,6 +102,17 @@ func (s *sBot) GetSelfId(ctx context.Context) int64 {
 	return v
 }
 
+func (s *sBot) GetNickname(ctx context.Context) string {
+	v, _ := s.reqJsonFromCtx(ctx).Get("sender").Get("nickname").StrictString()
+	return v
+}
+
+func (s *sBot) GetCardOldNew(ctx context.Context) (oldCard, newCard string) {
+	oldCard, _ = s.reqJsonFromCtx(ctx).Get("card_old").StrictString()
+	newCard, _ = s.reqJsonFromCtx(ctx).Get("card_new").StrictString()
+	return
+}
+
 func (s *sBot) GetGroupMemberInfo(ctx context.Context, groupId, userId int64) (member ast.Node, err error) {
 	// echo sign
 	echoSign := guid.S()
@@ -219,12 +230,6 @@ func (s *sBot) GetGroupMemberList(ctx context.Context, groupId int64, noCache ..
 		g.Log().Warning(ctx, err)
 		return
 	}
-	return
-}
-
-func (s *sBot) GetCardOldNew(ctx context.Context) (oldCard, newCard string) {
-	oldCard, _ = s.reqJsonFromCtx(ctx).Get("card_old").StrictString()
-	newCard, _ = s.reqJsonFromCtx(ctx).Get("card_new").StrictString()
 	return
 }
 

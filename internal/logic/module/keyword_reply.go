@@ -49,7 +49,9 @@ func (s *sModule) TryKeywordReply(ctx context.Context) (catch bool) {
 	noReplyPrefix := false
 	switch {
 	case webhookPrefixRe.MatchString(value):
-		replyMsg, noReplyPrefix = s.keywordReplyWebhook(ctx, userId, 0, msg, hit, value)
+		replyMsg, noReplyPrefix = s.keywordReplyWebhook(ctx,
+			userId, 0, service.Bot().GetNickname(ctx),
+			msg, hit, value)
 	case commandPrefixRe.MatchString(value):
 		replyMsg = s.keywordReplyCommand(ctx, msg, hit, value)
 	}
@@ -65,7 +67,7 @@ func (s *sModule) TryKeywordReply(ctx context.Context) (catch bool) {
 	return
 }
 
-func (s *sModule) keywordReplyWebhook(ctx context.Context, userId, groupId int64,
+func (s *sModule) keywordReplyWebhook(ctx context.Context, userId, groupId int64, nickname,
 	message, hit, value string) (replyMsg string, noReplyPrefix bool) {
 	// 必须以 hit 开头
 	if !strings.HasPrefix(message, hit) {
@@ -90,15 +92,17 @@ func (s *sModule) keywordReplyWebhook(ctx context.Context, userId, groupId int64
 	if headers != "" {
 		headers = strings.ReplaceAll(headers, "\\n", "\n")
 		headers = strings.ReplaceAll(headers, "{message}", message)
+		headers = strings.ReplaceAll(headers, "{remain}", remain)
+		headers = strings.ReplaceAll(headers, "{nickname}", nickname)
 		headers = strings.ReplaceAll(headers, "{userId}", gconv.String(userId))
 		headers = strings.ReplaceAll(headers, "{groupId}", gconv.String(groupId))
-		headers = strings.ReplaceAll(headers, "{remain}", remain)
 	}
 	// Url escape
 	urlLink = strings.ReplaceAll(urlLink, "{message}", url.QueryEscape(message))
+	urlLink = strings.ReplaceAll(urlLink, "{remain}", url.QueryEscape(remain))
+	urlLink = strings.ReplaceAll(urlLink, "{nickname}", url.QueryEscape(nickname))
 	urlLink = strings.ReplaceAll(urlLink, "{userId}", gconv.String(userId))
 	urlLink = strings.ReplaceAll(urlLink, "{groupId}", gconv.String(groupId))
-	urlLink = strings.ReplaceAll(urlLink, "{remain}", url.QueryEscape(remain))
 	// Call webhook
 	var body []byte
 	var statusCode int
@@ -110,10 +114,12 @@ func (s *sModule) keywordReplyWebhook(ctx context.Context, userId, groupId int64
 		// Payload
 		msg, _ := sonic.ConfigDefault.MarshalToString(message)
 		r, _ := sonic.ConfigDefault.MarshalToString(remain)
+		nick, _ := sonic.ConfigDefault.MarshalToString(nickname)
 		payload = strings.ReplaceAll(payload, "{message}", msg)
+		payload = strings.ReplaceAll(payload, "{remain}", r)
+		payload = strings.ReplaceAll(payload, "{nickname}", nick)
 		payload = strings.ReplaceAll(payload, "{userId}", gconv.String(userId))
 		payload = strings.ReplaceAll(payload, "{groupId}", gconv.String(groupId))
-		payload = strings.ReplaceAll(payload, "{remain}", r)
 		statusCode, contentType, body, err = s.WebhookPostPutPatchDelete(ctx, headers, method, urlLink, payload)
 	default:
 		return

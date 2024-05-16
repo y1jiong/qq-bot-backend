@@ -35,9 +35,10 @@ type (
 		GetTimestamp(ctx context.Context) int64
 		GetOperatorId(ctx context.Context) int64
 		GetSelfId(ctx context.Context) int64
+		GetNickname(ctx context.Context) string
+		GetCardOldNew(ctx context.Context) (oldCard, newCard string)
 		GetGroupMemberInfo(ctx context.Context, groupId, userId int64) (member ast.Node, err error)
 		GetGroupMemberList(ctx context.Context, groupId int64, noCache ...bool) (members []any, err error)
-		GetCardOldNew(ctx context.Context) (oldCard, newCard string)
 		RequestMessage(ctx context.Context, messageId int64) (messageMap map[string]any, err error)
 		GetGroupInfo(ctx context.Context, groupId int64, noCache ...bool) (infoMap map[string]any, err error)
 		GetLoginInfo(ctx context.Context) (userId int64, nickname string)
@@ -49,8 +50,8 @@ type (
 		SendPlainMsgIfNotApiReq(ctx context.Context, msg string)
 		SendFileToGroup(ctx context.Context, gid int64, filePath, name, folder string)
 		SendFileToUser(ctx context.Context, uid int64, filePath, name string)
-		UploadFile(ctx context.Context, url string) (filePath string, err error)
 		SendFile(ctx context.Context, filePath, name string)
+		UploadFile(ctx context.Context, url string) (filePath string, err error)
 		ApproveJoinGroup(ctx context.Context, flag, subType string, approve bool, reason string)
 		SetModel(ctx context.Context, model string)
 		RecallMessage(ctx context.Context, msgId int64)

@@ -171,7 +171,13 @@ v1.6
 
    **可用的参数**
 
-   `{message}` 用户发送的消息；`{userId}` 用户 ID；`{groupId}` 群 ID；`{remain}` 除去 Keyword 剩下的字符串。
+   * `{message}` 用户发送的消息
+   * `{remain}` 除去 Keyword 剩下的字符串
+   * `{nickname}` 用户昵称
+   * `{userId}` 用户 ID
+   * `{groupId}` 群 ID
+
+   **Method**
 
    * `GET`：
 
