@@ -36,6 +36,8 @@ type (
 		GetOperatorId(ctx context.Context) int64
 		GetSelfId(ctx context.Context) int64
 		GetNickname(ctx context.Context) string
+		GetCard(ctx context.Context) string
+		GetCardOrNickname(ctx context.Context) string
 		GetCardOldNew(ctx context.Context) (oldCard, newCard string)
 		GetGroupMemberInfo(ctx context.Context, groupId, userId int64) (member ast.Node, err error)
 		GetGroupMemberList(ctx context.Context, groupId int64, noCache ...bool) (members []any, err error)

@@ -107,6 +107,19 @@ func (s *sBot) GetNickname(ctx context.Context) string {
 	return v
 }
 
+func (s *sBot) GetCard(ctx context.Context) string {
+	v, _ := s.reqJsonFromCtx(ctx).Get("sender").Get("card").StrictString()
+	return v
+}
+
+func (s *sBot) GetCardOrNickname(ctx context.Context) string {
+	card := s.GetCard(ctx)
+	if card != "" {
+		return card
+	}
+	return s.GetNickname(ctx)
+}
+
 func (s *sBot) GetCardOldNew(ctx context.Context) (oldCard, newCard string) {
 	oldCard, _ = s.reqJsonFromCtx(ctx).Get("card_old").StrictString()
 	newCard, _ = s.reqJsonFromCtx(ctx).Get("card_new").StrictString()
