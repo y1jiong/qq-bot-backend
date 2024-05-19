@@ -1,4 +1,4 @@
-package module
+package event
 
 import (
 	"context"
@@ -9,7 +9,7 @@ import (
 	"qq-bot-backend/internal/service"
 )
 
-func (s *sModule) TryKeywordRecall(ctx context.Context) (catch bool) {
+func (s *sEvent) TryKeywordRecall(ctx context.Context) (catch bool) {
 	if service.Bot().IsGroupOwnerOrAdmin(ctx) {
 		// owner or admin 不需要撤回
 		return
@@ -29,10 +29,10 @@ func (s *sModule) TryKeywordRecall(ctx context.Context) (catch bool) {
 	hit := ""
 	// 处理
 	if _, ok := process[consts.BlacklistCmd]; ok {
-		shouldRecall, hit, _ = s.isOnKeywordLists(ctx, msg, service.Group().GetKeywordBlacklists(ctx, groupId))
+		shouldRecall, hit, _ = service.Util().IsOnKeywordLists(ctx, msg, service.Group().GetKeywordBlacklists(ctx, groupId))
 	}
 	if _, ok := process[consts.WhitelistCmd]; ok && shouldRecall {
-		in, _, _ := s.isOnKeywordLists(ctx, msg, service.Group().GetKeywordWhitelists(ctx, groupId))
+		in, _, _ := service.Util().IsOnKeywordLists(ctx, msg, service.Group().GetKeywordWhitelists(ctx, groupId))
 		shouldRecall = !in
 	}
 	// 结果处理
@@ -57,7 +57,7 @@ func (s *sModule) TryKeywordRecall(ctx context.Context) (catch bool) {
 			"group", 0, notificationGroupId, logMsg, true)
 	}
 	// 禁言
-	s.AutoMute(ctx, "keyword", groupId, userId,
+	service.Util().AutoMute(ctx, "keyword", groupId, userId,
 		1, 5, 0, gconv.Duration("16h"))
 	catch = true
 	return

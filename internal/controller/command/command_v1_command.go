@@ -41,7 +41,7 @@ func (c *ControllerV1) Command(ctx context.Context, req *v1.CommandReq) (res *v1
 		return
 	}
 	// 防止重放攻击
-	if limit, _ := service.Module().AutoLimit(ctx,
+	if limit, _ := service.Util().AutoLimit(ctx,
 		"api.command", req.Signature, 1, 10*time.Second); limit {
 		err = gerror.NewCode(gcode.New(http.StatusConflict, "", nil),
 			http.StatusText(http.StatusConflict))
@@ -123,7 +123,7 @@ func (c *ControllerV1) Command(ctx context.Context, req *v1.CommandReq) (res *v1
 		return
 	}
 	// 一分钟只能发送五条消息
-	if limit, _ := service.Module().AutoLimit(ctx,
+	if limit, _ := service.Util().AutoLimit(ctx,
 		"send_msg", gconv.String(req.GroupId), 5, time.Minute); limit {
 		err = gerror.NewCode(gcode.New(http.StatusTooManyRequests, "", nil),
 			http.StatusText(http.StatusTooManyRequests))

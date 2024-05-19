@@ -1,4 +1,4 @@
-package module
+package util
 
 import (
 	"context"
@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-func (s *sModule) AutoLimit(ctx context.Context, kind, key string, limitTimes int, duration time.Duration) (
+func (s *sUtil) AutoLimit(ctx context.Context, kind, key string, limitTimes int, duration time.Duration) (
 	limited bool, times int) {
 	// 缓存键名
 	cacheKey := "LimitTimes" + kind + ":" + key

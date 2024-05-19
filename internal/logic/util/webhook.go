@@ -1,4 +1,4 @@
-package module
+package util
 
 import (
 	"context"
@@ -6,7 +6,7 @@ import (
 	"qq-bot-backend/internal/consts"
 )
 
-func (s *sModule) WebhookGetHeadConnectOptionsTrace(ctx context.Context, header, method, url string) (
+func (s *sUtil) WebhookGetHeadConnectOptionsTrace(ctx context.Context, header, method, url string) (
 	statusCode int, contentType string, body []byte, err error) {
 	c := gclient.New()
 	c.SetAgent(consts.ProjName + "/" + consts.Version)
@@ -24,7 +24,7 @@ func (s *sModule) WebhookGetHeadConnectOptionsTrace(ctx context.Context, header,
 	return
 }
 
-func (s *sModule) WebhookPostPutPatchDelete(ctx context.Context, header, method, url string, payload any) (
+func (s *sUtil) WebhookPostPutPatchDelete(ctx context.Context, header, method, url string, payload any) (
 	statusCode int, contentType string, body []byte, err error) {
 	c := gclient.New()
 	c.SetAgent(consts.ProjName + "/" + consts.Version)

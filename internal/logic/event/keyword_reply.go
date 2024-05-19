@@ -1,4 +1,4 @@
-package module
+package event
 
 import (
 	"context"
@@ -19,9 +19,10 @@ var (
 	atPrefixRe      = regexp.MustCompile(`^\[CQ:at,qq=(\d+)]\s*`)
 	webhookPrefixRe = regexp.MustCompile(`^webhook(?::([A-Za-z]{3,7}))?(?:#(.+)#)?(?:<(.+)>)?(?:@(.+)@)?://(.+)$`)
 	commandPrefixRe = regexp.MustCompile(`^(?:command|cmd)://(.+)$`)
+	rewritePrefixRe = regexp.MustCompile(`^rewrite://(.+)$`)
 )
 
-func (s *sModule) TryKeywordReply(ctx context.Context) (catch bool) {
+func (s *sEvent) TryKeywordReply(ctx context.Context) (catch bool) {
 	// 获取基础信息
 	msg := service.Bot().GetMessage(ctx)
 	userId := service.Bot().GetUserId(ctx)
@@ -33,14 +34,14 @@ func (s *sModule) TryKeywordReply(ctx context.Context) (catch bool) {
 		}
 	}
 	// 匹配关键词
-	contains, hit, value := s.isOnKeywordLists(ctx, msg, service.Namespace().GetPublicNamespaceLists(ctx))
+	contains, hit, value := service.Util().IsOnKeywordLists(ctx, msg, service.Namespace().GetPublicNamespaceLists(ctx))
 	if !contains || value == "" {
 		return
 	}
 	// 限速
 	const kind = "replyU"
 	uid := gconv.String(userId)
-	if limited, _ := s.AutoLimit(ctx, kind, uid, 5, time.Minute); limited {
+	if limited, _ := service.Util().AutoLimit(ctx, kind, uid, 5, time.Minute); limited {
 		g.Log().Info(ctx, kind, uid, "is limited")
 		return
 	}
@@ -52,6 +53,9 @@ func (s *sModule) TryKeywordReply(ctx context.Context) (catch bool) {
 		replyMsg, noReplyPrefix = s.keywordReplyWebhook(ctx,
 			userId, 0, service.Bot().GetNickname(ctx),
 			msg, hit, value)
+	case rewritePrefixRe.MatchString(value):
+		catch = s.keywordReplyRewrite(ctx, s.TryKeywordReply, msg, hit, value)
+		replyMsg = ""
 	case commandPrefixRe.MatchString(value):
 		replyMsg = s.keywordReplyCommand(ctx, msg, hit, value)
 	}
@@ -67,7 +71,7 @@ func (s *sModule) TryKeywordReply(ctx context.Context) (catch bool) {
 	return
 }
 
-func (s *sModule) keywordReplyWebhook(ctx context.Context, userId, groupId int64, nickname,
+func (s *sEvent) keywordReplyWebhook(ctx context.Context, userId, groupId int64, nickname,
 	message, hit, value string) (replyMsg string, noReplyPrefix bool) {
 	// 必须以 hit 开头
 	if !strings.HasPrefix(message, hit) {
@@ -109,7 +113,7 @@ func (s *sModule) keywordReplyWebhook(ctx context.Context, userId, groupId int64
 	var contentType string
 	switch method {
 	case http.MethodGet:
-		statusCode, contentType, body, err = s.WebhookGetHeadConnectOptionsTrace(ctx, headers, method, urlLink)
+		statusCode, contentType, body, err = service.Util().WebhookGetHeadConnectOptionsTrace(ctx, headers, method, urlLink)
 	case http.MethodPost, http.MethodPut, http.MethodDelete, http.MethodPatch:
 		// Payload
 		msg, _ := sonic.ConfigDefault.MarshalToString(message)
@@ -120,7 +124,7 @@ func (s *sModule) keywordReplyWebhook(ctx context.Context, userId, groupId int64
 		payload = strings.ReplaceAll(payload, "{nickname}", nick)
 		payload = strings.ReplaceAll(payload, "{userId}", gconv.String(userId))
 		payload = strings.ReplaceAll(payload, "{groupId}", gconv.String(groupId))
-		statusCode, contentType, body, err = s.WebhookPostPutPatchDelete(ctx, headers, method, urlLink, payload)
+		statusCode, contentType, body, err = service.Util().WebhookPostPutPatchDelete(ctx, headers, method, urlLink, payload)
 	default:
 		return
 	}
@@ -203,7 +207,7 @@ func (s *sModule) keywordReplyWebhook(ctx context.Context, userId, groupId int64
 	return
 }
 
-func (s *sModule) keywordReplyCommand(ctx context.Context, message, hit, text string) (replyMsg string) {
+func (s *sEvent) keywordReplyCommand(ctx context.Context, message, hit, text string) (replyMsg string) {
 	// 必须全字匹配
 	if message != hit {
 		return
@@ -221,5 +225,28 @@ func (s *sModule) keywordReplyCommand(ctx context.Context, message, hit, text st
 		replyBuilder.WriteString(tmp + "\n")
 	}
 	replyMsg = strings.TrimRight(replyBuilder.String(), "\n")
+	return
+}
+
+func (s *sEvent) keywordReplyRewrite(ctx context.Context, try func(context.Context) bool, message, hit, text string) (catch bool) {
+	// 必须以 hit 开头
+	if !strings.HasPrefix(message, hit) {
+		return
+	}
+	// 提取
+	subMatch := rewritePrefixRe.FindStringSubmatch(service.Codec().DecodeCqCode(text))
+	remain := strings.Replace(message, hit, "", 1)
+	// 切分
+	rewrites := strings.Split(subMatch[1], " & ")
+	for _, rewrite := range rewrites {
+		rewrite = strings.ReplaceAll(rewrite, "{message}", message)
+		rewrite = strings.ReplaceAll(rewrite, "{remain}", remain)
+		err := service.Bot().RewriteMessage(ctx, rewrite)
+		if err != nil {
+			g.Log().Error(ctx, "rewrite", rewrite, err)
+			return
+		}
+		catch = try(ctx)
+	}
 	return
 }

@@ -7,7 +7,7 @@ import (
 
 const (
 	ProjName = "qq-bot-backend"
-	Version  = "1.6.3"
+	Version  = "1.7.0"
 )
 
 var (

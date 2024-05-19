@@ -1,4 +1,4 @@
-package module
+package event
 
 import (
 	"context"
@@ -6,7 +6,7 @@ import (
 	"qq-bot-backend/internal/service"
 )
 
-func (s *sModule) TryUndoMessageRecall(ctx context.Context) (catch bool) {
+func (s *sEvent) TryUndoMessageRecall(ctx context.Context) (catch bool) {
 	groupId := service.Bot().GetGroupId(ctx)
 	if service.Group().IsSetOnlyAntiRecallMember(ctx, groupId) && service.Bot().IsGroupOwnerOrAdmin(ctx) {
 		// owner or admin 在 only-anti-recall-member 情况下不需要反撤回
@@ -35,7 +35,7 @@ func (s *sModule) TryUndoMessageRecall(ctx context.Context) (catch bool) {
 	// 获取撤回消息
 	message := gconv.String(messageMap["message"])
 	// 防止过度触发反撤回
-	s.AutoMute(ctx, "recall", groupId, userId,
+	service.Util().AutoMute(ctx, "recall", groupId, userId,
 		2, 5, 5, gconv.Duration("1m"))
 	// 反撤回
 	notificationGroupId := service.Group().GetMessageNotificationGroupId(ctx, groupId)

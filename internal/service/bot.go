@@ -61,6 +61,7 @@ type (
 		Mute(ctx context.Context, seconds int)
 		SetGroupCard(ctx context.Context, groupId, userId int64, card string)
 		Kick(ctx context.Context, groupId, userId int64, reject ...bool)
+		RewriteMessage(ctx context.Context, message string) error
 	}
 )
 

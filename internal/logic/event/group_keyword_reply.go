@@ -1,4 +1,4 @@
-package module
+package event
 
 import (
 	"context"
@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-func (s *sModule) TryGroupKeywordReply(ctx context.Context) (catch bool) {
+func (s *sEvent) TryGroupKeywordReply(ctx context.Context) (catch bool) {
 	// 获取基础信息
 	msg := service.Bot().GetMessage(ctx)
 	groupId := service.Bot().GetGroupId(ctx)
@@ -27,14 +27,14 @@ func (s *sModule) TryGroupKeywordReply(ctx context.Context) (catch bool) {
 	} else {
 		lists = service.Namespace().GetPublicNamespaceLists(ctx)
 	}
-	contains, hit, value := s.isOnKeywordLists(ctx, msg, lists)
+	contains, hit, value := service.Util().IsOnKeywordLists(ctx, msg, lists)
 	if !contains || value == "" {
 		return
 	}
 	// 限速
 	const kind = "replyG"
 	gid := gconv.String(groupId)
-	if limited, _ := s.AutoLimit(ctx, kind, gid, 7, time.Minute); limited {
+	if limited, _ := service.Util().AutoLimit(ctx, kind, gid, 7, time.Minute); limited {
 		g.Log().Info(ctx, kind, gid, "is limited")
 		return
 	}
@@ -46,6 +46,9 @@ func (s *sModule) TryGroupKeywordReply(ctx context.Context) (catch bool) {
 		replyMsg, noReplyPrefix = s.keywordReplyWebhook(ctx,
 			service.Bot().GetUserId(ctx), groupId, service.Bot().GetCardOrNickname(ctx),
 			msg, hit, value)
+	case rewritePrefixRe.MatchString(value):
+		catch = s.keywordReplyRewrite(ctx, s.TryGroupKeywordReply, msg, hit, value)
+		replyMsg = ""
 	case commandPrefixRe.MatchString(value):
 		replyMsg = s.keywordReplyCommand(ctx, msg, hit, value)
 	}

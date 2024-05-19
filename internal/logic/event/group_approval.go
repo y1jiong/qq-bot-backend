@@ -1,4 +1,4 @@
-package module
+package event
 
 import (
 	"context"
@@ -10,7 +10,7 @@ import (
 	"regexp"
 )
 
-func (s *sModule) TryApproveAddGroup(ctx context.Context) (catch bool) {
+func (s *sEvent) TryApproveAddGroup(ctx context.Context) (catch bool) {
 	// 获取当前 group approval 策略
 	groupId := service.Bot().GetGroupId(ctx)
 	process := service.Group().GetApprovalProcess(ctx, groupId)

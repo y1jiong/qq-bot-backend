@@ -1,4 +1,4 @@
-v1.6
+v1.7
 
 {required} [optional]
 
@@ -154,7 +154,7 @@ v1.6
 
    e.g. key: `砍 并夕夕` 文本1：`帮我并夕夕砍一刀`（匹配成功）文本2：`是兄弟就来砍我`（匹配失败）
 
-2. 群关键字回复支持 Webhook。
+2. 关键字回复支持 Webhook
 
    Webhook 支持 `GET`、`POST`、`PUT`、`DELETE` 和 `PATCH` 方法。如果返回的内容是 JSON 数据，可以使用 JSON Path
    提取内容。如果返回的内容是媒体，将会直接发送。
@@ -201,7 +201,7 @@ v1.6
 
    例如：`bb` 是 Keyword。用户发送 `bb 123`，触发 Webhook；用户发送 `aa bb`，不会触发 Webhook。
 
-3. 群关键字回复支持 Commands 命令组合
+3. 关键字回复支持 Commands 命令组合
 
    **协议头**
 
@@ -214,3 +214,24 @@ v1.6
    e.g. `/list join example cmd cmd:///list glance example && /list len example`
 
    **注意**：要触发 Commands 命令组合，消息必须全字匹配 Keyword。
+
+4. 关键字回复支持 Rewrite 消息
+
+   **协议头**
+
+   `rewrite://`
+
+   使用协议头作为回复内容的开头，将会执行协议头之后的重写。
+
+   多个重写用 `&` 分隔。**注意！**`&`前后必须各有一个*空格*！
+
+   **可用的参数**
+
+   * `{message}` 用户发送的消息
+   * `{remain}` 除去 Keyword 剩下的字符串
+
+   e.g. `/list join example rewrite rewrite://{remain} & {message}`
+
+   **注意**：要触发 Rewrite，消息必须以 Keyword 开头。
+
+   例如：`bb` 是 Keyword。用户发送 `bb 123`，触发 Rewrite；用户发送 `aa bb`，不会触发 Rewrite。

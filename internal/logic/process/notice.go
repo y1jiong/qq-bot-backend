@@ -13,22 +13,22 @@ func processNotice(ctx context.Context) {
 		// 群管理员变更
 	case "group_decrease":
 		// 群成员减少
-		go service.Module().TryLogLeave(ctx)
+		go service.Event().TryLogLeave(ctx)
 	case "group_increase":
 		// 群成员增加
-		go service.Module().TryAutoSetCard(ctx)
+		go service.Event().TryAutoSetCard(ctx)
 	case "group_ban":
 		// 群成员禁言
 	case "friend_add":
 		// 好友添加
 	case "group_recall":
 		// 群消息撤回
-		go service.Module().TryUndoMessageRecall(ctx)
+		go service.Event().TryUndoMessageRecall(ctx)
 	case "friend_recall":
 		// 好友消息撤回
 	case "group_card":
 		// 群名片变更
-		go service.Module().TryLockCard(ctx)
+		go service.Event().TryLockCard(ctx)
 	case "offline_file":
 		// 离线文件上传
 	case "client_status":

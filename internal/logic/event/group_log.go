@@ -1,4 +1,4 @@
-package module
+package event
 
 import (
 	"context"
@@ -8,7 +8,7 @@ import (
 	"qq-bot-backend/internal/service"
 )
 
-func (s *sModule) TryLogLeave(ctx context.Context) (catch bool) {
+func (s *sEvent) TryLogLeave(ctx context.Context) (catch bool) {
 	// 获取当前 group log leave list
 	groupId := service.Bot().GetGroupId(ctx)
 	listName := service.Group().GetLogLeaveList(ctx, groupId)
@@ -49,7 +49,7 @@ func (s *sModule) TryLogLeave(ctx context.Context) (catch bool) {
 	return
 }
 
-func (s *sModule) TryLogApproval(ctx context.Context) (catch bool) {
+func (s *sEvent) TryLogApproval(ctx context.Context) (catch bool) {
 	// 获取当前 group log approval list
 	groupId := service.Bot().GetGroupId(ctx)
 	listName := service.Group().GetLogApprovalList(ctx, groupId)

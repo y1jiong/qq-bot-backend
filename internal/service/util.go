@@ -11,35 +11,28 @@ import (
 )
 
 type (
-	IModule interface {
-		TryApproveAddGroup(ctx context.Context) (catch bool)
-		TryLockCard(ctx context.Context) (catch bool)
-		TryAutoSetCard(ctx context.Context) (catch bool)
-		TryKeywordRecall(ctx context.Context) (catch bool)
-		TryGroupKeywordReply(ctx context.Context) (catch bool)
-		TryLogLeave(ctx context.Context) (catch bool)
-		TryLogApproval(ctx context.Context) (catch bool)
-		TryUndoMessageRecall(ctx context.Context) (catch bool)
-		TryKeywordReply(ctx context.Context) (catch bool)
+	IUtil interface {
 		AutoLimit(ctx context.Context, kind, key string, limitTimes int, duration time.Duration) (limited bool, times int)
-		MultiContains(str string, m map[string]any) (contains bool, hit string, mValue string)
+		ReverseSortedArrayFromMapKey(m map[string]any) (arr []string)
 		AutoMute(ctx context.Context, kind string, groupId, userId int64, limitTimes, baseMinutes, limitMinutes int, duration time.Duration)
+		MultiContains(str string, m map[string]any) (contains bool, hit string, mValue string)
+		IsOnKeywordLists(ctx context.Context, msg string, lists map[string]any) (in bool, hit, value string)
 		WebhookGetHeadConnectOptionsTrace(ctx context.Context, header, method, url string) (statusCode int, contentType string, body []byte, err error)
 		WebhookPostPutPatchDelete(ctx context.Context, header, method, url string, payload any) (statusCode int, contentType string, body []byte, err error)
 	}
 )
 
 var (
-	localModule IModule
+	localUtil IUtil
 )
 
-func Module() IModule {
-	if localModule == nil {
-		panic("implement not found for interface IModule, forgot register?")
+func Util() IUtil {
+	if localUtil == nil {
+		panic("implement not found for interface IUtil, forgot register?")
 	}
-	return localModule
+	return localUtil
 }
 
-func RegisterModule(i IModule) {
-	localModule = i
+func RegisterUtil(i IUtil) {
+	localUtil = i
 }

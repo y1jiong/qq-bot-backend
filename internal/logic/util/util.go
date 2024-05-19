@@ -1,4 +1,4 @@
-package module
+package util
 
 import (
 	"context"
@@ -6,18 +6,19 @@ import (
 	"strings"
 )
 
-type sModule struct{}
+type sUtil struct{}
 
-func New() *sModule {
-	return &sModule{}
+func New() *sUtil {
+	return &sUtil{}
 }
 
 func init() {
-	service.RegisterModule(New())
+	service.RegisterUtil(New())
 }
 
-func (s *sModule) MultiContains(str string, m map[string]any) (contains bool, hit string, mValue string) {
-	for k, v := range m {
+func (s *sUtil) MultiContains(str string, m map[string]any) (contains bool, hit string, mValue string) {
+	arr := service.Util().ReverseSortedArrayFromMapKey(m)
+	for _, k := range arr {
 		fields := strings.Fields(k)
 		fieldsLen, count := len(fields), 0
 		for _, kk := range fields {
@@ -28,7 +29,7 @@ func (s *sModule) MultiContains(str string, m map[string]any) (contains bool, hi
 		if count == fieldsLen {
 			contains = true
 			hit = k
-			if vv, ok := v.(string); ok {
+			if vv, ok := m[k].(string); ok {
 				mValue = vv
 			}
 			if strings.HasPrefix(str, k) {
@@ -39,7 +40,7 @@ func (s *sModule) MultiContains(str string, m map[string]any) (contains bool, hi
 	return
 }
 
-func (s *sModule) isOnKeywordLists(ctx context.Context, msg string, lists map[string]any) (in bool, hit, value string) {
+func (s *sUtil) IsOnKeywordLists(ctx context.Context, msg string, lists map[string]any) (in bool, hit, value string) {
 	for k := range lists {
 		listMap := service.List().GetListData(ctx, k)
 		if contains, hitStr, valueStr := s.MultiContains(msg, listMap); contains {

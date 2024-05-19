@@ -1,4 +1,4 @@
-package module
+package util
 
 import (
 	"context"
@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-func (s *sModule) AutoMute(ctx context.Context, kind string, groupId, userId int64,
+func (s *sUtil) AutoMute(ctx context.Context, kind string, groupId, userId int64,
 	limitTimes, baseMinutes, limitMinutes int, duration time.Duration) {
 	limited, times := s.AutoLimit(ctx, kind, gconv.String(userId), limitTimes, duration)
 	if !limited {

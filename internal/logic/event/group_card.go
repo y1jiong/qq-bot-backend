@@ -1,4 +1,4 @@
-package module
+package event
 
 import (
 	"context"
@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-func (s *sModule) TryLockCard(ctx context.Context) (catch bool) {
+func (s *sEvent) TryLockCard(ctx context.Context) (catch bool) {
 	// 获取基础信息
 	userId := service.Bot().GetUserId(ctx)
 	groupId := service.Bot().GetGroupId(ctx)
@@ -59,7 +59,7 @@ func (s *sModule) TryLockCard(ctx context.Context) (catch bool) {
 	return
 }
 
-func (s *sModule) TryAutoSetCard(ctx context.Context) (catch bool) {
+func (s *sEvent) TryAutoSetCard(ctx context.Context) (catch bool) {
 	// 获取当前 group card auto_set list
 	groupId := service.Bot().GetGroupId(ctx)
 	listName := service.Group().GetCardAutoSetList(ctx, groupId)
