@@ -379,7 +379,7 @@ func (s *sNamespace) SetNamespacePropertyPublicReturnRes(ctx context.Context,
 	if value {
 		retMsg = "已设置 namespace(" + namespace + ") 为 public"
 	} else {
-		retMsg = "已取消 namespace(" + namespace + ") 的 public"
+		retMsg = "已取消 namespace(" + namespace + ") 的 public 属性"
 	}
 	return
 }

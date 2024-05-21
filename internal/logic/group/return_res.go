@@ -105,7 +105,7 @@ func (s *sGroup) QueryGroupReturnRes(ctx context.Context, groupId int64) (retMsg
 	}
 	// 获取 group
 	groupE := getGroup(ctx, groupId)
-	if groupE == nil {
+	if groupE == nil || groupE.Namespace == "" {
 		return
 	}
 	// 权限校验
@@ -132,7 +132,7 @@ func (s *sGroup) KickFromListReturnRes(ctx context.Context,
 	}
 	// 获取 group
 	groupE := getGroup(ctx, groupId)
-	if groupE == nil {
+	if groupE == nil || groupE.Namespace == "" {
 		return
 	}
 	// 权限校验
@@ -227,7 +227,7 @@ func (s *sGroup) KeepFromListReturnRes(ctx context.Context,
 	}
 	// 获取 group
 	groupE := getGroup(ctx, groupId)
-	if groupE == nil {
+	if groupE == nil || groupE.Namespace == "" {
 		return
 	}
 	// 权限校验

@@ -18,7 +18,7 @@ func (s *sGroup) GetCardAutoSetList(ctx context.Context, groupId int64) (listNam
 	}
 	// 获取 group
 	groupE := getGroup(ctx, groupId)
-	if groupE == nil {
+	if groupE == nil || groupE.Namespace == "" {
 		return
 	}
 	// 数据处理
@@ -38,7 +38,7 @@ func (s *sGroup) IsCardLocked(ctx context.Context, groupId int64) bool {
 	}
 	// 获取 group
 	groupE := getGroup(ctx, groupId)
-	if groupE == nil {
+	if groupE == nil || groupE.Namespace == "" {
 		return false
 	}
 	// 数据处理

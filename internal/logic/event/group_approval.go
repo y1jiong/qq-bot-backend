@@ -15,7 +15,7 @@ func (s *sEvent) TryApproveAddGroup(ctx context.Context) (catch bool) {
 	groupId := service.Bot().GetGroupId(ctx)
 	process := service.Group().GetApprovalProcess(ctx, groupId)
 	// 预处理
-	if len(process) < 1 {
+	if len(process) == 0 {
 		// 没有入群审核策略，跳过审核功能
 		return
 	}

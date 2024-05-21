@@ -20,7 +20,7 @@ func (s *sGroup) GetKeywordProcess(ctx context.Context, groupId int64) (process 
 	}
 	// 获取 group
 	groupE := getGroup(ctx, groupId)
-	if groupE == nil {
+	if groupE == nil || groupE.Namespace == "" {
 		return
 	}
 	// 数据处理
@@ -43,7 +43,7 @@ func (s *sGroup) GetKeywordWhitelists(ctx context.Context, groupId int64) (white
 	}
 	// 获取 group
 	groupE := getGroup(ctx, groupId)
-	if groupE == nil {
+	if groupE == nil || groupE.Namespace == "" {
 		return
 	}
 	// 数据处理
@@ -66,7 +66,7 @@ func (s *sGroup) GetKeywordBlacklists(ctx context.Context, groupId int64) (black
 	}
 	// 获取 group
 	groupE := getGroup(ctx, groupId)
-	if groupE == nil {
+	if groupE == nil || groupE.Namespace == "" {
 		return
 	}
 	// 数据处理
@@ -89,7 +89,7 @@ func (s *sGroup) GetKeywordReplyLists(ctx context.Context, groupId int64) (reply
 	}
 	// 获取 group
 	groupE := getGroup(ctx, groupId)
-	if groupE == nil {
+	if groupE == nil || groupE.Namespace == "" {
 		return
 	}
 	// 数据处理

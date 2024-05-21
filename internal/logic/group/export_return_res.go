@@ -20,7 +20,7 @@ func (s *sGroup) ExportGroupMemberListReturnRes(ctx context.Context,
 	}
 	// 获取 group
 	groupE := getGroup(ctx, groupId)
-	if groupE == nil {
+	if groupE == nil || groupE.Namespace == "" {
 		return
 	}
 	// 权限校验

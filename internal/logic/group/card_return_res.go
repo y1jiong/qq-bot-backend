@@ -22,7 +22,7 @@ func (s *sGroup) SetAutoSetListReturnRes(ctx context.Context,
 	}
 	// 获取 group
 	groupE := getGroup(ctx, groupId)
-	if groupE == nil {
+	if groupE == nil || groupE.Namespace == "" {
 		return
 	}
 	// 权限校验
@@ -74,7 +74,7 @@ func (s *sGroup) RemoveAutoSetListReturnRes(ctx context.Context, groupId int64) 
 	}
 	// 获取 group
 	groupE := getGroup(ctx, groupId)
-	if groupE == nil {
+	if groupE == nil || groupE.Namespace == "" {
 		return
 	}
 	// 权限校验
@@ -125,7 +125,7 @@ func (s *sGroup) CheckCardWithRegexpReturnRes(ctx context.Context,
 	}
 	// 获取 group
 	groupE := getGroup(ctx, groupId)
-	if groupE == nil {
+	if groupE == nil || groupE.Namespace == "" {
 		return
 	}
 	// 权限校验
@@ -192,7 +192,7 @@ func (s *sGroup) CheckCardByListReturnRes(ctx context.Context,
 	}
 	// 获取 group
 	groupE := getGroup(ctx, groupId)
-	if groupE == nil {
+	if groupE == nil || groupE.Namespace == "" {
 		return
 	}
 	// 权限校验
@@ -256,7 +256,7 @@ func (s *sGroup) LockCardReturnRes(ctx context.Context, groupId int64) (retMsg s
 	}
 	// 获取 group
 	groupE := getGroup(ctx, groupId)
-	if groupE == nil {
+	if groupE == nil || groupE.Namespace == "" {
 		return
 	}
 	// 权限校验
@@ -306,7 +306,7 @@ func (s *sGroup) UnlockCardReturnRes(ctx context.Context, groupId int64) (retMsg
 	}
 	// 获取 group
 	groupE := getGroup(ctx, groupId)
-	if groupE == nil {
+	if groupE == nil || groupE.Namespace == "" {
 		return
 	}
 	// 权限校验

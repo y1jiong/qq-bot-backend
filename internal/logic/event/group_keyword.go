@@ -18,7 +18,7 @@ func (s *sEvent) TryKeywordRecall(ctx context.Context) (catch bool) {
 	groupId := service.Bot().GetGroupId(ctx)
 	process := service.Group().GetKeywordProcess(ctx, groupId)
 	// 预处理
-	if len(process) < 1 {
+	if len(process) == 0 {
 		// 没有关键词检查策略，跳过撤回功能
 		return
 	}

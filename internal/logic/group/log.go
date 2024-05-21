@@ -18,7 +18,7 @@ func (s *sGroup) GetLogLeaveList(ctx context.Context, groupId int64) (listName s
 	}
 	// 获取 group
 	groupE := getGroup(ctx, groupId)
-	if groupE == nil {
+	if groupE == nil || groupE.Namespace == "" {
 		return
 	}
 	// 数据处理
@@ -38,7 +38,7 @@ func (s *sGroup) GetLogApprovalList(ctx context.Context, groupId int64) (listNam
 	}
 	// 获取 group
 	groupE := getGroup(ctx, groupId)
-	if groupE == nil {
+	if groupE == nil || groupE.Namespace == "" {
 		return
 	}
 	// 数据处理

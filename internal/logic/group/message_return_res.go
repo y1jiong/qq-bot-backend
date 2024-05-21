@@ -23,7 +23,7 @@ func (s *sGroup) SetAntiRecallReturnRes(ctx context.Context,
 	}
 	// 获取 group
 	groupE := getGroup(ctx, groupId)
-	if groupE == nil {
+	if groupE == nil || groupE.Namespace == "" {
 		return
 	}
 	// 权限校验
@@ -87,7 +87,7 @@ func (s *sGroup) SetMessageNotificationReturnRes(ctx context.Context,
 	}
 	// 获取 group
 	groupE := getGroup(ctx, groupId)
-	if groupE == nil {
+	if groupE == nil || groupE.Namespace == "" {
 		return
 	}
 	// 权限校验
@@ -144,7 +144,7 @@ func (s *sGroup) RemoveMessageNotificationReturnRes(ctx context.Context, groupId
 	}
 	// 获取 group
 	groupE := getGroup(ctx, groupId)
-	if groupE == nil {
+	if groupE == nil || groupE.Namespace == "" {
 		return
 	}
 	// 权限校验
@@ -194,7 +194,7 @@ func (s *sGroup) SetOnlyAntiRecallMemberReturnRes(ctx context.Context, groupId i
 	}
 	// 获取 group
 	groupE := getGroup(ctx, groupId)
-	if groupE == nil {
+	if groupE == nil || groupE.Namespace == "" {
 		return
 	}
 	// 权限校验

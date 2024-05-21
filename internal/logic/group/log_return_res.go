@@ -22,7 +22,7 @@ func (s *sGroup) SetLogLeaveListReturnRes(ctx context.Context,
 	}
 	// 获取 group
 	groupE := getGroup(ctx, groupId)
-	if groupE == nil {
+	if groupE == nil || groupE.Namespace == "" {
 		return
 	}
 	// 权限校验
@@ -74,7 +74,7 @@ func (s *sGroup) RemoveLogLeaveListReturnRes(ctx context.Context, groupId int64)
 	}
 	// 获取 group
 	groupE := getGroup(ctx, groupId)
-	if groupE == nil {
+	if groupE == nil || groupE.Namespace == "" {
 		return
 	}
 	// 权限校验
@@ -125,7 +125,7 @@ func (s *sGroup) SetLogApprovalListReturnRes(ctx context.Context,
 	}
 	// 获取 group
 	groupE := getGroup(ctx, groupId)
-	if groupE == nil {
+	if groupE == nil || groupE.Namespace == "" {
 		return
 	}
 	// 权限校验
@@ -177,7 +177,7 @@ func (s *sGroup) RemoveLogApprovalListReturnRes(ctx context.Context, groupId int
 	}
 	// 获取 group
 	groupE := getGroup(ctx, groupId)
-	if groupE == nil {
+	if groupE == nil || groupE.Namespace == "" {
 		return
 	}
 	// 权限校验

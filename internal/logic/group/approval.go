@@ -23,7 +23,7 @@ func (s *sGroup) GetApprovalProcess(ctx context.Context, groupId int64) (process
 	}
 	// 获取 group
 	groupE := getGroup(ctx, groupId)
-	if groupE == nil {
+	if groupE == nil || groupE.Namespace == "" {
 		return
 	}
 	// 数据处理
@@ -46,7 +46,7 @@ func (s *sGroup) GetApprovalWhitelists(ctx context.Context, groupId int64) (whit
 	}
 	// 获取 group
 	groupE := getGroup(ctx, groupId)
-	if groupE == nil {
+	if groupE == nil || groupE.Namespace == "" {
 		return
 	}
 	// 数据处理
@@ -69,7 +69,7 @@ func (s *sGroup) GetApprovalBlacklists(ctx context.Context, groupId int64) (blac
 	}
 	// 获取 group
 	groupE := getGroup(ctx, groupId)
-	if groupE == nil {
+	if groupE == nil || groupE.Namespace == "" {
 		return
 	}
 	// 数据处理
@@ -92,7 +92,7 @@ func (s *sGroup) GetApprovalRegexp(ctx context.Context, groupId int64) (exp stri
 	}
 	// 获取 group
 	groupE := getGroup(ctx, groupId)
-	if groupE == nil {
+	if groupE == nil || groupE.Namespace == "" {
 		return
 	}
 	// 数据处理
@@ -112,7 +112,7 @@ func (s *sGroup) GetApprovalNotificationGroupId(ctx context.Context, groupId int
 	}
 	// 获取 group
 	groupE := getGroup(ctx, groupId)
-	if groupE == nil {
+	if groupE == nil || groupE.Namespace == "" {
 		return
 	}
 	// 数据处理
@@ -132,7 +132,7 @@ func (s *sGroup) IsEnabledApprovalAutoPass(ctx context.Context, groupId int64) b
 	}
 	// 获取 group
 	groupE := getGroup(ctx, groupId)
-	if groupE == nil {
+	if groupE == nil || groupE.Namespace == "" {
 		return false
 	}
 	// 数据处理
@@ -152,7 +152,7 @@ func (s *sGroup) IsEnabledApprovalAutoReject(ctx context.Context, groupId int64)
 	}
 	// 获取 group
 	groupE := getGroup(ctx, groupId)
-	if groupE == nil {
+	if groupE == nil || groupE.Namespace == "" {
 		return false
 	}
 	// 数据处理
