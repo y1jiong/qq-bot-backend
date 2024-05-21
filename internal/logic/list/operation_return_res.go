@@ -7,10 +7,10 @@ import (
 	"qq-bot-backend/internal/service"
 )
 
-func isListOpLegal(ctx context.Context, A, B, C string) (legal bool) {
+func isListOpLegal(ctx context.Context, A, B, C string) bool {
 	// 参数合法性校验
 	if !legalListNameRe.MatchString(A) || !legalListNameRe.MatchString(B) || !legalListNameRe.MatchString(C) {
-		return
+		return false
 	}
 	// 局部变量
 	userId := service.Bot().GetUserId(ctx)
@@ -19,15 +19,14 @@ func isListOpLegal(ctx context.Context, A, B, C string) (legal bool) {
 	BE := getList(ctx, B)
 	CE := getList(ctx, C)
 	if AE == nil || BE == nil || CE == nil {
-		return
+		return false
 	}
 	if !service.Namespace().IsNamespaceOwnerOrAdminOrOperator(ctx, AE.Namespace, userId) ||
 		!service.Namespace().IsNamespaceOwnerOrAdminOrOperator(ctx, BE.Namespace, userId) ||
 		!service.Namespace().IsNamespaceOwnerOrAdminOrOperator(ctx, CE.Namespace, userId) {
-		return
+		return false
 	}
-	legal = true
-	return
+	return true
 }
 
 func (s *sList) UnionListReturnRes(ctx context.Context, A, B, C string) (retMsg string) {

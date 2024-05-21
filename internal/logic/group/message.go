@@ -12,24 +12,24 @@ const (
 	antiRecallOnlyMemberKey       = "antiRecallOnlyMember"
 )
 
-func (s *sGroup) IsEnabledAntiRecall(ctx context.Context, groupId int64) (enabled bool) {
+func (s *sGroup) IsEnabledAntiRecall(ctx context.Context, groupId int64) bool {
 	// 参数合法性校验
 	if groupId < 1 {
-		return
+		return false
 	}
 	// 获取 group
 	groupE := getGroup(ctx, groupId)
 	if groupE == nil {
-		return
+		return false
 	}
 	// 数据处理
 	settingJson, err := sonic.GetFromString(groupE.SettingJson)
 	if err != nil {
 		g.Log().Error(ctx, err)
-		return
+		return false
 	}
-	enabled, _ = settingJson.Get(antiRecallKey).Bool()
-	return
+	b, _ := settingJson.Get(antiRecallKey).Bool()
+	return b
 }
 
 func (s *sGroup) GetMessageNotificationGroupId(ctx context.Context, groupId int64) (notificationGroupId int64) {
@@ -52,22 +52,22 @@ func (s *sGroup) GetMessageNotificationGroupId(ctx context.Context, groupId int6
 	return
 }
 
-func (s *sGroup) IsSetOnlyAntiRecallMember(ctx context.Context, groupId int64) (set bool) {
+func (s *sGroup) IsSetOnlyAntiRecallMember(ctx context.Context, groupId int64) bool {
 	// 参数合法性校验
 	if groupId < 1 {
-		return
+		return false
 	}
 	// 获取 group
 	groupE := getGroup(ctx, groupId)
 	if groupE == nil {
-		return
+		return false
 	}
 	// 数据处理
 	settingJson, err := sonic.GetFromString(groupE.SettingJson)
 	if err != nil {
 		g.Log().Error(ctx, err)
-		return
+		return false
 	}
-	set, _ = settingJson.Get(antiRecallOnlyMemberKey).Bool()
-	return
+	b, _ := settingJson.Get(antiRecallOnlyMemberKey).Bool()
+	return b
 }

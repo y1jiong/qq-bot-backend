@@ -31,22 +31,22 @@ func (s *sGroup) GetCardAutoSetList(ctx context.Context, groupId int64) (listNam
 	return
 }
 
-func (s *sGroup) IsCardLocked(ctx context.Context, groupId int64) (locked bool) {
+func (s *sGroup) IsCardLocked(ctx context.Context, groupId int64) bool {
 	// 参数合法性校验
 	if groupId < 1 {
-		return
+		return false
 	}
 	// 获取 group
 	groupE := getGroup(ctx, groupId)
 	if groupE == nil {
-		return
+		return false
 	}
 	// 数据处理
 	settingJson, err := sonic.GetFromString(groupE.SettingJson)
 	if err != nil {
 		g.Log().Error(ctx, err)
-		return
+		return false
 	}
-	locked, _ = settingJson.Get(cardLockKey).Bool()
-	return
+	locked, _ := settingJson.Get(cardLockKey).Bool()
+	return locked
 }

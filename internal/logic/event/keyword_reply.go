@@ -34,7 +34,7 @@ func (s *sEvent) TryKeywordReply(ctx context.Context) (catch bool) {
 		}
 	}
 	// 匹配关键词
-	contains, hit, value := service.Util().IsOnKeywordLists(ctx, msg, service.Namespace().GetPublicNamespaceLists(ctx))
+	contains, hit, value := service.Util().IsOnKeywordLists(ctx, msg, service.Namespace().GetSharedNamespaceLists(ctx))
 	if !contains || value == "" {
 		return
 	}
@@ -241,11 +241,8 @@ func (s *sEvent) keywordReplyRewrite(ctx context.Context, try func(context.Conte
 	for _, rewrite := range rewrites {
 		rewrite = strings.ReplaceAll(rewrite, "{message}", message)
 		rewrite = strings.ReplaceAll(rewrite, "{remain}", remain)
-		err := service.Bot().RewriteMessage(ctx, rewrite)
-		if err != nil {
-			g.Log().Error(ctx, "rewrite", rewrite, err)
-			return
-		}
+		service.Bot().RewriteMessage(ctx, rewrite)
+
 		catch = try(ctx)
 	}
 	return

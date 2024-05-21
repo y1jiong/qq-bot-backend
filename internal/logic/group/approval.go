@@ -125,44 +125,42 @@ func (s *sGroup) GetApprovalNotificationGroupId(ctx context.Context, groupId int
 	return
 }
 
-func (s *sGroup) IsEnabledApprovalAutoPass(ctx context.Context, groupId int64) (enabled bool) {
+func (s *sGroup) IsEnabledApprovalAutoPass(ctx context.Context, groupId int64) bool {
 	// 参数合法性校验
 	if groupId < 1 {
-		return
+		return false
 	}
 	// 获取 group
 	groupE := getGroup(ctx, groupId)
 	if groupE == nil {
-		return
+		return false
 	}
 	// 数据处理
 	settingJson, err := sonic.GetFromString(groupE.SettingJson)
 	if err != nil {
 		g.Log().Error(ctx, err)
-		return
+		return false
 	}
-	enabled, _ = settingJson.Get(approvalDisabledAutoPassKey).Bool()
-	enabled = !enabled
-	return
+	b, _ := settingJson.Get(approvalDisabledAutoPassKey).Bool()
+	return !b
 }
 
-func (s *sGroup) IsEnabledApprovalAutoReject(ctx context.Context, groupId int64) (enabled bool) {
+func (s *sGroup) IsEnabledApprovalAutoReject(ctx context.Context, groupId int64) bool {
 	// 参数合法性校验
 	if groupId < 1 {
-		return
+		return false
 	}
 	// 获取 group
 	groupE := getGroup(ctx, groupId)
 	if groupE == nil {
-		return
+		return false
 	}
 	// 数据处理
 	settingJson, err := sonic.GetFromString(groupE.SettingJson)
 	if err != nil {
 		g.Log().Error(ctx, err)
-		return
+		return false
 	}
-	enabled, _ = settingJson.Get(approvalDisabledAutoRejectKey).Bool()
-	enabled = !enabled
-	return
+	b, _ := settingJson.Get(approvalDisabledAutoRejectKey).Bool()
+	return !b
 }

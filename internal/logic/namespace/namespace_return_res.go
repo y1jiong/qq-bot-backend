@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 	sj "github.com/bitly/go-simplejson"
+	"github.com/bytedance/sonic"
+	"github.com/bytedance/sonic/ast"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/util/gconv"
 	"qq-bot-backend/internal/dao"
@@ -85,12 +87,15 @@ func (s *sNamespace) QueryNamespaceReturnRes(ctx context.Context, namespace stri
 		return
 	}
 	// 权限校验 判断 owner or admin
-	if !isNamespaceOwnerOrAdmin(ctx, service.Bot().GetUserId(ctx), namespaceE) {
+	if permission, public := isNamespaceOwnerOrAdmin(ctx, service.Bot().GetUserId(ctx), namespaceE),
+		s.IsNamespacePropertyPublic(ctx, namespace) || s.IsSharedNamespace(namespace); !permission && !public {
 		return
+	} else if permission {
+		retMsg = dao.Namespace.Columns().OwnerId + ": " + gconv.String(namespaceE.OwnerId) + "\n"
 	}
 	// 回执
 	retMsg = dao.Namespace.Columns().Namespace + ": " + namespaceE.Namespace + "\n" +
-		dao.Namespace.Columns().OwnerId + ": " + gconv.String(namespaceE.OwnerId) + "\n" +
+		retMsg +
 		dao.Namespace.Columns().SettingJson + ": " + namespaceE.SettingJson + "\n" +
 		dao.Namespace.Columns().UpdatedAt + ": " + namespaceE.UpdatedAt.String()
 	return
@@ -112,6 +117,9 @@ func (s *sNamespace) QueryOwnNamespaceReturnRes(ctx context.Context) (retMsg str
 		)
 	if !service.User().CouldOpNamespace(ctx, userId) {
 		query = query.Where(dao.Namespace.Columns().OwnerId, userId)
+		query = query.WhereOr(fmt.Sprintf("%v->'%v'->>'%v'='%v'",
+			dao.Namespace.Columns().SettingJson, propertiesMapKey, propertyPublic, true),
+		)
 	}
 	err := query.Scan(&nEntities)
 	if err != nil {
@@ -215,7 +223,11 @@ func (s *sNamespace) RemoveNamespaceAdminReturnRes(ctx context.Context,
 	// 删除 userId 的 admin 权限
 	delete(admins, gconv.String(userId))
 	// 保存数据
-	settingJson.Set(adminsMapKey, admins)
+	if len(admins) == 0 {
+		settingJson.Del(adminsMapKey)
+	} else {
+		settingJson.Set(adminsMapKey, admins)
+	}
 	settingBytes, err := settingJson.Encode()
 	if err != nil {
 		g.Log().Error(ctx, err)
@@ -303,5 +315,71 @@ func (s *sNamespace) ChangeNamespaceOwnerReturnRes(ctx context.Context,
 	}
 	// 回执
 	retMsg = "已将 namespace(" + namespace + ") 的 owner 修改为 user(" + ownerId + ")"
+	return
+}
+
+func (s *sNamespace) SetNamespacePropertyPublicReturnRes(ctx context.Context,
+	namespace string, value bool) (retMsg string) {
+	// 参数合法性校验
+	if !legalNamespaceNameRe.MatchString(namespace) {
+		return
+	}
+	// 获取 namespace
+	namespaceE := getNamespace(ctx, namespace)
+	if namespaceE == nil {
+		return
+	}
+	// 权限校验 判断 owner 或者 namespace op
+	if !isNamespaceOwner(service.Bot().GetUserId(ctx), namespaceE) &&
+		!service.User().CouldOpNamespace(ctx, service.Bot().GetUserId(ctx)) {
+		return
+	}
+	// 数据处理
+	settingJson, err := sonic.GetFromString(namespaceE.SettingJson)
+	if err != nil {
+		g.Log().Error(ctx, err)
+		return
+	}
+	if value {
+		if !settingJson.Get(propertiesMapKey).Valid() {
+			_, _ = settingJson.Set(propertiesMapKey, ast.NewNull())
+		}
+		if v, _ := settingJson.Get(propertiesMapKey).Get(propertyPublic).Bool(); v {
+			retMsg = "早已设置 namespace(" + namespace + ") 为 public"
+			return
+		}
+		_, _ = settingJson.Get(propertiesMapKey).Set(propertyPublic, ast.NewBool(value))
+	} else {
+		if settingJson.Get(propertiesMapKey).Get(propertyPublic).Exists() {
+			_, _ = settingJson.Get(propertiesMapKey).Unset(propertyPublic)
+		} else {
+			retMsg = "并未设置 namespace(" + namespace + ") 为 public"
+			return
+		}
+		// 删除 properties map 如果为空
+		if l, _ := settingJson.Get(propertiesMapKey).Len(); l == 0 {
+			_, _ = settingJson.Unset(propertiesMapKey)
+		}
+	}
+	// 保存数据
+	settingBytes, err := settingJson.MarshalJSON()
+	if err != nil {
+		g.Log().Error(ctx, err)
+		return
+	}
+	// 数据库更新
+	_, err = dao.Namespace.Ctx(ctx).
+		Where(dao.Namespace.Columns().Namespace, namespace).
+		Data(dao.Namespace.Columns().SettingJson, string(settingBytes)).
+		Update()
+	if err != nil {
+		g.Log().Error(ctx, err)
+	}
+	// 回执
+	if value {
+		retMsg = "已设置 namespace(" + namespace + ") 为 public"
+	} else {
+		retMsg = "已取消 namespace(" + namespace + ") 的 public"
+	}
 	return
 }

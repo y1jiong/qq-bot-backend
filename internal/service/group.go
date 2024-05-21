@@ -16,12 +16,12 @@ type (
 		GetApprovalBlacklists(ctx context.Context, groupId int64) (blacklists map[string]any)
 		GetApprovalRegexp(ctx context.Context, groupId int64) (exp string)
 		GetApprovalNotificationGroupId(ctx context.Context, groupId int64) (notificationGroupId int64)
-		IsEnabledApprovalAutoPass(ctx context.Context, groupId int64) (enabled bool)
-		IsEnabledApprovalAutoReject(ctx context.Context, groupId int64) (enabled bool)
+		IsEnabledApprovalAutoPass(ctx context.Context, groupId int64) bool
+		IsEnabledApprovalAutoReject(ctx context.Context, groupId int64) bool
 		AddApprovalProcessReturnRes(ctx context.Context, groupId int64, processName string, args ...string) (retMsg string)
 		RemoveApprovalProcessReturnRes(ctx context.Context, groupId int64, processName string, args ...string) (retMsg string)
 		GetCardAutoSetList(ctx context.Context, groupId int64) (listName string)
-		IsCardLocked(ctx context.Context, groupId int64) (locked bool)
+		IsCardLocked(ctx context.Context, groupId int64) bool
 		SetAutoSetListReturnRes(ctx context.Context, groupId int64, listName string) (retMsg string)
 		RemoveAutoSetListReturnRes(ctx context.Context, groupId int64) (retMsg string)
 		CheckCardWithRegexpReturnRes(ctx context.Context, groupId int64, listName, exp string) (retMsg string)
@@ -42,9 +42,9 @@ type (
 		RemoveLogLeaveListReturnRes(ctx context.Context, groupId int64) (retMsg string)
 		SetLogApprovalListReturnRes(ctx context.Context, groupId int64, listName string) (retMsg string)
 		RemoveLogApprovalListReturnRes(ctx context.Context, groupId int64) (retMsg string)
-		IsEnabledAntiRecall(ctx context.Context, groupId int64) (enabled bool)
+		IsEnabledAntiRecall(ctx context.Context, groupId int64) bool
 		GetMessageNotificationGroupId(ctx context.Context, groupId int64) (notificationGroupId int64)
-		IsSetOnlyAntiRecallMember(ctx context.Context, groupId int64) (set bool)
+		IsSetOnlyAntiRecallMember(ctx context.Context, groupId int64) bool
 		SetAntiRecallReturnRes(ctx context.Context, groupId int64, enable bool) (retMsg string)
 		SetMessageNotificationReturnRes(ctx context.Context, groupId int64, notificationGroupId int64) (retMsg string)
 		RemoveMessageNotificationReturnRes(ctx context.Context, groupId int64) (retMsg string)

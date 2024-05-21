@@ -25,7 +25,7 @@ func (s *sEvent) TryGroupKeywordReply(ctx context.Context) (catch bool) {
 	if service.Group().IsBinding(ctx, groupId) {
 		lists = service.Group().GetKeywordReplyLists(ctx, groupId)
 	} else {
-		lists = service.Namespace().GetPublicNamespaceLists(ctx)
+		lists = service.Namespace().GetSharedNamespaceLists(ctx)
 	}
 	contains, hit, value := service.Util().IsOnKeywordLists(ctx, msg, lists)
 	if !contains || value == "" {

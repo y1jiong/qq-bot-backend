@@ -27,7 +27,8 @@ func (s *sGroup) SetAntiRecallReturnRes(ctx context.Context,
 		return
 	}
 	// 权限校验
-	if !service.Namespace().IsNamespaceOwnerOrAdminOrOperator(ctx, groupE.Namespace, service.Bot().GetUserId(ctx)) {
+	if !service.Namespace().IsNamespaceOwnerOrAdminOrOperator(ctx, groupE.Namespace, service.Bot().GetUserId(ctx)) &&
+		!service.Namespace().IsNamespacePropertyPublic(ctx, groupE.Namespace) {
 		return
 	}
 	// 数据处理
@@ -90,7 +91,8 @@ func (s *sGroup) SetMessageNotificationReturnRes(ctx context.Context,
 		return
 	}
 	// 权限校验
-	if !service.Namespace().IsNamespaceOwnerOrAdminOrOperator(ctx, groupE.Namespace, service.Bot().GetUserId(ctx)) {
+	if !service.Namespace().IsNamespaceOwnerOrAdminOrOperator(ctx, groupE.Namespace, service.Bot().GetUserId(ctx)) &&
+		!service.Namespace().IsNamespacePropertyPublic(ctx, groupE.Namespace) {
 		return
 	}
 	// 数据处理
@@ -146,7 +148,8 @@ func (s *sGroup) RemoveMessageNotificationReturnRes(ctx context.Context, groupId
 		return
 	}
 	// 权限校验
-	if !service.Namespace().IsNamespaceOwnerOrAdminOrOperator(ctx, groupE.Namespace, service.Bot().GetUserId(ctx)) {
+	if !service.Namespace().IsNamespaceOwnerOrAdminOrOperator(ctx, groupE.Namespace, service.Bot().GetUserId(ctx)) &&
+		!service.Namespace().IsNamespacePropertyPublic(ctx, groupE.Namespace) {
 		return
 	}
 	// 数据处理
@@ -195,7 +198,8 @@ func (s *sGroup) SetOnlyAntiRecallMemberReturnRes(ctx context.Context, groupId i
 		return
 	}
 	// 权限校验
-	if !service.Namespace().IsNamespaceOwnerOrAdminOrOperator(ctx, groupE.Namespace, service.Bot().GetUserId(ctx)) {
+	if !service.Namespace().IsNamespaceOwnerOrAdminOrOperator(ctx, groupE.Namespace, service.Bot().GetUserId(ctx)) &&
+		!service.Namespace().IsNamespacePropertyPublic(ctx, groupE.Namespace) {
 		return
 	}
 	// 数据处理
@@ -204,20 +208,15 @@ func (s *sGroup) SetOnlyAntiRecallMemberReturnRes(ctx context.Context, groupId i
 		g.Log().Error(ctx, err)
 		return
 	}
-	if settingJson.Get(antiRecallOnlyMemberKey).Valid() {
-		if enable {
-			if on, _ := settingJson.Get(antiRecallOnlyMemberKey).Bool(); on {
-				retMsg = "早已设置 group(" + gconv.String(groupId) + ") 仅反撤回群成员"
-				return
-			} else {
-				_, _ = settingJson.Set(antiRecallOnlyMemberKey, ast.NewBool(enable))
-			}
-		} else {
-			_, _ = settingJson.Unset(antiRecallOnlyMemberKey)
+	if enable {
+		if v, _ := settingJson.Get(antiRecallOnlyMemberKey).Bool(); v {
+			retMsg = "早已设置 group(" + gconv.String(groupId) + ") 仅反撤回群成员"
+			return
 		}
+		_, _ = settingJson.Set(antiRecallOnlyMemberKey, ast.NewBool(enable))
 	} else {
-		if enable {
-			_, _ = settingJson.Set(antiRecallOnlyMemberKey, ast.NewBool(enable))
+		if settingJson.Get(antiRecallOnlyMemberKey).Exists() {
+			_, _ = settingJson.Unset(antiRecallOnlyMemberKey)
 		} else {
 			retMsg = "并未设置 group(" + gconv.String(groupId) + ") 仅反撤回群成员"
 			return

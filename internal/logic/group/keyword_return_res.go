@@ -26,7 +26,8 @@ func (s *sGroup) AddKeywordProcessReturnRes(ctx context.Context,
 		return
 	}
 	// 权限校验
-	if !service.Namespace().IsNamespaceOwnerOrAdminOrOperator(ctx, groupE.Namespace, service.Bot().GetUserId(ctx)) {
+	if !service.Namespace().IsNamespaceOwnerOrAdminOrOperator(ctx, groupE.Namespace, service.Bot().GetUserId(ctx)) &&
+		!service.Namespace().IsNamespacePropertyPublic(ctx, groupE.Namespace) {
 		return
 	}
 	// 数据处理
@@ -41,15 +42,15 @@ func (s *sGroup) AddKeywordProcessReturnRes(ctx context.Context,
 		case consts.ReplyCmd:
 			// 添加回复列表
 			// 是否存在 list
-			lists := service.Namespace().GetNamespaceListsIncludingPublic(ctx, groupE.Namespace)
+			lists := service.Namespace().GetNamespaceListsIncludingShared(ctx, groupE.Namespace)
 			if _, ok := lists[args[0]]; !ok {
 				retMsg = "在 namespace(" + groupE.Namespace + ") 中未找到 list(" + args[0] + ")"
 				return
 			}
 			// 继续处理
-			replyLists := settingJson.Get(keywordReplyListsKey).MustMap(make(map[string]any))
+			replyLists := settingJson.Get(keywordReplyListsMapKey).MustMap(make(map[string]any))
 			replyLists[args[0]] = nil
-			settingJson.Set(keywordReplyListsKey, replyLists)
+			settingJson.Set(keywordReplyListsMapKey, replyLists)
 		case consts.BlacklistCmd:
 			// 添加一个黑名单
 			// 是否存在 list
@@ -121,7 +122,8 @@ func (s *sGroup) RemoveKeywordProcessReturnRes(ctx context.Context,
 		return
 	}
 	// 权限校验
-	if !service.Namespace().IsNamespaceOwnerOrAdminOrOperator(ctx, groupE.Namespace, service.Bot().GetUserId(ctx)) {
+	if !service.Namespace().IsNamespaceOwnerOrAdminOrOperator(ctx, groupE.Namespace, service.Bot().GetUserId(ctx)) &&
+		!service.Namespace().IsNamespacePropertyPublic(ctx, groupE.Namespace) {
 		return
 	}
 	// 数据处理
@@ -135,13 +137,13 @@ func (s *sGroup) RemoveKeywordProcessReturnRes(ctx context.Context,
 		switch processName {
 		case consts.ReplyCmd:
 			// 移除回复列表
-			replyLists := settingJson.Get(keywordReplyListsKey).MustMap(make(map[string]any))
+			replyLists := settingJson.Get(keywordReplyListsMapKey).MustMap(make(map[string]any))
 			if _, ok := replyLists[args[0]]; !ok {
 				retMsg = "在 " + consts.ReplyCmd + " 中未找到 list(" + args[0] + ")"
 				return
 			}
 			delete(replyLists, args[0])
-			settingJson.Set(keywordReplyListsKey, replyLists)
+			settingJson.Set(keywordReplyListsMapKey, replyLists)
 		case consts.BlacklistCmd:
 			// 移除某个黑名单
 			blacklists := settingJson.Get(keywordBlacklistsMapKey).MustMap(make(map[string]any))

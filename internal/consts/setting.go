@@ -1,5 +1,6 @@
 package consts
 
+// group setting cmd
 const (
 	RegexpCmd       = "regexp"
 	WhitelistCmd    = "whitelist"
@@ -9,4 +10,9 @@ const (
 	AutoPassCmd     = "auto-pass"
 	AutoRejectCmd   = "auto-reject"
 	NotificationCmd = "notification"
+)
+
+// namespace property cmd
+const (
+	PublicCmd = "public"
 )

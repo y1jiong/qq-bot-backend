@@ -10,7 +10,7 @@ const (
 	keywordProcessMapKey    = "keywordProcess"
 	keywordWhitelistsMapKey = "keywordWhitelists"
 	keywordBlacklistsMapKey = "keywordBlacklists"
-	keywordReplyListsKey    = "keywordReplyLists"
+	keywordReplyListsMapKey = "keywordReplyLists"
 )
 
 func (s *sGroup) GetKeywordProcess(ctx context.Context, groupId int64) (process map[string]any) {
@@ -98,7 +98,7 @@ func (s *sGroup) GetKeywordReplyLists(ctx context.Context, groupId int64) (reply
 		g.Log().Error(ctx, err)
 		return
 	}
-	replyLists, _ = settingJson.Get(keywordReplyListsKey).Map()
+	replyLists, _ = settingJson.Get(keywordReplyListsMapKey).Map()
 	if replyLists == nil {
 		replyLists = make(map[string]any)
 	}

@@ -11,10 +11,10 @@ import (
 
 type (
 	IUser interface {
-		IsSystemTrustedUser(ctx context.Context, userId int64) (yes bool)
-		CouldOpToken(ctx context.Context, userId int64) (yes bool)
-		CouldOpNamespace(ctx context.Context, userId int64) (yes bool)
-		CouldGetRawMsg(ctx context.Context, userId int64) (yes bool)
+		IsSystemTrustedUser(ctx context.Context, userId int64) bool
+		CouldOpToken(ctx context.Context, userId int64) bool
+		CouldOpNamespace(ctx context.Context, userId int64) bool
+		CouldGetRawMsg(ctx context.Context, userId int64) bool
 		QueryUserReturnRes(ctx context.Context, userId int64) (retMsg string)
 		SystemTrustUserReturnRes(ctx context.Context, userId int64) (retMsg string)
 		SystemDistrustUserReturnRes(ctx context.Context, userId int64) (retMsg string)

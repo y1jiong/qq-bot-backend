@@ -50,82 +50,82 @@ func createUser(ctx context.Context, userId int64) (userE *entity.User, err erro
 	return
 }
 
-func (s *sUser) IsSystemTrustedUser(ctx context.Context, userId int64) (yes bool) {
+func (s *sUser) IsSystemTrustedUser(ctx context.Context, userId int64) bool {
 	// 参数合法性校验
 	if userId < 1 {
-		return
+		return false
 	}
 	// 获取 user
 	userE := getUser(ctx, userId)
 	if userE == nil {
-		return
+		return false
 	}
 	// 数据处理
 	settingJson, err := sonic.GetFromString(userE.SettingJson)
 	if err != nil {
 		g.Log().Error(ctx, err)
-		return
+		return false
 	}
-	yes, _ = settingJson.Get(trustKey).Bool()
-	return
+	b, _ := settingJson.Get(trustKey).Bool()
+	return b
 }
 
-func (s *sUser) CouldOpToken(ctx context.Context, userId int64) (yes bool) {
+func (s *sUser) CouldOpToken(ctx context.Context, userId int64) bool {
 	// 参数合法性校验
 	if userId < 1 {
-		return
+		return false
 	}
 	// 获取 user
 	userE := getUser(ctx, userId)
 	if userE == nil {
-		return
+		return false
 	}
 	// 数据处理
 	settingJson, err := sonic.GetFromString(userE.SettingJson)
 	if err != nil {
 		g.Log().Error(ctx, err)
-		return
+		return false
 	}
-	yes, _ = settingJson.Get(tokenKey).Bool()
-	return
+	b, _ := settingJson.Get(tokenKey).Bool()
+	return b
 }
 
-func (s *sUser) CouldOpNamespace(ctx context.Context, userId int64) (yes bool) {
+func (s *sUser) CouldOpNamespace(ctx context.Context, userId int64) bool {
 	// 参数合法性校验
 	if userId < 1 {
-		return
+		return false
 	}
 	// 获取 user
 	userE := getUser(ctx, userId)
 	if userE == nil {
-		return
+		return false
 	}
 	// 数据处理
 	settingJson, err := sonic.GetFromString(userE.SettingJson)
 	if err != nil {
 		g.Log().Error(ctx, err)
-		return
+		return false
 	}
-	yes, _ = settingJson.Get(namespaceKey).Bool()
-	return
+	b, _ := settingJson.Get(namespaceKey).Bool()
+	return b
 }
 
-func (s *sUser) CouldGetRawMsg(ctx context.Context, userId int64) (yes bool) {
+func (s *sUser) CouldGetRawMsg(ctx context.Context, userId int64) bool {
 	// 参数合法性校验
 	if userId < 1 {
-		return
+		return false
 	}
 	// 获取 user
 	userE := getUser(ctx, userId)
 	if userE == nil {
-		return
+		return false
 	}
 	// 数据处理
 	settingJson, err := sonic.GetFromString(userE.SettingJson)
 	if err != nil {
 		g.Log().Error(ctx, err)
-		return
+		return false
 	}
-	yes, _ = settingJson.Get(rawKey).Bool()
-	return
+	b, _ := settingJson.Get(rawKey).Bool()
+	return b
 }

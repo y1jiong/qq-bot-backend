@@ -20,7 +20,8 @@ func (s *sGroup) BindNamespaceReturnRes(ctx context.Context,
 	}
 	// 权限校验
 	if !service.Bot().IsGroupOwnerOrAdminOrSysTrusted(ctx) ||
-		!service.Namespace().IsNamespaceOwnerOrAdminOrOperator(ctx, namespace, service.Bot().GetUserId(ctx)) {
+		(!service.Namespace().IsNamespaceOwnerOrAdminOrOperator(ctx, namespace, service.Bot().GetUserId(ctx)) &&
+			!service.Namespace().IsNamespacePropertyPublic(ctx, namespace)) {
 		return
 	}
 	// 获取 group
@@ -79,7 +80,8 @@ func (s *sGroup) UnbindReturnRes(ctx context.Context, groupId int64) (retMsg str
 		return
 	}
 	// 权限校验
-	if !service.Namespace().IsNamespaceOwnerOrAdminOrOperator(ctx, groupE.Namespace, service.Bot().GetUserId(ctx)) {
+	if !service.Namespace().IsNamespaceOwnerOrAdminOrOperator(ctx, groupE.Namespace, service.Bot().GetUserId(ctx)) &&
+		!service.Namespace().IsNamespacePropertyPublic(ctx, groupE.Namespace) {
 		return
 	}
 	// 数据库更新
@@ -107,7 +109,8 @@ func (s *sGroup) QueryGroupReturnRes(ctx context.Context, groupId int64) (retMsg
 		return
 	}
 	// 权限校验
-	if !service.Namespace().IsNamespaceOwnerOrAdminOrOperator(ctx, groupE.Namespace, service.Bot().GetUserId(ctx)) {
+	if !service.Namespace().IsNamespaceOwnerOrAdminOrOperator(ctx, groupE.Namespace, service.Bot().GetUserId(ctx)) &&
+		!service.Namespace().IsNamespacePropertyPublic(ctx, groupE.Namespace) {
 		return
 	}
 	// 回执
@@ -133,7 +136,8 @@ func (s *sGroup) KickFromListReturnRes(ctx context.Context,
 		return
 	}
 	// 权限校验
-	if !service.Namespace().IsNamespaceOwnerOrAdminOrOperator(ctx, groupE.Namespace, service.Bot().GetUserId(ctx)) {
+	if !service.Namespace().IsNamespaceOwnerOrAdminOrOperator(ctx, groupE.Namespace, service.Bot().GetUserId(ctx)) &&
+		!service.Namespace().IsNamespacePropertyPublic(ctx, groupE.Namespace) {
 		return
 	}
 	// 是否存在 list
@@ -227,7 +231,8 @@ func (s *sGroup) KeepFromListReturnRes(ctx context.Context,
 		return
 	}
 	// 权限校验
-	if !service.Namespace().IsNamespaceOwnerOrAdminOrOperator(ctx, groupE.Namespace, service.Bot().GetUserId(ctx)) {
+	if !service.Namespace().IsNamespaceOwnerOrAdminOrOperator(ctx, groupE.Namespace, service.Bot().GetUserId(ctx)) &&
+		!service.Namespace().IsNamespacePropertyPublic(ctx, groupE.Namespace) {
 		return
 	}
 	// 是否存在 list

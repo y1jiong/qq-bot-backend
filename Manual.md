@@ -6,21 +6,21 @@ v1.7
 
 ## List
 
-| Command                                           | Description                                                                                     | Comment                                |
-|---------------------------------------------------|-------------------------------------------------------------------------------------------------|----------------------------------------|
-| /list add \<list_name> \<namespace>               | 在 namespace 下新增 list_name                                                                       | 需要 list_name 对应的 namespace admin 或更高权限 |
-| /list join \<list_name> \<key> [value]            | 将 key[:value] 添加到 list_name 中（key value 可作为双因子认证使用）（key 包含**空格**请用`%20`转义替换，包含**%**请用`%25`转义替换） | 同上                                     |
-| /list copy-key \<list_name> \<src_key> \<dst_key> | 将 list_name 中的 src_key 复制到 dst_key 中（src_key dst_key 包含**空格**请用`%20`转义替换，包含**%**请用`%25`转义替换）    | 同上                                     |
-| /list leave \<list_name> \<key>                   | 将 key 从 list_name 中移除（key 包含**空格**请用`%20`转义替换，包含**%**请用`%25`转义替换）                               | 同上                                     |
-| /list len \<list_name>                            | 查询 list_name 里共有多少条数据                                                                           | 同上                                     |
-| /list query \<list_name> [key]                    | 查询 list_name 或者 list_name 内的 key（key 包含**空格**请用`%20`转义替换，包含**%**请用`%25`转义替换）                    | 同上                                     |
-| /list export \<list_name>                         | 将 list_name 以文件的方式导出                                                                            | 同上                                     |
-| /list append \<list_name> \<json>                 | 用 json 追加 list_name 的数据                                                                         | 同上                                     |
-| /list set \<list_name> \<json>                    | 用 json 覆盖 list_name 的数据                                                                         | 同上                                     |
-| /list reset \<list_name>                          | 重置 list_name 的数据                                                                                | 同上                                     |
-| /list rm \<list_name>                             | 删除 list_name（删除后原 list_name 不可使用，只能恢复）                                                          | 同上                                     |
-| /list recover \<list_name>                        | 恢复 list_name                                                                                    | 同上                                     |
-| /list glance \<list_name>                         | 快速查询 list_name 里的所有 key                                                                         | 同上或 list_name 处于 public namespace      |
+| Command                                           | Description                                                                                     | Comment                                                        |
+|---------------------------------------------------|-------------------------------------------------------------------------------------------------|----------------------------------------------------------------|
+| /list add \<list_name> \<namespace>               | 在 namespace 下新增 list_name                                                                       | 需要 list_name 对应的 namespace admin 或更高权限或者 namespace 有 public 属性 |
+| /list join \<list_name> \<key> [value]            | 将 key[:value] 添加到 list_name 中（key value 可作为双因子认证使用）（key 包含**空格**请用`%20`转义替换，包含**%**请用`%25`转义替换） | 同上                                                             |
+| /list copy-key \<list_name> \<src_key> \<dst_key> | 将 list_name 中的 src_key 复制到 dst_key 中（src_key dst_key 包含**空格**请用`%20`转义替换，包含**%**请用`%25`转义替换）    | 同上                                                             |
+| /list leave \<list_name> \<key>                   | 将 key 从 list_name 中移除（key 包含**空格**请用`%20`转义替换，包含**%**请用`%25`转义替换）                               | 同上                                                             |
+| /list len \<list_name>                            | 查询 list_name 里共有多少条数据                                                                           | 同上                                                             |
+| /list query \<list_name> [key]                    | 查询 list_name 或者 list_name 内的 key（key 包含**空格**请用`%20`转义替换，包含**%**请用`%25`转义替换）                    | 同上                                                             |
+| /list export \<list_name>                         | 将 list_name 以文件的方式导出                                                                            | 同上                                                             |
+| /list append \<list_name> \<json>                 | 用 json 追加 list_name 的数据                                                                         | 同上                                                             |
+| /list set \<list_name> \<json>                    | 用 json 覆盖 list_name 的数据                                                                         | 同上                                                             |
+| /list reset \<list_name>                          | 重置 list_name 的数据                                                                                | 同上                                                             |
+| /list rm \<list_name>                             | 删除 list_name（删除后原 list_name 不可使用，只能恢复）                                                          | 同上                                                             |
+| /list recover \<list_name>                        | 恢复 list_name                                                                                    | 同上                                                             |
+| /list glance \<list_name>                         | 快速查询 list_name 里的所有 key                                                                         | 同上或者 list_name 处于 shared namespace 中                           |
 
 ## List Operation
 
@@ -125,14 +125,15 @@ v1.7
 
 ## Namespace
 
-| Command                                   | Description          | Comment                    |
-|-------------------------------------------|----------------------|----------------------------|
-| /namespace add \<namespace>               | 新建 namespace         | 需要系统授予的操作 namespace 权限     |
-| /namespace rm \<namespace>                | 删除 namespace         | 同上                         |
-| /namespace query                          | 查询自己所有的 namespace    | 同上                         |
-| /namespace \<namespace>                   | 查询 namespace 配置      | 需要 namespace admin 或更高权限   |
-| /namespace \<namespace> reset             | 重置 namespace 的 admin | 需要 namespace owner 权限      |
-| /namespace chown \<owner_id> \<namespace> | 修改 namespace 的 owner | 需要 namespace owner 权限或更高权限 |
+| Command                                          | Description                     | Comment                                                                 |
+|--------------------------------------------------|---------------------------------|-------------------------------------------------------------------------|
+| /namespace add \<namespace>                      | 新建 namespace                    | 需要系统授予的操作 namespace 权限                                                  |
+| /namespace rm \<namespace>                       | 删除 namespace                    | 同上                                                                      |
+| /namespace query                                 | 查询自己所有的和具有 public 属性的 namespace | 同上                                                                      |
+| /namespace \<namespace>                          | 查询 namespace 配置                 | 需要 namespace admin 或更高权限或者是具有 public 属性的 namespace 或者是 shared namespace |
+| /namespace \<namespace> reset admin              | 重置 namespace 的 admin            | 需要 namespace owner 权限                                                   |
+| /namespace chown \<owner_id> \<namespace>        | 修改 namespace 的 owner            | 需要 namespace owner 权限或更高权限                                              |
+| /namespace \<namespace> set public <true\|false> | 设置 namespace 的 public 属性        | 同上                                                                      |
 
 ## Extra
 

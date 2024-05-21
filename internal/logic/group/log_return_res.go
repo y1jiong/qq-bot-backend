@@ -26,7 +26,8 @@ func (s *sGroup) SetLogLeaveListReturnRes(ctx context.Context,
 		return
 	}
 	// 权限校验
-	if !service.Namespace().IsNamespaceOwnerOrAdminOrOperator(ctx, groupE.Namespace, service.Bot().GetUserId(ctx)) {
+	if !service.Namespace().IsNamespaceOwnerOrAdminOrOperator(ctx, groupE.Namespace, service.Bot().GetUserId(ctx)) &&
+		!service.Namespace().IsNamespacePropertyPublic(ctx, groupE.Namespace) {
 		return
 	}
 	// 是否存在 list
@@ -41,11 +42,7 @@ func (s *sGroup) SetLogLeaveListReturnRes(ctx context.Context,
 		g.Log().Error(ctx, err)
 		return
 	}
-	_, err = settingJson.Set(logLeaveListKey, ast.NewString(listName))
-	if err != nil {
-		g.Log().Error(ctx, err)
-		return
-	}
+	_, _ = settingJson.Set(logLeaveListKey, ast.NewString(listName))
 	// 保存数据
 	settingBytes, err := settingJson.MarshalJSON()
 	if err != nil {
@@ -81,7 +78,8 @@ func (s *sGroup) RemoveLogLeaveListReturnRes(ctx context.Context, groupId int64)
 		return
 	}
 	// 权限校验
-	if !service.Namespace().IsNamespaceOwnerOrAdminOrOperator(ctx, groupE.Namespace, service.Bot().GetUserId(ctx)) {
+	if !service.Namespace().IsNamespaceOwnerOrAdminOrOperator(ctx, groupE.Namespace, service.Bot().GetUserId(ctx)) &&
+		!service.Namespace().IsNamespacePropertyPublic(ctx, groupE.Namespace) {
 		return
 	}
 	// 数据处理
@@ -90,15 +88,11 @@ func (s *sGroup) RemoveLogLeaveListReturnRes(ctx context.Context, groupId int64)
 		g.Log().Error(ctx, err)
 		return
 	}
-	if !settingJson.Get(logLeaveListKey).Valid() {
+	if !settingJson.Get(logLeaveListKey).Exists() {
 		retMsg = "并未设置记录离群 list"
 		return
 	}
-	_, err = settingJson.Unset(logLeaveListKey)
-	if err != nil {
-		g.Log().Error(ctx, err)
-		return
-	}
+	_, _ = settingJson.Unset(logLeaveListKey)
 	// 保存数据
 	settingBytes, err := settingJson.MarshalJSON()
 	if err != nil {
@@ -135,7 +129,8 @@ func (s *sGroup) SetLogApprovalListReturnRes(ctx context.Context,
 		return
 	}
 	// 权限校验
-	if !service.Namespace().IsNamespaceOwnerOrAdminOrOperator(ctx, groupE.Namespace, service.Bot().GetUserId(ctx)) {
+	if !service.Namespace().IsNamespaceOwnerOrAdminOrOperator(ctx, groupE.Namespace, service.Bot().GetUserId(ctx)) &&
+		!service.Namespace().IsNamespacePropertyPublic(ctx, groupE.Namespace) {
 		return
 	}
 	// 是否存在 list
@@ -150,11 +145,7 @@ func (s *sGroup) SetLogApprovalListReturnRes(ctx context.Context,
 		g.Log().Error(ctx, err)
 		return
 	}
-	_, err = settingJson.Set(logApprovalListKey, ast.NewString(listName))
-	if err != nil {
-		g.Log().Error(ctx, err)
-		return
-	}
+	_, _ = settingJson.Set(logApprovalListKey, ast.NewString(listName))
 	// 保存数据
 	settingBytes, err := settingJson.MarshalJSON()
 	if err != nil {
@@ -190,7 +181,8 @@ func (s *sGroup) RemoveLogApprovalListReturnRes(ctx context.Context, groupId int
 		return
 	}
 	// 权限校验
-	if !service.Namespace().IsNamespaceOwnerOrAdminOrOperator(ctx, groupE.Namespace, service.Bot().GetUserId(ctx)) {
+	if !service.Namespace().IsNamespaceOwnerOrAdminOrOperator(ctx, groupE.Namespace, service.Bot().GetUserId(ctx)) &&
+		!service.Namespace().IsNamespacePropertyPublic(ctx, groupE.Namespace) {
 		return
 	}
 	// 数据处理
@@ -199,15 +191,11 @@ func (s *sGroup) RemoveLogApprovalListReturnRes(ctx context.Context, groupId int
 		g.Log().Error(ctx, err)
 		return
 	}
-	if !settingJson.Get(logApprovalListKey).Valid() {
+	if !settingJson.Get(logApprovalListKey).Exists() {
 		retMsg = "并未设置记录入群审核 list"
 		return
 	}
-	_, err = settingJson.Unset(logApprovalListKey)
-	if err != nil {
-		g.Log().Error(ctx, err)
-		return
-	}
+	_, _ = settingJson.Unset(logApprovalListKey)
 	// 保存数据
 	settingBytes, err := settingJson.MarshalJSON()
 	if err != nil {

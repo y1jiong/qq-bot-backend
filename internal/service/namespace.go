@@ -11,14 +11,14 @@ import (
 
 type (
 	INamespace interface {
-		IsNamespaceOwnerOrAdmin(ctx context.Context, namespace string, userId int64) (yes bool)
-		IsNamespaceOwnerOrAdminOrOperator(ctx context.Context, namespace string, userId int64) (yes bool)
 		AddNamespaceList(ctx context.Context, namespace, listName string)
 		RemoveNamespaceList(ctx context.Context, namespace, listName string)
 		GetNamespaceLists(ctx context.Context, namespace string) (lists map[string]any)
-		GetNamespaceListsIncludingPublic(ctx context.Context, namespace string) (lists map[string]any)
-		IsPublicNamespace(namespace string) (yes bool)
-		GetPublicNamespaceLists(ctx context.Context) (lists map[string]any)
+		GetNamespaceListsIncludingShared(ctx context.Context, namespace string) (lists map[string]any)
+		GetSharedNamespaceLists(ctx context.Context) (lists map[string]any)
+		IsNamespaceOwnerOrAdmin(ctx context.Context, namespace string, userId int64) bool
+		IsNamespaceOwnerOrAdminOrOperator(ctx context.Context, namespace string, userId int64) bool
+		IsSharedNamespace(namespace string) bool
 		AddNewNamespaceReturnRes(ctx context.Context, namespace string) (retMsg string)
 		RemoveNamespaceReturnRes(ctx context.Context, namespace string) (retMsg string)
 		QueryNamespaceReturnRes(ctx context.Context, namespace string) (retMsg string)
@@ -27,6 +27,8 @@ type (
 		RemoveNamespaceAdminReturnRes(ctx context.Context, namespace string, userId int64) (retMsg string)
 		ResetNamespaceAdminReturnRes(ctx context.Context, namespace string) (retMsg string)
 		ChangeNamespaceOwnerReturnRes(ctx context.Context, namespace, ownerId string) (retMsg string)
+		SetNamespacePropertyPublicReturnRes(ctx context.Context, namespace string, value bool) (retMsg string)
+		IsNamespacePropertyPublic(ctx context.Context, namespace string) bool
 	}
 )
 

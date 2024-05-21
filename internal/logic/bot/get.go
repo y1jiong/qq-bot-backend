@@ -412,19 +412,19 @@ func (s *sBot) GetLoginInfo(ctx context.Context) (userId int64, nickname string)
 	return
 }
 
-func (s *sBot) IsGroupOwnerOrAdmin(ctx context.Context) (yes bool) {
+func (s *sBot) IsGroupOwnerOrAdmin(ctx context.Context) bool {
 	role, _ := s.reqJsonFromCtx(ctx).Get("sender").Get("role").StrictString()
 	// lazy load user role
 	if role == "" {
 		member, err := s.GetGroupMemberInfo(ctx, s.GetGroupId(ctx), s.GetUserId(ctx))
 		if err != nil {
 			g.Log().Warning(ctx, err)
-			return
+			return false
 		}
 		role, err = member.Get("role").StrictString()
 		if err != nil {
 			g.Log().Error(ctx, err)
-			return
+			return false
 		}
 		params := []ast.Pair{
 			{
@@ -432,11 +432,7 @@ func (s *sBot) IsGroupOwnerOrAdmin(ctx context.Context) (yes bool) {
 				Value: ast.NewString(role),
 			},
 		}
-		_, err = s.reqJsonFromCtx(ctx).Set("sender", ast.NewObject(params))
-		if err != nil {
-			g.Log().Error(ctx, err)
-			return
-		}
+		_, _ = s.reqJsonFromCtx(ctx).Set("sender", ast.NewObject(params))
 	}
 	return role == "owner" || role == "admin"
 }

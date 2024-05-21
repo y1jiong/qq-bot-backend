@@ -127,7 +127,7 @@ func verifyMinecraftGenuine(ctx context.Context, comment string) (genuine bool, 
 	return
 }
 
-func isOnApprovalWhitelist(ctx context.Context, groupId, userId int64, extra string) (in bool) {
+func isOnApprovalWhitelist(ctx context.Context, groupId, userId int64, extra string) bool {
 	// 获取白名单组
 	whitelists := service.Group().GetApprovalWhitelists(ctx, groupId)
 	for k := range whitelists {
@@ -138,13 +138,11 @@ func isOnApprovalWhitelist(ctx context.Context, groupId, userId int64, extra str
 			if vv, okay := v.(string); okay {
 				// 有额外验证信息
 				if vv == extra {
-					in = true
-					return
+					return true
 				}
 			} else {
 				// 没有额外验证信息
-				in = true
-				return
+				return true
 			}
 		}
 		if extra == "" {
@@ -155,18 +153,16 @@ func isOnApprovalWhitelist(ctx context.Context, groupId, userId int64, extra str
 		if v, ok := whitelist[extra]; ok {
 			if vv, okay := v.(string); okay {
 				if vv == gconv.String(userId) {
-					in = true
-					return
+					return true
 				}
 			}
 		}
 	}
-	return
+	return false
 }
 
-func isNotOnApprovalBlacklist(ctx context.Context, groupId, userId int64, extra string) (notIn bool) {
+func isNotOnApprovalBlacklist(ctx context.Context, groupId, userId int64, extra string) bool {
 	// 默认不在黑名单内
-	notIn = true
 	// 获取黑名单组
 	blacklists := service.Group().GetApprovalBlacklists(ctx, groupId)
 	for k := range blacklists {
@@ -177,13 +173,11 @@ func isNotOnApprovalBlacklist(ctx context.Context, groupId, userId int64, extra 
 			if vv, okay := v.(string); okay {
 				// 有额外验证信息
 				if vv == extra {
-					notIn = false
-					return
+					return false
 				}
 			} else {
 				// 没有额外验证信息
-				notIn = false
-				return
+				return false
 			}
 		}
 		if extra == "" {
@@ -194,11 +188,10 @@ func isNotOnApprovalBlacklist(ctx context.Context, groupId, userId int64, extra 
 		if v, ok := blacklist[extra]; ok {
 			if vv, okay := v.(string); okay {
 				if vv == gconv.String(userId) {
-					notIn = false
-					return
+					return false
 				}
 			}
 		}
 	}
-	return
+	return true
 }
