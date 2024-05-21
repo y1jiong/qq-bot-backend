@@ -184,7 +184,7 @@ v1.7
 
      template: `webhook#headers#@response.json.path@://url`
 
-     `#headers#` 可以省略。
+     `#headers#` 接受换行输入；可以省略。
 
      `@response.json.path@` 可以省略。
 
@@ -194,9 +194,9 @@ v1.7
 
      template: `webhook:post#headers#<request body>@response.json.path@://url`
 
-     `#headers#` 可以省略。
+     `#headers#` 接受换行输入；可以省略。
 
-     `<request body>` 可以省略。
+     `<request body>` 接受换行输入；可以省略。
 
      `@response.json.path@` 可以省略。
 
@@ -214,7 +214,7 @@ v1.7
 
    使用协议头作为回复内容的开头，将会执行协议头之后的 Commands。
 
-   多个命令用 `&&` 分隔。**注意！**`&&`前后必须各有一个*空格*！
+   多个命令用 `&&` 分隔。**注意！**`&&`前后必须各有一个*空格*！除非`&&`后紧跟换行。
 
    e.g. `/list join example cmd cmd:///list glance example && /list len example`
 
@@ -228,7 +228,7 @@ v1.7
 
    使用协议头作为回复内容的开头，将会执行协议头之后的重写。
 
-   多个重写用 `&` 分隔。**注意！**`&`前后必须各有一个*空格*！
+   多个重写用 `&` 分隔。**注意！**`&`前后必须各有一个*空格*！除非`&`后紧跟换行。
 
    **可用的参数**
 

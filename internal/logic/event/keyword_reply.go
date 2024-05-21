@@ -17,9 +17,9 @@ import (
 
 var (
 	atPrefixRe      = regexp.MustCompile(`^\[CQ:at,qq=(\d+)]\s*`)
-	webhookPrefixRe = regexp.MustCompile(`^webhook(?::([A-Za-z]{3,7}))?(?:#(.+)#)?(?:<(.+)>)?(?:@(.+)@)?://(.+)$`)
-	commandPrefixRe = regexp.MustCompile(`^(?:command|cmd)://(.+)$`)
-	rewritePrefixRe = regexp.MustCompile(`^rewrite://(.+)$`)
+	webhookPrefixRe = regexp.MustCompile(`^webhook(?::([A-Za-z]{3,7}))?(?:#([\s\S]+)#)?(?:<([\s\S]+)>)?(?:@(.+)@)?://(.+)$`)
+	commandPrefixRe = regexp.MustCompile(`^(?:command|cmd)://([\s\S]+)$`)
+	rewritePrefixRe = regexp.MustCompile(`^rewrite://([\s\S]+)$`)
 )
 
 func (s *sEvent) TryKeywordReply(ctx context.Context) (catch bool) {
@@ -95,6 +95,7 @@ func (s *sEvent) keywordReplyWebhook(ctx context.Context, userId, groupId int64,
 	// Headers
 	if headers != "" {
 		headers = strings.ReplaceAll(headers, "\\n", "\n")
+		headers = strings.ReplaceAll(headers, "\r", "\n")
 		headers = strings.ReplaceAll(headers, "{message}", message)
 		headers = strings.ReplaceAll(headers, "{remain}", remain)
 		headers = strings.ReplaceAll(headers, "{nickname}", nickname)
@@ -212,13 +213,15 @@ func (s *sEvent) keywordReplyCommand(ctx context.Context, message, hit, text str
 	if message != hit {
 		return
 	}
-	// 解码
+	// 解码提取
 	subMatch := commandPrefixRe.FindStringSubmatch(service.Codec().DecodeCqCode(text))
+	subMatch[1] = strings.ReplaceAll(subMatch[1], "\r", " ")
+	subMatch[1] = strings.ReplaceAll(subMatch[1], "\n", " ")
 	// 切分命令
 	commands := strings.Split(subMatch[1], " && ")
 	var replyBuilder strings.Builder
 	for _, command := range commands {
-		catch, tmp := service.Command().TryCommand(ctx, command)
+		catch, tmp := service.Command().TryCommand(ctx, strings.TrimSpace(command))
 		if !catch {
 			return
 		}
@@ -233,15 +236,17 @@ func (s *sEvent) keywordReplyRewrite(ctx context.Context, try func(context.Conte
 	if !strings.HasPrefix(message, hit) {
 		return
 	}
-	// 提取
+	// 解码提取
 	subMatch := rewritePrefixRe.FindStringSubmatch(service.Codec().DecodeCqCode(text))
+	subMatch[1] = strings.ReplaceAll(subMatch[1], "\r", " ")
+	subMatch[1] = strings.ReplaceAll(subMatch[1], "\n", " ")
 	remain := strings.Replace(message, hit, "", 1)
 	// 切分
 	rewrites := strings.Split(subMatch[1], " & ")
 	for _, rewrite := range rewrites {
 		rewrite = strings.ReplaceAll(rewrite, "{message}", message)
 		rewrite = strings.ReplaceAll(rewrite, "{remain}", remain)
-		service.Bot().RewriteMessage(ctx, rewrite)
+		service.Bot().RewriteMessage(ctx, strings.TrimSpace(rewrite))
 
 		catch = try(ctx)
 	}

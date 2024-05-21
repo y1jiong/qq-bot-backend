@@ -21,7 +21,7 @@ func init() {
 }
 
 var (
-	nextBranchRe      = regexp.MustCompile(`^(\S+)\s+(.+)$`)
+	nextBranchRe      = regexp.MustCompile(`^(\S+)\s+([\s\S]+)$`)
 	endBranchRe       = regexp.MustCompile(`^\S+$`)
 	dualValueCmdEndRe = regexp.MustCompile(`^(\S+)\s+(\S+)$`)
 )
