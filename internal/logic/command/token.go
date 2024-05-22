@@ -6,7 +6,6 @@ import (
 )
 
 func tryToken(ctx context.Context, cmd string) (catch bool, retMsg string) {
-	// 继续处理
 	switch {
 	case nextBranchRe.MatchString(cmd):
 		// 权限校验

@@ -15,6 +15,10 @@ import (
 )
 
 func (s *sNamespace) AddNewNamespaceReturnRes(ctx context.Context, namespace string) (retMsg string) {
+	// 权限校验 namespace op
+	if !service.User().CouldOpNamespace(ctx, service.Bot().GetUserId(ctx)) {
+		return
+	}
 	// 参数合法性校验
 	if !legalNamespaceNameRe.MatchString(namespace) {
 		return
@@ -58,7 +62,7 @@ func (s *sNamespace) RemoveNamespaceReturnRes(ctx context.Context, namespace str
 		retMsg = "未找到 namespace(" + namespace + ")"
 		return
 	}
-	// 权限校验 判断 owner
+	// 权限校验 owner
 	if !isNamespaceOwner(service.Bot().GetUserId(ctx), namespaceE) {
 		retMsg = "未找到 namespace(" + namespace + ")"
 		return
@@ -86,8 +90,9 @@ func (s *sNamespace) QueryNamespaceReturnRes(ctx context.Context, namespace stri
 	if namespaceE == nil {
 		return
 	}
-	// 权限校验 判断 owner or admin
-	if permission, public := isNamespaceOwnerOrAdmin(ctx, service.Bot().GetUserId(ctx), namespaceE),
+	// 权限校验 owner or admin or namespace op or public or shared
+	if permission, public := isNamespaceOwnerOrAdmin(ctx, service.Bot().GetUserId(ctx), namespaceE) ||
+		service.User().CouldOpNamespace(ctx, service.Bot().GetUserId(ctx)),
 		s.IsNamespacePropertyPublic(ctx, namespace) || s.IsSharedNamespace(namespace); !permission && !public {
 		return
 	} else if permission {
@@ -156,7 +161,7 @@ func (s *sNamespace) AddNamespaceAdminReturnRes(ctx context.Context,
 	if namespaceE == nil {
 		return
 	}
-	// 权限校验 判断 owner 或者 namespace op
+	// 权限校验 owner or namespace op
 	if !isNamespaceOwner(service.Bot().GetUserId(ctx), namespaceE) &&
 		!service.User().CouldOpNamespace(ctx, service.Bot().GetUserId(ctx)) {
 		return
@@ -203,7 +208,7 @@ func (s *sNamespace) RemoveNamespaceAdminReturnRes(ctx context.Context,
 	if namespaceE == nil {
 		return
 	}
-	// 权限校验 判断 owner 或者 namespace op
+	// 权限校验 owner or namespace op
 	if !isNamespaceOwner(service.Bot().GetUserId(ctx), namespaceE) &&
 		!service.User().CouldOpNamespace(ctx, service.Bot().GetUserId(ctx)) {
 		return
@@ -257,8 +262,9 @@ func (s *sNamespace) ResetNamespaceAdminReturnRes(ctx context.Context, namespace
 	if namespaceE == nil {
 		return
 	}
-	// 权限校验 判断 owner
-	if !isNamespaceOwner(service.Bot().GetUserId(ctx), namespaceE) {
+	// 权限校验 owner or namespace op
+	if !isNamespaceOwner(service.Bot().GetUserId(ctx), namespaceE) &&
+		!service.User().CouldOpNamespace(ctx, service.Bot().GetUserId(ctx)) {
 		return
 	}
 	// 数据处理
@@ -299,7 +305,7 @@ func (s *sNamespace) ChangeNamespaceOwnerReturnRes(ctx context.Context,
 	if namespaceE == nil {
 		return
 	}
-	// 权限校验 判断 owner 或者 namespace op
+	// 权限校验 owner or namespace op
 	if !isNamespaceOwner(service.Bot().GetUserId(ctx), namespaceE) &&
 		!service.User().CouldOpNamespace(ctx, service.Bot().GetUserId(ctx)) {
 		return
@@ -329,7 +335,7 @@ func (s *sNamespace) SetNamespacePropertyPublicReturnRes(ctx context.Context,
 	if namespaceE == nil {
 		return
 	}
-	// 权限校验 判断 owner 或者 namespace op
+	// 权限校验 owner or namespace op
 	if !isNamespaceOwner(service.Bot().GetUserId(ctx), namespaceE) &&
 		!service.User().CouldOpNamespace(ctx, service.Bot().GetUserId(ctx)) {
 		return

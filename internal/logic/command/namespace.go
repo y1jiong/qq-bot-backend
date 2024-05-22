@@ -12,26 +12,15 @@ func tryNamespace(ctx context.Context, cmd string) (catch bool, retMsg string) {
 		next := nextBranchRe.FindStringSubmatch(cmd)
 		switch next[1] {
 		case "add":
-			// 权限校验
-			if !service.User().CouldOpNamespace(ctx, service.Bot().GetUserId(ctx)) {
-				return
-			}
 			// /namespace add <namespace>
-			// 继续处理
 			retMsg = service.Namespace().AddNewNamespaceReturnRes(ctx, next[2])
 			catch = true
 		case "rm":
-			// 权限校验
-			if !service.User().CouldOpNamespace(ctx, service.Bot().GetUserId(ctx)) {
-				return
-			}
 			// /namespace rm <namespace>
-			// 继续处理
 			retMsg = service.Namespace().RemoveNamespaceReturnRes(ctx, next[2])
 			catch = true
 		case "chown":
 			// /namespace chown <owner_id> <namespace>
-			// 继续处理
 			if !dualValueCmdEndRe.MatchString(next[2]) {
 				return
 			}

@@ -32,13 +32,13 @@ v1.7
 
 ## Group
 
-| Command                  | Description                                  | Comment                                |
-|--------------------------|----------------------------------------------|----------------------------------------|
-| /group bind \<namespace> | 将当前 group 绑定到 namespace 中（会重置当前 group 的所有配置） | 需要 group admin 和 namespace admin 或更高权限 |
-| /group unbind            | 解除当前 group 的绑定                               | 同上                                     |
-| /group query             | 查询当前 group 的配置                               | 需要 namespace admin 或更高权限               |
-| /group kick \<list_name> | 把当前 group 在 list_name 中的成员踢出                 | 需要 group admin 和 namespace admin 或更高权限 |
-| /group keep \<list_name> | 把当前 group 不在 list_name 中的成员踢出                | 同上                                     |
+| Command                  | Description                                  | Comment                                                           |
+|--------------------------|----------------------------------------------|-------------------------------------------------------------------|
+| /group bind \<namespace> | 将当前 group 绑定到 namespace 中（会重置当前 group 的所有配置） | 需要 group admin 和 namespace admin 或更高权限或者 namespace 具有 public 属性   |
+| /group unbind            | 解除当前 group 的绑定                               | 同上                                                                |
+| /group query             | 查询当前 group 的配置                               | 需要 namespace admin 或更高权限或者对应 namespace 具有 public 属性               |
+| /group kick \<list_name> | 把当前 group 在 list_name 中的成员踢出                 | 需要 group admin 和 namespace admin 或更高权限或者对应 namespace 具有 public 属性 |
+| /group keep \<list_name> | 把当前 group 不在 list_name 中的成员踢出                | 同上                                                                |
 
 ## Group Approval
 
@@ -121,18 +121,18 @@ v1.7
 | Command                             | Description                      | Comment                    |
 |-------------------------------------|----------------------------------|----------------------------|
 | /user join \<namespace> \<user_id>  | 将 user_id 添加到 namespace admin 名单 | 需要 namespace owner 权限或更高权限 |
-| /user leave \<namespace> \<user_id> | 将 user_id 从 namespace admin 名单移除 | 同上或更高权限                    |
+| /user leave \<namespace> \<user_id> | 将 user_id 从 namespace admin 名单移除 | 同上                         |
 
 ## Namespace
 
 | Command                                          | Description                     | Comment                                                                 |
 |--------------------------------------------------|---------------------------------|-------------------------------------------------------------------------|
 | /namespace add \<namespace>                      | 新建 namespace                    | 需要系统授予的操作 namespace 权限                                                  |
-| /namespace rm \<namespace>                       | 删除 namespace                    | 同上                                                                      |
-| /namespace query                                 | 查询自己所有的和具有 public 属性的 namespace | 同上                                                                      |
-| /namespace \<namespace>                          | 查询 namespace 配置                 | 需要 namespace admin 或更高权限或者是具有 public 属性的 namespace 或者是 shared namespace |
-| /namespace \<namespace> reset admin              | 重置 namespace 的 admin            | 需要 namespace owner 权限                                                   |
-| /namespace chown \<owner_id> \<namespace>        | 修改 namespace 的 owner            | 需要 namespace owner 权限或更高权限                                              |
+| /namespace rm \<namespace>                       | 删除 namespace                    | 需要 namespace owner 权限                                                   |
+| /namespace query                                 | 查询自己所有的和具有 public 属性的 namespace | 需要 namespace admin 或更高权限或者是具有 public 属性的 namespace 或者是 shared namespace |
+| /namespace \<namespace>                          | 查询 namespace 配置                 | 同上                                                                      |
+| /namespace \<namespace> reset admin              | 重置 namespace 的 admin            | 需要 namespace owner 权限或更高权限                                              |
+| /namespace chown \<owner_id> \<namespace>        | 修改 namespace 的 owner            | 同上                                                                      |
 | /namespace \<namespace> set public <true\|false> | 设置 namespace 的 public 属性        | 同上                                                                      |
 
 ## Extra

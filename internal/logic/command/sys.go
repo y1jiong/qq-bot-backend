@@ -11,7 +11,6 @@ func trySys(ctx context.Context, cmd string) (catch bool, retMsg string) {
 	if !service.User().IsSystemTrustedUser(ctx, service.Bot().GetUserId(ctx)) {
 		return
 	}
-	// 继续处理
 	switch {
 	case nextBranchRe.MatchString(cmd):
 		next := nextBranchRe.FindStringSubmatch(cmd)

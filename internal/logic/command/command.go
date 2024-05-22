@@ -44,7 +44,6 @@ func (s *sCommand) TryCommand(ctx context.Context, message string) (catch bool, 
 		g.Log().Info(ctx,
 			"user("+gconv.String(userId)+") in group("+gconv.String(service.Bot().GetGroupId(ctx))+") send cmd "+message)
 	}()
-	// 继续处理
 	cmd := strings.Replace(message, "/", "", 1)
 	switch {
 	case nextBranchRe.MatchString(cmd):

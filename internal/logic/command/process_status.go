@@ -8,7 +8,6 @@ import (
 
 func queryProcessStatus(ctx context.Context) (catch bool, retMsg string) {
 	catch = true
-	// 继续处理
 	if service.Process().IsEnabledBotProcess() {
 		retMsg = "正常状态"
 	} else {
@@ -19,7 +18,6 @@ func queryProcessStatus(ctx context.Context) (catch bool, retMsg string) {
 
 func pauseProcess(ctx context.Context) (catch bool, retMsg string) {
 	catch = true
-	// 继续处理
 	if !service.Process().IsEnabledBotProcess() {
 		retMsg = "已处于暂停状态"
 		return
@@ -35,7 +33,6 @@ func pauseProcess(ctx context.Context) (catch bool, retMsg string) {
 
 func continueProcess(ctx context.Context) (catch bool, retMsg string) {
 	catch = true
-	// 继续处理
 	if service.Process().IsEnabledBotProcess() {
 		retMsg = "已处于正常状态"
 		return
