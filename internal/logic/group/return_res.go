@@ -41,7 +41,7 @@ func (s *sGroup) BindNamespaceReturnRes(ctx context.Context,
 			Insert()
 	} else {
 		if groupE.Namespace != "" {
-			retMsg = "当前 group(" + gconv.String(groupId) + ") 已经绑定了 namespace(" + groupE.Namespace + ")"
+			retMsg = "group(" + gconv.String(groupId) + ") 已经绑定了 namespace(" + groupE.Namespace + ")"
 			return
 		}
 		// 重置 setting
@@ -61,7 +61,7 @@ func (s *sGroup) BindNamespaceReturnRes(ctx context.Context,
 		return
 	}
 	// 回执
-	retMsg = "已绑定当前 group(" + gconv.String(groupId) + ") 到 namespace(" + namespace + ")"
+	retMsg = "已绑定 group(" + gconv.String(groupId) + ") 到 namespace(" + namespace + ")"
 	return
 }
 
@@ -95,6 +95,44 @@ func (s *sGroup) UnbindReturnRes(ctx context.Context, groupId int64) (retMsg str
 	}
 	// 回执
 	retMsg = "已解除 group(" + gconv.String(groupId) + ") 的 namespace 绑定"
+	return
+}
+
+func (s *sGroup) CloneReturnRes(ctx context.Context, groupId, srcGroupId int64) (retMsg string) {
+	// 参数合法性校验
+	if groupId < 1 || srcGroupId < 1 {
+		return
+	}
+	// 权限校验
+	if !service.Bot().IsGroupOwnerOrAdminOrSysTrusted(ctx) {
+		return
+	}
+	// 获取 group srcGroup
+	groupE := getGroup(ctx, groupId)
+	srcGroupE := getGroup(ctx, srcGroupId)
+	if groupE == nil || srcGroupE == nil || groupE.Namespace == "" || srcGroupE.Namespace == "" {
+		return
+	}
+	if groupE.Namespace != srcGroupE.Namespace {
+		retMsg = "group(" + gconv.String(groupId) + ") 和 group(" + gconv.String(srcGroupId) + ") 的 namespace 不一致"
+		return
+	}
+	// 权限校验
+	if !service.Namespace().IsNamespaceOwnerOrAdminOrOperator(ctx, groupE.Namespace, service.Bot().GetUserId(ctx)) &&
+		!service.Namespace().IsNamespacePropertyPublic(ctx, groupE.Namespace) {
+		return
+	}
+	// 数据库更新
+	_, err := dao.Group.Ctx(ctx).
+		Where(dao.Group.Columns().GroupId, groupId).
+		Data(dao.Group.Columns().SettingJson, srcGroupE.SettingJson).
+		Update()
+	if err != nil {
+		g.Log().Error(ctx, err)
+		return
+	}
+	// 回执
+	retMsg = "已克隆 group(" + gconv.String(srcGroupId) + ") 的配置到 group(" + gconv.String(groupId) + ")"
 	return
 }
 

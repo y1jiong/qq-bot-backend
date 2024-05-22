@@ -52,6 +52,7 @@ type (
 		SetOnlyAntiRecallMemberReturnRes(ctx context.Context, groupId int64, enable bool) (retMsg string)
 		BindNamespaceReturnRes(ctx context.Context, groupId int64, namespace string) (retMsg string)
 		UnbindReturnRes(ctx context.Context, groupId int64) (retMsg string)
+		CloneReturnRes(ctx context.Context, groupId, srcGroupId int64) (retMsg string)
 		QueryGroupReturnRes(ctx context.Context, groupId int64) (retMsg string)
 		KickFromListReturnRes(ctx context.Context, groupId int64, listName string) (retMsg string)
 		KeepFromListReturnRes(ctx context.Context, groupId int64, listName string) (retMsg string)

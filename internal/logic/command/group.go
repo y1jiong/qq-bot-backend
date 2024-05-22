@@ -2,6 +2,7 @@ package command
 
 import (
 	"context"
+	"github.com/gogf/gf/v2/util/gconv"
 	"qq-bot-backend/internal/service"
 )
 
@@ -39,6 +40,10 @@ func tryGroup(ctx context.Context, cmd string) (catch bool, retMsg string) {
 		case "bind":
 			// /group bind <namespace>
 			retMsg = service.Group().BindNamespaceReturnRes(ctx, service.Bot().GetGroupId(ctx), next[2])
+			catch = true
+		case "clone":
+			// /group clone <group_id>
+			retMsg = service.Group().CloneReturnRes(ctx, service.Bot().GetGroupId(ctx), gconv.Int64(next[2]))
 			catch = true
 		}
 	case endBranchRe.MatchString(cmd):
