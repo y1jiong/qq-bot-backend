@@ -48,6 +48,7 @@ v1.7
 | /group approval enable regexp                | 入群审核启用正则表达式（将使用匹配结果作为双因子认证的输入）                    | 同上                                     |
 | /group approval enable whitelist             | 入群审核启用白名单                                         | 同上                                     |
 | /group approval enable blacklist             | 入群审核启用黑名单                                         | 同上                                     |
+| /group approval enable notify-only           | 入群审核启用仅通知                                         | 同上                                     |
 | /group approval enable auto-pass             | 入群审核启用自动通过（默认启用）                                  | 同上                                     |
 | /group approval enable auto-reject           | 入群审核启用自动拒绝（默认启用）                                  | 同上                                     |
 | /group approval set regexp \<regexp>         | 指定入群审核的正则表达式（若有子表达式，则会使用第一个子表达式的匹配结果）             | 同上                                     |
@@ -61,6 +62,7 @@ v1.7
 | /group approval disable regexp               | 入群审核禁用正则表达式                                       | 同上                                     |
 | /group approval disable whitelist            | 入群审核禁用白名单                                         | 同上                                     |
 | /group approval disable blacklist            | 入群审核禁用黑名单                                         | 同上                                     |
+| /group approval disable notify-only          | 入群审核禁用仅通知                                         | 同上                                     |
 | /group approval disable auto-pass            | 入群审核禁用自动通过（言下之意，符合通过条件的申请不自动处理，需要手动处理）            | 同上                                     |
 | /group approval disable auto-reject          | 入群审核禁用自动拒绝（言下之意，不符合通过条件的申请不自动处理，需要手动处理）           | 同上                                     |
 

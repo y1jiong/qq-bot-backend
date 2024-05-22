@@ -19,6 +19,7 @@ type (
 		IsNamespaceOwnerOrAdmin(ctx context.Context, namespace string, userId int64) bool
 		IsNamespaceOwnerOrAdminOrOperator(ctx context.Context, namespace string, userId int64) bool
 		IsSharedNamespace(namespace string) bool
+		IsNamespacePropertyPublic(ctx context.Context, namespace string) bool
 		AddNewNamespaceReturnRes(ctx context.Context, namespace string) (retMsg string)
 		RemoveNamespaceReturnRes(ctx context.Context, namespace string) (retMsg string)
 		QueryNamespaceReturnRes(ctx context.Context, namespace string) (retMsg string)
@@ -28,7 +29,6 @@ type (
 		ResetNamespaceAdminReturnRes(ctx context.Context, namespace string) (retMsg string)
 		ChangeNamespaceOwnerReturnRes(ctx context.Context, namespace, ownerId string) (retMsg string)
 		SetNamespacePropertyPublicReturnRes(ctx context.Context, namespace string, value bool) (retMsg string)
-		IsNamespacePropertyPublic(ctx context.Context, namespace string) bool
 	}
 )
 

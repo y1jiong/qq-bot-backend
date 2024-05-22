@@ -96,6 +96,12 @@ func (s *sGroup) AddApprovalProcessReturnRes(ctx context.Context,
 		}
 	} else {
 		switch processName {
+		case consts.NotifyOnlyCmd:
+			if _, ok := settingJson.CheckGet(approvalEnabledNotifyOnlyKey); ok {
+				retMsg = "早已启用仅通知"
+				return
+			}
+			settingJson.Set(approvalEnabledNotifyOnlyKey, true)
 		case consts.AutoPassCmd:
 			if _, ok := settingJson.CheckGet(approvalDisabledAutoPassKey); !ok {
 				retMsg = "并未禁用自动通过"
@@ -189,6 +195,12 @@ func (s *sGroup) RemoveApprovalProcessReturnRes(ctx context.Context,
 		}
 	} else {
 		switch processName {
+		case consts.NotifyOnlyCmd:
+			if _, ok := settingJson.CheckGet(approvalEnabledNotifyOnlyKey); !ok {
+				retMsg = "并未启用仅通知"
+				return
+			}
+			settingJson.Del(approvalEnabledNotifyOnlyKey)
 		case consts.AutoPassCmd:
 			if _, ok := settingJson.CheckGet(approvalDisabledAutoPassKey); ok {
 				retMsg = "早已禁用自动通过"

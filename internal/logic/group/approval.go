@@ -11,6 +11,7 @@ const (
 	approvalRegexpKey              = "approvalRegexp"
 	approvalWhitelistsMapKey       = "approvalWhitelists"
 	approvalBlacklistsMapKey       = "approvalBlacklists"
+	approvalEnabledNotifyOnlyKey   = "approvalEnabledNotifyOnly"
 	approvalDisabledAutoPassKey    = "approvalDisabledAutoPass"
 	approvalDisabledAutoRejectKey  = "approvalDisabledAutoReject"
 	approvalNotificationGroupIdKey = "approvalNotificationGroupId"
@@ -123,6 +124,26 @@ func (s *sGroup) GetApprovalNotificationGroupId(ctx context.Context, groupId int
 	}
 	notificationGroupId, _ = settingJson.Get(approvalNotificationGroupIdKey).StrictInt64()
 	return
+}
+
+func (s *sGroup) IsEnabledApprovalNotifyOnly(ctx context.Context, groupId int64) bool {
+	// 参数合法性校验
+	if groupId < 1 {
+		return false
+	}
+	// 获取 group
+	groupE := getGroup(ctx, groupId)
+	if groupE == nil || groupE.Namespace == "" {
+		return false
+	}
+	// 数据处理
+	settingJson, err := sonic.GetFromString(groupE.SettingJson)
+	if err != nil {
+		g.Log().Error(ctx, err)
+		return false
+	}
+	b, _ := settingJson.Get(approvalEnabledNotifyOnlyKey).Bool()
+	return b
 }
 
 func (s *sGroup) IsEnabledApprovalAutoPass(ctx context.Context, groupId int64) bool {

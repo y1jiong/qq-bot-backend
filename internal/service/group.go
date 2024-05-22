@@ -16,6 +16,7 @@ type (
 		GetApprovalBlacklists(ctx context.Context, groupId int64) (blacklists map[string]any)
 		GetApprovalRegexp(ctx context.Context, groupId int64) (exp string)
 		GetApprovalNotificationGroupId(ctx context.Context, groupId int64) (notificationGroupId int64)
+		IsEnabledApprovalNotifyOnly(ctx context.Context, groupId int64) bool
 		IsEnabledApprovalAutoPass(ctx context.Context, groupId int64) bool
 		IsEnabledApprovalAutoReject(ctx context.Context, groupId int64) bool
 		AddApprovalProcessReturnRes(ctx context.Context, groupId int64, processName string, args ...string) (retMsg string)

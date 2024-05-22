@@ -42,9 +42,9 @@ func (s *sEvent) TryUndoMessageRecall(ctx context.Context) (catch bool) {
 	var msg string
 	if notificationGroupId < 1 {
 		notificationGroupId = groupId
-		msg = gconv.String(userId) + "(" + nickname + ") 撤回了一条消息：\n"
+		msg = nickname + "(" + gconv.String(userId) + ") 撤回了一条消息：\n"
 	} else {
-		msg = gconv.String(userId) + "(" + nickname + ") 在 group(" + gconv.String(groupId) + ") 撤回了一条消息：\n"
+		msg = nickname + "(" + gconv.String(userId) + ") 在 group(" + gconv.String(groupId) + ") 撤回了一条消息：\n"
 	}
 	msg += message
 	service.Bot().SendMessage(ctx,

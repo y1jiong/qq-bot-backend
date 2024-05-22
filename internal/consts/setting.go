@@ -7,6 +7,7 @@ const (
 	BlacklistCmd    = "blacklist"
 	McCmd           = "mc"
 	ReplyCmd        = "reply"
+	NotifyOnlyCmd   = "notify-only"
 	AutoPassCmd     = "auto-pass"
 	AutoRejectCmd   = "auto-reject"
 	NotificationCmd = "notification"

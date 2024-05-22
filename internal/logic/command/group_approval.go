@@ -66,11 +66,12 @@ func tryGroupApprovalEnable(ctx context.Context, cmd string) (catch bool, retMsg
 	case endBranchRe.MatchString(cmd):
 		switch cmd {
 		case consts.WhitelistCmd, consts.BlacklistCmd, consts.RegexpCmd, consts.McCmd,
-			consts.AutoPassCmd, consts.AutoRejectCmd:
+			consts.NotifyOnlyCmd, consts.AutoPassCmd, consts.AutoRejectCmd:
 			// /group approval enable whitelist
 			// /group approval enable blacklist
 			// /group approval enable regexp
 			// /group approval enable mc
+			// /group approval enable notify-only
 			// /group approval enable auto-pass
 			// /group approval enable auto-reject
 			retMsg = service.Group().AddApprovalProcessReturnRes(ctx, service.Bot().GetGroupId(ctx), cmd)
@@ -107,11 +108,12 @@ func tryGroupApprovalDisable(ctx context.Context, cmd string) (catch bool, retMs
 	case endBranchRe.MatchString(cmd):
 		switch cmd {
 		case consts.WhitelistCmd, consts.BlacklistCmd, consts.RegexpCmd, consts.McCmd,
-			consts.AutoPassCmd, consts.AutoRejectCmd:
+			consts.NotifyOnlyCmd, consts.AutoPassCmd, consts.AutoRejectCmd:
 			// /group approval disable whitelist
 			// /group approval disable blacklist
 			// /group approval disable regexp
 			// /group approval disable mc
+			// /group approval disable notify-only
 			// /group approval disable auto-pass
 			// /group approval disable auto-reject
 			retMsg = service.Group().RemoveApprovalProcessReturnRes(ctx, service.Bot().GetGroupId(ctx), cmd)

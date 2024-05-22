@@ -24,7 +24,7 @@ func (s *sEvent) TryApproveAddGroup(ctx context.Context) (catch bool) {
 	// 局部变量
 	comment := service.Bot().GetComment(ctx)
 	userId := service.Bot().GetUserId(ctx)
-	var extra string
+	var extra, blackReason string
 	isOnBlacklist := false
 	// 处理
 	if _, ok := process[consts.McCmd]; ok {
@@ -41,14 +41,15 @@ func (s *sEvent) TryApproveAddGroup(ctx context.Context) (catch bool) {
 	}
 	if _, ok := process[consts.BlacklistCmd]; ok && pass {
 		// 黑名单
-		pass = isNotOnApprovalBlacklist(ctx, groupId, userId, extra)
+		pass, blackReason = isNotOnApprovalBlacklist(ctx, groupId, userId)
 		isOnBlacklist = !pass
 	}
 	// 回执与日志
 	var logMsg string
-	if (!pass && service.Group().IsEnabledApprovalAutoReject(ctx, groupId)) ||
-		(pass && service.Group().IsEnabledApprovalAutoPass(ctx, groupId)) ||
-		isOnBlacklist {
+	if !service.Group().IsEnabledApprovalNotifyOnly(ctx, groupId) &&
+		((!pass && service.Group().IsEnabledApprovalAutoReject(ctx, groupId)) ||
+			(pass && service.Group().IsEnabledApprovalAutoPass(ctx, groupId)) ||
+			isOnBlacklist) {
 		if isOnBlacklist {
 			// 黑名单拒绝
 			pass = false
@@ -59,7 +60,7 @@ func (s *sEvent) TryApproveAddGroup(ctx context.Context) (catch bool) {
 			service.Bot().GetFlag(ctx),
 			service.Bot().GetSubType(ctx),
 			pass,
-			"Auto-rejection")
+			"")
 		// 打印审核日志
 		if pass {
 			logMsg = fmt.Sprintf("approve user(%v) join group(%v) with %v",
@@ -84,6 +85,9 @@ func (s *sEvent) TryApproveAddGroup(ctx context.Context) (catch bool) {
 			userId,
 			groupId,
 			comment)
+	}
+	if isOnBlacklist {
+		logMsg = "[hit blacklist]" + blackReason + "\n" + logMsg
 	}
 	g.Log().Info(ctx, logMsg)
 	// 通知
@@ -161,7 +165,7 @@ func isOnApprovalWhitelist(ctx context.Context, groupId, userId int64, extra str
 	return false
 }
 
-func isNotOnApprovalBlacklist(ctx context.Context, groupId, userId int64, extra string) bool {
+func isNotOnApprovalBlacklist(ctx context.Context, groupId, userId int64) (bool, string) {
 	// 默认不在黑名单内
 	// 获取黑名单组
 	blacklists := service.Group().GetApprovalBlacklists(ctx, groupId)
@@ -171,27 +175,13 @@ func isNotOnApprovalBlacklist(ctx context.Context, groupId, userId int64, extra 
 		if v, ok := blacklist[gconv.String(userId)]; ok {
 			// userId 在黑名单中
 			if vv, okay := v.(string); okay {
-				// 有额外验证信息
-				if vv == extra {
-					return false
-				}
+				// 有黑名单原因
+				return false, vv
 			} else {
-				// 没有额外验证信息
-				return false
-			}
-		}
-		if extra == "" {
-			// 没有额外验证信息则跳过反向验证
-			continue
-		}
-		// 反向验证
-		if v, ok := blacklist[extra]; ok {
-			if vv, okay := v.(string); okay {
-				if vv == gconv.String(userId) {
-					return false
-				}
+				// 没有黑名单原因
+				return false, ""
 			}
 		}
 	}
-	return true
+	return true, ""
 }
