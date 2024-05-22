@@ -11,10 +11,6 @@ import (
 
 type (
 	IUser interface {
-		IsSystemTrustedUser(ctx context.Context, userId int64) bool
-		CouldOpToken(ctx context.Context, userId int64) bool
-		CouldOpNamespace(ctx context.Context, userId int64) bool
-		CouldGetRawMsg(ctx context.Context, userId int64) bool
 		QueryUserReturnRes(ctx context.Context, userId int64) (retMsg string)
 		SystemTrustUserReturnRes(ctx context.Context, userId int64) (retMsg string)
 		SystemDistrustUserReturnRes(ctx context.Context, userId int64) (retMsg string)
@@ -24,6 +20,10 @@ type (
 		RevokeOpNamespaceReturnRes(ctx context.Context, userId int64) (retMsg string)
 		GrantGetRawMsgReturnRes(ctx context.Context, userId int64) (retMsg string)
 		RevokeGetRawMsgReturnRes(ctx context.Context, userId int64) (retMsg string)
+		IsSystemTrustedUser(ctx context.Context, userId int64) bool
+		CouldOpToken(ctx context.Context, userId int64) bool
+		CouldOpNamespace(ctx context.Context, userId int64) bool
+		CouldGetRawMsg(ctx context.Context, userId int64) bool
 	}
 )
 

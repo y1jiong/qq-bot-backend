@@ -38,13 +38,6 @@ func (s *sEvent) TryKeywordReply(ctx context.Context) (catch bool) {
 	if !contains || value == "" {
 		return
 	}
-	// 限速
-	const kind = "replyU"
-	uid := gconv.String(userId)
-	if limited, _ := service.Util().AutoLimit(ctx, kind, uid, 5, time.Minute); limited {
-		g.Log().Info(ctx, kind, uid, "is limited")
-		return
-	}
 	// 匹配成功，回复
 	replyMsg := value
 	noReplyPrefix := false
@@ -61,6 +54,13 @@ func (s *sEvent) TryKeywordReply(ctx context.Context) (catch bool) {
 	}
 	// 内容为空，不回复
 	if replyMsg == "" {
+		return
+	}
+	// 限速
+	const kind = "replyU"
+	uid := gconv.String(userId)
+	if limited, _ := service.Util().AutoLimit(ctx, kind, uid, 5, time.Minute); limited {
+		g.Log().Notice(ctx, kind, uid, "is limited")
 		return
 	}
 	if !noReplyPrefix {
@@ -130,13 +130,15 @@ func (s *sEvent) keywordReplyWebhook(ctx context.Context, userId, groupId int64,
 		return
 	}
 	if err != nil {
-		g.Log().Notice(ctx, "webhook", statusCode, method, urlLink, err)
+		g.Log().Notice(ctx, "webhook", statusCode, method, urlLink, message, err)
 		return
 	}
 	// Log
-	g.Log().Info(ctx,
-		"user("+gconv.String(userId)+") in group("+gconv.String(service.Bot().GetGroupId(ctx))+
-			") call webhook", statusCode, method, urlLink)
+	if statusCode != http.StatusOK {
+		g.Log().Notice(ctx,
+			"user["+nickname+"]("+gconv.String(userId)+") in group("+gconv.String(service.Bot().GetGroupId(ctx))+
+				") call webhook", statusCode, method, urlLink, message)
+	}
 	// 媒体文件
 	{
 		var mediumUrl string
@@ -234,6 +236,13 @@ func (s *sEvent) keywordReplyCommand(ctx context.Context, message, hit, text str
 func (s *sEvent) keywordReplyRewrite(ctx context.Context, try func(context.Context) bool, message, hit, text string) (catch bool) {
 	// 必须以 hit 开头
 	if !strings.HasPrefix(message, hit) {
+		return
+	}
+	// 防止循环递归
+	err := service.Bot().SetHistory(ctx, hit)
+	if err != nil {
+		// rewrite loop detected
+		g.Log().Notice(ctx, "rewrite loop detected: "+hit)
 		return
 	}
 	// 解码提取

@@ -113,7 +113,7 @@ func (s *sBot) Process(ctx context.Context, rawJson []byte, nextProcess func(ctx
 	ctx = s.CtxWithReqJson(ctx, &reqJson)
 	// debug mode
 	if service.Cfg().IsEnabledDebug(ctx) && s.GetPostType(ctx) != "meta_event" {
-		g.Log().Info(ctx, "\n", rawJson)
+		g.Log().Debug(ctx, "\n", rawJson)
 	}
 	// 捕捉 echo
 	if s.catchEcho(ctx) {
@@ -145,36 +145,36 @@ func (s *sBot) catchEcho(ctx context.Context) (catch bool) {
 	return
 }
 
-func (s *sBot) defaultEchoProcess(rsyncCtx context.Context) (err error) {
+func (s *sBot) defaultEchoProcess(rsyncCtx context.Context) error {
 	if s.getEchoStatus(rsyncCtx) != "ok" {
 		switch s.getEchoStatus(rsyncCtx) {
 		case "async":
-			err = errors.New("已提交 async 处理")
+			return errors.New("已提交 async 处理")
 		case "failed":
-			err = errors.New(s.getEchoFailedMsg(rsyncCtx))
+			return errors.New(s.getEchoFailedMsg(rsyncCtx))
 		}
 	}
-	return
+	return nil
 }
 
 func (s *sBot) pushEchoCache(ctx context.Context, echoSign string,
 	callbackFunc func(ctx context.Context, rsyncCtx context.Context),
-	timeoutFunc func(ctx context.Context)) (err error) {
+	timeoutFunc func(ctx context.Context)) error {
 	echoKey := echoPrefix + echoSign
 	// 检查超时
 	go func() {
 		time.Sleep(echoDuration)
-		contain, e := gcache.Contains(ctx, echoKey)
-		if e != nil {
-			g.Log().Error(ctx, e)
+		contain, err := gcache.Contains(ctx, echoKey)
+		if err != nil {
+			g.Log().Error(ctx, err)
 			return
 		}
 		if !contain {
 			return
 		}
-		v, e := gcache.Remove(ctx, echoKey)
-		if e != nil {
-			g.Log().Error(ctx, e)
+		v, err := gcache.Remove(ctx, echoKey)
+		if err != nil {
+			g.Log().Error(ctx, err)
 			return
 		}
 		// 执行超时回调
@@ -182,9 +182,9 @@ func (s *sBot) pushEchoCache(ctx context.Context, echoSign string,
 			return
 		}
 		var echo *echoModel
-		e = v.Scan(&echo)
-		if e != nil {
-			g.Log().Error(ctx, e)
+		err = v.Scan(&echo)
+		if err != nil {
+			g.Log().Error(ctx, err)
 			return
 		}
 		if echo == nil || echo.TimeoutFunc == nil {
@@ -193,12 +193,11 @@ func (s *sBot) pushEchoCache(ctx context.Context, echoSign string,
 		echo.TimeoutFunc(echo.LastContext)
 	}()
 	// 放入缓存
-	err = gcache.Set(ctx, echoKey, echoModel{
+	return gcache.Set(ctx, echoKey, echoModel{
 		LastContext:  ctx,
 		CallbackFunc: callbackFunc,
 		TimeoutFunc:  timeoutFunc,
 	}, echoTimeout)
-	return
 }
 
 func (s *sBot) popEchoCache(ctx context.Context, echoSign string) (echo *echoModel, err error) {

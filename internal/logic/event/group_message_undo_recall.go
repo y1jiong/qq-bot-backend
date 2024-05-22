@@ -30,7 +30,10 @@ func (s *sEvent) TryUndoMessageRecall(ctx context.Context) (catch bool) {
 	}
 	// 获取发送者信息
 	senderMap := gconv.Map(messageMap["sender"])
-	nickname := gconv.String(senderMap["nickname"])
+	nickname := gconv.String(senderMap["card"])
+	if nickname == "" {
+		nickname = gconv.String(senderMap["nickname"])
+	}
 	userId := gconv.Int64(senderMap["user_id"])
 	// 获取撤回消息
 	message := gconv.String(messageMap["message"])
@@ -42,9 +45,10 @@ func (s *sEvent) TryUndoMessageRecall(ctx context.Context) (catch bool) {
 	var msg string
 	if notificationGroupId < 1 {
 		notificationGroupId = groupId
-		msg = nickname + "(" + gconv.String(userId) + ") 撤回了一条消息：\n"
+		msg = "user[" + nickname + "](" + gconv.String(userId) + ") 撤回了：\n"
 	} else {
-		msg = nickname + "(" + gconv.String(userId) + ") 在 group(" + gconv.String(groupId) + ") 撤回了一条消息：\n"
+		msg = "user[" + nickname + "](" + gconv.String(userId) +
+			") 在 group(" + gconv.String(groupId) + ") 撤回了：\n"
 	}
 	msg += message
 	service.Bot().SendMessage(ctx,

@@ -11,15 +11,28 @@ func tryGroup(ctx context.Context, cmd string) (catch bool, retMsg string) {
 	case nextBranchRe.MatchString(cmd):
 		next := nextBranchRe.FindStringSubmatch(cmd)
 		switch next[1] {
+		case "query":
+			// /group query <group_id>
+			retMsg = service.Group().QueryGroupReturnRes(ctx, gconv.Int64(next[2]))
+			catch = true
 		case "approval":
 			// /group approval <>
 			catch, retMsg = tryGroupApproval(ctx, next[2])
 		case "keyword":
 			// /group keyword <>
 			catch, retMsg = tryGroupKeyword(ctx, next[2])
+		case "message":
+			// /group message <>
+			catch, retMsg = tryGroupMessage(ctx, next[2])
 		case "card":
 			// /group card <>
 			catch, retMsg = tryGroupCard(ctx, next[2])
+		case "export":
+			// /group export <>
+			catch, retMsg = tryGroupExport(ctx, next[2])
+		case "log":
+			// /group log <>
+			catch, retMsg = tryGroupLog(ctx, next[2])
 		case "kick":
 			// /group kick <list_name>
 			retMsg = service.Group().KickFromListReturnRes(ctx, service.Bot().GetGroupId(ctx), next[2])
@@ -28,22 +41,13 @@ func tryGroup(ctx context.Context, cmd string) (catch bool, retMsg string) {
 			// /group keep <list_name>
 			retMsg = service.Group().KeepFromListReturnRes(ctx, service.Bot().GetGroupId(ctx), next[2])
 			catch = true
-		case "log":
-			// /group log <>
-			catch, retMsg = tryGroupLog(ctx, next[2])
-		case "export":
-			// /group export <>
-			catch, retMsg = tryGroupExport(ctx, next[2])
-		case "message":
-			// /group message <>
-			catch, retMsg = tryGroupMessage(ctx, next[2])
-		case "bind":
-			// /group bind <namespace>
-			retMsg = service.Group().BindNamespaceReturnRes(ctx, service.Bot().GetGroupId(ctx), next[2])
-			catch = true
 		case "clone":
 			// /group clone <group_id>
 			retMsg = service.Group().CloneReturnRes(ctx, service.Bot().GetGroupId(ctx), gconv.Int64(next[2]))
+			catch = true
+		case "bind":
+			// /group bind <namespace>
+			retMsg = service.Group().BindNamespaceReturnRes(ctx, service.Bot().GetGroupId(ctx), next[2])
 			catch = true
 		}
 	case endBranchRe.MatchString(cmd):

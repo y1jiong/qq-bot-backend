@@ -117,7 +117,7 @@ func (s *sNamespace) GetNamespaceListsIncludingShared(ctx context.Context, names
 	}
 	settingJson, err := sonic.GetFromString(namespaceE.SettingJson)
 	if err != nil {
-		g.Log().Notice(ctx, err)
+		g.Log().Error(ctx, err)
 		return
 	}
 	sharedLists, _ := settingJson.Get(listsMapKey).Map()

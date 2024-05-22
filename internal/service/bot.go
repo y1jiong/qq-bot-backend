@@ -62,6 +62,7 @@ type (
 		SetGroupCard(ctx context.Context, groupId, userId int64, card string)
 		Kick(ctx context.Context, groupId, userId int64, reject ...bool)
 		RewriteMessage(ctx context.Context, message string)
+		SetHistory(ctx context.Context, history string) error
 	}
 )
 

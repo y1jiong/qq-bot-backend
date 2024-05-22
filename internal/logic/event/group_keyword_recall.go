@@ -44,8 +44,9 @@ func (s *sEvent) TryKeywordRecall(ctx context.Context) (catch bool) {
 	service.Bot().RecallMessage(ctx, service.Bot().GetMsgId(ctx))
 	userId := service.Bot().GetUserId(ctx)
 	// 打印撤回日志
-	logMsg := fmt.Sprintf("recall group(%v) user(%v) hit(%v) detail %v",
+	logMsg := fmt.Sprintf("recall group(%v) user[%v](%v) hit(%v) detail %v",
 		groupId,
+		service.Bot().GetCardOrNickname(ctx),
 		userId,
 		hit,
 		msg)

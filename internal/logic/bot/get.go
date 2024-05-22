@@ -63,7 +63,10 @@ func (s *sBot) GetMsgId(ctx context.Context) int64 {
 }
 
 func (s *sBot) GetMessage(ctx context.Context) string {
-	v, _ := s.reqJsonFromCtx(ctx).Get("message").StrictString()
+	v, _ := s.reqJsonFromCtx(ctx).Get("raw_message").StrictString()
+	if v == "" {
+		v, _ = s.reqJsonFromCtx(ctx).Get("message").StrictString()
+	}
 	return v
 }
 
@@ -254,15 +257,15 @@ func (s *sBot) RequestMessage(ctx context.Context, messageId int64) (messageMap 
 		Action string `json:"action"`
 		Echo   string `json:"echo"`
 		Params struct {
-			MessageId string `json:"message_id"`
+			MessageId int64 `json:"message_id"`
 		} `json:"params"`
 	}{
 		Action: "get_msg",
 		Echo:   echoSign,
 		Params: struct {
-			MessageId string `json:"message_id"`
+			MessageId int64 `json:"message_id"`
 		}{
-			MessageId: gconv.String(messageId),
+			MessageId: messageId,
 		},
 	}
 	reqJson, err := sonic.ConfigDefault.Marshal(req)
@@ -426,13 +429,13 @@ func (s *sBot) IsGroupOwnerOrAdmin(ctx context.Context) bool {
 			g.Log().Error(ctx, err)
 			return false
 		}
-		params := []ast.Pair{
+		pairs := []ast.Pair{
 			{
 				Key:   "role",
 				Value: ast.NewString(role),
 			},
 		}
-		_, _ = s.reqJsonFromCtx(ctx).Set("sender", ast.NewObject(params))
+		_, _ = s.reqJsonFromCtx(ctx).Set("sender", ast.NewObject(pairs))
 	}
 	return role == "owner" || role == "admin"
 }

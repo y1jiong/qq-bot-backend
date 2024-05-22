@@ -31,13 +31,6 @@ func (s *sEvent) TryGroupKeywordReply(ctx context.Context) (catch bool) {
 	if !contains || value == "" {
 		return
 	}
-	// 限速
-	const kind = "replyG"
-	gid := gconv.String(groupId)
-	if limited, _ := service.Util().AutoLimit(ctx, kind, gid, 7, time.Minute); limited {
-		g.Log().Info(ctx, kind, gid, "is limited")
-		return
-	}
 	// 匹配成功，回复
 	replyMsg := value
 	noReplyPrefix := false
@@ -54,6 +47,13 @@ func (s *sEvent) TryGroupKeywordReply(ctx context.Context) (catch bool) {
 	}
 	// 内容为空，不回复
 	if replyMsg == "" {
+		return
+	}
+	// 限速
+	const kind = "replyG"
+	gid := gconv.String(groupId)
+	if limited, _ := service.Util().AutoLimit(ctx, kind, gid, 7, time.Minute); limited {
+		g.Log().Notice(ctx, kind, gid, "is limited")
 		return
 	}
 	if !noReplyPrefix {

@@ -38,6 +38,7 @@ v1.7
 | /group unbind            | 解除当前 group 的绑定                               | 同上                                                                |
 | /group clone \<group_id> | 从 group_id 克隆配置到当前 group（需要先绑定 namespace）    | 同上                                                                |
 | /group query             | 查询当前 group 的配置                               | 需要 namespace admin 或更高权限或者对应 namespace 具有 public 属性               |
+| /group query \<group_id> | 查询指定 group 的配置                               | 同上                                                                |
 | /group kick \<list_name> | 把当前 group 在 list_name 中的成员踢出                 | 需要 group admin 和 namespace admin 或更高权限或者对应 namespace 具有 public 属性 |
 | /group keep \<list_name> | 把当前 group 不在 list_name 中的成员踢出                | 同上                                                                |
 

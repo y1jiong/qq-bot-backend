@@ -42,7 +42,8 @@ func (s *sCommand) TryCommand(ctx context.Context, message string) (catch bool, 
 			return
 		}
 		g.Log().Info(ctx,
-			"user("+gconv.String(userId)+") in group("+gconv.String(service.Bot().GetGroupId(ctx))+") send cmd "+message)
+			"user["+service.Bot().GetCardOrNickname(ctx)+"]("+gconv.String(userId)+
+				") in group("+gconv.String(service.Bot().GetGroupId(ctx))+") send cmd "+message)
 	}()
 	cmd := strings.Replace(message, "/", "", 1)
 	switch {
