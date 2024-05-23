@@ -64,7 +64,7 @@ func (c *ControllerV1) Command(ctx context.Context, req *v1.CommandReq) (res *v1
 			return
 		}
 	}
-	// 记录登录时间
+	// 记录访问时间
 	service.Token().UpdateLoginTime(ctx, req.Token)
 	// 加载 botId 对应的 botCtx
 	botCtx := service.Bot().LoadConnectionPool(botId)
@@ -83,13 +83,13 @@ func (c *ControllerV1) Command(ctx context.Context, req *v1.CommandReq) (res *v1
 		UserId:  ownerId,
 		GroupId: req.GroupId,
 	}
-	rawJson, err := sonic.ConfigDefault.Marshal(innerReq)
+	rawJson, err := sonic.ConfigDefault.MarshalToString(innerReq)
 	if err != nil {
 		return
 	}
-	reqJson, _ := sonic.Get(rawJson)
+	reqJson, _ := sonic.GetFromString(rawJson)
 	botCtx = service.Bot().CtxWithReqJson(botCtx, &reqJson)
-	g.Log().Info(ctx, tokenName+" access successfully with "+string(rawJson))
+	g.Log().Info(ctx, tokenName+" access successfully with "+rawJson)
 	var retMsg string
 	// 异步执行
 	if req.Async {
@@ -122,7 +122,7 @@ func (c *ControllerV1) Command(ctx context.Context, req *v1.CommandReq) (res *v1
 			"permission denied")
 		return
 	}
-	// 一分钟只能发送五条消息
+	// 限速 一分钟只能发送 5 条消息
 	if limit, _ := service.Util().AutoLimit(ctx,
 		"send_msg", gconv.String(req.GroupId), 5, time.Minute); limit {
 		err = gerror.NewCode(gcode.New(http.StatusTooManyRequests, "", nil),
@@ -130,6 +130,11 @@ func (c *ControllerV1) Command(ctx context.Context, req *v1.CommandReq) (res *v1
 		return
 	}
 	// 发送消息
-	service.Bot().SendMessage(botCtx, "", 0, req.GroupId, retMsg, true)
+	err = service.Bot().SendMessage(botCtx, "", 0, req.GroupId, retMsg, true)
+	if err != nil {
+		err = gerror.NewCode(gcode.New(http.StatusInternalServerError, "", nil),
+			err.Error())
+		return
+	}
 	return
 }

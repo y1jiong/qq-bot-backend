@@ -8,6 +8,7 @@ import (
 	"qq-bot-backend/internal/consts"
 	"qq-bot-backend/internal/controller"
 	"qq-bot-backend/internal/controller/command"
+	"qq-bot-backend/internal/controller/message"
 	"qq-bot-backend/internal/service"
 )
 
@@ -31,6 +32,7 @@ var (
 				group.Group("/v1", func(group *ghttp.RouterGroup) {
 					group.Bind(
 						command.NewV1(),
+						message.NewV1(),
 					)
 				})
 			})

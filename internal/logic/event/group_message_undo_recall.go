@@ -51,7 +51,7 @@ func (s *sEvent) TryUndoMessageRecall(ctx context.Context) (catch bool) {
 			") 在 group(" + gconv.String(groupId) + ") 撤回了：\n"
 	}
 	msg += message
-	service.Bot().SendMessage(ctx,
+	_ = service.Bot().SendMessage(ctx,
 		"group", 0, notificationGroupId, msg, false)
 	catch = true
 	return

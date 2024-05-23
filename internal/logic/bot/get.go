@@ -42,6 +42,13 @@ func (s *sBot) GetMsgType(ctx context.Context) string {
 	return v
 }
 
+func (s *sBot) GuessMsgType(groupId int64) string {
+	if groupId > 0 {
+		return "group"
+	}
+	return "private"
+}
+
 func (s *sBot) GetRequestType(ctx context.Context) string {
 	v, _ := s.reqJsonFromCtx(ctx).Get("request_type").StrictString()
 	return v
@@ -190,7 +197,7 @@ func (s *sBot) GetGroupMemberInfo(ctx context.Context, groupId, userId int64) (m
 	return
 }
 
-func (s *sBot) GetGroupMemberList(ctx context.Context, groupId int64, noCache ...bool) (members []any, err error) {
+func (s *sBot) GetGroupMemberList(ctx context.Context, groupId int64, usingCache ...bool) (members []any, err error) {
 	// echo sign
 	echoSign := guid.S()
 	// 参数
@@ -211,6 +218,9 @@ func (s *sBot) GetGroupMemberList(ctx context.Context, groupId int64, noCache ..
 			GroupId: groupId,
 			NoCache: true,
 		},
+	}
+	if len(usingCache) > 0 && usingCache[0] {
+		req.Params.NoCache = false
 	}
 	reqJson, err := sonic.ConfigDefault.Marshal(req)
 	if err != nil {

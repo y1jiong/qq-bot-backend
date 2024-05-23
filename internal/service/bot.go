@@ -23,6 +23,7 @@ type (
 		Process(ctx context.Context, rawJson []byte, nextProcess func(ctx context.Context))
 		GetPostType(ctx context.Context) string
 		GetMsgType(ctx context.Context) string
+		GuessMsgType(groupId int64) string
 		GetRequestType(ctx context.Context) string
 		GetNoticeType(ctx context.Context) string
 		GetSubType(ctx context.Context) string
@@ -40,18 +41,18 @@ type (
 		GetCardOrNickname(ctx context.Context) string
 		GetCardOldNew(ctx context.Context) (oldCard, newCard string)
 		GetGroupMemberInfo(ctx context.Context, groupId, userId int64) (member ast.Node, err error)
-		GetGroupMemberList(ctx context.Context, groupId int64, noCache ...bool) (members []any, err error)
+		GetGroupMemberList(ctx context.Context, groupId int64, usingCache ...bool) (members []any, err error)
 		RequestMessage(ctx context.Context, messageId int64) (messageMap map[string]any, err error)
 		GetGroupInfo(ctx context.Context, groupId int64, noCache ...bool) (infoMap map[string]any, err error)
 		GetLoginInfo(ctx context.Context) (userId int64, nickname string)
 		IsGroupOwnerOrAdmin(ctx context.Context) bool
 		IsGroupOwnerOrAdminOrSysTrusted(ctx context.Context) bool
-		SendMessage(ctx context.Context, messageType string, uid, gid int64, msg string, plain bool)
+		SendMessage(ctx context.Context, messageType string, userId, groupId int64, msg string, plain bool) error
 		SendPlainMsg(ctx context.Context, msg string)
 		SendMsg(ctx context.Context, msg string)
 		SendPlainMsgIfNotApiReq(ctx context.Context, msg string)
-		SendFileToGroup(ctx context.Context, gid int64, filePath, name, folder string)
-		SendFileToUser(ctx context.Context, uid int64, filePath, name string)
+		SendFileToGroup(ctx context.Context, groupId int64, filePath, name, folder string)
+		SendFileToUser(ctx context.Context, userId int64, filePath, name string)
 		SendFile(ctx context.Context, filePath, name string)
 		UploadFile(ctx context.Context, url string) (filePath string, err error)
 		ApproveJoinGroup(ctx context.Context, flag, subType string, approve bool, reason string)

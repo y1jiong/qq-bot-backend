@@ -10,17 +10,21 @@ import (
 	"sync"
 )
 
-func (s *sBot) SendMessage(ctx context.Context, messageType string, uid, gid int64, msg string, plain bool) {
+func (s *sBot) SendMessage(ctx context.Context,
+	messageType string, userId, groupId int64, msg string, plain bool) error {
 	// 参数校验
-	if uid == 0 && gid == 0 {
-		return
+	if userId == 0 && groupId == 0 {
+		return errors.New("userId 和 groupId 不能同时为 0")
 	}
-	if gid != 0 {
-		uid = 0
+	if groupId != 0 {
+		userId = 0
 	}
+	// echo sign
+	echoSign := guid.S()
 	// 参数
 	req := struct {
 		Action string `json:"action"`
+		Echo   string `json:"echo"`
 		Params struct {
 			MessageType string `json:"message_type,omitempty"`
 			Message     string `json:"message"`
@@ -30,6 +34,7 @@ func (s *sBot) SendMessage(ctx context.Context, messageType string, uid, gid int
 		} `json:"params"`
 	}{
 		Action: "send_msg",
+		Echo:   echoSign,
 		Params: struct {
 			MessageType string `json:"message_type,omitempty"`
 			Message     string `json:"message"`
@@ -40,27 +45,48 @@ func (s *sBot) SendMessage(ctx context.Context, messageType string, uid, gid int
 			MessageType: messageType,
 			Message:     msg,
 			AutoEscape:  plain,
-			UserId:      uid,
-			GroupId:     gid,
+			UserId:      userId,
+			GroupId:     groupId,
 		},
 	}
 	reqJson, err := sonic.ConfigDefault.Marshal(req)
 	if err != nil {
 		g.Log().Error(ctx, err)
-		return
+		return err
+	} // callback
+	wg := sync.WaitGroup{}
+	defer wg.Wait()
+	wgDone := sync.OnceFunc(wg.Done)
+	wg.Add(1)
+	callback := func(ctx context.Context, rsyncCtx context.Context) {
+		defer wgDone()
+		err = s.defaultEchoProcess(rsyncCtx)
 	}
+	timeout := func(ctx context.Context) {
+		defer wgDone()
+		err = errors.New("echo timeout")
+	}
+	// echo
+	err = s.pushEchoCache(ctx, echoSign, callback, timeout)
+	if err != nil {
+		g.Log().Error(ctx, err)
+		return err
+	}
+	// 发送响应
 	err = s.writeMessage(ctx, websocket.TextMessage, reqJson)
 	if err != nil {
 		g.Log().Warning(ctx, err)
+		return err
 	}
+	return err
 }
 
 func (s *sBot) SendPlainMsg(ctx context.Context, msg string) {
-	s.SendMessage(ctx, s.GetMsgType(ctx), s.GetUserId(ctx), s.GetGroupId(ctx), msg, true)
+	_ = s.SendMessage(ctx, s.GetMsgType(ctx), s.GetUserId(ctx), s.GetGroupId(ctx), msg, true)
 }
 
 func (s *sBot) SendMsg(ctx context.Context, msg string) {
-	s.SendMessage(ctx, s.GetMsgType(ctx), s.GetUserId(ctx), s.GetGroupId(ctx), msg, false)
+	_ = s.SendMessage(ctx, s.GetMsgType(ctx), s.GetUserId(ctx), s.GetGroupId(ctx), msg, false)
 }
 
 func (s *sBot) SendPlainMsgIfNotApiReq(ctx context.Context, msg string) {
@@ -70,7 +96,7 @@ func (s *sBot) SendPlainMsgIfNotApiReq(ctx context.Context, msg string) {
 	s.SendPlainMsg(ctx, msg)
 }
 
-func (s *sBot) SendFileToGroup(ctx context.Context, gid int64, filePath, name, folder string) {
+func (s *sBot) SendFileToGroup(ctx context.Context, groupId int64, filePath, name, folder string) {
 	// echo sign
 	echoSign := guid.S()
 	// 参数
@@ -92,7 +118,7 @@ func (s *sBot) SendFileToGroup(ctx context.Context, gid int64, filePath, name, f
 			Name    string `json:"name"`
 			Folder  string `json:"folder,omitempty"`
 		}{
-			GroupId: gid,
+			GroupId: groupId,
 			File:    filePath,
 			Name:    name,
 			Folder:  folder,
@@ -125,7 +151,7 @@ func (s *sBot) SendFileToGroup(ctx context.Context, gid int64, filePath, name, f
 	}
 }
 
-func (s *sBot) SendFileToUser(ctx context.Context, uid int64, filePath, name string) {
+func (s *sBot) SendFileToUser(ctx context.Context, userId int64, filePath, name string) {
 	// echo sign
 	echoSign := guid.S()
 	// 参数
@@ -145,7 +171,7 @@ func (s *sBot) SendFileToUser(ctx context.Context, uid int64, filePath, name str
 			File   string `json:"file"`
 			Name   string `json:"name"`
 		}{
-			UserId: uid,
+			UserId: userId,
 			File:   filePath,
 			Name:   name,
 		},
