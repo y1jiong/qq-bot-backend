@@ -90,13 +90,23 @@ func (s *sNamespace) QueryNamespaceReturnRes(ctx context.Context, namespace stri
 	if namespaceE == nil {
 		return
 	}
-	// 权限校验 owner or admin or namespace op or public or shared
+	// 权限校验 owner or admin or namespace op or public or global
 	if permission, public := isNamespaceOwnerOrAdmin(ctx, service.Bot().GetUserId(ctx), namespaceE) ||
 		service.User().CouldOpNamespace(ctx, service.Bot().GetUserId(ctx)),
-		s.IsNamespacePropertyPublic(ctx, namespace) || s.IsSharedNamespace(namespace); !permission && !public {
+		s.IsGlobalNamespace(namespace) || s.IsNamespacePropertyPublic(ctx, namespace); !permission && !public {
 		return
 	} else if permission {
 		retMsg = dao.Namespace.Columns().OwnerId + ": " + gconv.String(namespaceE.OwnerId) + "\n"
+	} else {
+		// 只显示 settingJson 中的 listsMapKey
+		settingJson, err := sonic.GetFromString(namespaceE.SettingJson)
+		if err != nil {
+			g.Log().Error(ctx, err)
+			return
+		}
+		tmpJson := ast.NewNull()
+		_, _ = tmpJson.Set(listsMapKey, *(settingJson.Get(listsMapKey)))
+		namespaceE.SettingJson, _ = tmpJson.Raw()
 	}
 	// 回执
 	retMsg = dao.Namespace.Columns().Namespace + ": " + namespaceE.Namespace + "\n" +
@@ -368,7 +378,7 @@ func (s *sNamespace) SetNamespacePropertyPublicReturnRes(ctx context.Context,
 		}
 	}
 	// 保存数据
-	settingBytes, err := settingJson.MarshalJSON()
+	settingStr, err := settingJson.Raw()
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return
@@ -376,7 +386,7 @@ func (s *sNamespace) SetNamespacePropertyPublicReturnRes(ctx context.Context,
 	// 数据库更新
 	_, err = dao.Namespace.Ctx(ctx).
 		Where(dao.Namespace.Columns().Namespace, namespace).
-		Data(dao.Namespace.Columns().SettingJson, string(settingBytes)).
+		Data(dao.Namespace.Columns().SettingJson, settingStr).
 		Update()
 	if err != nil {
 		g.Log().Error(ctx, err)

@@ -469,7 +469,7 @@ func (s *sList) GlanceListDataReturnRes(ctx context.Context, listName string) (r
 	}
 	// 权限校验
 	if !service.Namespace().IsNamespaceOwnerOrAdminOrOperator(ctx, listE.Namespace, service.Bot().GetUserId(ctx)) &&
-		!service.Namespace().IsSharedNamespace(listE.Namespace) &&
+		!service.Namespace().IsGlobalNamespace(listE.Namespace) &&
 		!service.Namespace().IsNamespacePropertyPublic(ctx, listE.Namespace) {
 		return
 	}

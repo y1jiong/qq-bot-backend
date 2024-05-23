@@ -34,7 +34,7 @@ func (s *sEvent) TryKeywordReply(ctx context.Context) (catch bool) {
 		}
 	}
 	// 匹配关键词
-	contains, hit, value := service.Util().IsOnKeywordLists(ctx, msg, service.Namespace().GetSharedNamespaceLists(ctx))
+	contains, hit, value := service.Util().IsOnKeywordLists(ctx, msg, service.Namespace().GetGlobalNamespaceLists(ctx))
 	if !contains || value == "" {
 		return
 	}
@@ -202,8 +202,7 @@ func (s *sEvent) keywordReplyWebhook(ctx context.Context, userId, groupId int64,
 			replyMsg = "Wrong JSON format"
 			return
 		}
-		tmp, _ := node.MarshalJSON()
-		replyMsg = string(tmp)
+		replyMsg, _ = node.Raw()
 		return
 	}
 	replyMsg, _ = node.StrictString()

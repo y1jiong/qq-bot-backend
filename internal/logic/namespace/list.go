@@ -33,7 +33,7 @@ func (s *sNamespace) AddNamespaceList(ctx context.Context, namespace, listName s
 	}
 	_, _ = settingJson.Get(listsMapKey).Set(listName, ast.NewNull())
 	// 保存数据
-	settingBytes, err := settingJson.MarshalJSON()
+	settingStr, err := settingJson.Raw()
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return
@@ -41,7 +41,7 @@ func (s *sNamespace) AddNamespaceList(ctx context.Context, namespace, listName s
 	// 数据库更新
 	_, err = dao.Namespace.Ctx(ctx).
 		Where(dao.Namespace.Columns().Namespace, namespace).
-		Data(dao.Namespace.Columns().SettingJson, string(settingBytes)).
+		Data(dao.Namespace.Columns().SettingJson, settingStr).
 		Update()
 	if err != nil {
 		g.Log().Error(ctx, err)
@@ -69,7 +69,7 @@ func (s *sNamespace) RemoveNamespaceList(ctx context.Context, namespace, listNam
 	}
 	_, _ = settingJson.Get(listsMapKey).Unset(listName)
 	// 保存数据
-	settingBytes, err := settingJson.MarshalJSON()
+	settingStr, err := settingJson.Raw()
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return
@@ -77,7 +77,7 @@ func (s *sNamespace) RemoveNamespaceList(ctx context.Context, namespace, listNam
 	// 数据库更新
 	_, err = dao.Namespace.Ctx(ctx).
 		Where(dao.Namespace.Columns().Namespace, namespace).
-		Data(dao.Namespace.Columns().SettingJson, string(settingBytes)).
+		Data(dao.Namespace.Columns().SettingJson, settingStr).
 		Update()
 	if err != nil {
 		g.Log().Error(ctx, err)
@@ -107,11 +107,11 @@ func (s *sNamespace) GetNamespaceLists(ctx context.Context, namespace string) (l
 	return
 }
 
-func (s *sNamespace) GetNamespaceListsIncludingShared(ctx context.Context, namespace string) (lists map[string]any) {
+func (s *sNamespace) GetNamespaceListsIncludingGlobal(ctx context.Context, namespace string) (lists map[string]any) {
 	// 先加载 namespace list
 	lists = s.GetNamespaceLists(ctx, namespace)
 	// 加载公共 list
-	namespaceE := getNamespace(ctx, sharedNamespace)
+	namespaceE := getNamespace(ctx, globalNamespace)
 	if namespaceE == nil {
 		return
 	}
@@ -120,16 +120,16 @@ func (s *sNamespace) GetNamespaceListsIncludingShared(ctx context.Context, names
 		g.Log().Error(ctx, err)
 		return
 	}
-	sharedLists, _ := settingJson.Get(listsMapKey).Map()
-	if sharedLists == nil {
+	globalLists, _ := settingJson.Get(listsMapKey).Map()
+	if globalLists == nil {
 		return
 	}
-	for k, v := range sharedLists {
+	for k, v := range globalLists {
 		lists[k] = v
 	}
 	return
 }
 
-func (s *sNamespace) GetSharedNamespaceLists(ctx context.Context) (lists map[string]any) {
-	return s.GetNamespaceLists(ctx, sharedNamespace)
+func (s *sNamespace) GetGlobalNamespaceLists(ctx context.Context) (lists map[string]any) {
+	return s.GetNamespaceLists(ctx, globalNamespace)
 }

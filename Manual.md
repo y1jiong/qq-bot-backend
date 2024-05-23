@@ -20,7 +20,7 @@ v1.7
 | /list reset \<list_name>                          | 重置 list_name 的数据                                                                                | 同上                                                             |
 | /list rm \<list_name>                             | 删除 list_name（删除后原 list_name 不可使用，只能恢复）                                                          | 同上                                                             |
 | /list recover \<list_name>                        | 恢复 list_name                                                                                    | 同上                                                             |
-| /list glance \<list_name>                         | 快速查询 list_name 里的所有 key                                                                         | 同上或者 list_name 处于 shared namespace 中                           |
+| /list glance \<list_name>                         | 快速查询 list_name 里的所有 key                                                                         | 同上或者 list_name 处于 global namespace 中                           |
 
 ## List Operation
 
@@ -133,7 +133,7 @@ v1.7
 |--------------------------------------------------|---------------------------------|-------------------------------------------------------------------------|
 | /namespace add \<namespace>                      | 新建 namespace                    | 需要系统授予的操作 namespace 权限                                                  |
 | /namespace rm \<namespace>                       | 删除 namespace                    | 需要 namespace owner 权限                                                   |
-| /namespace query                                 | 查询自己所有的和具有 public 属性的 namespace | 需要 namespace admin 或更高权限或者是具有 public 属性的 namespace 或者是 shared namespace |
+| /namespace query                                 | 查询自己所有的和具有 public 属性的 namespace | 需要 namespace admin 或更高权限或者是具有 public 属性的 namespace 或者是 global namespace |
 | /namespace \<namespace>                          | 查询 namespace 配置                 | 同上                                                                      |
 | /namespace \<namespace> reset admin              | 重置 namespace 的 admin            | 需要 namespace owner 权限或更高权限                                              |
 | /namespace chown \<owner_id> \<namespace>        | 修改 namespace 的 owner            | 同上                                                                      |

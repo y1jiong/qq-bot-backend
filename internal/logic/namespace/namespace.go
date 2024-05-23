@@ -28,7 +28,7 @@ var (
 const (
 	adminsMapKey = "admins"
 
-	sharedNamespace = "shared"
+	globalNamespace = "global"
 )
 
 func getNamespace(ctx context.Context, namespace string) (namespaceE *entity.Namespace) {
@@ -89,11 +89,11 @@ func (s *sNamespace) IsNamespaceOwnerOrAdminOrOperator(ctx context.Context, name
 		service.User().CouldOpNamespace(ctx, gconv.Int64(userId))
 }
 
-func (s *sNamespace) IsSharedNamespace(namespace string) bool {
+func (s *sNamespace) IsGlobalNamespace(namespace string) bool {
 	// 参数合法性校验
 	if !legalNamespaceNameRe.MatchString(namespace) {
 		return false
 	}
 	// 判断
-	return namespace == sharedNamespace
+	return namespace == globalNamespace
 }

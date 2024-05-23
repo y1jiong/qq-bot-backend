@@ -42,7 +42,7 @@ func (s *sGroup) AddKeywordProcessReturnRes(ctx context.Context,
 		case consts.ReplyCmd:
 			// 添加回复列表
 			// 是否存在 list
-			lists := service.Namespace().GetNamespaceListsIncludingShared(ctx, groupE.Namespace)
+			lists := service.Namespace().GetNamespaceListsIncludingGlobal(ctx, groupE.Namespace)
 			if _, ok := lists[args[0]]; !ok {
 				retMsg = "在 namespace(" + groupE.Namespace + ") 中未找到 list(" + args[0] + ")"
 				return

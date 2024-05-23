@@ -44,7 +44,7 @@ func (s *sGroup) SetLogLeaveListReturnRes(ctx context.Context,
 	}
 	_, _ = settingJson.Set(logLeaveListKey, ast.NewString(listName))
 	// 保存数据
-	settingBytes, err := settingJson.MarshalJSON()
+	settingStr, err := settingJson.Raw()
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return
@@ -52,7 +52,7 @@ func (s *sGroup) SetLogLeaveListReturnRes(ctx context.Context,
 	// 数据库更新
 	_, err = dao.Group.Ctx(ctx).
 		Where(dao.Group.Columns().GroupId, groupId).
-		Data(dao.Group.Columns().SettingJson, string(settingBytes)).
+		Data(dao.Group.Columns().SettingJson, settingStr).
 		Update()
 	if err != nil {
 		g.Log().Error(ctx, err)
@@ -94,7 +94,7 @@ func (s *sGroup) RemoveLogLeaveListReturnRes(ctx context.Context, groupId int64)
 	}
 	_, _ = settingJson.Unset(logLeaveListKey)
 	// 保存数据
-	settingBytes, err := settingJson.MarshalJSON()
+	settingStr, err := settingJson.Raw()
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return
@@ -102,7 +102,7 @@ func (s *sGroup) RemoveLogLeaveListReturnRes(ctx context.Context, groupId int64)
 	// 数据库更新
 	_, err = dao.Group.Ctx(ctx).
 		Where(dao.Group.Columns().GroupId, groupId).
-		Data(dao.Group.Columns().SettingJson, string(settingBytes)).
+		Data(dao.Group.Columns().SettingJson, settingStr).
 		Update()
 	if err != nil {
 		g.Log().Error(ctx, err)
@@ -147,7 +147,7 @@ func (s *sGroup) SetLogApprovalListReturnRes(ctx context.Context,
 	}
 	_, _ = settingJson.Set(logApprovalListKey, ast.NewString(listName))
 	// 保存数据
-	settingBytes, err := settingJson.MarshalJSON()
+	settingStr, err := settingJson.Raw()
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return
@@ -155,7 +155,7 @@ func (s *sGroup) SetLogApprovalListReturnRes(ctx context.Context,
 	// 数据库更新
 	_, err = dao.Group.Ctx(ctx).
 		Where(dao.Group.Columns().GroupId, groupId).
-		Data(dao.Group.Columns().SettingJson, string(settingBytes)).
+		Data(dao.Group.Columns().SettingJson, settingStr).
 		Update()
 	if err != nil {
 		g.Log().Error(ctx, err)
@@ -197,7 +197,7 @@ func (s *sGroup) RemoveLogApprovalListReturnRes(ctx context.Context, groupId int
 	}
 	_, _ = settingJson.Unset(logApprovalListKey)
 	// 保存数据
-	settingBytes, err := settingJson.MarshalJSON()
+	settingStr, err := settingJson.Raw()
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return
@@ -205,7 +205,7 @@ func (s *sGroup) RemoveLogApprovalListReturnRes(ctx context.Context, groupId int
 	// 数据库更新
 	_, err = dao.Group.Ctx(ctx).
 		Where(dao.Group.Columns().GroupId, groupId).
-		Data(dao.Group.Columns().SettingJson, string(settingBytes)).
+		Data(dao.Group.Columns().SettingJson, settingStr).
 		Update()
 	if err != nil {
 		g.Log().Error(ctx, err)
