@@ -43,11 +43,11 @@ func (s *sEvent) TryUndoMessageRecall(ctx context.Context) (catch bool) {
 	// 反撤回
 	notificationGroupId := service.Group().GetMessageNotificationGroupId(ctx, groupId)
 	var msg string
-	if notificationGroupId < 1 {
+	if notificationGroupId == 0 {
 		notificationGroupId = groupId
-		msg = "user[" + nickname + "](" + gconv.String(userId) + ") 撤回了：\n"
+		msg = nickname + "(" + gconv.String(userId) + ") 撤回了：\n"
 	} else {
-		msg = "user[" + nickname + "](" + gconv.String(userId) +
+		msg = nickname + "(" + gconv.String(userId) +
 			") 在 group(" + gconv.String(groupId) + ") 撤回了：\n"
 	}
 	msg += message

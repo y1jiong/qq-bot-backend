@@ -11,7 +11,7 @@ import (
 func (s *sGroup) ExportGroupMemberListReturnRes(ctx context.Context,
 	groupId int64, listName string) (retMsg string) {
 	// 参数合法性校验
-	if groupId < 1 {
+	if groupId == 0 {
 		return
 	}
 	// 权限校验

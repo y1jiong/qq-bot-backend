@@ -43,7 +43,7 @@ func (s *sBot) GetMsgType(ctx context.Context) string {
 }
 
 func (s *sBot) GuessMsgType(groupId int64) string {
-	if groupId > 0 {
+	if groupId != 0 {
 		return "group"
 	}
 	return "private"

@@ -15,7 +15,7 @@ import (
 func (s *sGroup) BindNamespaceReturnRes(ctx context.Context,
 	groupId int64, namespace string) (retMsg string) {
 	// 参数合法性校验
-	if groupId < 1 {
+	if groupId == 0 {
 		return
 	}
 	// 权限校验
@@ -67,7 +67,7 @@ func (s *sGroup) BindNamespaceReturnRes(ctx context.Context,
 
 func (s *sGroup) UnbindReturnRes(ctx context.Context, groupId int64) (retMsg string) {
 	// 参数合法性校验
-	if groupId < 1 {
+	if groupId == 0 {
 		return
 	}
 	// 权限校验
@@ -100,7 +100,7 @@ func (s *sGroup) UnbindReturnRes(ctx context.Context, groupId int64) (retMsg str
 
 func (s *sGroup) CloneReturnRes(ctx context.Context, groupId, srcGroupId int64) (retMsg string) {
 	// 参数合法性校验
-	if groupId < 1 || srcGroupId < 1 {
+	if groupId == 0 || srcGroupId == 0 {
 		return
 	}
 	// 权限校验
@@ -138,7 +138,7 @@ func (s *sGroup) CloneReturnRes(ctx context.Context, groupId, srcGroupId int64) 
 
 func (s *sGroup) QueryGroupReturnRes(ctx context.Context, groupId int64) (retMsg string) {
 	// 参数合法性校验
-	if groupId < 1 {
+	if groupId == 0 {
 		return
 	}
 	// 获取 group
@@ -161,7 +161,7 @@ func (s *sGroup) QueryGroupReturnRes(ctx context.Context, groupId int64) (retMsg
 func (s *sGroup) KickFromListReturnRes(ctx context.Context,
 	groupId int64, listName string) (retMsg string) {
 	// 参数合法性校验
-	if groupId < 1 {
+	if groupId == 0 {
 		return
 	}
 	// 权限校验
@@ -256,7 +256,7 @@ func (s *sGroup) KickFromListReturnRes(ctx context.Context,
 func (s *sGroup) KeepFromListReturnRes(ctx context.Context,
 	groupId int64, listName string) (retMsg string) {
 	// 参数合法性校验
-	if groupId < 1 {
+	if groupId == 0 {
 		return
 	}
 	// 权限校验

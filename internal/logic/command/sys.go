@@ -15,6 +15,9 @@ func trySys(ctx context.Context, cmd string) (catch bool, retMsg string) {
 	case nextBranchRe.MatchString(cmd):
 		next := nextBranchRe.FindStringSubmatch(cmd)
 		switch next[1] {
+		case "forward":
+			// /sys forward <>
+			catch, retMsg = trySysForward(ctx, next[2])
 		case "check":
 			// /sys check <>
 			catch, retMsg = trySysCheck(ctx, next[2])
@@ -35,6 +38,87 @@ func trySys(ctx context.Context, cmd string) (catch bool, retMsg string) {
 		case "distrust":
 			// /sys distrust <user_id>
 			retMsg = service.User().SystemDistrustUserReturnRes(ctx, gconv.Int64(next[2]))
+			catch = true
+		}
+	}
+	return
+}
+
+func trySysForward(ctx context.Context, cmd string) (catch bool, retMsg string) {
+	switch {
+	case nextBranchRe.MatchString(cmd):
+		next := nextBranchRe.FindStringSubmatch(cmd)
+		switch next[1] {
+		case "join":
+			if !dualValueCmdEndRe.MatchString(next[2]) {
+				return
+			}
+			dv := dualValueCmdEndRe.FindStringSubmatch(next[2])
+			switch dv[1] {
+			case "user":
+				// /sys forward join user <user_id>
+				retMsg = service.Namespace().AddForwardingMatchUserIdReturnRes(ctx, dv[2])
+				catch = true
+			case "group":
+				// /sys forward join group <group_id>
+				retMsg = service.Namespace().AddForwardingMatchGroupIdReturnRes(ctx, dv[2])
+				catch = true
+			}
+		case "leave":
+			if !dualValueCmdEndRe.MatchString(next[2]) {
+				return
+			}
+			dv := dualValueCmdEndRe.FindStringSubmatch(next[2])
+			switch dv[1] {
+			case "user":
+				// /sys forward leave user <user_id>
+				retMsg = service.Namespace().RemoveForwardingMatchUserIdReturnRes(ctx, dv[2])
+				catch = true
+			case "group":
+				// /sys forward leave group <group_id>
+				retMsg = service.Namespace().RemoveForwardingMatchGroupIdReturnRes(ctx, dv[2])
+				catch = true
+			}
+		case "reset":
+			if !endBranchRe.MatchString(next[2]) {
+				return
+			}
+			switch next[2] {
+			case "user":
+				// /sys forward reset user
+				retMsg = service.Namespace().ResetForwardingMatchUserIdReturnRes(ctx)
+				catch = true
+			case "group":
+				// /sys forward reset group
+				retMsg = service.Namespace().ResetForwardingMatchGroupIdReturnRes(ctx)
+				catch = true
+			}
+		case "add":
+			if !nextBranchRe.MatchString(next[2]) {
+				return
+			}
+			ne := nextBranchRe.FindStringSubmatch(next[2])
+			if dualValueCmdEndRe.MatchString(ne[2]) {
+				dv := dualValueCmdEndRe.FindStringSubmatch(ne[2])
+				args := make([]string, 3)
+				args[0] = ne[1]
+				args[1] = dv[1]
+				args[2] = dv[2]
+				// /sys forward add <alias> <url> <authorization>
+				retMsg = service.Namespace().AddForwardingToReturnRes(ctx, args[0], args[1], args[2])
+				catch = true
+			}
+			if endBranchRe.MatchString(ne[2]) {
+				// /sys forward add <alias> <url>
+				retMsg = service.Namespace().AddForwardingToReturnRes(ctx, ne[1], ne[2], "")
+				catch = true
+			}
+		case "rm":
+			if !endBranchRe.MatchString(next[2]) {
+				return
+			}
+			// /sys forward rm <alias>
+			retMsg = service.Namespace().RemoveForwardingToReturnRes(ctx, next[2])
 			catch = true
 		}
 	}

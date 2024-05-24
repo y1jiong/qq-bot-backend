@@ -13,7 +13,7 @@ const (
 
 func (s *sGroup) GetLogLeaveList(ctx context.Context, groupId int64) (listName string) {
 	// 参数合法性校验
-	if groupId < 1 {
+	if groupId == 0 {
 		return
 	}
 	// 获取 group
@@ -33,7 +33,7 @@ func (s *sGroup) GetLogLeaveList(ctx context.Context, groupId int64) (listName s
 
 func (s *sGroup) GetLogApprovalList(ctx context.Context, groupId int64) (listName string) {
 	// 参数合法性校验
-	if groupId < 1 {
+	if groupId == 0 {
 		return
 	}
 	// 获取 group

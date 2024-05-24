@@ -52,7 +52,7 @@ func createUser(ctx context.Context, userId int64) (userE *entity.User, err erro
 
 func (s *sUser) IsSystemTrustedUser(ctx context.Context, userId int64) bool {
 	// 参数合法性校验
-	if userId < 1 {
+	if userId == 0 {
 		return false
 	}
 	// 获取 user
@@ -72,7 +72,7 @@ func (s *sUser) IsSystemTrustedUser(ctx context.Context, userId int64) bool {
 
 func (s *sUser) CouldOpToken(ctx context.Context, userId int64) bool {
 	// 参数合法性校验
-	if userId < 1 {
+	if userId == 0 {
 		return false
 	}
 	// 获取 user
@@ -92,7 +92,7 @@ func (s *sUser) CouldOpToken(ctx context.Context, userId int64) bool {
 
 func (s *sUser) CouldOpNamespace(ctx context.Context, userId int64) bool {
 	// 参数合法性校验
-	if userId < 1 {
+	if userId == 0 {
 		return false
 	}
 	// 获取 user
@@ -112,7 +112,7 @@ func (s *sUser) CouldOpNamespace(ctx context.Context, userId int64) bool {
 
 func (s *sUser) CouldGetRawMsg(ctx context.Context, userId int64) bool {
 	// 参数合法性校验
-	if userId < 1 {
+	if userId == 0 {
 		return false
 	}
 	// 获取 user

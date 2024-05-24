@@ -13,7 +13,7 @@ const (
 
 func (s *sGroup) GetCardAutoSetList(ctx context.Context, groupId int64) (listName string) {
 	// 参数合法性校验
-	if groupId < 1 {
+	if groupId == 0 {
 		return
 	}
 	// 获取 group
@@ -33,7 +33,7 @@ func (s *sGroup) GetCardAutoSetList(ctx context.Context, groupId int64) (listNam
 
 func (s *sGroup) IsCardLocked(ctx context.Context, groupId int64) bool {
 	// 参数合法性校验
-	if groupId < 1 {
+	if groupId == 0 {
 		return false
 	}
 	// 获取 group

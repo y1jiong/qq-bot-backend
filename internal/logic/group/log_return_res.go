@@ -13,7 +13,7 @@ import (
 func (s *sGroup) SetLogLeaveListReturnRes(ctx context.Context,
 	groupId int64, listName string) (retMsg string) {
 	// 参数合法性校验
-	if groupId < 1 {
+	if groupId == 0 {
 		return
 	}
 	// 权限校验
@@ -65,7 +65,7 @@ func (s *sGroup) SetLogLeaveListReturnRes(ctx context.Context,
 
 func (s *sGroup) RemoveLogLeaveListReturnRes(ctx context.Context, groupId int64) (retMsg string) {
 	// 参数合法性校验
-	if groupId < 1 {
+	if groupId == 0 {
 		return
 	}
 	// 权限校验
@@ -116,7 +116,7 @@ func (s *sGroup) RemoveLogLeaveListReturnRes(ctx context.Context, groupId int64)
 func (s *sGroup) SetLogApprovalListReturnRes(ctx context.Context,
 	groupId int64, listName string) (retMsg string) {
 	// 参数合法性校验
-	if groupId < 1 {
+	if groupId == 0 {
 		return
 	}
 	// 权限校验
@@ -168,7 +168,7 @@ func (s *sGroup) SetLogApprovalListReturnRes(ctx context.Context,
 
 func (s *sGroup) RemoveLogApprovalListReturnRes(ctx context.Context, groupId int64) (retMsg string) {
 	// 参数合法性校验
-	if groupId < 1 {
+	if groupId == 0 {
 		return
 	}
 	// 权限校验

@@ -14,7 +14,7 @@ const (
 
 func (s *sGroup) IsEnabledAntiRecall(ctx context.Context, groupId int64) bool {
 	// 参数合法性校验
-	if groupId < 1 {
+	if groupId == 0 {
 		return false
 	}
 	// 获取 group
@@ -34,7 +34,7 @@ func (s *sGroup) IsEnabledAntiRecall(ctx context.Context, groupId int64) bool {
 
 func (s *sGroup) GetMessageNotificationGroupId(ctx context.Context, groupId int64) (notificationGroupId int64) {
 	// 参数合法性校验
-	if groupId < 1 {
+	if groupId == 0 {
 		return
 	}
 	// 获取 group
@@ -54,7 +54,7 @@ func (s *sGroup) GetMessageNotificationGroupId(ctx context.Context, groupId int6
 
 func (s *sGroup) IsSetOnlyAntiRecallMember(ctx context.Context, groupId int64) bool {
 	// 参数合法性校验
-	if groupId < 1 {
+	if groupId == 0 {
 		return false
 	}
 	// 获取 group

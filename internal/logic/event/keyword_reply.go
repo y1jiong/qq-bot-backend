@@ -136,7 +136,7 @@ func (s *sEvent) keywordReplyWebhook(ctx context.Context, userId, groupId int64,
 	// Log
 	if statusCode != http.StatusOK {
 		g.Log().Notice(ctx,
-			"user["+nickname+"]("+gconv.String(userId)+") in group("+gconv.String(service.Bot().GetGroupId(ctx))+
+			nickname+"("+gconv.String(userId)+") in group("+gconv.String(service.Bot().GetGroupId(ctx))+
 				") call webhook", statusCode, method, urlLink, message)
 	}
 	// 媒体文件

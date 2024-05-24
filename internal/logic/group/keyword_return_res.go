@@ -13,7 +13,7 @@ import (
 func (s *sGroup) AddKeywordProcessReturnRes(ctx context.Context,
 	groupId int64, processName string, args ...string) (retMsg string) {
 	// 参数合法性校验
-	if groupId < 1 {
+	if groupId == 0 {
 		return
 	}
 	// 权限校验
@@ -109,7 +109,7 @@ func (s *sGroup) AddKeywordProcessReturnRes(ctx context.Context,
 func (s *sGroup) RemoveKeywordProcessReturnRes(ctx context.Context,
 	groupId int64, processName string, args ...string) (retMsg string) {
 	// 参数合法性校验
-	if groupId < 1 {
+	if groupId == 0 {
 		return
 	}
 	// 权限校验

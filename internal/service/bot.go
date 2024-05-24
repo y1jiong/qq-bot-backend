@@ -20,6 +20,7 @@ type (
 		JoinConnectionPool(ctx context.Context, key int64)
 		LeaveConnectionPool(key int64)
 		LoadConnectionPool(key int64) context.Context
+		Forward(ctx context.Context, url, authorization string) error
 		Process(ctx context.Context, rawJson []byte, nextProcess func(ctx context.Context))
 		GetPostType(ctx context.Context) string
 		GetMsgType(ctx context.Context) string

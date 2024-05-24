@@ -11,6 +11,18 @@ import (
 
 type (
 	INamespace interface {
+		GetForwardingToAliasList(ctx context.Context) (aliasList map[string]any)
+		GetForwardingTo(ctx context.Context, alias string) (url, authorization string)
+		IsForwardingMatchUserId(ctx context.Context, userId string) bool
+		IsForwardingMatchGroupId(ctx context.Context, groupId string) bool
+		AddForwardingToReturnRes(ctx context.Context, alias, url, authorization string) (retMsg string)
+		RemoveForwardingToReturnRes(ctx context.Context, alias string) (retMsg string)
+		AddForwardingMatchUserIdReturnRes(ctx context.Context, userId string) (retMsg string)
+		AddForwardingMatchGroupIdReturnRes(ctx context.Context, groupId string) (retMsg string)
+		RemoveForwardingMatchUserIdReturnRes(ctx context.Context, userId string) (retMsg string)
+		RemoveForwardingMatchGroupIdReturnRes(ctx context.Context, groupId string) (retMsg string)
+		ResetForwardingMatchUserIdReturnRes(ctx context.Context) (retMsg string)
+		ResetForwardingMatchGroupIdReturnRes(ctx context.Context) (retMsg string)
 		AddNamespaceList(ctx context.Context, namespace, listName string)
 		RemoveNamespaceList(ctx context.Context, namespace, listName string)
 		GetNamespaceLists(ctx context.Context, namespace string) (lists map[string]any)

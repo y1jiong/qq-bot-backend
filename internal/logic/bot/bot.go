@@ -6,8 +6,11 @@ import (
 	"github.com/bytedance/sonic"
 	"github.com/bytedance/sonic/ast"
 	"github.com/gogf/gf/v2/frame/g"
+	"github.com/gogf/gf/v2/net/gclient"
 	"github.com/gogf/gf/v2/os/gcache"
 	"github.com/gorilla/websocket"
+	"net/http"
+	"qq-bot-backend/internal/consts"
 	"qq-bot-backend/internal/service"
 	"sync"
 	"time"
@@ -97,6 +100,23 @@ func (s *sBot) writeMessage(ctx context.Context, messageType int, data []byte) e
 		defer mu.Unlock()
 	}
 	return s.webSocketFromCtx(ctx).WriteMessage(messageType, data)
+}
+
+func (s *sBot) Forward(ctx context.Context, url, authorization string) error {
+	c := gclient.New()
+	c.SetAgent(consts.ProjName + "/" + consts.Version)
+	if authorization != "" {
+		c.SetHeader("Authorization", "Bearer "+authorization)
+	}
+	payload, err := s.reqJsonFromCtx(ctx).MarshalJSON()
+	if err != nil {
+		return err
+	}
+	resp, err := c.DoRequest(ctx, http.MethodPost, url, payload)
+	if err != nil || resp == nil {
+		return err
+	}
+	return resp.Close()
 }
 
 func (s *sBot) Process(ctx context.Context, rawJson []byte, nextProcess func(ctx context.Context)) {

@@ -11,6 +11,7 @@ import (
 
 type (
 	IEvent interface {
+		TryForward(ctx context.Context) (catch bool)
 		TryApproveAddGroup(ctx context.Context) (catch bool)
 		TryLockCard(ctx context.Context) (catch bool)
 		TryAutoSetCard(ctx context.Context) (catch bool)

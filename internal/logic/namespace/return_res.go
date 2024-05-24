@@ -119,7 +119,7 @@ func (s *sNamespace) QueryNamespaceReturnRes(ctx context.Context, namespace stri
 func (s *sNamespace) QueryOwnNamespaceReturnRes(ctx context.Context) (retMsg string) {
 	userId := service.Bot().GetUserId(ctx)
 	// 参数合法性校验
-	if userId < 1 {
+	if userId == 0 {
 		return
 	}
 	// 创建数组指针
@@ -132,7 +132,7 @@ func (s *sNamespace) QueryOwnNamespaceReturnRes(ctx context.Context) (retMsg str
 		)
 	if !service.User().CouldOpNamespace(ctx, userId) {
 		query = query.Where(dao.Namespace.Columns().OwnerId, userId)
-		query = query.WhereOr(fmt.Sprintf("%v->'%v'->>'%v'='%v'",
+		query = query.WhereOr(fmt.Sprintf(`%v#>>'{%v,%v}'='%v'`,
 			dao.Namespace.Columns().SettingJson, propertiesMapKey, propertyPublic, true),
 		)
 	}
@@ -163,7 +163,7 @@ func (s *sNamespace) QueryOwnNamespaceReturnRes(ctx context.Context) (retMsg str
 func (s *sNamespace) AddNamespaceAdminReturnRes(ctx context.Context,
 	namespace string, userId int64) (retMsg string) {
 	// 参数合法性校验
-	if userId < 1 || !legalNamespaceNameRe.MatchString(namespace) {
+	if userId == 0 || !legalNamespaceNameRe.MatchString(namespace) {
 		return
 	}
 	// 获取 namespace 对象
@@ -210,7 +210,7 @@ func (s *sNamespace) AddNamespaceAdminReturnRes(ctx context.Context,
 func (s *sNamespace) RemoveNamespaceAdminReturnRes(ctx context.Context,
 	namespace string, userId int64) (retMsg string) {
 	// 参数合法性校验
-	if userId < 1 || !legalNamespaceNameRe.MatchString(namespace) {
+	if userId == 0 || !legalNamespaceNameRe.MatchString(namespace) {
 		return
 	}
 	// 获取 namespace

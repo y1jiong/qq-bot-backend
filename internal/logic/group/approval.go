@@ -19,7 +19,7 @@ const (
 
 func (s *sGroup) GetApprovalProcess(ctx context.Context, groupId int64) (process map[string]any) {
 	// 参数合法性校验
-	if groupId < 1 {
+	if groupId == 0 {
 		return
 	}
 	// 获取 group
@@ -42,7 +42,7 @@ func (s *sGroup) GetApprovalProcess(ctx context.Context, groupId int64) (process
 
 func (s *sGroup) GetApprovalWhitelists(ctx context.Context, groupId int64) (whitelists map[string]any) {
 	// 参数合法性校验
-	if groupId < 1 {
+	if groupId == 0 {
 		return
 	}
 	// 获取 group
@@ -65,7 +65,7 @@ func (s *sGroup) GetApprovalWhitelists(ctx context.Context, groupId int64) (whit
 
 func (s *sGroup) GetApprovalBlacklists(ctx context.Context, groupId int64) (blacklists map[string]any) {
 	// 参数合法性校验
-	if groupId < 1 {
+	if groupId == 0 {
 		return
 	}
 	// 获取 group
@@ -88,7 +88,7 @@ func (s *sGroup) GetApprovalBlacklists(ctx context.Context, groupId int64) (blac
 
 func (s *sGroup) GetApprovalRegexp(ctx context.Context, groupId int64) (exp string) {
 	// 参数合法性校验
-	if groupId < 1 {
+	if groupId == 0 {
 		return
 	}
 	// 获取 group
@@ -108,7 +108,7 @@ func (s *sGroup) GetApprovalRegexp(ctx context.Context, groupId int64) (exp stri
 
 func (s *sGroup) GetApprovalNotificationGroupId(ctx context.Context, groupId int64) (notificationGroupId int64) {
 	// 参数合法性校验
-	if groupId < 1 {
+	if groupId == 0 {
 		return
 	}
 	// 获取 group
@@ -128,7 +128,7 @@ func (s *sGroup) GetApprovalNotificationGroupId(ctx context.Context, groupId int
 
 func (s *sGroup) IsEnabledApprovalNotifyOnly(ctx context.Context, groupId int64) bool {
 	// 参数合法性校验
-	if groupId < 1 {
+	if groupId == 0 {
 		return false
 	}
 	// 获取 group
@@ -148,7 +148,7 @@ func (s *sGroup) IsEnabledApprovalNotifyOnly(ctx context.Context, groupId int64)
 
 func (s *sGroup) IsEnabledApprovalAutoPass(ctx context.Context, groupId int64) bool {
 	// 参数合法性校验
-	if groupId < 1 {
+	if groupId == 0 {
 		return false
 	}
 	// 获取 group
@@ -168,7 +168,7 @@ func (s *sGroup) IsEnabledApprovalAutoPass(ctx context.Context, groupId int64) b
 
 func (s *sGroup) IsEnabledApprovalAutoReject(ctx context.Context, groupId int64) bool {
 	// 参数合法性校验
-	if groupId < 1 {
+	if groupId == 0 {
 		return false
 	}
 	// 获取 group

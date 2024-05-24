@@ -15,7 +15,7 @@ const (
 
 func (s *sGroup) GetKeywordProcess(ctx context.Context, groupId int64) (process map[string]any) {
 	// 参数合法性校验
-	if groupId < 1 {
+	if groupId == 0 {
 		return
 	}
 	// 获取 group
@@ -38,7 +38,7 @@ func (s *sGroup) GetKeywordProcess(ctx context.Context, groupId int64) (process 
 
 func (s *sGroup) GetKeywordWhitelists(ctx context.Context, groupId int64) (whitelists map[string]any) {
 	// 参数合法性校验
-	if groupId < 1 {
+	if groupId == 0 {
 		return
 	}
 	// 获取 group
@@ -61,7 +61,7 @@ func (s *sGroup) GetKeywordWhitelists(ctx context.Context, groupId int64) (white
 
 func (s *sGroup) GetKeywordBlacklists(ctx context.Context, groupId int64) (blacklists map[string]any) {
 	// 参数合法性校验
-	if groupId < 1 {
+	if groupId == 0 {
 		return
 	}
 	// 获取 group
@@ -84,7 +84,7 @@ func (s *sGroup) GetKeywordBlacklists(ctx context.Context, groupId int64) (black
 
 func (s *sGroup) GetKeywordReplyLists(ctx context.Context, groupId int64) (replyLists map[string]any) {
 	// 参数合法性校验
-	if groupId < 1 {
+	if groupId == 0 {
 		return
 	}
 	// 获取 group

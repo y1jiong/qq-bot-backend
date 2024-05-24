@@ -13,6 +13,7 @@ func processMessage(ctx context.Context) {
 		switch subType {
 		case "normal":
 			// 群聊
+			go service.Event().TryForward(ctx)
 			go service.Event().TryKeywordRecall(ctx)
 			go service.Event().TryGroupKeywordReply(ctx)
 		case "anonymous":
@@ -25,9 +26,11 @@ func processMessage(ctx context.Context) {
 		switch subType {
 		case "group":
 			// 群临时会话
+			go service.Event().TryForward(ctx)
 			go service.Event().TryKeywordReply(ctx)
 		case "friend":
 			// 好友私聊
+			go service.Event().TryForward(ctx)
 			go service.Event().TryKeywordReply(ctx)
 		}
 	}

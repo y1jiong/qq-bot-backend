@@ -14,7 +14,7 @@ import (
 func (s *sGroup) SetAntiRecallReturnRes(ctx context.Context,
 	groupId int64, enable bool) (retMsg string) {
 	// 参数合法性校验
-	if groupId < 1 {
+	if groupId == 0 {
 		return
 	}
 	// 权限校验
@@ -78,7 +78,7 @@ func (s *sGroup) SetAntiRecallReturnRes(ctx context.Context,
 func (s *sGroup) SetMessageNotificationReturnRes(ctx context.Context,
 	groupId int64, notificationGroupId int64) (retMsg string) {
 	// 参数合法性校验
-	if groupId < 1 || notificationGroupId < 1 {
+	if groupId == 0 || notificationGroupId == 0 {
 		return
 	}
 	// 权限校验
@@ -135,7 +135,7 @@ func (s *sGroup) SetMessageNotificationReturnRes(ctx context.Context,
 
 func (s *sGroup) RemoveMessageNotificationReturnRes(ctx context.Context, groupId int64) (retMsg string) {
 	// 参数合法性校验
-	if groupId < 1 {
+	if groupId == 0 {
 		return
 	}
 	// 权限校验
@@ -185,7 +185,7 @@ func (s *sGroup) RemoveMessageNotificationReturnRes(ctx context.Context, groupId
 
 func (s *sGroup) SetOnlyAntiRecallMemberReturnRes(ctx context.Context, groupId int64, enable bool) (retMsg string) {
 	// 参数合法性校验
-	if groupId < 1 {
+	if groupId == 0 {
 		return
 	}
 	// 权限校验

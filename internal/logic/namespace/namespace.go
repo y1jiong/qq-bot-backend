@@ -64,7 +64,7 @@ func isNamespaceOwnerOrAdmin(ctx context.Context, userId int64, namespaceE *enti
 
 func (s *sNamespace) IsNamespaceOwnerOrAdmin(ctx context.Context, namespace string, userId int64) bool {
 	// 参数合法性校验
-	if userId < 1 || !legalNamespaceNameRe.MatchString(namespace) {
+	if userId == 0 || !legalNamespaceNameRe.MatchString(namespace) {
 		return false
 	}
 	// 过程
@@ -77,7 +77,7 @@ func (s *sNamespace) IsNamespaceOwnerOrAdmin(ctx context.Context, namespace stri
 
 func (s *sNamespace) IsNamespaceOwnerOrAdminOrOperator(ctx context.Context, namespace string, userId int64) bool {
 	// 参数合法性校验
-	if userId < 1 || !legalNamespaceNameRe.MatchString(namespace) {
+	if userId == 0 || !legalNamespaceNameRe.MatchString(namespace) {
 		return false
 	}
 	// 过程

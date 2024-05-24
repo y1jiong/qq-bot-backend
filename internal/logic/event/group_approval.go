@@ -92,7 +92,7 @@ func (s *sEvent) TryApproveAddGroup(ctx context.Context) (catch bool) {
 	g.Log().Info(ctx, logMsg)
 	// 通知
 	notificationGroupId := service.Group().GetApprovalNotificationGroupId(ctx, groupId)
-	if notificationGroupId > 0 {
+	if notificationGroupId != 0 {
 		_ = service.Bot().SendMessage(ctx,
 			"group", 0, notificationGroupId, logMsg, true)
 	}

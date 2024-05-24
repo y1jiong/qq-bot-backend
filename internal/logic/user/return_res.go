@@ -10,7 +10,7 @@ import (
 
 func (s *sUser) QueryUserReturnRes(ctx context.Context, userId int64) (retMsg string) {
 	// 参数合法性校验
-	if userId < 1 {
+	if userId == 0 {
 		return
 	}
 	// 获取 user
@@ -29,7 +29,7 @@ func (s *sUser) QueryUserReturnRes(ctx context.Context, userId int64) (retMsg st
 
 func (s *sUser) SystemTrustUserReturnRes(ctx context.Context, userId int64) (retMsg string) {
 	// 参数合法性校验
-	if userId < 1 {
+	if userId == 0 {
 		return
 	}
 	// 获取 user
@@ -76,7 +76,7 @@ func (s *sUser) SystemTrustUserReturnRes(ctx context.Context, userId int64) (ret
 
 func (s *sUser) SystemDistrustUserReturnRes(ctx context.Context, userId int64) (retMsg string) {
 	// 参数合法性校验
-	if userId < 1 {
+	if userId == 0 {
 		return
 	}
 	// 获取 user
@@ -117,7 +117,7 @@ func (s *sUser) SystemDistrustUserReturnRes(ctx context.Context, userId int64) (
 
 func (s *sUser) GrantOpTokenReturnRes(ctx context.Context, userId int64) (retMsg string) {
 	// 参数合法性校验
-	if userId < 1 {
+	if userId == 0 {
 		return
 	}
 	// 获取 user
@@ -164,7 +164,7 @@ func (s *sUser) GrantOpTokenReturnRes(ctx context.Context, userId int64) (retMsg
 
 func (s *sUser) RevokeOpTokenReturnRes(ctx context.Context, userId int64) (retMsg string) {
 	// 参数合法性校验
-	if userId < 1 {
+	if userId == 0 {
 		return
 	}
 	// 获取 user
@@ -205,7 +205,7 @@ func (s *sUser) RevokeOpTokenReturnRes(ctx context.Context, userId int64) (retMs
 
 func (s *sUser) GrantOpNamespaceReturnRes(ctx context.Context, userId int64) (retMsg string) {
 	// 参数合法性校验
-	if userId < 1 {
+	if userId == 0 {
 		return
 	}
 	// 获取 user
@@ -252,7 +252,7 @@ func (s *sUser) GrantOpNamespaceReturnRes(ctx context.Context, userId int64) (re
 
 func (s *sUser) RevokeOpNamespaceReturnRes(ctx context.Context, userId int64) (retMsg string) {
 	// 参数合法性校验
-	if userId < 1 {
+	if userId == 0 {
 		return
 	}
 	// 获取 user
@@ -293,7 +293,7 @@ func (s *sUser) RevokeOpNamespaceReturnRes(ctx context.Context, userId int64) (r
 
 func (s *sUser) GrantGetRawMsgReturnRes(ctx context.Context, userId int64) (retMsg string) {
 	// 参数合法性校验
-	if userId < 1 {
+	if userId == 0 {
 		return
 	}
 	// 获取 user
@@ -340,7 +340,7 @@ func (s *sUser) GrantGetRawMsgReturnRes(ctx context.Context, userId int64) (retM
 
 func (s *sUser) RevokeGetRawMsgReturnRes(ctx context.Context, userId int64) (retMsg string) {
 	// 参数合法性校验
-	if userId < 1 {
+	if userId == 0 {
 		return
 	}
 	// 获取 user
