@@ -97,23 +97,23 @@ func (s *sGroup) AddApprovalProcessReturnRes(ctx context.Context,
 	} else {
 		switch processName {
 		case consts.NotifyOnlyCmd:
-			if _, ok := settingJson.CheckGet(approvalEnabledNotifyOnlyKey); ok {
+			if _, ok := settingJson.CheckGet(approvalNotifyOnlyEnabledKey); ok {
 				retMsg = "早已启用仅通知"
 				return
 			}
-			settingJson.Set(approvalEnabledNotifyOnlyKey, true)
+			settingJson.Set(approvalNotifyOnlyEnabledKey, true)
 		case consts.AutoPassCmd:
-			if _, ok := settingJson.CheckGet(approvalDisabledAutoPassKey); !ok {
+			if _, ok := settingJson.CheckGet(approvalAutoPassDisabledKey); !ok {
 				retMsg = "并未禁用自动通过"
 				return
 			}
-			settingJson.Del(approvalDisabledAutoPassKey)
+			settingJson.Del(approvalAutoPassDisabledKey)
 		case consts.AutoRejectCmd:
-			if _, ok := settingJson.CheckGet(approvalDisabledAutoRejectKey); !ok {
+			if _, ok := settingJson.CheckGet(approvalAutoRejectDisabledKey); !ok {
 				retMsg = "并未禁用自动拒绝"
 				return
 			}
-			settingJson.Del(approvalDisabledAutoRejectKey)
+			settingJson.Del(approvalAutoRejectDisabledKey)
 		default:
 			// 添加 processName
 			processMap := settingJson.Get(approvalProcessMapKey).MustMap(make(map[string]any))
@@ -196,23 +196,23 @@ func (s *sGroup) RemoveApprovalProcessReturnRes(ctx context.Context,
 	} else {
 		switch processName {
 		case consts.NotifyOnlyCmd:
-			if _, ok := settingJson.CheckGet(approvalEnabledNotifyOnlyKey); !ok {
+			if _, ok := settingJson.CheckGet(approvalNotifyOnlyEnabledKey); !ok {
 				retMsg = "并未启用仅通知"
 				return
 			}
-			settingJson.Del(approvalEnabledNotifyOnlyKey)
+			settingJson.Del(approvalNotifyOnlyEnabledKey)
 		case consts.AutoPassCmd:
-			if _, ok := settingJson.CheckGet(approvalDisabledAutoPassKey); ok {
+			if _, ok := settingJson.CheckGet(approvalAutoPassDisabledKey); ok {
 				retMsg = "早已禁用自动通过"
 				return
 			}
-			settingJson.Set(approvalDisabledAutoPassKey, true)
+			settingJson.Set(approvalAutoPassDisabledKey, true)
 		case consts.AutoRejectCmd:
-			if _, ok := settingJson.CheckGet(approvalDisabledAutoRejectKey); ok {
+			if _, ok := settingJson.CheckGet(approvalAutoRejectDisabledKey); ok {
 				retMsg = "早已禁用自动拒绝"
 				return
 			}
-			settingJson.Set(approvalDisabledAutoRejectKey, true)
+			settingJson.Set(approvalAutoRejectDisabledKey, true)
 		case consts.NotificationCmd:
 			if _, ok := settingJson.CheckGet(approvalNotificationGroupIdKey); !ok {
 				retMsg = "并未设置通知群"

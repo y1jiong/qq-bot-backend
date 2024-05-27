@@ -46,9 +46,9 @@ func (s *sEvent) TryApproveAddGroup(ctx context.Context) (catch bool) {
 	}
 	// 回执与日志
 	var logMsg string
-	if !service.Group().IsEnabledApprovalNotifyOnly(ctx, groupId) &&
-		((!pass && service.Group().IsEnabledApprovalAutoReject(ctx, groupId)) ||
-			(pass && service.Group().IsEnabledApprovalAutoPass(ctx, groupId)) ||
+	if !service.Group().IsApprovalNotifyOnlyEnabled(ctx, groupId) &&
+		((!pass && service.Group().IsApprovalAutoRejectEnabled(ctx, groupId)) ||
+			(pass && service.Group().IsApprovalAutoPassEnabled(ctx, groupId)) ||
 			isOnBlacklist) {
 		if isOnBlacklist {
 			// 黑名单拒绝

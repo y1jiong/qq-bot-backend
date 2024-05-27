@@ -32,7 +32,7 @@ func (s *sCommand) TryCommand(ctx context.Context, message string) (catch bool, 
 	}
 	// 暂停状态时的权限校验
 	userId := service.Bot().GetUserId(ctx)
-	if !service.Process().IsEnabledBotProcess() &&
+	if !service.Process().IsBotProcessEnabled() &&
 		!service.User().IsSystemTrustedUser(ctx, userId) {
 		return
 	}

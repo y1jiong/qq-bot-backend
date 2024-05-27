@@ -16,9 +16,9 @@ type (
 		GetApprovalBlacklists(ctx context.Context, groupId int64) (blacklists map[string]any)
 		GetApprovalRegexp(ctx context.Context, groupId int64) (exp string)
 		GetApprovalNotificationGroupId(ctx context.Context, groupId int64) (notificationGroupId int64)
-		IsEnabledApprovalNotifyOnly(ctx context.Context, groupId int64) bool
-		IsEnabledApprovalAutoPass(ctx context.Context, groupId int64) bool
-		IsEnabledApprovalAutoReject(ctx context.Context, groupId int64) bool
+		IsApprovalNotifyOnlyEnabled(ctx context.Context, groupId int64) bool
+		IsApprovalAutoPassEnabled(ctx context.Context, groupId int64) bool
+		IsApprovalAutoRejectEnabled(ctx context.Context, groupId int64) bool
 		AddApprovalProcessReturnRes(ctx context.Context, groupId int64, processName string, args ...string) (retMsg string)
 		RemoveApprovalProcessReturnRes(ctx context.Context, groupId int64, processName string, args ...string) (retMsg string)
 		GetCardAutoSetList(ctx context.Context, groupId int64) (listName string)
@@ -43,7 +43,7 @@ type (
 		RemoveLogLeaveListReturnRes(ctx context.Context, groupId int64) (retMsg string)
 		SetLogApprovalListReturnRes(ctx context.Context, groupId int64, listName string) (retMsg string)
 		RemoveLogApprovalListReturnRes(ctx context.Context, groupId int64) (retMsg string)
-		IsEnabledAntiRecall(ctx context.Context, groupId int64) bool
+		IsAntiRecallEnabled(ctx context.Context, groupId int64) bool
 		GetMessageNotificationGroupId(ctx context.Context, groupId int64) (notificationGroupId int64)
 		IsSetOnlyAntiRecallMember(ctx context.Context, groupId int64) bool
 		SetAntiRecallReturnRes(ctx context.Context, groupId int64, enable bool) (retMsg string)

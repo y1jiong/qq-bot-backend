@@ -8,7 +8,7 @@ import (
 
 const (
 	cardAutoSetListKey = "cardAutoSetList"
-	cardLockKey        = "cardLock"
+	cardLockEnabledKey = "cardLockEnabled"
 )
 
 func (s *sGroup) GetCardAutoSetList(ctx context.Context, groupId int64) (listName string) {
@@ -47,6 +47,6 @@ func (s *sGroup) IsCardLocked(ctx context.Context, groupId int64) bool {
 		g.Log().Error(ctx, err)
 		return false
 	}
-	locked, _ := settingJson.Get(cardLockKey).Bool()
+	locked, _ := settingJson.Get(cardLockEnabledKey).Bool()
 	return locked
 }

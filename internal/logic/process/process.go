@@ -26,7 +26,7 @@ var (
 	botProcessState = enabled
 )
 
-func (s *sProcess) IsEnabledBotProcess() bool {
+func (s *sProcess) IsBotProcessEnabled() bool {
 	return atomic.LoadInt32(&botProcessState) == enabled
 }
 
@@ -52,7 +52,7 @@ func (s *sProcess) Process(ctx context.Context) {
 		return
 	}
 	// 是否暂停处理
-	if !s.IsEnabledBotProcess() {
+	if !s.IsBotProcessEnabled() {
 		return
 	}
 	// 处理分支

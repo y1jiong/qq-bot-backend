@@ -11,9 +11,9 @@ const (
 	approvalRegexpKey              = "approvalRegexp"
 	approvalWhitelistsMapKey       = "approvalWhitelists"
 	approvalBlacklistsMapKey       = "approvalBlacklists"
-	approvalEnabledNotifyOnlyKey   = "approvalEnabledNotifyOnly"
-	approvalDisabledAutoPassKey    = "approvalDisabledAutoPass"
-	approvalDisabledAutoRejectKey  = "approvalDisabledAutoReject"
+	approvalNotifyOnlyEnabledKey   = "approvalNotifyOnlyEnabled"
+	approvalAutoPassDisabledKey    = "approvalAutoPassDisabled"
+	approvalAutoRejectDisabledKey  = "approvalAutoRejectDisabled"
 	approvalNotificationGroupIdKey = "approvalNotificationGroupId"
 )
 
@@ -126,7 +126,7 @@ func (s *sGroup) GetApprovalNotificationGroupId(ctx context.Context, groupId int
 	return
 }
 
-func (s *sGroup) IsEnabledApprovalNotifyOnly(ctx context.Context, groupId int64) bool {
+func (s *sGroup) IsApprovalNotifyOnlyEnabled(ctx context.Context, groupId int64) bool {
 	// 参数合法性校验
 	if groupId == 0 {
 		return false
@@ -142,11 +142,11 @@ func (s *sGroup) IsEnabledApprovalNotifyOnly(ctx context.Context, groupId int64)
 		g.Log().Error(ctx, err)
 		return false
 	}
-	b, _ := settingJson.Get(approvalEnabledNotifyOnlyKey).Bool()
+	b, _ := settingJson.Get(approvalNotifyOnlyEnabledKey).Bool()
 	return b
 }
 
-func (s *sGroup) IsEnabledApprovalAutoPass(ctx context.Context, groupId int64) bool {
+func (s *sGroup) IsApprovalAutoPassEnabled(ctx context.Context, groupId int64) bool {
 	// 参数合法性校验
 	if groupId == 0 {
 		return false
@@ -162,11 +162,11 @@ func (s *sGroup) IsEnabledApprovalAutoPass(ctx context.Context, groupId int64) b
 		g.Log().Error(ctx, err)
 		return false
 	}
-	b, _ := settingJson.Get(approvalDisabledAutoPassKey).Bool()
+	b, _ := settingJson.Get(approvalAutoPassDisabledKey).Bool()
 	return !b
 }
 
-func (s *sGroup) IsEnabledApprovalAutoReject(ctx context.Context, groupId int64) bool {
+func (s *sGroup) IsApprovalAutoRejectEnabled(ctx context.Context, groupId int64) bool {
 	// 参数合法性校验
 	if groupId == 0 {
 		return false
@@ -182,6 +182,6 @@ func (s *sGroup) IsEnabledApprovalAutoReject(ctx context.Context, groupId int64)
 		g.Log().Error(ctx, err)
 		return false
 	}
-	b, _ := settingJson.Get(approvalDisabledAutoRejectKey).Bool()
+	b, _ := settingJson.Get(approvalAutoRejectDisabledKey).Bool()
 	return !b
 }

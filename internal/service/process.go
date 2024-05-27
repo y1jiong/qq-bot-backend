@@ -11,7 +11,7 @@ import (
 
 type (
 	IProcess interface {
-		IsEnabledBotProcess() bool
+		IsBotProcessEnabled() bool
 		PauseBotProcess() bool
 		ContinueBotProcess() bool
 		Process(ctx context.Context)

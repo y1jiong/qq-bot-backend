@@ -13,7 +13,7 @@ func (s *sEvent) TryUndoMessageRecall(ctx context.Context) (catch bool) {
 		return
 	}
 	// 获取当前 group message anti-recall 策略
-	if !service.Group().IsEnabledAntiRecall(ctx, groupId) {
+	if !service.Group().IsAntiRecallEnabled(ctx, groupId) {
 		return
 	}
 	if service.Bot().GetOperatorId(ctx) != service.Bot().GetUserId(ctx) {

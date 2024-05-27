@@ -13,7 +13,7 @@ import (
 type (
 	ICfg interface {
 		GetRetryIntervalSeconds(ctx context.Context) time.Duration
-		IsEnabledDebug(ctx context.Context) bool
+		IsDebugEnabled(ctx context.Context) bool
 		GetDebugToken(ctx context.Context) string
 	}
 )

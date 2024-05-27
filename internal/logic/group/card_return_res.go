@@ -270,11 +270,11 @@ func (s *sGroup) LockCardReturnRes(ctx context.Context, groupId int64) (retMsg s
 		g.Log().Error(ctx, err)
 		return
 	}
-	if _, ok := settingJson.CheckGet(cardLockKey); ok {
+	if _, ok := settingJson.CheckGet(cardLockEnabledKey); ok {
 		retMsg = "group(" + gconv.String(groupId) + ") 群名片已锁定"
 		return
 	}
-	settingJson.Set(cardLockKey, true)
+	settingJson.Set(cardLockEnabledKey, true)
 	// 保存数据
 	settingBytes, err := settingJson.Encode()
 	if err != nil {
@@ -320,11 +320,11 @@ func (s *sGroup) UnlockCardReturnRes(ctx context.Context, groupId int64) (retMsg
 		g.Log().Error(ctx, err)
 		return
 	}
-	if _, ok := settingJson.CheckGet(cardLockKey); !ok {
+	if _, ok := settingJson.CheckGet(cardLockEnabledKey); !ok {
 		retMsg = "group(" + gconv.String(groupId) + ") 群名片未锁定"
 		return
 	}
-	settingJson.Del(cardLockKey)
+	settingJson.Del(cardLockEnabledKey)
 	// 保存数据
 	settingBytes, err := settingJson.Encode()
 	if err != nil {

@@ -38,14 +38,14 @@ func (s *sGroup) SetAntiRecallReturnRes(ctx context.Context,
 		return
 	}
 	if enable {
-		if _, ok := settingJson.CheckGet(antiRecallKey); ok {
+		if _, ok := settingJson.CheckGet(antiRecallEnabledKey); ok {
 			retMsg = "早已启用 group(" + gconv.String(groupId) + ") 反撤回"
 			return
 		}
-		settingJson.Set(antiRecallKey, true)
+		settingJson.Set(antiRecallEnabledKey, true)
 	} else {
-		if _, ok := settingJson.CheckGet(antiRecallKey); ok {
-			settingJson.Del(antiRecallKey)
+		if _, ok := settingJson.CheckGet(antiRecallEnabledKey); ok {
+			settingJson.Del(antiRecallEnabledKey)
 		} else {
 			retMsg = "并未启用 group(" + gconv.String(groupId) + ") 反撤回"
 			return

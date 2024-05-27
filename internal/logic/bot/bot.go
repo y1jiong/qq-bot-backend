@@ -132,7 +132,7 @@ func (s *sBot) Process(ctx context.Context, rawJson []byte, nextProcess func(ctx
 	}
 	ctx = s.CtxWithReqJson(ctx, &reqJson)
 	// debug mode
-	if service.Cfg().IsEnabledDebug(ctx) && s.GetPostType(ctx) != "meta_event" {
+	if service.Cfg().IsDebugEnabled(ctx) && s.GetPostType(ctx) != "meta_event" {
 		g.Log().Debug(ctx, "\n", rawJson)
 	}
 	// 捕捉 echo

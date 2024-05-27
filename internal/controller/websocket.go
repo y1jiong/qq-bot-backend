@@ -39,7 +39,7 @@ func (c *cBot) Websocket(r *ghttp.Request) {
 		tokenName string
 		botId     int64
 	)
-	if service.Cfg().IsEnabledDebug(ctx) {
+	if service.Cfg().IsDebugEnabled(ctx) {
 		// token debug 验证模式
 		var pass bool
 		var name string
