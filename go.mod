@@ -4,7 +4,7 @@ go 1.22
 
 require (
 	github.com/bitly/go-simplejson v0.5.1
-	github.com/bytedance/sonic v1.11.7
+	github.com/bytedance/sonic v1.11.8
 	github.com/gogf/gf/contrib/drivers/pgsql/v2 v2.7.1
 	github.com/gogf/gf/v2 v2.7.1
 	github.com/gorilla/websocket v1.5.1
@@ -13,7 +13,7 @@ require (
 )
 
 require (
-	github.com/BurntSushi/toml v1.3.2 // indirect
+	github.com/BurntSushi/toml v1.4.0 // indirect
 	github.com/bytedance/sonic/loader v0.1.1 // indirect
 	github.com/clbanning/mxj/v2 v2.7.0 // indirect
 	github.com/cloudwego/base64x v0.1.4 // indirect

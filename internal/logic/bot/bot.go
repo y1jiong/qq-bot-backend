@@ -9,6 +9,7 @@ import (
 	"github.com/gogf/gf/v2/net/gclient"
 	"github.com/gogf/gf/v2/os/gcache"
 	"github.com/gorilla/websocket"
+	"io"
 	"net/http"
 	"qq-bot-backend/internal/consts"
 	"qq-bot-backend/internal/service"
@@ -116,6 +117,7 @@ func (s *sBot) Forward(ctx context.Context, url, authorization string) error {
 	if err != nil || resp == nil {
 		return err
 	}
+	_, _ = io.Copy(io.Discard, resp.Body)
 	return resp.Close()
 }
 

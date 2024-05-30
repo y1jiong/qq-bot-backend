@@ -1,10 +1,9 @@
 BINARY_NAME = qq-bot-backend
 CODE_FILE = ./main.go
 OUTPUT_PATH = ./manifest/build
-#GIT_COMMIT = $(shell git rev-parse HEAD)
-GIT_COMMIT = $(shell git log --pretty=format:"%ci %h" | head -1)
+GIT_COMMIT = $(shell git log -1 --pretty=format:"%ci %h")
 GIT_TAG = $(shell git describe --tags --abbrev=0)
-BUILD_TIME = $(shell date "+%Y-%m-%d %H:%M:%S %z")
+BUILD_TIME = $(shell date +"%F %T %z")
 LDFLAGS = -w -s
 LDFLAGS += -X "$(BINARY_NAME)/internal/consts.GitTag=$(GIT_TAG)"
 LDFLAGS += -X "$(BINARY_NAME)/internal/consts.GitCommit=$(GIT_COMMIT)"
