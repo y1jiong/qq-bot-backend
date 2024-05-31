@@ -8,7 +8,7 @@ import (
 
 func (s *sEvent) TryUndoMessageRecall(ctx context.Context) (catch bool) {
 	groupId := service.Bot().GetGroupId(ctx)
-	if service.Group().IsSetOnlyAntiRecallMember(ctx, groupId) && service.Bot().IsGroupOwnerOrAdmin(ctx) {
+	if service.Group().IsOnlyAntiRecallMemberSet(ctx, groupId) && service.Bot().IsGroupOwnerOrAdmin(ctx) {
 		// owner or admin 在 only-anti-recall-member 情况下不需要反撤回
 		return
 	}

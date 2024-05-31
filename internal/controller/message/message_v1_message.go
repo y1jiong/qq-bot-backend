@@ -28,11 +28,30 @@ func (c *ControllerV1) Message(ctx context.Context, req *v1.MessageReq) (res *v1
 		req.Token = authorizations[1]
 	}
 	// token 验证
-	pass, tokenName, _, botId := service.Token().IsCorrectToken(ctx, req.Token)
+	pass, tokenName, ownerId, botId := service.Token().IsCorrectToken(ctx, req.Token)
 	if !pass {
 		err = gerror.NewCode(gcode.New(http.StatusForbidden, "", nil),
 			http.StatusText(http.StatusForbidden))
 		return
+	}
+	// 权限校验
+	if !service.Namespace().IsNamespaceOwnerOrAdmin(ctx, service.Namespace().GetGlobalNamespace(), ownerId) {
+		if req.GroupId == 0 {
+			err = gerror.NewCode(gcode.New(http.StatusForbidden, "", nil),
+				"permission denied")
+			return
+		}
+		namespace := service.Group().GetNamespace(ctx, req.GroupId)
+		if namespace == "" {
+			err = gerror.NewCode(gcode.New(http.StatusForbidden, "", nil),
+				"permission denied")
+			return
+		}
+		if !service.Namespace().IsNamespaceOwnerOrAdmin(ctx, namespace, ownerId) {
+			err = gerror.NewCode(gcode.New(http.StatusForbidden, "", nil),
+				"permission denied")
+			return
+		}
 	}
 	// 记录访问时间
 	service.Token().UpdateLoginTime(ctx, req.Token)

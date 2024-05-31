@@ -33,3 +33,11 @@ func (s *sGroup) IsBinding(ctx context.Context, groupId int64) bool {
 	groupE := getGroup(ctx, groupId)
 	return groupE != nil && groupE.Namespace != ""
 }
+
+func (s *sGroup) GetNamespace(ctx context.Context, groupId int64) string {
+	groupE := getGroup(ctx, groupId)
+	if groupE == nil {
+		return ""
+	}
+	return groupE.Namespace
+}

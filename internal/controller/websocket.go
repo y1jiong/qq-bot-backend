@@ -39,28 +39,24 @@ func (c *cBot) Websocket(r *ghttp.Request) {
 		tokenName string
 		botId     int64
 	)
-	if service.Cfg().IsDebugEnabled(ctx) {
-		// token debug 验证模式
-		var pass bool
-		var name string
-		pass, name, _, botId = service.Token().IsCorrectToken(ctx, token)
-		// debug mode
-		if !pass && token != service.Cfg().GetDebugToken(ctx) {
-			r.Response.WriteHeader(http.StatusForbidden)
-			return
-		}
-		if name == "" {
-			tokenName = "debug"
-		} else {
-			tokenName = name
-		}
-	} else {
-		// token 正常验证模式
+	{
 		var pass bool
 		pass, tokenName, _, botId = service.Token().IsCorrectToken(ctx, token)
-		if !pass {
-			r.Response.WriteHeader(http.StatusForbidden)
-			return
+		if service.Cfg().IsDebugEnabled(ctx) {
+			// token debug 验证模式
+			if !pass && token != service.Cfg().GetDebugToken(ctx) {
+				r.Response.WriteHeader(http.StatusForbidden)
+				return
+			}
+			if tokenName == "" {
+				tokenName = "debug"
+			}
+		} else {
+			// token 正常验证模式
+			if !pass {
+				r.Response.WriteHeader(http.StatusForbidden)
+				return
+			}
 		}
 	}
 	// 记录登录时间

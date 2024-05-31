@@ -31,6 +31,7 @@ type (
 		IsNamespaceOwnerOrAdmin(ctx context.Context, namespace string, userId int64) bool
 		IsNamespaceOwnerOrAdminOrOperator(ctx context.Context, namespace string, userId int64) bool
 		IsGlobalNamespace(namespace string) bool
+		GetGlobalNamespace() string
 		IsNamespacePropertyPublic(ctx context.Context, namespace string) bool
 		AddNewNamespaceReturnRes(ctx context.Context, namespace string) (retMsg string)
 		RemoveNamespaceReturnRes(ctx context.Context, namespace string) (retMsg string)

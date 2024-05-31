@@ -97,3 +97,7 @@ func (s *sNamespace) IsGlobalNamespace(namespace string) bool {
 	// 判断
 	return namespace == globalNamespace
 }
+
+func (s *sNamespace) GetGlobalNamespace() string {
+	return globalNamespace
+}

@@ -31,6 +31,7 @@ type (
 		UnlockCardReturnRes(ctx context.Context, groupId int64) (retMsg string)
 		ExportGroupMemberListReturnRes(ctx context.Context, groupId int64, listName string) (retMsg string)
 		IsBinding(ctx context.Context, groupId int64) bool
+		GetNamespace(ctx context.Context, groupId int64) string
 		GetKeywordProcess(ctx context.Context, groupId int64) (process map[string]any)
 		GetKeywordWhitelists(ctx context.Context, groupId int64) (whitelists map[string]any)
 		GetKeywordBlacklists(ctx context.Context, groupId int64) (blacklists map[string]any)
@@ -45,7 +46,7 @@ type (
 		RemoveLogApprovalListReturnRes(ctx context.Context, groupId int64) (retMsg string)
 		IsAntiRecallEnabled(ctx context.Context, groupId int64) bool
 		GetMessageNotificationGroupId(ctx context.Context, groupId int64) (notificationGroupId int64)
-		IsSetOnlyAntiRecallMember(ctx context.Context, groupId int64) bool
+		IsOnlyAntiRecallMemberSet(ctx context.Context, groupId int64) bool
 		SetAntiRecallReturnRes(ctx context.Context, groupId int64, enable bool) (retMsg string)
 		SetMessageNotificationReturnRes(ctx context.Context, groupId int64, notificationGroupId int64) (retMsg string)
 		RemoveMessageNotificationReturnRes(ctx context.Context, groupId int64) (retMsg string)

@@ -52,7 +52,7 @@ func (s *sGroup) GetMessageNotificationGroupId(ctx context.Context, groupId int6
 	return
 }
 
-func (s *sGroup) IsSetOnlyAntiRecallMember(ctx context.Context, groupId int64) bool {
+func (s *sGroup) IsOnlyAntiRecallMemberSet(ctx context.Context, groupId int64) bool {
 	// 参数合法性校验
 	if groupId == 0 {
 		return false
