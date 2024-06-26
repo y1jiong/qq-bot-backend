@@ -11,7 +11,7 @@ import (
 
 type (
 	IThirdParty interface {
-		QueryMinecraftGenuineUser(ctx context.Context, name string) (genuine bool, realName, uuid string, err error)
+		QueryMinecraftGenuineUser(ctx context.Context, name string) (genuine bool, realName string, uuid string, err error)
 	}
 )
 

@@ -5,8 +5,8 @@ go 1.22
 require (
 	github.com/bitly/go-simplejson v0.5.1
 	github.com/bytedance/sonic v1.11.9
-	github.com/gogf/gf/contrib/drivers/pgsql/v2 v2.7.1
-	github.com/gogf/gf/v2 v2.7.1
+	github.com/gogf/gf/contrib/drivers/pgsql/v2 v2.7.2
+	github.com/gogf/gf/v2 v2.7.2
 	github.com/gorilla/websocket v1.5.3
 	github.com/lukesampson/figlet v0.0.0-20190211215653-8a3ef4a6ac42
 	github.com/nsf/termbox-go v1.1.1
@@ -18,6 +18,7 @@ require (
 	github.com/clbanning/mxj/v2 v2.7.0 // indirect
 	github.com/cloudwego/base64x v0.1.4 // indirect
 	github.com/cloudwego/iasm v0.2.0 // indirect
+	github.com/emirpasic/gods v1.18.1 // indirect
 	github.com/fatih/color v1.17.0 // indirect
 	github.com/fsnotify/fsnotify v1.7.0 // indirect
 	github.com/go-logr/logr v1.4.2 // indirect

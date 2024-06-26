@@ -12,13 +12,13 @@ import (
 
 type (
 	IUtil interface {
-		AutoLimit(ctx context.Context, kind, key string, limitTimes int, duration time.Duration) (limited bool, times int)
+		AutoLimit(ctx context.Context, kind string, key string, limitTimes int, duration time.Duration) (limited bool, times int)
 		ReverseSortedArrayFromMapKey(m map[string]any) (arr []string)
-		AutoMute(ctx context.Context, kind string, groupId, userId int64, limitTimes, baseMinutes, limitMinutes int, duration time.Duration)
+		AutoMute(ctx context.Context, kind string, groupId int64, userId int64, limitTimes int, baseMinutes int, limitMinutes int, duration time.Duration)
 		MultiContains(str string, m map[string]any) (contains bool, hit string, mValue string)
-		IsOnKeywordLists(ctx context.Context, msg string, lists map[string]any) (in bool, hit, value string)
-		WebhookGetHeadConnectOptionsTrace(ctx context.Context, header, method, url string) (statusCode int, contentType string, body []byte, err error)
-		WebhookPostPutPatchDelete(ctx context.Context, header, method, url string, payload any) (statusCode int, contentType string, body []byte, err error)
+		IsOnKeywordLists(ctx context.Context, msg string, lists map[string]any) (in bool, hit string, value string)
+		WebhookGetHeadConnectOptionsTrace(ctx context.Context, header string, method string, url string) (statusCode int, contentType string, body []byte, err error)
+		WebhookPostPutPatchDelete(ctx context.Context, header string, method string, url string, payload any) (statusCode int, contentType string, body []byte, err error)
 	}
 )
 
