@@ -167,7 +167,7 @@ func (s *sBot) GetGroupMemberInfo(ctx context.Context, groupId, userId int64) (m
 		return
 	}
 	// callback
-	wg := sync.WaitGroup{}
+	wg := &sync.WaitGroup{}
 	defer wg.Wait()
 	wgDone := sync.OnceFunc(wg.Done)
 	wg.Add(1)
@@ -228,7 +228,7 @@ func (s *sBot) GetGroupMemberList(ctx context.Context, groupId int64, usingCache
 		return
 	}
 	// callback
-	wg := sync.WaitGroup{}
+	wg := &sync.WaitGroup{}
 	defer wg.Wait()
 	wgDone := sync.OnceFunc(wg.Done)
 	wg.Add(1)
@@ -284,7 +284,7 @@ func (s *sBot) RequestMessage(ctx context.Context, messageId int64) (messageMap 
 		return
 	}
 	// callback
-	wg := sync.WaitGroup{}
+	wg := &sync.WaitGroup{}
 	defer wg.Wait()
 	wgDone := sync.OnceFunc(wg.Done)
 	wg.Add(1)
@@ -346,7 +346,7 @@ func (s *sBot) GetGroupInfo(ctx context.Context, groupId int64, noCache ...bool)
 		return
 	}
 	// callback
-	wg := sync.WaitGroup{}
+	wg := &sync.WaitGroup{}
 	defer wg.Wait()
 	wgDone := sync.OnceFunc(wg.Done)
 	wg.Add(1)
@@ -394,7 +394,7 @@ func (s *sBot) GetLoginInfo(ctx context.Context) (userId int64, nickname string)
 		return
 	}
 	// callback
-	wg := sync.WaitGroup{}
+	wg := &sync.WaitGroup{}
 	defer wg.Wait()
 	wgDone := sync.OnceFunc(wg.Done)
 	wg.Add(1)

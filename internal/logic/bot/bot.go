@@ -199,23 +199,18 @@ func (s *sBot) pushEchoCache(ctx context.Context, echoSign string,
 			g.Log().Error(ctx, err)
 			return
 		}
-		// 执行超时回调
 		if v == nil {
 			return
 		}
-		var echo *echoModel
-		err = v.Scan(&echo)
-		if err != nil {
-			g.Log().Error(ctx, err)
-			return
-		}
+		echo := v.Val().(*echoModel)
 		if echo == nil || echo.TimeoutFunc == nil {
 			return
 		}
+		// 执行超时回调
 		echo.TimeoutFunc(echo.LastContext)
 	}()
 	// 放入缓存
-	return gcache.Set(ctx, echoKey, echoModel{
+	return gcache.Set(ctx, echoKey, &echoModel{
 		LastContext:  ctx,
 		CallbackFunc: callbackFunc,
 		TimeoutFunc:  timeoutFunc,
@@ -232,6 +227,6 @@ func (s *sBot) popEchoCache(ctx context.Context, echoSign string) (echo *echoMod
 	if err != nil {
 		return
 	}
-	err = v.Scan(&echo)
+	echo = v.Val().(*echoModel)
 	return
 }

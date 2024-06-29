@@ -21,13 +21,12 @@ var (
 		CaseSensitive: true,
 		Func: func(ctx context.Context, parser *gcmd.Parser) (err error) {
 			if isWindows() {
-				err = errors.New("windows 暂不支持安装到系统")
-				return
+				return errors.New("windows 暂不支持安装到系统")
 			}
 			// 注册系统服务
 			wd, err := os.Getwd()
 			if err != nil {
-				return err
+				return
 			}
 			serviceContent := []byte(
 				"[Unit]\n" +
@@ -43,7 +42,7 @@ var (
 					"WantedBy=multi-user.target\n")
 			err = os.WriteFile(installPath, serviceContent, 0600)
 			if err != nil {
-				return err
+				return
 			}
 			g.Log().Notice(ctx, "安装服务成功\n可以使用 systemctl 管理 "+consts.ProjName+" 服务了")
 			return
@@ -55,12 +54,11 @@ var (
 		CaseSensitive: true,
 		Func: func(ctx context.Context, parser *gcmd.Parser) (err error) {
 			if isWindows() {
-				err = errors.New("windows 暂不支持安装到系统")
-				return
+				return errors.New("windows 暂不支持安装到系统")
 			}
 			err = os.Remove(installPath)
 			if err != nil {
-				return err
+				return
 			}
 			g.Log().Notice(ctx, "卸载服务成功")
 			return

@@ -28,18 +28,18 @@ var (
 
 func (c *cBot) Websocket(r *ghttp.Request) {
 	ctx := r.Context()
-	// 忽视前置的 Bearer 或 Token 进行鉴权
-	authorizations := strings.Fields(r.Header.Get("Authorization"))
-	if len(authorizations) < 2 {
-		r.Response.WriteHeader(http.StatusForbidden)
-		return
-	}
-	token := authorizations[1]
 	var (
 		tokenName string
 		botId     int64
 	)
 	{
+		// 忽视前置的 Bearer 或 Token 进行鉴权
+		authorizations := strings.Fields(r.Header.Get("Authorization"))
+		if len(authorizations) < 2 {
+			r.Response.WriteHeader(http.StatusForbidden)
+			return
+		}
+		token := authorizations[1]
 		var pass bool
 		pass, tokenName, _, botId = service.Token().IsCorrectToken(ctx, token)
 		if service.Cfg().IsDebugEnabled(ctx) {
@@ -58,9 +58,9 @@ func (c *cBot) Websocket(r *ghttp.Request) {
 				return
 			}
 		}
+		// 记录登录时间
+		service.Token().UpdateLoginTime(ctx, token)
 	}
-	// 记录登录时间
-	service.Token().UpdateLoginTime(ctx, token)
 	// 升级 WebSocket 协议
 	conn, err := wsUpGrader.Upgrade(r.Response.Writer, r.Request, nil)
 	if err != nil {
@@ -88,7 +88,7 @@ func (c *cBot) Websocket(r *ghttp.Request) {
 				g.Log().Info(ctx, tokenName+"("+gconv.String(botId)+") left connection pool")
 			}
 			g.Log().Info(ctx, tokenName+" disconnected")
-			return
+			break
 		}
 		// 异步处理 WebSocket 请求
 		go service.Bot().Process(ctx, wsReq, service.Process().Process)

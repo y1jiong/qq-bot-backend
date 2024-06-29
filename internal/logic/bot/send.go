@@ -11,7 +11,7 @@ import (
 )
 
 func (s *sBot) SendMessage(ctx context.Context,
-	messageType string, userId, groupId int64, msg string, plain bool) error {
+	messageType string, userId, groupId int64, msg string, plain bool) (err error) {
 	// 参数校验
 	if userId == 0 && groupId == 0 {
 		return errors.New("userId 和 groupId 不能同时为 0")
@@ -52,9 +52,10 @@ func (s *sBot) SendMessage(ctx context.Context,
 	reqJson, err := sonic.ConfigDefault.Marshal(req)
 	if err != nil {
 		g.Log().Error(ctx, err)
-		return err
-	} // callback
-	wg := sync.WaitGroup{}
+		return
+	}
+	// callback
+	wg := &sync.WaitGroup{}
 	defer wg.Wait()
 	wgDone := sync.OnceFunc(wg.Done)
 	wg.Add(1)
@@ -70,15 +71,15 @@ func (s *sBot) SendMessage(ctx context.Context,
 	err = s.pushEchoCache(ctx, echoSign, callback, timeout)
 	if err != nil {
 		g.Log().Error(ctx, err)
-		return err
+		return
 	}
 	// 发送响应
 	err = s.writeMessage(ctx, websocket.TextMessage, reqJson)
 	if err != nil {
 		g.Log().Warning(ctx, err)
-		return err
+		return
 	}
-	return err
+	return
 }
 
 func (s *sBot) SendPlainMsg(ctx context.Context, msg string) {
@@ -238,7 +239,7 @@ func (s *sBot) UploadFile(ctx context.Context, url string) (filePath string, err
 		return
 	}
 	// callback
-	wg := sync.WaitGroup{}
+	wg := &sync.WaitGroup{}
 	defer wg.Wait()
 	wgDone := sync.OnceFunc(wg.Done)
 	wg.Add(1)
