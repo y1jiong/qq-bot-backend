@@ -48,7 +48,7 @@ type (
 		GetLoginInfo(ctx context.Context) (userId int64, nickname string)
 		IsGroupOwnerOrAdmin(ctx context.Context) bool
 		IsGroupOwnerOrAdminOrSysTrusted(ctx context.Context) bool
-		SendMessage(ctx context.Context, messageType string, userId int64, groupId int64, msg string, plain bool) error
+		SendMessage(ctx context.Context, messageType string, userId int64, groupId int64, msg string, plain bool) (err error)
 		SendPlainMsg(ctx context.Context, msg string)
 		SendMsg(ctx context.Context, msg string)
 		SendPlainMsgIfNotApiReq(ctx context.Context, msg string)

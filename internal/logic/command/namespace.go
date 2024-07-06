@@ -22,7 +22,7 @@ func tryNamespace(ctx context.Context, cmd string) (catch bool, retMsg string) {
 		case "chown":
 			// /namespace chown <owner_id> <namespace>
 			if !dualValueCmdEndRe.MatchString(next[2]) {
-				return
+				break
 			}
 			dv := dualValueCmdEndRe.FindStringSubmatch(next[2])
 			retMsg = service.Namespace().ChangeNamespaceOwnerReturnRes(ctx, dv[2], dv[1])
@@ -51,12 +51,52 @@ func tryNamespaceNext(ctx context.Context, namespace, cmd string) (catch bool, r
 	case nextBranchRe.MatchString(cmd):
 		next := nextBranchRe.FindStringSubmatch(cmd)
 		switch next[1] {
+		case "load":
+			// /namespace <namespace> load <>
+			catch, retMsg = tryNamespaceLoad(ctx, namespace, next[2])
+		case "unload":
+			// /namespace <namespace> unload <>
+			catch, retMsg = tryNamespaceUnload(ctx, namespace, next[2])
 		case "set":
 			// /namespace <namespace> set <>
 			catch, retMsg = tryNamespaceSet(ctx, namespace, next[2])
 		case "reset":
 			// /namespace <namespace> reset <>
 			catch, retMsg = tryNamespaceReset(ctx, namespace, next[2])
+		}
+	}
+	return
+}
+
+func tryNamespaceLoad(ctx context.Context, namespace, cmd string) (catch bool, retMsg string) {
+	switch {
+	case nextBranchRe.MatchString(cmd):
+		next := nextBranchRe.FindStringSubmatch(cmd)
+		switch next[1] {
+		case "list":
+			if !endBranchRe.MatchString(next[2]) {
+				break
+			}
+			// /namespace <namespace> load list <list_name>
+			retMsg = service.Namespace().LoadNamespaceListReturnRes(ctx, namespace, next[2])
+			catch = true
+		}
+	}
+	return
+}
+
+func tryNamespaceUnload(ctx context.Context, namespace, cmd string) (catch bool, retMsg string) {
+	switch {
+	case nextBranchRe.MatchString(cmd):
+		next := nextBranchRe.FindStringSubmatch(cmd)
+		switch next[1] {
+		case "list":
+			if !endBranchRe.MatchString(next[2]) {
+				break
+			}
+			// /namespace <namespace> unload list <list_name>
+			retMsg = service.Namespace().UnloadNamespaceListReturnRes(ctx, namespace, next[2])
+			catch = true
 		}
 	}
 	return

@@ -70,7 +70,7 @@ func tryGroupCardCheckout(ctx context.Context, cmd string) (catch bool, retMsg s
 		listName := next[1]
 		// 以防命令不完整
 		if !nextBranchRe.MatchString(next[2]) {
-			return
+			break
 		}
 		next = nextBranchRe.FindStringSubmatch(next[2])
 		switch next[1] {

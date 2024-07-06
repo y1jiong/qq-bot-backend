@@ -82,3 +82,21 @@ func (s *sList) AppendListData(ctx context.Context, listName string, newMap map[
 		Update()
 	return
 }
+
+func (s *sList) GetListNamespace(ctx context.Context, listName string) (namespace string) {
+	var listE *entity.List
+	// 数据库查询
+	err := dao.List.Ctx(ctx).
+		Fields(dao.List.Columns().Namespace).
+		Where(dao.List.Columns().ListName, listName).
+		Scan(&listE)
+	if err != nil {
+		g.Log().Error(ctx, err)
+		return
+	}
+	if listE == nil {
+		return
+	}
+	namespace = listE.Namespace
+	return
+}

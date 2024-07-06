@@ -1,4 +1,4 @@
-v1.7
+v1.8
 
 \<required> [optional]
 
@@ -129,15 +129,17 @@ v1.7
 
 ## Namespace
 
-| Command                                          | Description                     | Comment                                                                 |
-|--------------------------------------------------|---------------------------------|-------------------------------------------------------------------------|
-| /namespace add \<namespace>                      | 新建 namespace                    | 需要系统授予的操作 namespace 权限                                                  |
-| /namespace rm \<namespace>                       | 删除 namespace                    | 需要 namespace owner 权限                                                   |
-| /namespace query                                 | 查询自己所有的和具有 public 属性的 namespace | 需要 namespace admin 或更高权限或者是具有 public 属性的 namespace 或者是 global namespace |
-| /namespace \<namespace>                          | 查询 namespace 配置                 | 同上                                                                      |
-| /namespace \<namespace> reset admin              | 重置 namespace 的 admin            | 需要 namespace owner 权限或更高权限                                              |
-| /namespace chown \<owner_id> \<namespace>        | 修改 namespace 的 owner            | 同上                                                                      |
-| /namespace \<namespace> set public <true\|false> | 设置 namespace 的 public 属性        | 同上                                                                      |
+| Command                                           | Description                      | Comment                                                                 |
+|---------------------------------------------------|----------------------------------|-------------------------------------------------------------------------|
+| /namespace add \<namespace>                       | 新建 namespace                     | 需要系统授予的操作 namespace 权限                                                  |
+| /namespace rm \<namespace>                        | 删除 namespace                     | 需要 namespace owner 权限                                                   |
+| /namespace query                                  | 查询自己所有的和具有 public 属性的 namespace  | 需要 namespace admin 或更高权限或者是具有 public 属性的 namespace 或者是 global namespace |
+| /namespace \<namespace>                           | 查询 namespace 配置                  | 同上                                                                      |
+| /namespace \<namespace> reset admin               | 重置 namespace 的 admin             | 需要 namespace owner 权限或更高权限                                              |
+| /namespace chown \<owner_id> \<namespace>         | 修改 namespace 的 owner             | 同上                                                                      |
+| /namespace \<namespace> set public \<true\|false> | 设置 namespace 的 public 属性         | 同上                                                                      |
+| /namespace \<namespace> load list \<list_name>    | 加载属于public namespace 的 list_name | 需要 namespace admin 或更高权限                                                |
+| /namespace \<namespace> unload list \<list_name>  | 卸载属于public namespace 的 list_name | 同上                                                                      |
 
 ## Extra
 

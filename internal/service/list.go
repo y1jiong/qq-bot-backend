@@ -14,6 +14,7 @@ type (
 		// GetListData 获取 list 数据，返回的 map 一定不为 nil
 		GetListData(ctx context.Context, listName string) (listMap map[string]any)
 		AppendListData(ctx context.Context, listName string, newMap map[string]any) (n int, err error)
+		GetListNamespace(ctx context.Context, listName string) (namespace string)
 		UnionOp(ctx context.Context, A string, B string, C string) (n int, err error)
 		IntersectOp(ctx context.Context, A string, B string, C string) (n int, err error)
 		DifferenceOp(ctx context.Context, A string, B string, C string) (n int, err error)

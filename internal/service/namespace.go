@@ -28,6 +28,8 @@ type (
 		GetNamespaceLists(ctx context.Context, namespace string) (lists map[string]any)
 		GetNamespaceListsIncludingGlobal(ctx context.Context, namespace string) (lists map[string]any)
 		GetGlobalNamespaceLists(ctx context.Context) (lists map[string]any)
+		LoadNamespaceListReturnRes(ctx context.Context, namespace string, listName string) (retMsg string)
+		UnloadNamespaceListReturnRes(ctx context.Context, namespace string, listName string) (retMsg string)
 		IsNamespaceOwnerOrAdmin(ctx context.Context, namespace string, userId int64) bool
 		IsNamespaceOwnerOrAdminOrOperator(ctx context.Context, namespace string, userId int64) bool
 		IsGlobalNamespace(namespace string) bool

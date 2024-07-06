@@ -51,7 +51,7 @@ func trySysForward(ctx context.Context, cmd string) (catch bool, retMsg string) 
 		switch next[1] {
 		case "join":
 			if !dualValueCmdEndRe.MatchString(next[2]) {
-				return
+				break
 			}
 			dv := dualValueCmdEndRe.FindStringSubmatch(next[2])
 			switch dv[1] {
@@ -66,7 +66,7 @@ func trySysForward(ctx context.Context, cmd string) (catch bool, retMsg string) 
 			}
 		case "leave":
 			if !dualValueCmdEndRe.MatchString(next[2]) {
-				return
+				break
 			}
 			dv := dualValueCmdEndRe.FindStringSubmatch(next[2])
 			switch dv[1] {
@@ -81,7 +81,7 @@ func trySysForward(ctx context.Context, cmd string) (catch bool, retMsg string) 
 			}
 		case "reset":
 			if !endBranchRe.MatchString(next[2]) {
-				return
+				break
 			}
 			switch next[2] {
 			case "user":
@@ -95,7 +95,7 @@ func trySysForward(ctx context.Context, cmd string) (catch bool, retMsg string) 
 			}
 		case "add":
 			if !nextBranchRe.MatchString(next[2]) {
-				return
+				break
 			}
 			ne := nextBranchRe.FindStringSubmatch(next[2])
 			if dualValueCmdEndRe.MatchString(ne[2]) {
@@ -115,7 +115,7 @@ func trySysForward(ctx context.Context, cmd string) (catch bool, retMsg string) 
 			}
 		case "rm":
 			if !endBranchRe.MatchString(next[2]) {
-				return
+				break
 			}
 			// /sys forward rm <alias>
 			retMsg = service.Namespace().RemoveForwardingToReturnRes(ctx, next[2])
