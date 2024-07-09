@@ -26,8 +26,7 @@ func (s *sNamespace) UnloadNamespaceListReturnRes(ctx context.Context, namespace
 		return
 	}
 	// 获取 listName 对应的 namespace
-	if listNamespace := service.List().GetListNamespace(ctx, listName); listNamespace == "" ||
-		listNamespace == namespace {
+	if listNamespace := service.List().GetListNamespace(ctx, listName); listNamespace == namespace {
 		return
 	}
 	// 从 namespace 卸载 listName

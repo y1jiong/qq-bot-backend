@@ -20,7 +20,24 @@ var (
 	webhookPrefixRe = regexp.MustCompile(`^webhook(?::([A-Za-z]{3,7}))?(?:#([\s\S]+)#)?(?:<([\s\S]+)>)?(?:@(.+)@)?://(.+)$`)
 	commandPrefixRe = regexp.MustCompile(`^(?:command|cmd)://([\s\S]+)$`)
 	rewritePrefixRe = regexp.MustCompile(`^rewrite://([\s\S]+)$`)
+	placeholderRe   = regexp.MustCompile(`\{(.+?)(\d+)?}`)
 )
+
+func decrementPlaceholderIndex(text string) string {
+	arr := placeholderRe.FindAllStringSubmatch(text, -1)
+	for _, sub := range arr {
+		if len(sub) < 3 {
+			continue
+		}
+		num := gconv.Int(sub[2]) - 1
+		if num <= 0 {
+			text = strings.ReplaceAll(text, sub[0], "{"+sub[1]+"}")
+			continue
+		}
+		text = strings.ReplaceAll(text, sub[0], "{"+sub[1]+gconv.String(num)+"}")
+	}
+	return text
+}
 
 func (s *sEvent) TryKeywordReply(ctx context.Context) (catch bool) {
 	// 获取基础信息
@@ -120,6 +137,7 @@ func (s *sEvent) keywordReplyWebhook(ctx context.Context, userId, groupId int64,
 		msg, _ := sonic.ConfigDefault.MarshalToString(message)
 		r, _ := sonic.ConfigDefault.MarshalToString(remain)
 		nick, _ := sonic.ConfigDefault.MarshalToString(nickname)
+		// 占位符替换
 		payload = strings.ReplaceAll(payload, "{message}", msg)
 		payload = strings.ReplaceAll(payload, "{remain}", r)
 		payload = strings.ReplaceAll(payload, "{nickname}", nick)
@@ -210,14 +228,23 @@ func (s *sEvent) keywordReplyWebhook(ctx context.Context, userId, groupId int64,
 }
 
 func (s *sEvent) keywordReplyCommand(ctx context.Context, message, hit, text string) (replyMsg string) {
-	// 必须全字匹配
-	if message != hit {
+	// 必须以 hit 开头
+	if !strings.HasPrefix(message, hit) {
 		return
 	}
 	// 解码提取
 	subMatch := commandPrefixRe.FindStringSubmatch(service.Codec().DecodeCqCode(text))
-	subMatch[1] = strings.ReplaceAll(subMatch[1], "\r", " ")
-	subMatch[1] = strings.ReplaceAll(subMatch[1], "\n", " ")
+	// 占位符替换
+	remain := strings.Replace(message, hit, "", 1)
+	subMatch[1] = strings.ReplaceAll(subMatch[1], "{message}", message)
+	subMatch[1] = strings.ReplaceAll(subMatch[1], "{remain}", remain)
+	// 转换占位符
+	subMatch[1] = decrementPlaceholderIndex(subMatch[1])
+	// 为什么是 " &&"？因为 " &&" 后可能是换行符，需要替换为 " "
+	if strings.Contains(subMatch[1], " &&") {
+		subMatch[1] = strings.ReplaceAll(subMatch[1], "\r", " ")
+		subMatch[1] = strings.ReplaceAll(subMatch[1], "\n", " ")
+	}
 	// 切分命令
 	commands := strings.Split(subMatch[1], " && ")
 	var replyBuilder strings.Builder
@@ -246,16 +273,20 @@ func (s *sEvent) keywordReplyRewrite(ctx context.Context, try func(context.Conte
 	}
 	// 解码提取
 	subMatch := rewritePrefixRe.FindStringSubmatch(service.Codec().DecodeCqCode(text))
-	subMatch[1] = strings.ReplaceAll(subMatch[1], "\r", " ")
-	subMatch[1] = strings.ReplaceAll(subMatch[1], "\n", " ")
+	// 占位符替换
 	remain := strings.Replace(message, hit, "", 1)
+	subMatch[1] = strings.ReplaceAll(subMatch[1], "{message}", message)
+	subMatch[1] = strings.ReplaceAll(subMatch[1], "{remain}", remain)
+	// 为什么是 " &"？因为 " &" 后可能是换行符，需要替换为 " "
+	if strings.Contains(subMatch[1], " &") {
+		subMatch[1] = strings.ReplaceAll(subMatch[1], "\r", " ")
+		subMatch[1] = strings.ReplaceAll(subMatch[1], "\n", " ")
+	}
 	// 切分
 	rewrites := strings.Split(subMatch[1], " & ")
 	for _, rewrite := range rewrites {
-		rewrite = strings.ReplaceAll(rewrite, "{message}", message)
-		rewrite = strings.ReplaceAll(rewrite, "{remain}", remain)
 		service.Bot().RewriteMessage(ctx, strings.TrimSpace(rewrite))
-
+		// callback
 		catch = try(ctx)
 	}
 	return

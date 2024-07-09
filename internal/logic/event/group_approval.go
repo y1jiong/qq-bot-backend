@@ -68,7 +68,7 @@ func (s *sEvent) TryApproveAddGroup(ctx context.Context) (catch bool) {
 				groupId,
 				comment)
 		} else {
-			logMsg = fmt.Sprintf("reject user(%v) join group(%v) with %v",
+			logMsg = fmt.Sprintf("REJECT user(%v) join group(%v) with %v",
 				userId,
 				groupId,
 				comment)
@@ -81,7 +81,7 @@ func (s *sEvent) TryApproveAddGroup(ctx context.Context) (catch bool) {
 			comment)
 	} else if !pass {
 		// 打印跳过拒绝日志
-		logMsg = fmt.Sprintf("skip processing reject user(%v) join group(%v) with %v",
+		logMsg = fmt.Sprintf("skip processing REJECT user(%v) join group(%v) with %v",
 			userId,
 			groupId,
 			comment)
