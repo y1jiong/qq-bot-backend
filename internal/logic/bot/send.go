@@ -55,7 +55,7 @@ func (s *sBot) SendMessage(ctx context.Context,
 		return
 	}
 	// callback
-	wg := &sync.WaitGroup{}
+	wg := sync.WaitGroup{}
 	defer wg.Wait()
 	wgDone := sync.OnceFunc(wg.Done)
 	wg.Add(1)
@@ -239,7 +239,7 @@ func (s *sBot) UploadFile(ctx context.Context, url string) (filePath string, err
 		return
 	}
 	// callback
-	wg := &sync.WaitGroup{}
+	wg := sync.WaitGroup{}
 	defer wg.Wait()
 	wgDone := sync.OnceFunc(wg.Done)
 	wg.Add(1)

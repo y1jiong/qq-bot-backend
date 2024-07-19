@@ -32,9 +32,6 @@ func (s *sBot) catchEcho(ctx context.Context) (catch bool) {
 		}
 		catch = true
 		if echo.CallbackFunc == nil {
-			if echo.TimeoutFunc != nil {
-				echo.TimeoutFunc(echo.LastContext)
-			}
 			return
 		}
 		echo.CallbackFunc(echo.LastContext, ctx)
@@ -58,8 +55,16 @@ func (s *sBot) pushEchoCache(ctx context.Context, echoSign string,
 	callbackFunc func(ctx context.Context, rsyncCtx context.Context),
 	timeoutFunc func(ctx context.Context)) error {
 	echoKey := echoPrefix + echoSign
+	// 放入缓存
+	if err := gcache.Set(ctx, echoKey, &echoModel{
+		LastContext:  ctx,
+		CallbackFunc: callbackFunc,
+		TimeoutFunc:  timeoutFunc,
+	}, echoTimeout); err != nil {
+		return err
+	}
 	// 检查超时
-	go func() {
+	go func(ctx context.Context, echoKey string) {
 		time.Sleep(echoDuration)
 		contain, err := gcache.Contains(ctx, echoKey)
 		if err != nil {
@@ -83,13 +88,8 @@ func (s *sBot) pushEchoCache(ctx context.Context, echoSign string,
 		}
 		// 执行超时回调
 		echo.TimeoutFunc(echo.LastContext)
-	}()
-	// 放入缓存
-	return gcache.Set(ctx, echoKey, &echoModel{
-		LastContext:  ctx,
-		CallbackFunc: callbackFunc,
-		TimeoutFunc:  timeoutFunc,
-	}, echoTimeout)
+	}(ctx, echoKey)
+	return nil
 }
 
 func (s *sBot) popEchoCache(ctx context.Context, echoSign string) (echo *echoModel, err error) {
