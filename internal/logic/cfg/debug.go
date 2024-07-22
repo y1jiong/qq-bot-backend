@@ -6,23 +6,21 @@ import (
 )
 
 func (s *sCfg) IsDebugEnabled(ctx context.Context) bool {
-	enabled, err := g.Cfg().Get(ctx, "bot.debug.enabled")
+	const def = false
+	enabled, err := g.Cfg().Get(ctx, "bot.debug.enabled", def)
 	if err != nil {
 		g.Log().Warning(ctx, err)
-	}
-	if enabled == nil {
-		return false
+		return def
 	}
 	return enabled.Bool()
 }
 
 func (s *sCfg) GetDebugToken(ctx context.Context) string {
-	token, err := g.Cfg().Get(ctx, "bot.debug.token")
+	const def = ""
+	token, err := g.Cfg().Get(ctx, "bot.debug.token", def)
 	if err != nil {
 		g.Log().Warning(ctx, err)
-	}
-	if token == nil {
-		return ""
+		return def
 	}
 	return token.String()
 }

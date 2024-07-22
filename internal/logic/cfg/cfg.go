@@ -18,12 +18,11 @@ func init() {
 }
 
 func (s *sCfg) GetRetryIntervalSeconds(ctx context.Context) time.Duration {
-	seconds, err := g.Cfg().Get(ctx, "bot.retryIntervalSeconds")
+	const def = 3
+	seconds, err := g.Cfg().Get(ctx, "bot.retryIntervalSeconds", def)
 	if err != nil {
 		g.Log().Warning(ctx, err)
-	}
-	if seconds == nil {
-		return 3
+		return def
 	}
 	return seconds.Duration()
 }
