@@ -10,7 +10,7 @@ create table token
     binding_bot_id bigint,
     constraint token_pk
         primary key (token),
-    constraint token_pk2
+    constraint token_pk_2
         unique (name)
 );
 

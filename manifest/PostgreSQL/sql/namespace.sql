@@ -10,3 +10,6 @@ create table namespace
         primary key (namespace)
 );
 
+create index namespace_owner_id_index
+    on namespace (owner_id);
+

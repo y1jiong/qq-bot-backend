@@ -17,11 +17,11 @@ type (
 		CtxWithWebSocket(parent context.Context, conn *websocket.Conn) context.Context
 		CtxNewWebSocketMutex(parent context.Context) context.Context
 		CtxWithReqJson(ctx context.Context, reqJson *ast.Node) context.Context
+		Process(ctx context.Context, rawJson []byte, nextProcess func(ctx context.Context))
 		JoinConnectionPool(ctx context.Context, key int64)
 		LeaveConnectionPool(key int64)
 		LoadConnectionPool(key int64) context.Context
 		Forward(ctx context.Context, url string, authorization string) error
-		Process(ctx context.Context, rawJson []byte, nextProcess func(ctx context.Context))
 		GetPostType(ctx context.Context) string
 		GetMsgType(ctx context.Context) string
 		GuessMsgType(groupId int64) string

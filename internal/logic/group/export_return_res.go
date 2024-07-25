@@ -2,8 +2,8 @@ package group
 
 import (
 	"context"
+	"github.com/gogf/gf/v2/container/gvar"
 	"github.com/gogf/gf/v2/frame/g"
-	"github.com/gogf/gf/v2/os/gtime"
 	"github.com/gogf/gf/v2/util/gconv"
 	"qq-bot-backend/internal/service"
 )
@@ -46,14 +46,22 @@ func (s *sGroup) ExportGroupMemberListReturnRes(ctx context.Context,
 	for _, v := range membersArr {
 		// map 断言
 		if vv, ok := v.(map[string]any); ok {
-			// 写入数据
-			membersMap[gconv.String(vv["user_id"])] = struct {
-				Card     string `json:"card"`
-				JoinTime string `json:"join_time"`
-			}{
-				Card:     gconv.String(vv["card"]),
-				JoinTime: gtime.New(gconv.Int(vv["join_time"])).String(),
+			infoM := make(map[string]any)
+			for k, vvv := range vv {
+				// 过滤字段
+				switch k {
+				case "sex", "user_id", "card_changeable":
+					continue
+				}
+				// 过滤空值
+				if gvar.New(vvv).IsEmpty() {
+					continue
+				}
+
+				infoM[k] = vvv
 			}
+			// 写入数据
+			membersMap[gconv.String(vv["user_id"])] = infoM
 		}
 	}
 	// 保存数据
