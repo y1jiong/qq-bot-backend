@@ -4,8 +4,10 @@ import (
 	"context"
 	"github.com/gogf/gf/v2/container/gvar"
 	"github.com/gogf/gf/v2/frame/g"
+	"github.com/gogf/gf/v2/os/gtime"
 	"github.com/gogf/gf/v2/util/gconv"
 	"qq-bot-backend/internal/service"
+	"strings"
 )
 
 func (s *sGroup) ExportGroupMemberListReturnRes(ctx context.Context,
@@ -56,6 +58,16 @@ func (s *sGroup) ExportGroupMemberListReturnRes(ctx context.Context,
 				// 过滤空值
 				if gvar.New(vvv).IsEmpty() {
 					continue
+				}
+				if str, okay := vvv.(string); okay && str == "0" {
+					continue
+				}
+				// 时间戳转换
+				if strings.HasSuffix(k, "_time") || strings.HasSuffix(k, "_timestamp") {
+					vvv = gtime.New(gconv.Int64(vvv)).String()
+
+					k = strings.TrimSuffix(k, "_time")
+					k = strings.TrimSuffix(k, "_timestamp")
 				}
 
 				infoM[k] = vvv
