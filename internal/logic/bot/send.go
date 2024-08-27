@@ -11,10 +11,10 @@ import (
 )
 
 func (s *sBot) SendMessage(ctx context.Context,
-	messageType string, userId, groupId int64, msg string, plain bool) (err error) {
+	messageType string, userId, groupId int64, msg string, plain bool) (messageId int64, err error) {
 	// 参数校验
 	if userId == 0 && groupId == 0 {
-		return errors.New("userId 和 groupId 不能同时为 0")
+		return 0, errors.New("userId 和 groupId 不能同时为 0")
 	}
 	if groupId != 0 {
 		userId = 0
@@ -62,6 +62,10 @@ func (s *sBot) SendMessage(ctx context.Context,
 	callback := func(ctx context.Context, rsyncCtx context.Context) {
 		defer wgDone()
 		err = s.defaultEchoProcess(rsyncCtx)
+		if err != nil {
+			return
+		}
+		messageId = s.getMessageIdFromData(rsyncCtx)
 	}
 	timeout := func(ctx context.Context) {
 		defer wgDone()
@@ -83,18 +87,35 @@ func (s *sBot) SendMessage(ctx context.Context,
 }
 
 func (s *sBot) SendPlainMsg(ctx context.Context, msg string) {
-	_ = s.SendMessage(ctx, s.GetMsgType(ctx), s.GetUserId(ctx), s.GetGroupId(ctx), msg, true)
+	_, _ = s.SendMessage(ctx, s.GetMsgType(ctx), s.GetUserId(ctx), s.GetGroupId(ctx), msg, true)
 }
 
 func (s *sBot) SendMsg(ctx context.Context, msg string) {
-	_ = s.SendMessage(ctx, s.GetMsgType(ctx), s.GetUserId(ctx), s.GetGroupId(ctx), msg, false)
+	_, _ = s.SendMessage(ctx, s.GetMsgType(ctx), s.GetUserId(ctx), s.GetGroupId(ctx), msg, false)
 }
 
-func (s *sBot) SendPlainMsgIfNotApiReq(ctx context.Context, msg string) {
+func (s *sBot) SendMsgIfNotApiReq(ctx context.Context, msg string, notPlain ...bool) {
 	if s.isApiReq(ctx) {
 		return
 	}
+	if len(notPlain) > 0 && notPlain[0] {
+		s.SendMsg(ctx, msg)
+		return
+	}
 	s.SendPlainMsg(ctx, msg)
+}
+
+func (s *sBot) SendMsgCacheContext(ctx context.Context, msg string, notPlain ...bool) {
+	plain := true
+	if len(notPlain) > 0 && notPlain[0] {
+		plain = false
+	}
+	userId := s.GetUserId(ctx)
+	sentMsgId, err := s.SendMessage(ctx, s.GetMsgType(ctx), userId, s.GetGroupId(ctx), msg, plain)
+	if err != nil {
+		return
+	}
+	_ = s.CacheMessageContext(ctx, userId, s.GetMsgId(ctx), sentMsgId)
 }
 
 func (s *sBot) SendFileToGroup(ctx context.Context, groupId int64, filePath, name, folder string) {
@@ -133,12 +154,12 @@ func (s *sBot) SendFileToGroup(ctx context.Context, groupId int64, filePath, nam
 	// callback
 	callback := func(ctx context.Context, rsyncCtx context.Context) {
 		if err = s.defaultEchoProcess(rsyncCtx); err != nil {
-			s.SendPlainMsgIfNotApiReq(ctx, err.Error())
+			s.SendMsgIfNotApiReq(ctx, err.Error())
 			return
 		}
 	}
 	timeout := func(ctx context.Context) {
-		s.SendPlainMsgIfNotApiReq(ctx, "上传至群文件超时")
+		s.SendMsgIfNotApiReq(ctx, "上传至群文件超时")
 	}
 	// echo
 	err = s.pushEchoCache(ctx, echoSign, callback, timeout)
@@ -185,12 +206,12 @@ func (s *sBot) SendFileToUser(ctx context.Context, userId int64, filePath, name 
 	// callback
 	callback := func(ctx context.Context, rsyncCtx context.Context) {
 		if err = s.defaultEchoProcess(rsyncCtx); err != nil {
-			s.SendPlainMsgIfNotApiReq(ctx, err.Error())
+			s.SendMsgIfNotApiReq(ctx, err.Error())
 			return
 		}
 	}
 	timeout := func(ctx context.Context) {
-		s.SendPlainMsgIfNotApiReq(ctx, "上传文件至私聊超时")
+		s.SendMsgIfNotApiReq(ctx, "上传文件至私聊超时")
 	}
 	// echo
 	err = s.pushEchoCache(ctx, echoSign, callback, timeout)
@@ -246,7 +267,7 @@ func (s *sBot) UploadFile(ctx context.Context, url string) (filePath string, err
 	callback := func(ctx context.Context, rsyncCtx context.Context) {
 		defer wgDone()
 		if err = s.defaultEchoProcess(rsyncCtx); err != nil {
-			s.SendPlainMsgIfNotApiReq(ctx, err.Error())
+			s.SendMsgIfNotApiReq(ctx, err.Error())
 			return
 		}
 		filePath = s.getFileFromData(rsyncCtx)
@@ -338,13 +359,13 @@ func (s *sBot) SetModel(ctx context.Context, model string) {
 	// callback
 	callback := func(ctx context.Context, rsyncCtx context.Context) {
 		if err = s.defaultEchoProcess(rsyncCtx); err != nil {
-			s.SendPlainMsgIfNotApiReq(ctx, err.Error())
+			s.SendMsgIfNotApiReq(ctx, err.Error())
 			return
 		}
-		s.SendPlainMsgIfNotApiReq(ctx, "已更改机型为 '"+model+"'")
+		s.SendMsgIfNotApiReq(ctx, "已更改机型为 '"+model+"'")
 	}
 	timeout := func(ctx context.Context) {
-		s.SendPlainMsgIfNotApiReq(ctx, "更改机型超时")
+		s.SendMsgIfNotApiReq(ctx, "更改机型超时")
 	}
 	// echo
 	err = s.pushEchoCache(ctx, echoSign, callback, timeout)

@@ -10,7 +10,7 @@ import (
 func (s *sUtil) AutoLimit(ctx context.Context, kind, key string, limitTimes int, duration time.Duration) (
 	limited bool, times int) {
 	// 缓存键名
-	cacheKey := "LimitTimes" + kind + key
+	cacheKey := "LimitTimes_" + kind + "_" + key
 	// 过期时间
 	timesVar, err := gcache.Get(ctx, cacheKey)
 	if err != nil {

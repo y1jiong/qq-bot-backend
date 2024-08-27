@@ -28,7 +28,7 @@ func tryBroadcast(ctx context.Context, cmd string) (catch bool, retMsg string) {
 			}
 
 			suffix := "\n\nbroadcast from " + service.Bot().GetCardOrNickname(ctx) + "(" + gconv.String(userId) + ")"
-			_ = service.Bot().SendMessage(ctx,
+			_, _ = service.Bot().SendMessage(ctx,
 				service.Bot().GetMsgType(ctx),
 				0,
 				dstGroupId,

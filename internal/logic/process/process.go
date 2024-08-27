@@ -47,7 +47,7 @@ func (s *sProcess) Process(ctx context.Context) {
 	if catch, retMsg := service.Command().TryCommand(ctx, service.Bot().GetMessage(ctx)); catch {
 		// 处理成功放弃后续逻辑
 		if retMsg != "" {
-			service.Bot().SendPlainMsg(ctx, retMsg)
+			service.Bot().SendMsgCacheContext(ctx, retMsg)
 		}
 		return
 	}

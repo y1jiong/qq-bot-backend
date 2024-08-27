@@ -20,6 +20,10 @@ type echoModel struct {
 	TimeoutFunc  func(ctx context.Context)
 }
 
+func getEchoCacheKey(echoSign string) string {
+	return echoPrefix + echoSign
+}
+
 func (s *sBot) catchEcho(ctx context.Context) (catch bool) {
 	if echoSign := s.getEcho(ctx); echoSign != "" {
 		echo, err := s.popEchoCache(ctx, echoSign)
@@ -54,7 +58,7 @@ func (s *sBot) defaultEchoProcess(rsyncCtx context.Context) error {
 func (s *sBot) pushEchoCache(ctx context.Context, echoSign string,
 	callbackFunc func(ctx context.Context, rsyncCtx context.Context),
 	timeoutFunc func(ctx context.Context)) error {
-	echoKey := echoPrefix + echoSign
+	echoKey := getEchoCacheKey(echoSign)
 	// 放入缓存
 	if err := gcache.Set(ctx, echoKey, &echoModel{
 		LastContext:  ctx,
@@ -93,7 +97,7 @@ func (s *sBot) pushEchoCache(ctx context.Context, echoSign string,
 }
 
 func (s *sBot) popEchoCache(ctx context.Context, echoSign string) (echo *echoModel, err error) {
-	echoKey := echoPrefix + echoSign
+	echoKey := getEchoCacheKey(echoSign)
 	contain, err := gcache.Contains(ctx, echoKey)
 	if err != nil || !contain {
 		return

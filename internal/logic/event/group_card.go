@@ -26,7 +26,7 @@ func (s *sEvent) TryLockCard(ctx context.Context) (catch bool) {
 		return
 	}
 	// 防止重复修改群名片
-	cacheKey := "LockCard" + gconv.String(groupId) + gconv.String(userId)
+	cacheKey := "LockCard_" + gconv.String(groupId) + "_" + gconv.String(userId)
 	cardVar, err := gcache.Get(ctx, cacheKey)
 	if err != nil {
 		g.Log().Warning(ctx, err)

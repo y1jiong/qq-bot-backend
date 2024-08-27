@@ -23,6 +23,7 @@ func processNotice(ctx context.Context) {
 		// 好友添加
 	case "group_recall":
 		// 群消息撤回
+		go service.Event().TryChainRecall(ctx)
 		go service.Event().TryUndoMessageRecall(ctx)
 	case "friend_recall":
 		// 好友消息撤回

@@ -130,7 +130,7 @@ func (c *ControllerV1) Command(ctx context.Context, req *v1.CommandReq) (res *v1
 		return
 	}
 	// 发送消息
-	err = service.Bot().SendMessage(botCtx, "", 0, req.GroupId, retMsg, true)
+	_, err = service.Bot().SendMessage(botCtx, "", 0, req.GroupId, retMsg, true)
 	if err != nil {
 		err = gerror.NewCode(gcode.New(http.StatusInternalServerError, "", nil),
 			err.Error())

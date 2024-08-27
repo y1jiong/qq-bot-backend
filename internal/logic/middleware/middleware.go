@@ -33,7 +33,7 @@ func (s *sMiddleware) ErrCodeToHttpStatus(r *ghttp.Request) {
 
 func (s *sMiddleware) RateLimit(r *ghttp.Request) {
 	// 前置中间件
-	cacheKey := "RateLimit" + r.GetRemoteIp()
+	cacheKey := "RateLimit_" + r.GetRemoteIp()
 	limitTimes := 2
 	intervalTime := time.Second
 	// Rate Limit

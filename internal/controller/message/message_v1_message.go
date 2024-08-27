@@ -92,7 +92,7 @@ func (c *ControllerV1) Message(ctx context.Context, req *v1.MessageReq) (res *v1
 		return
 	}
 	// send message
-	err = service.Bot().SendMessage(botCtx,
+	_, err = service.Bot().SendMessage(botCtx,
 		service.Bot().GuessMsgType(req.GroupId), req.UserId, req.GroupId, req.Message, false)
 	if err != nil {
 		err = gerror.NewCode(gcode.New(http.StatusInternalServerError, "", nil),

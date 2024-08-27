@@ -12,11 +12,15 @@ import (
 )
 
 const (
-	fileCachePrefix = "file:cache:"
+	fileCachePrefix = "file_cache_"
 )
 
+func getFileCacheKey(id string) string {
+	return fileCachePrefix + id
+}
+
 func (s *sFile) GetCachedFileById(ctx context.Context, id string) (content []byte, err error) {
-	v, err := gcache.Get(ctx, fileCachePrefix+id)
+	v, err := gcache.Get(ctx, getFileCacheKey(id))
 	if err != nil {
 		return
 	}
@@ -30,7 +34,7 @@ func (s *sFile) GetCachedFileById(ctx context.Context, id string) (content []byt
 
 func (s *sFile) getCachedFileId(ctx context.Context, content []byte, duration time.Duration) (id string, err error) {
 	id = guid.S()
-	err = gcache.Set(ctx, fileCachePrefix+id, content, duration)
+	err = gcache.Set(ctx, getFileCacheKey(id), content, duration)
 	return
 }
 

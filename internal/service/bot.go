@@ -21,6 +21,8 @@ type (
 		JoinConnectionPool(ctx context.Context, key int64)
 		LeaveConnectionPool(key int64)
 		LoadConnectionPool(key int64) context.Context
+		CacheMessageContext(ctx context.Context, userId int64, lastMessageId int64, currentMessageId int64) error
+		GetCachedMessageContext(ctx context.Context, userId int64, lastMessageId int64) (currentMessageId int64, exist bool, err error)
 		Forward(ctx context.Context, url string, authorization string) error
 		GetPostType(ctx context.Context) string
 		GetMsgType(ctx context.Context) string
@@ -48,10 +50,11 @@ type (
 		GetLoginInfo(ctx context.Context) (userId int64, nickname string)
 		IsGroupOwnerOrAdmin(ctx context.Context) bool
 		IsGroupOwnerOrAdminOrSysTrusted(ctx context.Context) bool
-		SendMessage(ctx context.Context, messageType string, userId int64, groupId int64, msg string, plain bool) (err error)
+		SendMessage(ctx context.Context, messageType string, userId int64, groupId int64, msg string, plain bool) (messageId int64, err error)
 		SendPlainMsg(ctx context.Context, msg string)
 		SendMsg(ctx context.Context, msg string)
-		SendPlainMsgIfNotApiReq(ctx context.Context, msg string)
+		SendMsgIfNotApiReq(ctx context.Context, msg string, notPlain ...bool)
+		SendMsgCacheContext(ctx context.Context, msg string, notPlain ...bool)
 		SendFileToGroup(ctx context.Context, groupId int64, filePath string, name string, folder string)
 		SendFileToUser(ctx context.Context, userId int64, filePath string, name string)
 		SendFile(ctx context.Context, filePath string, name string)
