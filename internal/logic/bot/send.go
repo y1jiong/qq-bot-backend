@@ -61,7 +61,7 @@ func (s *sBot) SendMessage(ctx context.Context,
 	wg.Add(1)
 	callback := func(ctx context.Context, rsyncCtx context.Context) {
 		defer wgDone()
-		err = s.defaultEchoProcess(rsyncCtx)
+		err = s.defaultEchoHandler(rsyncCtx)
 		if err != nil {
 			return
 		}
@@ -153,7 +153,7 @@ func (s *sBot) SendFileToGroup(ctx context.Context, groupId int64, filePath, nam
 	}
 	// callback
 	callback := func(ctx context.Context, rsyncCtx context.Context) {
-		if err = s.defaultEchoProcess(rsyncCtx); err != nil {
+		if err = s.defaultEchoHandler(rsyncCtx); err != nil {
 			s.SendMsgIfNotApiReq(ctx, err.Error())
 			return
 		}
@@ -205,7 +205,7 @@ func (s *sBot) SendFileToUser(ctx context.Context, userId int64, filePath, name 
 	}
 	// callback
 	callback := func(ctx context.Context, rsyncCtx context.Context) {
-		if err = s.defaultEchoProcess(rsyncCtx); err != nil {
+		if err = s.defaultEchoHandler(rsyncCtx); err != nil {
 			s.SendMsgIfNotApiReq(ctx, err.Error())
 			return
 		}
@@ -266,7 +266,7 @@ func (s *sBot) UploadFile(ctx context.Context, url string) (filePath string, err
 	wg.Add(1)
 	callback := func(ctx context.Context, rsyncCtx context.Context) {
 		defer wgDone()
-		if err = s.defaultEchoProcess(rsyncCtx); err != nil {
+		if err = s.defaultEchoHandler(rsyncCtx); err != nil {
 			s.SendMsgIfNotApiReq(ctx, err.Error())
 			return
 		}
@@ -358,7 +358,7 @@ func (s *sBot) SetModel(ctx context.Context, model string) {
 	}
 	// callback
 	callback := func(ctx context.Context, rsyncCtx context.Context) {
-		if err = s.defaultEchoProcess(rsyncCtx); err != nil {
+		if err = s.defaultEchoHandler(rsyncCtx); err != nil {
 			s.SendMsgIfNotApiReq(ctx, err.Error())
 			return
 		}

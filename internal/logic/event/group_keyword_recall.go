@@ -16,9 +16,9 @@ func (s *sEvent) TryKeywordRecall(ctx context.Context) (catch bool) {
 	}
 	// 获取当前 group keyword 策略
 	groupId := service.Bot().GetGroupId(ctx)
-	process := service.Group().GetKeywordProcess(ctx, groupId)
+	policy := service.Group().GetKeywordPolicy(ctx, groupId)
 	// 预处理
-	if len(process) == 0 {
+	if len(policy) == 0 {
 		// 没有关键词检查策略，跳过撤回功能
 		return
 	}
@@ -28,10 +28,10 @@ func (s *sEvent) TryKeywordRecall(ctx context.Context) (catch bool) {
 	// 命中规则
 	hit := ""
 	// 处理
-	if _, ok := process[consts.BlacklistCmd]; ok {
+	if _, ok := policy[consts.BlacklistCmd]; ok {
 		shouldRecall, hit, _ = service.Util().IsOnKeywordLists(ctx, msg, service.Group().GetKeywordBlacklists(ctx, groupId))
 	}
-	if _, ok := process[consts.WhitelistCmd]; ok && shouldRecall {
+	if _, ok := policy[consts.WhitelistCmd]; ok && shouldRecall {
 		in, _, _ := service.Util().IsOnKeywordLists(ctx, msg, service.Group().GetKeywordWhitelists(ctx, groupId))
 		shouldRecall = !in
 	}

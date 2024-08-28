@@ -37,7 +37,7 @@ func tryGroupKeywordAdd(ctx context.Context, cmd string) (catch bool, retMsg str
 			// /group keyword add blacklist <list_name>
 			// /group keyword add whitelist <list_name>
 			// /group keyword add reply <list_name>
-			retMsg = service.Group().AddKeywordProcessReturnRes(ctx, service.Bot().GetGroupId(ctx), next[1], next[2])
+			retMsg = service.Group().AddKeywordPolicyReturnRes(ctx, service.Bot().GetGroupId(ctx), next[1], next[2])
 			catch = true
 		}
 	}
@@ -51,7 +51,7 @@ func tryGroupKeywordEnable(ctx context.Context, cmd string) (catch bool, retMsg 
 		case consts.BlacklistCmd, consts.WhitelistCmd:
 			// /group keyword enable blacklist
 			// /group keyword enable whitelist
-			retMsg = service.Group().AddKeywordProcessReturnRes(ctx, service.Bot().GetGroupId(ctx), cmd)
+			retMsg = service.Group().AddKeywordPolicyReturnRes(ctx, service.Bot().GetGroupId(ctx), cmd)
 			catch = true
 		}
 	}
@@ -67,7 +67,7 @@ func tryGroupKeywordRemove(ctx context.Context, cmd string) (catch bool, retMsg 
 			// /group keyword rm blacklist <list_name>
 			// /group keyword rm whitelist <list_name>
 			// /group keyword rm reply <list_name>
-			retMsg = service.Group().RemoveKeywordProcessReturnRes(ctx, service.Bot().GetGroupId(ctx), next[1], next[2])
+			retMsg = service.Group().RemoveKeywordPolicyReturnRes(ctx, service.Bot().GetGroupId(ctx), next[1], next[2])
 			catch = true
 		}
 	}
@@ -81,7 +81,7 @@ func tryGroupKeywordDisable(ctx context.Context, cmd string) (catch bool, retMsg
 		case consts.BlacklistCmd, consts.WhitelistCmd:
 			// /group keyword disable blacklist
 			// /group keyword disable whitelist
-			retMsg = service.Group().RemoveKeywordProcessReturnRes(ctx, service.Bot().GetGroupId(ctx), cmd)
+			retMsg = service.Group().RemoveKeywordPolicyReturnRes(ctx, service.Bot().GetGroupId(ctx), cmd)
 			catch = true
 		}
 	}

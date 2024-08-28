@@ -173,7 +173,7 @@ func (s *sBot) GetGroupMemberInfo(ctx context.Context, groupId, userId int64) (m
 	wg.Add(1)
 	callback := func(ctx context.Context, rsyncCtx context.Context) {
 		defer wgDone()
-		if err = s.defaultEchoProcess(rsyncCtx); err != nil {
+		if err = s.defaultEchoHandler(rsyncCtx); err != nil {
 			return
 		}
 		member = *s.getData(rsyncCtx)
@@ -234,7 +234,7 @@ func (s *sBot) GetGroupMemberList(ctx context.Context, groupId int64, usingCache
 	wg.Add(1)
 	callback := func(ctx context.Context, rsyncCtx context.Context) {
 		defer wgDone()
-		if err = s.defaultEchoProcess(rsyncCtx); err != nil {
+		if err = s.defaultEchoHandler(rsyncCtx); err != nil {
 			return
 		}
 		received := s.getData(rsyncCtx)
@@ -290,7 +290,7 @@ func (s *sBot) RequestMessage(ctx context.Context, messageId int64) (messageMap 
 	wg.Add(1)
 	callback := func(ctx context.Context, rsyncCtx context.Context) {
 		defer wgDone()
-		if err = s.defaultEchoProcess(rsyncCtx); err != nil {
+		if err = s.defaultEchoHandler(rsyncCtx); err != nil {
 			return
 		}
 		received := s.getData(rsyncCtx)
@@ -352,7 +352,7 @@ func (s *sBot) GetGroupInfo(ctx context.Context, groupId int64, noCache ...bool)
 	wg.Add(1)
 	callback := func(ctx context.Context, rsyncCtx context.Context) {
 		defer wgDone()
-		if err = s.defaultEchoProcess(rsyncCtx); err != nil {
+		if err = s.defaultEchoHandler(rsyncCtx); err != nil {
 			return
 		}
 		received := s.getData(rsyncCtx)
@@ -400,7 +400,7 @@ func (s *sBot) GetLoginInfo(ctx context.Context) (userId int64, nickname string)
 	wg.Add(1)
 	callback := func(ctx context.Context, rsyncCtx context.Context) {
 		defer wgDone()
-		if err = s.defaultEchoProcess(rsyncCtx); err != nil {
+		if err = s.defaultEchoHandler(rsyncCtx); err != nil {
 			return
 		}
 		received := s.getData(rsyncCtx)

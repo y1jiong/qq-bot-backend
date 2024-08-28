@@ -7,7 +7,7 @@ import (
 )
 
 const (
-	approvalProcessMapKey          = "approvalProcess"
+	approvalPolicyMapKey           = "approvalPolicy"
 	approvalRegexpKey              = "approvalRegexp"
 	approvalWhitelistsMapKey       = "approvalWhitelists"
 	approvalBlacklistsMapKey       = "approvalBlacklists"
@@ -17,7 +17,7 @@ const (
 	approvalNotificationGroupIdKey = "approvalNotificationGroupId"
 )
 
-func (s *sGroup) GetApprovalProcess(ctx context.Context, groupId int64) (process map[string]any) {
+func (s *sGroup) GetApprovalPolicy(ctx context.Context, groupId int64) (policy map[string]any) {
 	// 参数合法性校验
 	if groupId == 0 {
 		return
@@ -33,9 +33,9 @@ func (s *sGroup) GetApprovalProcess(ctx context.Context, groupId int64) (process
 		g.Log().Error(ctx, err)
 		return
 	}
-	process, _ = settingJson.Get(approvalProcessMapKey).Map()
-	if process == nil {
-		process = make(map[string]any)
+	policy, _ = settingJson.Get(approvalPolicyMapKey).Map()
+	if policy == nil {
+		policy = make(map[string]any)
 	}
 	return
 }

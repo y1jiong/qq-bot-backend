@@ -11,8 +11,8 @@ import (
 	"regexp"
 )
 
-func (s *sGroup) AddApprovalProcessReturnRes(ctx context.Context,
-	groupId int64, processName string, args ...string) (retMsg string) {
+func (s *sGroup) AddApprovalPolicyReturnRes(ctx context.Context,
+	groupId int64, policyName string, args ...string) (retMsg string) {
 	// 参数合法性校验
 	if groupId == 0 {
 		return
@@ -39,7 +39,7 @@ func (s *sGroup) AddApprovalProcessReturnRes(ctx context.Context,
 	}
 	if len(args) > 0 {
 		// 处理 args
-		switch processName {
+		switch policyName {
 		case consts.WhitelistCmd:
 			// 处理白名单
 			// 是否存在 list
@@ -95,7 +95,7 @@ func (s *sGroup) AddApprovalProcessReturnRes(ctx context.Context,
 			settingJson.Set(approvalNotificationGroupIdKey, gconv.Int64(args[0]))
 		}
 	} else {
-		switch processName {
+		switch policyName {
 		case consts.NotifyOnlyCmd:
 			if _, ok := settingJson.CheckGet(approvalNotifyOnlyEnabledKey); ok {
 				retMsg = "早已启用仅通知"
@@ -115,10 +115,10 @@ func (s *sGroup) AddApprovalProcessReturnRes(ctx context.Context,
 			}
 			settingJson.Del(approvalAutoRejectDisabledKey)
 		default:
-			// 添加 processName
-			processMap := settingJson.Get(approvalProcessMapKey).MustMap(make(map[string]any))
-			processMap[processName] = nil
-			settingJson.Set(approvalProcessMapKey, processMap)
+			// 添加 policyName
+			policyMap := settingJson.Get(approvalPolicyMapKey).MustMap(make(map[string]any))
+			policyMap[policyName] = nil
+			settingJson.Set(approvalPolicyMapKey, policyMap)
 		}
 	}
 	// 保存数据
@@ -138,15 +138,15 @@ func (s *sGroup) AddApprovalProcessReturnRes(ctx context.Context,
 	}
 	// 回执
 	if len(args) > 0 {
-		retMsg = "已添加 group(" + gconv.String(groupId) + ") 入群审核 " + processName + "(" + args[0] + ")"
+		retMsg = "已添加 group(" + gconv.String(groupId) + ") 入群审核 " + policyName + "(" + args[0] + ")"
 	} else {
-		retMsg = "已启用 group(" + gconv.String(groupId) + ") 入群审核 " + processName
+		retMsg = "已启用 group(" + gconv.String(groupId) + ") 入群审核 " + policyName
 	}
 	return
 }
 
-func (s *sGroup) RemoveApprovalProcessReturnRes(ctx context.Context,
-	groupId int64, processName string, args ...string) (retMsg string) {
+func (s *sGroup) RemoveApprovalPolicyReturnRes(ctx context.Context,
+	groupId int64, policyName string, args ...string) (retMsg string) {
 	// 参数合法性校验
 	if groupId == 0 {
 		return
@@ -173,7 +173,7 @@ func (s *sGroup) RemoveApprovalProcessReturnRes(ctx context.Context,
 	}
 	if len(args) > 0 {
 		// 处理 args
-		switch processName {
+		switch policyName {
 		case consts.WhitelistCmd:
 			// 处理白名单
 			whitelists := settingJson.Get(approvalWhitelistsMapKey).MustMap(make(map[string]any))
@@ -194,7 +194,7 @@ func (s *sGroup) RemoveApprovalProcessReturnRes(ctx context.Context,
 			settingJson.Set(approvalBlacklistsMapKey, blacklists)
 		}
 	} else {
-		switch processName {
+		switch policyName {
 		case consts.NotifyOnlyCmd:
 			if _, ok := settingJson.CheckGet(approvalNotifyOnlyEnabledKey); !ok {
 				retMsg = "并未启用仅通知"
@@ -220,14 +220,14 @@ func (s *sGroup) RemoveApprovalProcessReturnRes(ctx context.Context,
 			}
 			settingJson.Del(approvalNotificationGroupIdKey)
 		default:
-			// 删除 processName
-			processMap := settingJson.Get(approvalProcessMapKey).MustMap(make(map[string]any))
-			if _, ok := processMap[processName]; !ok {
-				retMsg = "在 " + approvalProcessMapKey + " 中未找到 " + processName
+			// 删除 policyName
+			policyMap := settingJson.Get(approvalPolicyMapKey).MustMap(make(map[string]any))
+			if _, ok := policyMap[policyName]; !ok {
+				retMsg = "在 " + approvalPolicyMapKey + " 中未找到 " + policyName
 				return
 			}
-			delete(processMap, processName)
-			settingJson.Set(approvalProcessMapKey, processMap)
+			delete(policyMap, policyName)
+			settingJson.Set(approvalPolicyMapKey, policyMap)
 		}
 	}
 	// 保存数据
@@ -247,9 +247,9 @@ func (s *sGroup) RemoveApprovalProcessReturnRes(ctx context.Context,
 	}
 	// 回执
 	if len(args) > 0 {
-		retMsg = "已移除 group(" + gconv.String(groupId) + ") 入群审核 " + processName + "(" + args[0] + ")"
+		retMsg = "已移除 group(" + gconv.String(groupId) + ") 入群审核 " + policyName + "(" + args[0] + ")"
 	} else {
-		retMsg = "已禁用 group(" + gconv.String(groupId) + ") 入群审核 " + processName
+		retMsg = "已禁用 group(" + gconv.String(groupId) + ") 入群审核 " + policyName
 	}
 	return
 }

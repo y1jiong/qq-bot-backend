@@ -39,7 +39,7 @@ func tryGroupApprovalSet(ctx context.Context, cmd string) (catch bool, retMsg st
 		case consts.RegexpCmd, consts.NotificationCmd:
 			// /group approval set regexp <regexp>
 			// /group approval set notification <group_id>
-			retMsg = service.Group().AddApprovalProcessReturnRes(ctx, service.Bot().GetGroupId(ctx), next[1], next[2])
+			retMsg = service.Group().AddApprovalPolicyReturnRes(ctx, service.Bot().GetGroupId(ctx), next[1], next[2])
 			catch = true
 		}
 	}
@@ -54,7 +54,7 @@ func tryGroupApprovalAdd(ctx context.Context, cmd string) (catch bool, retMsg st
 		case consts.WhitelistCmd, consts.BlacklistCmd:
 			// /group approval add whitelist <list_name>
 			// /group approval add blacklist <list_name>
-			retMsg = service.Group().AddApprovalProcessReturnRes(ctx, service.Bot().GetGroupId(ctx), next[1], next[2])
+			retMsg = service.Group().AddApprovalPolicyReturnRes(ctx, service.Bot().GetGroupId(ctx), next[1], next[2])
 			catch = true
 		}
 	}
@@ -74,7 +74,7 @@ func tryGroupApprovalEnable(ctx context.Context, cmd string) (catch bool, retMsg
 			// /group approval enable notify-only
 			// /group approval enable auto-pass
 			// /group approval enable auto-reject
-			retMsg = service.Group().AddApprovalProcessReturnRes(ctx, service.Bot().GetGroupId(ctx), cmd)
+			retMsg = service.Group().AddApprovalPolicyReturnRes(ctx, service.Bot().GetGroupId(ctx), cmd)
 			catch = true
 		}
 	}
@@ -89,14 +89,14 @@ func tryGroupApprovalRemove(ctx context.Context, cmd string) (catch bool, retMsg
 		case consts.WhitelistCmd, consts.BlacklistCmd:
 			// /group approval rm whitelist <list_name>
 			// /group approval rm blacklist <list_name>
-			retMsg = service.Group().RemoveApprovalProcessReturnRes(ctx, service.Bot().GetGroupId(ctx), next[1], next[2])
+			retMsg = service.Group().RemoveApprovalPolicyReturnRes(ctx, service.Bot().GetGroupId(ctx), next[1], next[2])
 			catch = true
 		}
 	case endBranchRe.MatchString(cmd):
 		switch cmd {
 		case consts.NotificationCmd:
 			// /group approval rm notification
-			retMsg = service.Group().RemoveApprovalProcessReturnRes(ctx, service.Bot().GetGroupId(ctx), cmd)
+			retMsg = service.Group().RemoveApprovalPolicyReturnRes(ctx, service.Bot().GetGroupId(ctx), cmd)
 			catch = true
 		}
 	}
@@ -116,7 +116,7 @@ func tryGroupApprovalDisable(ctx context.Context, cmd string) (catch bool, retMs
 			// /group approval disable notify-only
 			// /group approval disable auto-pass
 			// /group approval disable auto-reject
-			retMsg = service.Group().RemoveApprovalProcessReturnRes(ctx, service.Bot().GetGroupId(ctx), cmd)
+			retMsg = service.Group().RemoveApprovalPolicyReturnRes(ctx, service.Bot().GetGroupId(ctx), cmd)
 			catch = true
 		}
 	}

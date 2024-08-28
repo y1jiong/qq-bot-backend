@@ -11,7 +11,7 @@ import (
 
 type (
 	IGroup interface {
-		GetApprovalProcess(ctx context.Context, groupId int64) (process map[string]any)
+		GetApprovalPolicy(ctx context.Context, groupId int64) (policy map[string]any)
 		GetApprovalWhitelists(ctx context.Context, groupId int64) (whitelists map[string]any)
 		GetApprovalBlacklists(ctx context.Context, groupId int64) (blacklists map[string]any)
 		GetApprovalRegexp(ctx context.Context, groupId int64) (exp string)
@@ -19,8 +19,8 @@ type (
 		IsApprovalNotifyOnlyEnabled(ctx context.Context, groupId int64) bool
 		IsApprovalAutoPassEnabled(ctx context.Context, groupId int64) bool
 		IsApprovalAutoRejectEnabled(ctx context.Context, groupId int64) bool
-		AddApprovalProcessReturnRes(ctx context.Context, groupId int64, processName string, args ...string) (retMsg string)
-		RemoveApprovalProcessReturnRes(ctx context.Context, groupId int64, processName string, args ...string) (retMsg string)
+		AddApprovalPolicyReturnRes(ctx context.Context, groupId int64, policyName string, args ...string) (retMsg string)
+		RemoveApprovalPolicyReturnRes(ctx context.Context, groupId int64, policyName string, args ...string) (retMsg string)
 		GetCardAutoSetList(ctx context.Context, groupId int64) (listName string)
 		IsCardLocked(ctx context.Context, groupId int64) bool
 		SetAutoSetListReturnRes(ctx context.Context, groupId int64, listName string) (retMsg string)
@@ -32,12 +32,12 @@ type (
 		ExportGroupMemberListReturnRes(ctx context.Context, groupId int64, listName string) (retMsg string)
 		IsBinding(ctx context.Context, groupId int64) bool
 		GetNamespace(ctx context.Context, groupId int64) string
-		GetKeywordProcess(ctx context.Context, groupId int64) (process map[string]any)
+		GetKeywordPolicy(ctx context.Context, groupId int64) (policy map[string]any)
 		GetKeywordWhitelists(ctx context.Context, groupId int64) (whitelists map[string]any)
 		GetKeywordBlacklists(ctx context.Context, groupId int64) (blacklists map[string]any)
 		GetKeywordReplyLists(ctx context.Context, groupId int64) (replyLists map[string]any)
-		AddKeywordProcessReturnRes(ctx context.Context, groupId int64, processName string, args ...string) (retMsg string)
-		RemoveKeywordProcessReturnRes(ctx context.Context, groupId int64, processName string, args ...string) (retMsg string)
+		AddKeywordPolicyReturnRes(ctx context.Context, groupId int64, policyName string, args ...string) (retMsg string)
+		RemoveKeywordPolicyReturnRes(ctx context.Context, groupId int64, policyName string, args ...string) (retMsg string)
 		GetLogLeaveList(ctx context.Context, groupId int64) (listName string)
 		GetLogApprovalList(ctx context.Context, groupId int64) (listName string)
 		SetLogLeaveListReturnRes(ctx context.Context, groupId int64, listName string) (retMsg string)

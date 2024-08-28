@@ -4,6 +4,11 @@ import (
 	"context"
 	"github.com/gogf/gf/v2/util/gconv"
 	"qq-bot-backend/internal/service"
+	"regexp"
+)
+
+var (
+	cqReplyRe = regexp.MustCompile(`\[CQ:reply,.+?]`)
 )
 
 func (s *sEvent) TryUndoMessageRecall(ctx context.Context) (catch bool) {
@@ -59,6 +64,8 @@ func (s *sEvent) TryUndoMessageRecall(ctx context.Context) (catch bool) {
 	} else {
 		msg = nickname + "(" + gconv.String(userId) +
 			") 在 group(" + gconv.String(groupId) + ") 撤回了：\n"
+
+		message = cqReplyRe.ReplaceAllString(message, "")
 	}
 	msg += message
 	_, _ = service.Bot().SendMessage(ctx,

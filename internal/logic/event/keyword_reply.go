@@ -16,7 +16,7 @@ import (
 )
 
 var (
-	atPrefixRe      = regexp.MustCompile(`^\[CQ:at,qq=([^,]+)(?:,[^,=]+=[^,]*)*]\s*`)
+	cqAtPrefixRe    = regexp.MustCompile(`^\[CQ:at,qq=([^,]+)(?:,[^,=]+=[^,]*)*]\s*`)
 	webhookPrefixRe = regexp.MustCompile(`^webhook(?::([A-Za-z]{3,7}))?(?:#([\s\S]+)#)?(?:<([\s\S]+)>)?(?:@(.+)@)?://(.+)$`)
 	commandPrefixRe = regexp.MustCompile(`^(?:command|cmd)://([\s\S]+)$`)
 	rewritePrefixRe = regexp.MustCompile(`^rewrite://([\s\S]+)$`)
@@ -44,8 +44,8 @@ func (s *sEvent) TryKeywordReply(ctx context.Context) (catch bool) {
 	msg := service.Bot().GetMessage(ctx)
 	userId := service.Bot().GetUserId(ctx)
 	// 匹配 @bot
-	if atPrefixRe.MatchString(msg) {
-		sub := atPrefixRe.FindStringSubmatch(msg)
+	if cqAtPrefixRe.MatchString(msg) {
+		sub := cqAtPrefixRe.FindStringSubmatch(msg)
 		if sub[1] == gconv.String(service.Bot().GetSelfId(ctx)) {
 			msg = strings.Replace(msg, sub[0], "", 1)
 		}

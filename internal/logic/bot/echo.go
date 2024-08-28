@@ -43,7 +43,7 @@ func (s *sBot) catchEcho(ctx context.Context) (catch bool) {
 	return
 }
 
-func (s *sBot) defaultEchoProcess(rsyncCtx context.Context) error {
+func (s *sBot) defaultEchoHandler(rsyncCtx context.Context) error {
 	if s.getEchoStatus(rsyncCtx) != "ok" {
 		switch s.getEchoStatus(rsyncCtx) {
 		case "async":

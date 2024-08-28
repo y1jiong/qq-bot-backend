@@ -10,8 +10,8 @@ import (
 	"qq-bot-backend/internal/service"
 )
 
-func (s *sGroup) AddKeywordProcessReturnRes(ctx context.Context,
-	groupId int64, processName string, args ...string) (retMsg string) {
+func (s *sGroup) AddKeywordPolicyReturnRes(ctx context.Context,
+	groupId int64, policyName string, args ...string) (retMsg string) {
 	// 参数合法性校验
 	if groupId == 0 {
 		return
@@ -38,7 +38,7 @@ func (s *sGroup) AddKeywordProcessReturnRes(ctx context.Context,
 	}
 	if len(args) > 0 {
 		// 处理 args
-		switch processName {
+		switch policyName {
 		case consts.ReplyCmd:
 			// 添加回复列表
 			// 是否存在 list
@@ -77,10 +77,10 @@ func (s *sGroup) AddKeywordProcessReturnRes(ctx context.Context,
 			settingJson.Set(keywordWhitelistsMapKey, whitelists)
 		}
 	} else {
-		// 添加 processName
-		processMap := settingJson.Get(keywordProcessMapKey).MustMap(make(map[string]any))
-		processMap[processName] = nil
-		settingJson.Set(keywordProcessMapKey, processMap)
+		// 添加 policyName
+		policyMap := settingJson.Get(keywordPolicyMapKey).MustMap(make(map[string]any))
+		policyMap[policyName] = nil
+		settingJson.Set(keywordPolicyMapKey, policyMap)
 	}
 	// 保存数据
 	settingBytes, err := settingJson.Encode()
@@ -99,15 +99,15 @@ func (s *sGroup) AddKeywordProcessReturnRes(ctx context.Context,
 	}
 	// 回执
 	if len(args) > 0 {
-		retMsg = "已添加 group(" + gconv.String(groupId) + ") 关键词检查 " + processName + "(" + args[0] + ")"
+		retMsg = "已添加 group(" + gconv.String(groupId) + ") 关键词检查 " + policyName + "(" + args[0] + ")"
 	} else {
-		retMsg = "已启用 group(" + gconv.String(groupId) + ") 关键词检查 " + processName
+		retMsg = "已启用 group(" + gconv.String(groupId) + ") 关键词检查 " + policyName
 	}
 	return
 }
 
-func (s *sGroup) RemoveKeywordProcessReturnRes(ctx context.Context,
-	groupId int64, processName string, args ...string) (retMsg string) {
+func (s *sGroup) RemoveKeywordPolicyReturnRes(ctx context.Context,
+	groupId int64, policyName string, args ...string) (retMsg string) {
 	// 参数合法性校验
 	if groupId == 0 {
 		return
@@ -134,7 +134,7 @@ func (s *sGroup) RemoveKeywordProcessReturnRes(ctx context.Context,
 	}
 	if len(args) > 0 {
 		// 处理 args
-		switch processName {
+		switch policyName {
 		case consts.ReplyCmd:
 			// 移除回复列表
 			replyLists := settingJson.Get(keywordReplyListsMapKey).MustMap(make(map[string]any))
@@ -164,14 +164,14 @@ func (s *sGroup) RemoveKeywordProcessReturnRes(ctx context.Context,
 			settingJson.Set(keywordWhitelistsMapKey, whitelists)
 		}
 	} else {
-		// 删除 processName
-		processMap := settingJson.Get(keywordProcessMapKey).MustMap(make(map[string]any))
-		if _, ok := processMap[processName]; !ok {
-			retMsg = "在 " + approvalProcessMapKey + " 中未找到 " + processName
+		// 删除 policyName
+		policyMap := settingJson.Get(keywordPolicyMapKey).MustMap(make(map[string]any))
+		if _, ok := policyMap[policyName]; !ok {
+			retMsg = "在 " + approvalPolicyMapKey + " 中未找到 " + policyName
 			return
 		}
-		delete(processMap, processName)
-		settingJson.Set(keywordProcessMapKey, processMap)
+		delete(policyMap, policyName)
+		settingJson.Set(keywordPolicyMapKey, policyMap)
 	}
 	// 保存数据
 	settingBytes, err := settingJson.Encode()
@@ -190,9 +190,9 @@ func (s *sGroup) RemoveKeywordProcessReturnRes(ctx context.Context,
 	}
 	// 回执
 	if len(args) > 0 {
-		retMsg = "已移除 group(" + gconv.String(groupId) + ") 关键词检查 " + processName + "(" + args[0] + ")"
+		retMsg = "已移除 group(" + gconv.String(groupId) + ") 关键词检查 " + policyName + "(" + args[0] + ")"
 	} else {
-		retMsg = "已禁用 group(" + gconv.String(groupId) + ") 关键词检查 " + processName
+		retMsg = "已禁用 group(" + gconv.String(groupId) + ") 关键词检查 " + policyName
 	}
 	return
 }

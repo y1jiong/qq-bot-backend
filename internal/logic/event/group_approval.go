@@ -13,9 +13,9 @@ import (
 func (s *sEvent) TryApproveAddGroup(ctx context.Context) (catch bool) {
 	// 获取当前 group approval 策略
 	groupId := service.Bot().GetGroupId(ctx)
-	process := service.Group().GetApprovalProcess(ctx, groupId)
+	policy := service.Group().GetApprovalPolicy(ctx, groupId)
 	// 预处理
-	if len(process) == 0 {
+	if len(policy) == 0 {
 		// 没有入群审核策略，跳过审核功能
 		return
 	}
@@ -27,19 +27,19 @@ func (s *sEvent) TryApproveAddGroup(ctx context.Context) (catch bool) {
 	var extra, blackReason string
 	isOnBlacklist := false
 	// 处理
-	if _, ok := process[consts.McCmd]; ok {
+	if _, ok := policy[consts.McCmd]; ok {
 		// mc 正版验证
 		pass, extra = verifyMinecraftGenuine(ctx, comment)
 	}
-	if _, ok := process[consts.RegexpCmd]; ok && pass {
+	if _, ok := policy[consts.RegexpCmd]; ok && pass {
 		// 正则表达式
 		pass, extra = isMatchRegexp(ctx, groupId, comment)
 	}
-	if _, ok := process[consts.WhitelistCmd]; ok && pass {
+	if _, ok := policy[consts.WhitelistCmd]; ok && pass {
 		// 白名单
 		pass = isOnApprovalWhitelist(ctx, groupId, userId, extra)
 	}
-	if _, ok := process[consts.BlacklistCmd]; ok && pass {
+	if _, ok := policy[consts.BlacklistCmd]; ok && pass {
 		// 黑名单
 		pass, blackReason = isNotOnApprovalBlacklist(ctx, groupId, userId)
 		isOnBlacklist = !pass
