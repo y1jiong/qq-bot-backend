@@ -6,6 +6,7 @@ import (
 	"github.com/bytedance/sonic/ast"
 	"github.com/gogf/gf/v2/frame/g"
 	"qq-bot-backend/internal/dao"
+	"strconv"
 )
 
 func (s *sNamespace) AddForwardingToReturnRes(ctx context.Context, alias, url, authorization string) (retMsg string) {
@@ -108,6 +109,11 @@ func (s *sNamespace) AddForwardingMatchUserIdReturnRes(ctx context.Context, user
 	if userId == "" {
 		return
 	}
+	if _, err := strconv.Atoi(userId); err != nil {
+		if userId != all {
+			return
+		}
+	}
 	// 过程
 	namespaceE := getNamespace(ctx, globalNamespace)
 	if namespaceE == nil {
@@ -155,6 +161,11 @@ func (s *sNamespace) AddForwardingMatchGroupIdReturnRes(ctx context.Context, gro
 	// 参数合法性校验
 	if groupId == "" {
 		return
+	}
+	if _, err := strconv.Atoi(groupId); err != nil {
+		if groupId != all {
+			return
+		}
 	}
 	// 过程
 	namespaceE := getNamespace(ctx, globalNamespace)
@@ -204,6 +215,11 @@ func (s *sNamespace) RemoveForwardingMatchUserIdReturnRes(ctx context.Context, u
 	if userId == "" {
 		return
 	}
+	if _, err := strconv.Atoi(userId); err != nil {
+		if userId != all {
+			return
+		}
+	}
 	// 过程
 	namespaceE := getNamespace(ctx, globalNamespace)
 	if namespaceE == nil {
@@ -251,6 +267,11 @@ func (s *sNamespace) RemoveForwardingMatchGroupIdReturnRes(ctx context.Context, 
 	// 参数合法性校验
 	if groupId == "" {
 		return
+	}
+	if _, err := strconv.Atoi(groupId); err != nil {
+		if groupId != all {
+			return
+		}
 	}
 	// 过程
 	namespaceE := getNamespace(ctx, globalNamespace)

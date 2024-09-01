@@ -25,6 +25,8 @@ const (
 	userMapKey = "user"
 	// groupMapKey forwarding -> match -> group
 	groupMapKey = "group"
+
+	all = "all"
 )
 
 func (s *sNamespace) GetForwardingToAliasList(ctx context.Context) (aliasList map[string]any) {
@@ -80,8 +82,23 @@ func (s *sNamespace) GetForwardingTo(ctx context.Context, alias string) (url, au
 
 func (s *sNamespace) IsForwardingMatchUserId(ctx context.Context, userId string) bool {
 	var namespaceE *entity.Namespace
-	// 数据库查询 json
+	// 数据库查询 all
 	err := dao.Namespace.Ctx(ctx).
+		Fields(dao.Namespace.Columns().Namespace).
+		Where(dao.Namespace.Columns().Namespace, globalNamespace).
+		Where(fmt.Sprintf(`jsonb_path_exists(%v, '$."%v"."%v"."%v"."%v"')`,
+			dao.Namespace.Columns().SettingJson, forwardingMapKey, matchMapKey, userMapKey, all),
+		).
+		Scan(&namespaceE)
+	if err != nil {
+		g.Log().Error(ctx, err)
+		return false
+	}
+	if namespaceE != nil {
+		return true
+	}
+	// 数据库查询 json
+	err = dao.Namespace.Ctx(ctx).
 		Fields(dao.Namespace.Columns().Namespace).
 		Where(dao.Namespace.Columns().Namespace, globalNamespace).
 		Where(fmt.Sprintf(`jsonb_path_exists(%v, '$."%v"."%v"."%v"."%v"')`,
@@ -100,8 +117,23 @@ func (s *sNamespace) IsForwardingMatchUserId(ctx context.Context, userId string)
 
 func (s *sNamespace) IsForwardingMatchGroupId(ctx context.Context, groupId string) bool {
 	var namespaceE *entity.Namespace
-	// 数据库查询 json
+	// 数据库查询 all
 	err := dao.Namespace.Ctx(ctx).
+		Fields(dao.Namespace.Columns().Namespace).
+		Where(dao.Namespace.Columns().Namespace, globalNamespace).
+		Where(fmt.Sprintf(`jsonb_path_exists(%v, '$."%v"."%v"."%v"."%v"')`,
+			dao.Namespace.Columns().SettingJson, forwardingMapKey, matchMapKey, groupMapKey, all),
+		).
+		Scan(&namespaceE)
+	if err != nil {
+		g.Log().Error(ctx, err)
+		return false
+	}
+	if namespaceE != nil {
+		return true
+	}
+	// 数据库查询 json
+	err = dao.Namespace.Ctx(ctx).
 		Fields(dao.Namespace.Columns().Namespace).
 		Where(dao.Namespace.Columns().Namespace, globalNamespace).
 		Where(fmt.Sprintf(`jsonb_path_exists(%v, '$."%v"."%v"."%v"."%v"')`,
