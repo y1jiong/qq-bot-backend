@@ -7,25 +7,26 @@ import (
 	"io"
 	"net/http"
 	"qq-bot-backend/internal/consts"
+	"sync"
 )
 
 var (
 	forwardClient *http.Client
 )
 
-func (s *sBot) Forward(ctx context.Context, url, authorization string) error {
-	if forwardClient == nil {
-		t := http.DefaultTransport.(*http.Transport).Clone()
-		// No validation for https certification of the server in default.
-		t.TLSClientConfig = &tls.Config{
-			InsecureSkipVerify: true,
-		}
-
-		forwardClient = &http.Client{
-			Transport: t,
-		}
+var initForwardClient = sync.OnceFunc(func() {
+	t := http.DefaultTransport.(*http.Transport).Clone()
+	// No validation for https certification of the server in default.
+	t.TLSClientConfig = &tls.Config{
+		InsecureSkipVerify: true,
 	}
 
+	forwardClient = &http.Client{
+		Transport: t,
+	}
+})
+
+func (s *sBot) Forward(ctx context.Context, url, authorization string) error {
 	payload, err := s.reqJsonFromCtx(ctx).MarshalJSON()
 	if err != nil {
 		return err
@@ -39,6 +40,7 @@ func (s *sBot) Forward(ctx context.Context, url, authorization string) error {
 		req.Header.Set("Authorization", "Bearer "+authorization)
 	}
 
+	initForwardClient()
 	resp, err := forwardClient.Do(req)
 	if err != nil {
 		return err
