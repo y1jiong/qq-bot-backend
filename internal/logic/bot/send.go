@@ -8,6 +8,7 @@ import (
 	"github.com/gogf/gf/v2/net/gtrace"
 	"github.com/gorilla/websocket"
 	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/codes"
 	"sync"
 )
 
@@ -21,6 +22,11 @@ func (s *sBot) SendMessage(ctx context.Context,
 	ctx, span := gtrace.NewSpan(ctx, "bot.SendMessage")
 	defer span.End()
 	span.SetAttributes(attribute.String("send_message.message", msg))
+	defer func() {
+		if err != nil {
+			span.SetStatus(codes.Error, err.Error())
+		}
+	}()
 
 	if groupId != 0 {
 		userId = 0
@@ -137,6 +143,12 @@ func (s *sBot) SendFileToGroup(ctx context.Context, groupId int64, filePath, nam
 		attribute.String("send_file_to_group.name", name),
 		attribute.String("send_file_to_group.folder", folder),
 	)
+	var err error
+	defer func() {
+		if err != nil {
+			span.SetStatus(codes.Error, err.Error())
+		}
+	}()
 
 	// echo sign
 	echoSign := s.generateEchoSignWithTrace(ctx)
@@ -206,6 +218,12 @@ func (s *sBot) SendFileToUser(ctx context.Context, userId int64, filePath, name 
 		attribute.String("send_file_to_user.file_path", filePath),
 		attribute.String("send_file_to_user.name", name),
 	)
+	var err error
+	defer func() {
+		if err != nil {
+			span.SetStatus(codes.Error, err.Error())
+		}
+	}()
 
 	// echo sign
 	echoSign := s.generateEchoSignWithTrace(ctx)
@@ -278,6 +296,11 @@ func (s *sBot) UploadFile(ctx context.Context, url string) (filePath string, err
 	ctx, span := gtrace.NewSpan(ctx, "bot.UploadFile")
 	defer span.End()
 	span.SetAttributes(attribute.String("upload_file.url", url))
+	defer func() {
+		if err != nil {
+			span.SetStatus(codes.Error, err.Error())
+		}
+	}()
 
 	// echo sign
 	echoSign := s.generateEchoSignWithTrace(ctx)
@@ -341,6 +364,12 @@ func (s *sBot) ApproveJoinGroup(ctx context.Context, flag, subType string, appro
 		attribute.Bool("approve_join_group.approve", approve),
 		attribute.String("approve_join_group.reason", reason),
 	)
+	var err error
+	defer func() {
+		if err != nil {
+			span.SetStatus(codes.Error, err.Error())
+		}
+	}()
 
 	// 参数校验
 	if approve {
@@ -385,6 +414,12 @@ func (s *sBot) SetModel(ctx context.Context, model string) {
 	ctx, span := gtrace.NewSpan(ctx, "bot.SetModel")
 	defer span.End()
 	span.SetAttributes(attribute.String("set_model.model", model))
+	var err error
+	defer func() {
+		if err != nil {
+			span.SetStatus(codes.Error, err.Error())
+		}
+	}()
 
 	// echo sign
 	echoSign := s.generateEchoSignWithTrace(ctx)
@@ -446,6 +481,12 @@ func (s *sBot) RecallMessage(ctx context.Context, msgId int64) {
 	ctx, span := gtrace.NewSpan(ctx, "bot.RecallMessage")
 	defer span.End()
 	span.SetAttributes(attribute.Int64("recall_message.message_id", msgId))
+	var err error
+	defer func() {
+		if err != nil {
+			span.SetStatus(codes.Error, err.Error())
+		}
+	}()
 
 	// 参数
 	req := struct {
@@ -480,6 +521,12 @@ func (s *sBot) MutePrototype(ctx context.Context, groupId, userId int64, seconds
 		attribute.Int64("mute_prototype.user_id", userId),
 		attribute.Int("mute_prototype.seconds", seconds),
 	)
+	var err error
+	defer func() {
+		if err != nil {
+			span.SetStatus(codes.Error, err.Error())
+		}
+	}()
 
 	// 参数校验
 	if seconds > 2591940 {
@@ -530,6 +577,12 @@ func (s *sBot) SetGroupCard(ctx context.Context, groupId, userId int64, card str
 		attribute.Int64("set_group_card.user_id", userId),
 		attribute.String("set_group_card.card", card),
 	)
+	var err error
+	defer func() {
+		if err != nil {
+			span.SetStatus(codes.Error, err.Error())
+		}
+	}()
 
 	// 参数
 	req := struct {
@@ -569,6 +622,12 @@ func (s *sBot) Kick(ctx context.Context, groupId, userId int64, reject ...bool) 
 		attribute.Int64("kick.group_id", groupId),
 		attribute.Int64("kick.user_id", userId),
 	)
+	var err error
+	defer func() {
+		if err != nil {
+			span.SetStatus(codes.Error, err.Error())
+		}
+	}()
 
 	// 参数
 	req := struct {

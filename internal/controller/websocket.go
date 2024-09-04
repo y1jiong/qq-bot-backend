@@ -11,6 +11,7 @@ import (
 	"net/http"
 	"qq-bot-backend/internal/service"
 	"strings"
+	"sync"
 )
 
 var (
@@ -34,6 +35,10 @@ func (c *cBot) Websocket(r *ghttp.Request) {
 	// new trace
 	ctx = trace.ContextWithSpanContext(ctx, trace.SpanContext{})
 	ctx, span := gtrace.NewSpan(ctx, "controller.Bot.Websocket")
+	spanEnd := sync.OnceFunc(func() { span.End() })
+	defer func() {
+		spanEnd()
+	}()
 
 	var (
 		tokenName string
@@ -86,7 +91,7 @@ func (c *cBot) Websocket(r *ghttp.Request) {
 		g.Log().Info(ctx, tokenName+"("+gconv.String(botId)+") joined connection pool")
 	}
 
-	span.End()
+	spanEnd()
 
 	// 消息循环
 	for {

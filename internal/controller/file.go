@@ -3,6 +3,7 @@ package controller
 import (
 	"github.com/gogf/gf/v2/net/ghttp"
 	"github.com/gogf/gf/v2/net/gtrace"
+	"go.opentelemetry.io/otel/codes"
 	"qq-bot-backend/internal/service"
 )
 
@@ -18,7 +19,7 @@ func (c *cFile) GetCachedFileById(r *ghttp.Request) {
 	defer span.End()
 	defer func() {
 		if err := r.GetError(); err != nil {
-			span.RecordError(err)
+			span.SetStatus(codes.Error, err.Error())
 		}
 	}()
 

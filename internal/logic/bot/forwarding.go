@@ -7,6 +7,7 @@ import (
 	"github.com/gogf/gf/v2/net/gtrace"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/codes"
 	"go.opentelemetry.io/otel/propagation"
 	"io"
 	"net/http"
@@ -34,6 +35,12 @@ func (s *sBot) Forward(ctx context.Context, url, authorization string) error {
 	ctx, span := gtrace.NewSpan(ctx, "bot.Forward")
 	defer span.End()
 	span.SetAttributes(attribute.String("forward.url", url))
+	var err error
+	defer func() {
+		if err != nil {
+			span.SetStatus(codes.Error, err.Error())
+		}
+	}()
 
 	payload, err := s.reqJsonFromCtx(ctx).MarshalJSON()
 	if err != nil {

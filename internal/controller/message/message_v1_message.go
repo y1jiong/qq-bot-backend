@@ -6,6 +6,7 @@ import (
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/net/gtrace"
 	"github.com/gogf/gf/v2/util/gconv"
+	"go.opentelemetry.io/otel/codes"
 	"net/http"
 	"qq-bot-backend/internal/service"
 	"strings"
@@ -22,7 +23,7 @@ func (c *ControllerV1) Message(ctx context.Context, req *v1.MessageReq) (res *v1
 	defer span.End()
 	defer func() {
 		if err != nil {
-			span.RecordError(err)
+			span.SetStatus(codes.Error, err.Error())
 		}
 	}()
 

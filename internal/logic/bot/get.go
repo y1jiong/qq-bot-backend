@@ -10,6 +10,7 @@ import (
 	"github.com/gogf/gf/v2/util/gconv"
 	"github.com/gorilla/websocket"
 	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/codes"
 	"qq-bot-backend/internal/service"
 	"sync"
 )
@@ -144,6 +145,11 @@ func (s *sBot) GetGroupMemberInfo(ctx context.Context, groupId, userId int64) (m
 		attribute.Int64("get_group_member_info.group_id", groupId),
 		attribute.Int64("get_group_member_info.user_id", userId),
 	)
+	defer func() {
+		if err != nil {
+			span.SetStatus(codes.Error, err.Error())
+		}
+	}()
 
 	// echo sign
 	echoSign := s.generateEchoSignWithTrace(ctx)
@@ -209,6 +215,11 @@ func (s *sBot) GetGroupMemberList(ctx context.Context, groupId int64, useCache .
 	ctx, span := gtrace.NewSpan(ctx, "bot.GetGroupMemberList")
 	defer span.End()
 	span.SetAttributes(attribute.Int64("get_group_member_list.group_id", groupId))
+	defer func() {
+		if err != nil {
+			span.SetStatus(codes.Error, err.Error())
+		}
+	}()
 
 	// echo sign
 	echoSign := s.generateEchoSignWithTrace(ctx)
@@ -275,6 +286,11 @@ func (s *sBot) RequestMessage(ctx context.Context, messageId int64) (messageMap 
 	ctx, span := gtrace.NewSpan(ctx, "bot.RequestMessage")
 	defer span.End()
 	span.SetAttributes(attribute.Int64("request_message.message_id", messageId))
+	defer func() {
+		if err != nil {
+			span.SetStatus(codes.Error, err.Error())
+		}
+	}()
 
 	// echo sign
 	echoSign := s.generateEchoSignWithTrace(ctx)
@@ -335,6 +351,11 @@ func (s *sBot) GetGroupInfo(ctx context.Context, groupId int64, noCache ...bool)
 	ctx, span := gtrace.NewSpan(ctx, "bot.GetGroupInfo")
 	defer span.End()
 	span.SetAttributes(attribute.Int64("get_group_info.group_id", groupId))
+	defer func() {
+		if err != nil {
+			span.SetStatus(codes.Error, err.Error())
+		}
+	}()
 
 	// echo sign
 	echoSign := s.generateEchoSignWithTrace(ctx)
@@ -400,6 +421,12 @@ func (s *sBot) GetGroupInfo(ctx context.Context, groupId int64, noCache ...bool)
 func (s *sBot) GetLoginInfo(ctx context.Context) (userId int64, nickname string) {
 	ctx, span := gtrace.NewSpan(ctx, "bot.GetLoginInfo")
 	defer span.End()
+	var err error
+	defer func() {
+		if err != nil {
+			span.SetStatus(codes.Error, err.Error())
+		}
+	}()
 
 	// echo sign
 	echoSign := s.generateEchoSignWithTrace(ctx)

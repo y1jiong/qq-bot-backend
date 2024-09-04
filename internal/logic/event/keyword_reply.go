@@ -18,7 +18,7 @@ import (
 )
 
 var (
-	cqAtPrefixRe    = regexp.MustCompile(`^\[CQ:at,qq=([^,]+)(?:,[^,=]+=[^,]*)*]\s*`)
+	cqAtPrefixRe    = regexp.MustCompile(`^\[CQ:at,qq=([^,\]]+)(?:,[^,=]+=[^,\]]*)*]\s*`)
 	webhookPrefixRe = regexp.MustCompile(`^webhook(?::([A-Za-z]{3,7}))?(?:#([\s\S]+)#)?(?:<([\s\S]+)>)?(?:@(.+)@)?://(.+)$`)
 	commandPrefixRe = regexp.MustCompile(`^(?:command|cmd)://([\s\S]+)$`)
 	rewritePrefixRe = regexp.MustCompile(`^rewrite://([\s\S]+)$`)
@@ -95,6 +95,11 @@ func (s *sEvent) TryKeywordReply(ctx context.Context) (catch bool) {
 
 func (s *sEvent) keywordReplyWebhook(ctx context.Context, userId, groupId int64, nickname,
 	message, hit, value string) (replyMsg string, noReplyPrefix bool) {
+	// 必须以 hit 开头
+	if !strings.HasPrefix(message, hit) {
+		return
+	}
+
 	ctx, span := gtrace.NewSpan(ctx, "event.keywordReplyWebhook")
 	defer span.End()
 	span.SetAttributes(
@@ -106,10 +111,6 @@ func (s *sEvent) keywordReplyWebhook(ctx context.Context, userId, groupId int64,
 		attribute.String("keyword_reply_webhook.value", value),
 	)
 
-	// 必须以 hit 开头
-	if !strings.HasPrefix(message, hit) {
-		return
-	}
 	// Url
 	subMatch := webhookPrefixRe.FindStringSubmatch(service.Codec().DecodeCqCode(value))
 	method := strings.ToUpper(subMatch[1])
@@ -244,6 +245,11 @@ func (s *sEvent) keywordReplyWebhook(ctx context.Context, userId, groupId int64,
 }
 
 func (s *sEvent) keywordReplyCommand(ctx context.Context, message, hit, text string) (replyMsg string) {
+	// 必须以 hit 开头
+	if !strings.HasPrefix(message, hit) {
+		return
+	}
+
 	ctx, span := gtrace.NewSpan(ctx, "event.keywordReplyCommand")
 	defer span.End()
 	span.SetAttributes(
@@ -252,10 +258,6 @@ func (s *sEvent) keywordReplyCommand(ctx context.Context, message, hit, text str
 		attribute.String("keyword_reply_command.text", text),
 	)
 
-	// 必须以 hit 开头
-	if !strings.HasPrefix(message, hit) {
-		return
-	}
 	// 解码提取
 	subMatch := commandPrefixRe.FindStringSubmatch(service.Codec().DecodeCqCode(text))
 	// 占位符替换
@@ -283,6 +285,11 @@ func (s *sEvent) keywordReplyCommand(ctx context.Context, message, hit, text str
 
 func (s *sEvent) keywordReplyRewrite(ctx context.Context, try func(context.Context) bool,
 	message, hit, text string) (catch bool) {
+	// 必须以 hit 开头
+	if !strings.HasPrefix(message, hit) {
+		return
+	}
+
 	ctx, span := gtrace.NewSpan(ctx, "event.keywordReplyRewrite")
 	defer span.End()
 	span.SetAttributes(
@@ -291,10 +298,6 @@ func (s *sEvent) keywordReplyRewrite(ctx context.Context, try func(context.Conte
 		attribute.String("keyword_reply_rewrite.text", text),
 	)
 
-	// 必须以 hit 开头
-	if !strings.HasPrefix(message, hit) {
-		return
-	}
 	// 防止循环递归
 	err := service.Bot().SetHistory(ctx, hit)
 	if err != nil {

@@ -3,7 +3,6 @@ package thirdparty
 import (
 	"context"
 	"github.com/bytedance/sonic"
-	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/net/gclient"
 	"io"
 	"net/http"
@@ -26,7 +25,7 @@ func (s *sThirdParty) QueryMinecraftGenuineUser(ctx context.Context, name string
 	// GET 请求 mojang api
 	var resp *gclient.Response
 	for range 3 {
-		resp, err = g.Client().Get(ctx, "https://api.mojang.com/users/profiles/minecraft/"+name)
+		resp, err = gclient.New().Get(ctx, "https://api.mojang.com/users/profiles/minecraft/"+name)
 		if err == nil {
 			break
 		}
