@@ -3,6 +3,7 @@ package event
 import (
 	"context"
 	"github.com/gogf/gf/v2/frame/g"
+	"github.com/gogf/gf/v2/net/gtrace"
 	"github.com/gogf/gf/v2/util/gconv"
 	"qq-bot-backend/internal/service"
 	"strings"
@@ -10,6 +11,9 @@ import (
 )
 
 func (s *sEvent) TryGroupKeywordReply(ctx context.Context) (catch bool) {
+	ctx, span := gtrace.NewSpan(ctx, "event.TryGroupKeywordReply")
+	defer span.End()
+
 	// 获取基础信息
 	msg := service.Bot().GetMessage(ctx)
 	groupId := service.Bot().GetGroupId(ctx)

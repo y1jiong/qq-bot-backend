@@ -3,12 +3,16 @@ package event
 import (
 	"context"
 	"github.com/gogf/gf/v2/frame/g"
+	"github.com/gogf/gf/v2/net/gtrace"
 	"github.com/gogf/gf/v2/os/gtime"
 	"github.com/gogf/gf/v2/util/gconv"
 	"qq-bot-backend/internal/service"
 )
 
 func (s *sEvent) TryLogLeave(ctx context.Context) (catch bool) {
+	ctx, span := gtrace.NewSpan(ctx, "event.TryLogLeave")
+	defer span.End()
+
 	// 获取当前 group log leave list
 	groupId := service.Bot().GetGroupId(ctx)
 	listName := service.Group().GetLogLeaveList(ctx, groupId)

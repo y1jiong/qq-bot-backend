@@ -5,8 +5,9 @@ import (
 	"errors"
 	"github.com/bytedance/sonic"
 	"github.com/gogf/gf/v2/frame/g"
-	"github.com/gogf/gf/v2/util/guid"
+	"github.com/gogf/gf/v2/net/gtrace"
 	"github.com/gorilla/websocket"
+	"go.opentelemetry.io/otel/attribute"
 	"sync"
 )
 
@@ -16,11 +17,20 @@ func (s *sBot) SendMessage(ctx context.Context,
 	if userId == 0 && groupId == 0 {
 		return 0, errors.New("userId 和 groupId 不能同时为 0")
 	}
+
+	ctx, span := gtrace.NewSpan(ctx, "bot.SendMessage")
+	defer span.End()
+	span.SetAttributes(attribute.String("send_message.message", msg))
+
 	if groupId != 0 {
 		userId = 0
+		span.SetAttributes(attribute.Int64("send_message.group_id", groupId))
+	} else {
+		span.SetAttributes(attribute.Int64("send_message.user_id", userId))
 	}
+
 	// echo sign
-	echoSign := guid.S()
+	echoSign := s.generateEchoSignWithTrace(ctx)
 	// 参数
 	req := struct {
 		Action string `json:"action"`
@@ -119,8 +129,17 @@ func (s *sBot) SendMsgCacheContext(ctx context.Context, msg string, notPlain ...
 }
 
 func (s *sBot) SendFileToGroup(ctx context.Context, groupId int64, filePath, name, folder string) {
+	ctx, span := gtrace.NewSpan(ctx, "bot.SendFileToGroup")
+	defer span.End()
+	span.SetAttributes(
+		attribute.Int64("send_file_to_group.group_id", groupId),
+		attribute.String("send_file_to_group.file_path", filePath),
+		attribute.String("send_file_to_group.name", name),
+		attribute.String("send_file_to_group.folder", folder),
+	)
+
 	// echo sign
-	echoSign := guid.S()
+	echoSign := s.generateEchoSignWithTrace(ctx)
 	// 参数
 	req := struct {
 		Action string `json:"action"`
@@ -152,13 +171,19 @@ func (s *sBot) SendFileToGroup(ctx context.Context, groupId int64, filePath, nam
 		return
 	}
 	// callback
+	wg := sync.WaitGroup{}
+	defer wg.Wait()
+	wgDone := sync.OnceFunc(wg.Done)
+	wg.Add(1)
 	callback := func(ctx context.Context, rsyncCtx context.Context) {
+		defer wgDone()
 		if err = s.defaultEchoHandler(rsyncCtx); err != nil {
 			s.SendMsgIfNotApiReq(ctx, err.Error())
 			return
 		}
 	}
 	timeout := func(ctx context.Context) {
+		defer wgDone()
 		s.SendMsgIfNotApiReq(ctx, "上传至群文件超时")
 	}
 	// echo
@@ -174,8 +199,16 @@ func (s *sBot) SendFileToGroup(ctx context.Context, groupId int64, filePath, nam
 }
 
 func (s *sBot) SendFileToUser(ctx context.Context, userId int64, filePath, name string) {
+	ctx, span := gtrace.NewSpan(ctx, "bot.SendFileToUser")
+	defer span.End()
+	span.SetAttributes(
+		attribute.Int64("send_file_to_user.user_id", userId),
+		attribute.String("send_file_to_user.file_path", filePath),
+		attribute.String("send_file_to_user.name", name),
+	)
+
 	// echo sign
-	echoSign := guid.S()
+	echoSign := s.generateEchoSignWithTrace(ctx)
 	// 参数
 	req := struct {
 		Action string `json:"action"`
@@ -204,13 +237,19 @@ func (s *sBot) SendFileToUser(ctx context.Context, userId int64, filePath, name 
 		return
 	}
 	// callback
+	wg := sync.WaitGroup{}
+	defer wg.Wait()
+	wgDone := sync.OnceFunc(wg.Done)
+	wg.Add(1)
 	callback := func(ctx context.Context, rsyncCtx context.Context) {
+		defer wgDone()
 		if err = s.defaultEchoHandler(rsyncCtx); err != nil {
 			s.SendMsgIfNotApiReq(ctx, err.Error())
 			return
 		}
 	}
 	timeout := func(ctx context.Context) {
+		defer wgDone()
 		s.SendMsgIfNotApiReq(ctx, "上传文件至私聊超时")
 	}
 	// echo
@@ -236,8 +275,12 @@ func (s *sBot) SendFile(ctx context.Context, filePath, name string) {
 }
 
 func (s *sBot) UploadFile(ctx context.Context, url string) (filePath string, err error) {
+	ctx, span := gtrace.NewSpan(ctx, "bot.UploadFile")
+	defer span.End()
+	span.SetAttributes(attribute.String("upload_file.url", url))
+
 	// echo sign
-	echoSign := guid.S()
+	echoSign := s.generateEchoSignWithTrace(ctx)
 	// 参数
 	req := struct {
 		Action string `json:"action"`
@@ -290,6 +333,15 @@ func (s *sBot) UploadFile(ctx context.Context, url string) (filePath string, err
 }
 
 func (s *sBot) ApproveJoinGroup(ctx context.Context, flag, subType string, approve bool, reason string) {
+	ctx, span := gtrace.NewSpan(ctx, "bot.ApproveJoinGroup")
+	defer span.End()
+	span.SetAttributes(
+		attribute.String("approve_join_group.flag", flag),
+		attribute.String("approve_join_group.sub_type", subType),
+		attribute.Bool("approve_join_group.approve", approve),
+		attribute.String("approve_join_group.reason", reason),
+	)
+
 	// 参数校验
 	if approve {
 		reason = ""
@@ -330,8 +382,12 @@ func (s *sBot) ApproveJoinGroup(ctx context.Context, flag, subType string, appro
 }
 
 func (s *sBot) SetModel(ctx context.Context, model string) {
+	ctx, span := gtrace.NewSpan(ctx, "bot.SetModel")
+	defer span.End()
+	span.SetAttributes(attribute.String("set_model.model", model))
+
 	// echo sign
-	echoSign := guid.S()
+	echoSign := s.generateEchoSignWithTrace(ctx)
 	// 参数
 	req := struct {
 		Action string `json:"action"`
@@ -357,7 +413,12 @@ func (s *sBot) SetModel(ctx context.Context, model string) {
 		return
 	}
 	// callback
+	wg := sync.WaitGroup{}
+	defer wg.Wait()
+	wgDone := sync.OnceFunc(wg.Done)
+	wg.Add(1)
 	callback := func(ctx context.Context, rsyncCtx context.Context) {
+		defer wgDone()
 		if err = s.defaultEchoHandler(rsyncCtx); err != nil {
 			s.SendMsgIfNotApiReq(ctx, err.Error())
 			return
@@ -365,6 +426,7 @@ func (s *sBot) SetModel(ctx context.Context, model string) {
 		s.SendMsgIfNotApiReq(ctx, "已更改机型为 '"+model+"'")
 	}
 	timeout := func(ctx context.Context) {
+		defer wgDone()
 		s.SendMsgIfNotApiReq(ctx, "更改机型超时")
 	}
 	// echo
@@ -381,6 +443,10 @@ func (s *sBot) SetModel(ctx context.Context, model string) {
 }
 
 func (s *sBot) RecallMessage(ctx context.Context, msgId int64) {
+	ctx, span := gtrace.NewSpan(ctx, "bot.RecallMessage")
+	defer span.End()
+	span.SetAttributes(attribute.Int64("recall_message.message_id", msgId))
+
 	// 参数
 	req := struct {
 		Action string `json:"action"`
@@ -407,6 +473,14 @@ func (s *sBot) RecallMessage(ctx context.Context, msgId int64) {
 }
 
 func (s *sBot) MutePrototype(ctx context.Context, groupId, userId int64, seconds int) {
+	ctx, span := gtrace.NewSpan(ctx, "bot.MutePrototype")
+	defer span.End()
+	span.SetAttributes(
+		attribute.Int64("mute_prototype.group_id", groupId),
+		attribute.Int64("mute_prototype.user_id", userId),
+		attribute.Int("mute_prototype.seconds", seconds),
+	)
+
 	// 参数校验
 	if seconds > 2591940 {
 		// 不大于 29 天 23 小时 59 分钟
@@ -449,6 +523,14 @@ func (s *sBot) Mute(ctx context.Context, seconds int) {
 }
 
 func (s *sBot) SetGroupCard(ctx context.Context, groupId, userId int64, card string) {
+	ctx, span := gtrace.NewSpan(ctx, "bot.SetGroupCard")
+	defer span.End()
+	span.SetAttributes(
+		attribute.Int64("set_group_card.group_id", groupId),
+		attribute.Int64("set_group_card.user_id", userId),
+		attribute.String("set_group_card.card", card),
+	)
+
 	// 参数
 	req := struct {
 		Action string `json:"action"`
@@ -481,6 +563,13 @@ func (s *sBot) SetGroupCard(ctx context.Context, groupId, userId int64, card str
 }
 
 func (s *sBot) Kick(ctx context.Context, groupId, userId int64, reject ...bool) {
+	ctx, span := gtrace.NewSpan(ctx, "bot.Kick")
+	defer span.End()
+	span.SetAttributes(
+		attribute.Int64("kick.group_id", groupId),
+		attribute.Int64("kick.user_id", userId),
+	)
+
 	// 参数
 	req := struct {
 		Action string `json:"action"`

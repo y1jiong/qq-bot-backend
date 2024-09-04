@@ -44,7 +44,7 @@ type (
 		GetCardOrNickname(ctx context.Context) string
 		GetCardOldNew(ctx context.Context) (oldCard string, newCard string)
 		GetGroupMemberInfo(ctx context.Context, groupId int64, userId int64) (member ast.Node, err error)
-		GetGroupMemberList(ctx context.Context, groupId int64, usingCache ...bool) (members []any, err error)
+		GetGroupMemberList(ctx context.Context, groupId int64, useCache ...bool) (members []any, err error)
 		RequestMessage(ctx context.Context, messageId int64) (messageMap map[string]any, err error)
 		GetGroupInfo(ctx context.Context, groupId int64, noCache ...bool) (infoMap map[string]any, err error)
 		GetLoginInfo(ctx context.Context) (userId int64, nickname string)

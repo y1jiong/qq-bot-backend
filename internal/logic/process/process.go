@@ -2,6 +2,7 @@ package process
 
 import (
 	"context"
+	"github.com/gogf/gf/v2/net/gtrace"
 	"qq-bot-backend/internal/service"
 	"sync/atomic"
 )
@@ -43,6 +44,10 @@ func (s *sProcess) Process(ctx context.Context) {
 		// 跳过处理元事件 心跳包 生命周期
 		return
 	}
+
+	ctx, span := gtrace.NewSpan(ctx, "process.Process")
+	defer span.End()
+
 	// 优先处理命令
 	if catch, retMsg := service.Command().TryCommand(ctx, service.Bot().GetMessage(ctx)); catch {
 		// 处理成功放弃后续逻辑

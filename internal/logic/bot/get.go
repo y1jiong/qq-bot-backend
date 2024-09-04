@@ -6,9 +6,10 @@ import (
 	"github.com/bytedance/sonic"
 	"github.com/bytedance/sonic/ast"
 	"github.com/gogf/gf/v2/frame/g"
+	"github.com/gogf/gf/v2/net/gtrace"
 	"github.com/gogf/gf/v2/util/gconv"
-	"github.com/gogf/gf/v2/util/guid"
 	"github.com/gorilla/websocket"
+	"go.opentelemetry.io/otel/attribute"
 	"qq-bot-backend/internal/service"
 	"sync"
 )
@@ -137,8 +138,15 @@ func (s *sBot) GetCardOldNew(ctx context.Context) (oldCard, newCard string) {
 }
 
 func (s *sBot) GetGroupMemberInfo(ctx context.Context, groupId, userId int64) (member ast.Node, err error) {
+	ctx, span := gtrace.NewSpan(ctx, "bot.GetGroupMemberInfo")
+	defer span.End()
+	span.SetAttributes(
+		attribute.Int64("get_group_member_info.group_id", groupId),
+		attribute.Int64("get_group_member_info.user_id", userId),
+	)
+
 	// echo sign
-	echoSign := guid.S()
+	echoSign := s.generateEchoSignWithTrace(ctx)
 	// 参数
 	req := struct {
 		Action string `json:"action"`
@@ -197,9 +205,13 @@ func (s *sBot) GetGroupMemberInfo(ctx context.Context, groupId, userId int64) (m
 	return
 }
 
-func (s *sBot) GetGroupMemberList(ctx context.Context, groupId int64, usingCache ...bool) (members []any, err error) {
+func (s *sBot) GetGroupMemberList(ctx context.Context, groupId int64, useCache ...bool) (members []any, err error) {
+	ctx, span := gtrace.NewSpan(ctx, "bot.GetGroupMemberList")
+	defer span.End()
+	span.SetAttributes(attribute.Int64("get_group_member_list.group_id", groupId))
+
 	// echo sign
-	echoSign := guid.S()
+	echoSign := s.generateEchoSignWithTrace(ctx)
 	// 参数
 	req := struct {
 		Action string `json:"action"`
@@ -219,7 +231,7 @@ func (s *sBot) GetGroupMemberList(ctx context.Context, groupId int64, usingCache
 			NoCache: true,
 		},
 	}
-	if len(usingCache) > 0 && usingCache[0] {
+	if len(useCache) > 0 && useCache[0] {
 		req.Params.NoCache = false
 	}
 	reqJson, err := sonic.ConfigDefault.Marshal(req)
@@ -260,8 +272,12 @@ func (s *sBot) GetGroupMemberList(ctx context.Context, groupId int64, usingCache
 }
 
 func (s *sBot) RequestMessage(ctx context.Context, messageId int64) (messageMap map[string]any, err error) {
+	ctx, span := gtrace.NewSpan(ctx, "bot.RequestMessage")
+	defer span.End()
+	span.SetAttributes(attribute.Int64("request_message.message_id", messageId))
+
 	// echo sign
-	echoSign := guid.S()
+	echoSign := s.generateEchoSignWithTrace(ctx)
 	// 参数
 	req := struct {
 		Action string `json:"action"`
@@ -316,8 +332,12 @@ func (s *sBot) RequestMessage(ctx context.Context, messageId int64) (messageMap 
 }
 
 func (s *sBot) GetGroupInfo(ctx context.Context, groupId int64, noCache ...bool) (infoMap map[string]any, err error) {
+	ctx, span := gtrace.NewSpan(ctx, "bot.GetGroupInfo")
+	defer span.End()
+	span.SetAttributes(attribute.Int64("get_group_info.group_id", groupId))
+
 	// echo sign
-	echoSign := guid.S()
+	echoSign := s.generateEchoSignWithTrace(ctx)
 	// 参数
 	req := struct {
 		Action string `json:"action"`
@@ -378,8 +398,11 @@ func (s *sBot) GetGroupInfo(ctx context.Context, groupId int64, noCache ...bool)
 }
 
 func (s *sBot) GetLoginInfo(ctx context.Context) (userId int64, nickname string) {
+	ctx, span := gtrace.NewSpan(ctx, "bot.GetLoginInfo")
+	defer span.End()
+
 	// echo sign
-	echoSign := guid.S()
+	echoSign := s.generateEchoSignWithTrace(ctx)
 	// 参数
 	req := struct {
 		Action string `json:"action"`

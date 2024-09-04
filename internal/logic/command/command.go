@@ -3,7 +3,9 @@ package command
 import (
 	"context"
 	"github.com/gogf/gf/v2/frame/g"
+	"github.com/gogf/gf/v2/net/gtrace"
 	"github.com/gogf/gf/v2/util/gconv"
+	"go.opentelemetry.io/otel/attribute"
 	"qq-bot-backend/internal/consts"
 	"qq-bot-backend/internal/service"
 	"regexp"
@@ -30,6 +32,10 @@ func (s *sCommand) TryCommand(ctx context.Context, message string) (catch bool, 
 	if !strings.HasPrefix(message, "/") {
 		return
 	}
+
+	ctx, span := gtrace.NewSpan(ctx, "command.TryCommand")
+	defer span.End()
+
 	// 暂停状态时的权限校验
 	userId := service.Bot().GetUserId(ctx)
 	if !service.Process().IsBotProcessEnabled() &&
@@ -41,9 +47,15 @@ func (s *sCommand) TryCommand(ctx context.Context, message string) (catch bool, 
 		if !catch {
 			return
 		}
+		groupId := service.Bot().GetGroupId(ctx)
+		span.SetAttributes(
+			attribute.Int64("try_command.user_id", userId),
+			attribute.Int64("try_command.group_id", groupId),
+			attribute.String("try_command.command", message),
+		)
 		g.Log().Info(ctx,
 			service.Bot().GetCardOrNickname(ctx)+"("+gconv.String(userId)+
-				") in group("+gconv.String(service.Bot().GetGroupId(ctx))+") send cmd "+message)
+				") in group("+gconv.String(groupId)+") send cmd "+message)
 	}()
 	cmd := strings.Replace(message, "/", "", 1)
 	switch {

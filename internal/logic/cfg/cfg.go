@@ -3,6 +3,7 @@ package cfg
 import (
 	"context"
 	"github.com/gogf/gf/v2/frame/g"
+	"github.com/gogf/gf/v2/os/gcfg"
 	"qq-bot-backend/internal/service"
 	"time"
 )
@@ -19,7 +20,7 @@ func init() {
 
 func (s *sCfg) GetRetryIntervalSeconds(ctx context.Context) time.Duration {
 	const def = 3
-	seconds, err := g.Cfg().Get(ctx, "bot.retryIntervalSeconds", def)
+	seconds, err := gcfg.Instance().Get(ctx, "bot.retryIntervalSeconds", def)
 	if err != nil {
 		g.Log().Warning(ctx, err)
 		return def

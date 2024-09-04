@@ -3,6 +3,7 @@ package event
 import (
 	"context"
 	"github.com/gogf/gf/v2/frame/g"
+	"github.com/gogf/gf/v2/net/gtrace"
 	"github.com/gogf/gf/v2/os/gcache"
 	"github.com/gogf/gf/v2/util/gconv"
 	"qq-bot-backend/internal/service"
@@ -10,6 +11,9 @@ import (
 )
 
 func (s *sEvent) TryLockCard(ctx context.Context) (catch bool) {
+	ctx, span := gtrace.NewSpan(ctx, "event.TryLockCard")
+	defer span.End()
+
 	// 获取基础信息
 	userId := service.Bot().GetUserId(ctx)
 	groupId := service.Bot().GetGroupId(ctx)

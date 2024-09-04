@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/bytedance/sonic"
 	"github.com/gogf/gf/v2/frame/g"
+	"github.com/gogf/gf/v2/net/gtrace"
 	"github.com/gogf/gf/v2/util/gconv"
 	"net/http"
 	"qq-bot-backend/internal/service"
@@ -17,6 +18,14 @@ import (
 )
 
 func (c *ControllerV1) Message(ctx context.Context, req *v1.MessageReq) (res *v1.MessageRes, err error) {
+	ctx, span := gtrace.NewSpan(ctx, "controller.Message")
+	defer span.End()
+	defer func() {
+		if err != nil {
+			span.RecordError(err)
+		}
+	}()
+
 	if req.Token == "" {
 		// 忽视前置的 Bearer 或 Token 进行鉴权
 		authorizations := strings.Fields(g.RequestFromCtx(ctx).Header.Get("Authorization"))

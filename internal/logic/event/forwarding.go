@@ -3,11 +3,15 @@ package event
 import (
 	"context"
 	"github.com/gogf/gf/v2/frame/g"
+	"github.com/gogf/gf/v2/net/gtrace"
 	"github.com/gogf/gf/v2/util/gconv"
 	"qq-bot-backend/internal/service"
 )
 
 func (s *sEvent) TryForward(ctx context.Context) (catch bool) {
+	ctx, span := gtrace.NewSpan(ctx, "event.TryForward")
+	defer span.End()
+
 	groupId := service.Bot().GetGroupId(ctx)
 	userId := service.Bot().GetUserId(ctx)
 	if groupId != 0 {

@@ -4,12 +4,16 @@ import (
 	"context"
 	"fmt"
 	"github.com/gogf/gf/v2/frame/g"
+	"github.com/gogf/gf/v2/net/gtrace"
 	"github.com/gogf/gf/v2/util/gconv"
 	"qq-bot-backend/internal/consts"
 	"qq-bot-backend/internal/service"
 )
 
 func (s *sEvent) TryKeywordRecall(ctx context.Context) (catch bool) {
+	ctx, span := gtrace.NewSpan(ctx, "event.TryKeywordRecall")
+	defer span.End()
+
 	if service.Bot().IsGroupOwnerOrAdmin(ctx) {
 		// owner or admin 不需要撤回
 		return

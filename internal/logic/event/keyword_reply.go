@@ -5,7 +5,9 @@ import (
 	"github.com/bytedance/sonic"
 	"github.com/bytedance/sonic/ast"
 	"github.com/gogf/gf/v2/frame/g"
+	"github.com/gogf/gf/v2/net/gtrace"
 	"github.com/gogf/gf/v2/util/gconv"
+	"go.opentelemetry.io/otel/attribute"
 	"net/http"
 	"net/url"
 	"qq-bot-backend/internal/service"
@@ -40,6 +42,9 @@ func decrementPlaceholderIndex(text string) string {
 }
 
 func (s *sEvent) TryKeywordReply(ctx context.Context) (catch bool) {
+	ctx, span := gtrace.NewSpan(ctx, "event.TryKeywordReply")
+	defer span.End()
+
 	// 获取基础信息
 	msg := service.Bot().GetMessage(ctx)
 	userId := service.Bot().GetUserId(ctx)
@@ -90,6 +95,17 @@ func (s *sEvent) TryKeywordReply(ctx context.Context) (catch bool) {
 
 func (s *sEvent) keywordReplyWebhook(ctx context.Context, userId, groupId int64, nickname,
 	message, hit, value string) (replyMsg string, noReplyPrefix bool) {
+	ctx, span := gtrace.NewSpan(ctx, "event.keywordReplyWebhook")
+	defer span.End()
+	span.SetAttributes(
+		attribute.Int64("keyword_reply_webhook.user_id", userId),
+		attribute.Int64("keyword_reply_webhook.group_id", groupId),
+		attribute.String("keyword_reply_webhook.nickname", nickname),
+		attribute.String("keyword_reply_webhook.message", message),
+		attribute.String("keyword_reply_webhook.hit", hit),
+		attribute.String("keyword_reply_webhook.value", value),
+	)
+
 	// 必须以 hit 开头
 	if !strings.HasPrefix(message, hit) {
 		return
@@ -228,6 +244,14 @@ func (s *sEvent) keywordReplyWebhook(ctx context.Context, userId, groupId int64,
 }
 
 func (s *sEvent) keywordReplyCommand(ctx context.Context, message, hit, text string) (replyMsg string) {
+	ctx, span := gtrace.NewSpan(ctx, "event.keywordReplyCommand")
+	defer span.End()
+	span.SetAttributes(
+		attribute.String("keyword_reply_command.message", message),
+		attribute.String("keyword_reply_command.hit", hit),
+		attribute.String("keyword_reply_command.text", text),
+	)
+
 	// 必须以 hit 开头
 	if !strings.HasPrefix(message, hit) {
 		return
@@ -257,7 +281,16 @@ func (s *sEvent) keywordReplyCommand(ctx context.Context, message, hit, text str
 	return
 }
 
-func (s *sEvent) keywordReplyRewrite(ctx context.Context, try func(context.Context) bool, message, hit, text string) (catch bool) {
+func (s *sEvent) keywordReplyRewrite(ctx context.Context, try func(context.Context) bool,
+	message, hit, text string) (catch bool) {
+	ctx, span := gtrace.NewSpan(ctx, "event.keywordReplyRewrite")
+	defer span.End()
+	span.SetAttributes(
+		attribute.String("keyword_reply_rewrite.message", message),
+		attribute.String("keyword_reply_rewrite.hit", hit),
+		attribute.String("keyword_reply_rewrite.text", text),
+	)
+
 	// 必须以 hit 开头
 	if !strings.HasPrefix(message, hit) {
 		return

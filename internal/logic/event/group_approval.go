@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/gogf/gf/v2/frame/g"
+	"github.com/gogf/gf/v2/net/gtrace"
 	"github.com/gogf/gf/v2/util/gconv"
 	"qq-bot-backend/internal/consts"
 	"qq-bot-backend/internal/service"
@@ -11,12 +12,14 @@ import (
 )
 
 func (s *sEvent) TryApproveAddGroup(ctx context.Context) (catch bool) {
+	ctx, span := gtrace.NewSpan(ctx, "event.TryApproveAddGroup")
+	defer span.End()
+
 	// 获取当前 group approval 策略
 	groupId := service.Bot().GetGroupId(ctx)
 	policy := service.Group().GetApprovalPolicy(ctx, groupId)
-	// 预处理
+	// 没有入群审核策略，跳过审核功能
 	if len(policy) == 0 {
-		// 没有入群审核策略，跳过审核功能
 		return
 	}
 	// 默认通过审核

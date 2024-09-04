@@ -2,6 +2,8 @@ package event
 
 import (
 	"context"
+	"github.com/gogf/gf/v2/frame/g"
+	"github.com/gogf/gf/v2/net/gtrace"
 	"github.com/gogf/gf/v2/util/gconv"
 	"qq-bot-backend/internal/service"
 	"regexp"
@@ -12,6 +14,9 @@ var (
 )
 
 func (s *sEvent) TryUndoMessageRecall(ctx context.Context) (catch bool) {
+	ctx, span := gtrace.NewSpan(ctx, "event.TryUndoMessageRecall")
+	defer span.End()
+
 	{
 		userId := service.Bot().GetUserId(ctx)
 		// 不处理自己的消息
@@ -68,6 +73,7 @@ func (s *sEvent) TryUndoMessageRecall(ctx context.Context) (catch bool) {
 		message = cqReplyRe.ReplaceAllString(message, "")
 	}
 	msg += message
+	g.Log().Info(ctx, msg)
 	_, _ = service.Bot().SendMessage(ctx,
 		"group", 0, notificationGroupId, msg, false)
 	catch = true

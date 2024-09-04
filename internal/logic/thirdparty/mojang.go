@@ -24,31 +24,24 @@ func (s *sThirdParty) QueryMinecraftGenuineUser(ctx context.Context, name string
 	}
 	name = legalMinecraftNameRe.FindStringSubmatch(name)[1]
 	// GET 请求 mojang api
-	get := func() (*gclient.Response, error) {
-		return g.Client().Get(ctx, "https://api.mojang.com/users/profiles/minecraft/"+name)
-	}
-	// 第一次请求
-	res, err := get()
-	// 失败重试
-	if err != nil {
-		for range 2 {
-			time.Sleep(service.Cfg().GetRetryIntervalSeconds(ctx) * time.Second)
-			res, err = get()
-			if err == nil {
-				break
-			}
+	var resp *gclient.Response
+	for range 3 {
+		resp, err = g.Client().Get(ctx, "https://api.mojang.com/users/profiles/minecraft/"+name)
+		if err == nil {
+			break
 		}
-		if err != nil {
-			return
-		}
+		time.Sleep(service.Cfg().GetRetryIntervalSeconds(ctx) * time.Second)
 	}
-	defer res.Body.Close()
+	if err != nil || resp == nil {
+		return
+	}
+	defer resp.Close()
 	// 判断是否正版
-	if res.StatusCode != http.StatusOK {
+	if resp.StatusCode != http.StatusOK {
 		return
 	}
 	// 解析响应
-	rawJson, err := io.ReadAll(res.Body)
+	rawJson, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return
 	}

@@ -4,7 +4,9 @@ import (
 	"context"
 	"errors"
 	"github.com/gogf/gf/v2/frame/g"
+	"github.com/gogf/gf/v2/net/gtrace"
 	"github.com/gogf/gf/v2/os/gcache"
+	"go.opentelemetry.io/otel/trace"
 	"time"
 )
 
@@ -38,6 +40,10 @@ func (s *sBot) catchEcho(ctx context.Context) (catch bool) {
 		if echo.CallbackFunc == nil {
 			return
 		}
+
+		var span trace.Span
+		ctx, span = gtrace.NewSpan(s.extractEchoSign(ctx, echoSign), "bot.echo")
+		defer span.End()
 		echo.CallbackFunc(echo.LastContext, ctx)
 	}
 	return

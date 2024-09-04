@@ -3,8 +3,11 @@ package controller
 import (
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/net/ghttp"
+	"github.com/gogf/gf/v2/net/gtrace"
 	"github.com/gogf/gf/v2/util/gconv"
 	"github.com/gorilla/websocket"
+	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/trace"
 	"net/http"
 	"qq-bot-backend/internal/service"
 	"strings"
@@ -28,6 +31,10 @@ var (
 
 func (c *cBot) Websocket(r *ghttp.Request) {
 	ctx := r.Context()
+	// new trace
+	ctx = trace.ContextWithSpanContext(ctx, trace.SpanContext{})
+	ctx, span := gtrace.NewSpan(ctx, "controller.Bot.Websocket")
+
 	var (
 		tokenName string
 		botId     int64
@@ -60,6 +67,7 @@ func (c *cBot) Websocket(r *ghttp.Request) {
 		}
 		// 记录登录时间
 		service.Token().UpdateLoginTime(ctx, token)
+		span.SetAttributes(attribute.String("websocket.token_name", tokenName))
 	}
 	// 升级 WebSocket 协议
 	conn, err := wsUpGrader.Upgrade(r.Response.Writer, r.Request, nil)
@@ -77,6 +85,9 @@ func (c *cBot) Websocket(r *ghttp.Request) {
 		service.Bot().JoinConnectionPool(ctx, botId)
 		g.Log().Info(ctx, tokenName+"("+gconv.String(botId)+") joined connection pool")
 	}
+
+	span.End()
+
 	// 消息循环
 	for {
 		var wsReq []byte
@@ -90,6 +101,8 @@ func (c *cBot) Websocket(r *ghttp.Request) {
 			g.Log().Info(ctx, tokenName+" disconnected")
 			break
 		}
+		// new trace
+		ctx := trace.ContextWithSpanContext(ctx, trace.SpanContext{})
 		// 异步处理 WebSocket 请求
 		go service.Bot().Process(ctx, wsReq, service.Process().Process)
 	}
