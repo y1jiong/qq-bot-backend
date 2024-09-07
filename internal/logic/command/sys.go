@@ -2,6 +2,7 @@ package command
 
 import (
 	"context"
+	"github.com/gogf/gf/v2/net/gtrace"
 	"github.com/gogf/gf/v2/util/gconv"
 	"qq-bot-backend/internal/service"
 )
@@ -11,6 +12,10 @@ func trySys(ctx context.Context, cmd string) (catch bool, retMsg string) {
 	if !service.User().IsSystemTrustedUser(ctx, service.Bot().GetUserId(ctx)) {
 		return
 	}
+
+	ctx, span := gtrace.NewSpan(ctx, "command.trySys")
+	defer span.End()
+
 	switch {
 	case nextBranchRe.MatchString(cmd):
 		next := nextBranchRe.FindStringSubmatch(cmd)

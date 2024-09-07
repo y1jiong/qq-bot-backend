@@ -2,7 +2,7 @@ package event
 
 import "testing"
 
-func Test_decrementPlaceholderIndex(t *testing.T) {
+func Test_decreasePlaceholderIndex(t *testing.T) {
 	type args struct {
 		text string
 	}
@@ -44,8 +44,8 @@ func Test_decrementPlaceholderIndex(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := decrementPlaceholderIndex(tt.args.text); got != tt.want {
-				t.Errorf("decrementPlaceholderIndex() = %v, want %v", got, tt.want)
+			if got := decreasePlaceholderIndex(tt.args.text); got != tt.want {
+				t.Errorf("decreasePlaceholderIndex() = %v, want %v", got, tt.want)
 			}
 		})
 	}

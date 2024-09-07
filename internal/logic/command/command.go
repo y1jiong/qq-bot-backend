@@ -79,8 +79,11 @@ func (s *sCommand) TryCommand(ctx context.Context, message string) (catch bool, 
 			if !service.User().CouldGetRawMsg(ctx, service.Bot().GetUserId(ctx)) {
 				return
 			}
+			// span
+			_, span := gtrace.NewSpan(ctx, "command.raw")
 			// /raw <>
 			catch, retMsg = true, next[2]
+			span.End()
 		case "broadcast":
 			// /broadcast <>
 			catch, retMsg = tryBroadcast(ctx, next[2])
@@ -104,9 +107,11 @@ func (s *sCommand) TryCommand(ctx context.Context, message string) (catch bool, 
 			// /status
 			catch, retMsg = queryProcessStatus(ctx)
 		case "version":
+			// span
+			_, span := gtrace.NewSpan(ctx, "command.version")
 			// /version
-			retMsg = consts.Description
-			catch = true
+			catch, retMsg = true, consts.Description
+			span.End()
 		case "continue":
 			// /continue
 			catch, retMsg = continueProcess(ctx)

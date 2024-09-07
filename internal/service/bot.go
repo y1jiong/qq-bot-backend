@@ -43,7 +43,7 @@ type (
 		GetCard(ctx context.Context) string
 		GetCardOrNickname(ctx context.Context) string
 		GetCardOldNew(ctx context.Context) (oldCard string, newCard string)
-		GetGroupMemberInfo(ctx context.Context, groupId int64, userId int64) (member ast.Node, err error)
+		GetGroupMemberInfo(ctx context.Context, groupId int64, userId int64) (member *ast.Node, err error)
 		GetGroupMemberList(ctx context.Context, groupId int64, useCache ...bool) (members []any, err error)
 		RequestMessage(ctx context.Context, messageId int64) (messageMap map[string]any, err error)
 		GetGroupInfo(ctx context.Context, groupId int64, noCache ...bool) (infoMap map[string]any, err error)
@@ -51,10 +51,13 @@ type (
 		IsGroupOwnerOrAdmin(ctx context.Context) bool
 		IsGroupOwnerOrAdminOrSysTrusted(ctx context.Context) bool
 		SendMessage(ctx context.Context, messageType string, userId int64, groupId int64, msg string, plain bool) (messageId int64, err error)
+		// SendPlainMsg 适用于*事件*触发的消息发送
 		SendPlainMsg(ctx context.Context, msg string)
+		// SendMsg 适用于*事件*触发的消息发送
 		SendMsg(ctx context.Context, msg string)
-		SendMsgIfNotApiReq(ctx context.Context, msg string, notPlain ...bool)
-		SendMsgCacheContext(ctx context.Context, msg string, notPlain ...bool)
+		SendMsgIfNotApiReq(ctx context.Context, msg string, richText ...bool)
+		// SendMsgCacheContext 适用于*非事件*触发的消息发送
+		SendMsgCacheContext(ctx context.Context, msg string, richText ...bool)
 		SendFileToGroup(ctx context.Context, groupId int64, filePath string, name string, folder string)
 		SendFileToUser(ctx context.Context, userId int64, filePath string, name string)
 		SendFile(ctx context.Context, filePath string, name string)

@@ -75,13 +75,12 @@ func (s *sBot) SendMessage(ctx context.Context,
 	defer wg.Wait()
 	wgDone := sync.OnceFunc(wg.Done)
 	wg.Add(1)
-	callback := func(ctx context.Context, rsyncCtx context.Context) {
+	callback := func(ctx context.Context, asyncCtx context.Context) {
 		defer wgDone()
-		err = s.defaultEchoHandler(rsyncCtx)
-		if err != nil {
+		if err = s.defaultEchoHandler(asyncCtx); err != nil {
 			return
 		}
-		messageId = s.getMessageIdFromData(rsyncCtx)
+		messageId = s.getMessageIdFromData(asyncCtx)
 	}
 	timeout := func(ctx context.Context) {
 		defer wgDone()
@@ -102,28 +101,27 @@ func (s *sBot) SendMessage(ctx context.Context,
 	return
 }
 
+// SendPlainMsg 适用于*事件*触发的消息发送
 func (s *sBot) SendPlainMsg(ctx context.Context, msg string) {
 	_, _ = s.SendMessage(ctx, s.GetMsgType(ctx), s.GetUserId(ctx), s.GetGroupId(ctx), msg, true)
 }
 
+// SendMsg 适用于*事件*触发的消息发送
 func (s *sBot) SendMsg(ctx context.Context, msg string) {
 	_, _ = s.SendMessage(ctx, s.GetMsgType(ctx), s.GetUserId(ctx), s.GetGroupId(ctx), msg, false)
 }
 
-func (s *sBot) SendMsgIfNotApiReq(ctx context.Context, msg string, notPlain ...bool) {
+func (s *sBot) SendMsgIfNotApiReq(ctx context.Context, msg string, richText ...bool) {
 	if s.isApiReq(ctx) {
 		return
 	}
-	if len(notPlain) > 0 && notPlain[0] {
-		s.SendMsg(ctx, msg)
-		return
-	}
-	s.SendPlainMsg(ctx, msg)
+	s.SendMsgCacheContext(ctx, msg, richText...)
 }
 
-func (s *sBot) SendMsgCacheContext(ctx context.Context, msg string, notPlain ...bool) {
+// SendMsgCacheContext 适用于*非事件*触发的消息发送
+func (s *sBot) SendMsgCacheContext(ctx context.Context, msg string, richText ...bool) {
 	plain := true
-	if len(notPlain) > 0 && notPlain[0] {
+	if len(richText) > 0 && richText[0] {
 		plain = false
 	}
 	userId := s.GetUserId(ctx)
@@ -187,15 +185,16 @@ func (s *sBot) SendFileToGroup(ctx context.Context, groupId int64, filePath, nam
 	defer wg.Wait()
 	wgDone := sync.OnceFunc(wg.Done)
 	wg.Add(1)
-	callback := func(ctx context.Context, rsyncCtx context.Context) {
+	callback := func(ctx context.Context, asyncCtx context.Context) {
 		defer wgDone()
-		if err = s.defaultEchoHandler(rsyncCtx); err != nil {
+		if err = s.defaultEchoHandler(asyncCtx); err != nil {
 			s.SendMsgIfNotApiReq(ctx, err.Error())
 			return
 		}
 	}
 	timeout := func(ctx context.Context) {
 		defer wgDone()
+		err = errors.New("echo timeout")
 		s.SendMsgIfNotApiReq(ctx, "上传至群文件超时")
 	}
 	// echo
@@ -259,15 +258,16 @@ func (s *sBot) SendFileToUser(ctx context.Context, userId int64, filePath, name 
 	defer wg.Wait()
 	wgDone := sync.OnceFunc(wg.Done)
 	wg.Add(1)
-	callback := func(ctx context.Context, rsyncCtx context.Context) {
+	callback := func(ctx context.Context, asyncCtx context.Context) {
 		defer wgDone()
-		if err = s.defaultEchoHandler(rsyncCtx); err != nil {
+		if err = s.defaultEchoHandler(asyncCtx); err != nil {
 			s.SendMsgIfNotApiReq(ctx, err.Error())
 			return
 		}
 	}
 	timeout := func(ctx context.Context) {
 		defer wgDone()
+		err = errors.New("echo timeout")
 		s.SendMsgIfNotApiReq(ctx, "上传文件至私聊超时")
 	}
 	// echo
@@ -330,13 +330,13 @@ func (s *sBot) UploadFile(ctx context.Context, url string) (filePath string, err
 	defer wg.Wait()
 	wgDone := sync.OnceFunc(wg.Done)
 	wg.Add(1)
-	callback := func(ctx context.Context, rsyncCtx context.Context) {
+	callback := func(ctx context.Context, asyncCtx context.Context) {
 		defer wgDone()
-		if err = s.defaultEchoHandler(rsyncCtx); err != nil {
+		if err = s.defaultEchoHandler(asyncCtx); err != nil {
 			s.SendMsgIfNotApiReq(ctx, err.Error())
 			return
 		}
-		filePath = s.getFileFromData(rsyncCtx)
+		filePath = s.getFileFromData(asyncCtx)
 	}
 	timeout := func(ctx context.Context) {
 		defer wgDone()
@@ -375,9 +375,12 @@ func (s *sBot) ApproveJoinGroup(ctx context.Context, flag, subType string, appro
 	if approve {
 		reason = ""
 	}
+	// echo sign
+	echoSign := s.generateEchoSignWithTrace(ctx)
 	// 参数
 	req := struct {
 		Action string `json:"action"`
+		Echo   string `json:"echo"`
 		Params struct {
 			Flag    string `json:"flag"`
 			SubType string `json:"sub_type"`
@@ -386,6 +389,7 @@ func (s *sBot) ApproveJoinGroup(ctx context.Context, flag, subType string, appro
 		} `json:"params"`
 	}{
 		Action: "set_group_add_request",
+		Echo:   echoSign,
 		Params: struct {
 			Flag    string `json:"flag"`
 			SubType string `json:"sub_type"`
@@ -399,6 +403,27 @@ func (s *sBot) ApproveJoinGroup(ctx context.Context, flag, subType string, appro
 		},
 	}
 	reqJson, err := sonic.ConfigDefault.Marshal(req)
+	if err != nil {
+		g.Log().Error(ctx, err)
+		return
+	}
+	// callback
+	wg := sync.WaitGroup{}
+	defer wg.Wait()
+	wgDone := sync.OnceFunc(wg.Done)
+	wg.Add(1)
+	callback := func(ctx context.Context, asyncCtx context.Context) {
+		defer wgDone()
+		if err = s.defaultEchoHandler(asyncCtx); err != nil {
+			return
+		}
+	}
+	timeout := func(ctx context.Context) {
+		defer wgDone()
+		err = errors.New("echo timeout")
+	}
+	// echo
+	err = s.pushEchoCache(ctx, echoSign, callback, timeout)
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return
@@ -452,9 +477,9 @@ func (s *sBot) SetModel(ctx context.Context, model string) {
 	defer wg.Wait()
 	wgDone := sync.OnceFunc(wg.Done)
 	wg.Add(1)
-	callback := func(ctx context.Context, rsyncCtx context.Context) {
+	callback := func(ctx context.Context, asyncCtx context.Context) {
 		defer wgDone()
-		if err = s.defaultEchoHandler(rsyncCtx); err != nil {
+		if err = s.defaultEchoHandler(asyncCtx); err != nil {
 			s.SendMsgIfNotApiReq(ctx, err.Error())
 			return
 		}
@@ -462,6 +487,7 @@ func (s *sBot) SetModel(ctx context.Context, model string) {
 	}
 	timeout := func(ctx context.Context) {
 		defer wgDone()
+		err = errors.New("echo timeout")
 		s.SendMsgIfNotApiReq(ctx, "更改机型超时")
 	}
 	// echo
@@ -488,14 +514,18 @@ func (s *sBot) RecallMessage(ctx context.Context, msgId int64) {
 		}
 	}()
 
+	// echo sign
+	echoSign := s.generateEchoSignWithTrace(ctx)
 	// 参数
 	req := struct {
 		Action string `json:"action"`
+		Echo   string `json:"echo"`
 		Params struct {
 			MessageId int64 `json:"message_id"`
 		} `json:"params"`
 	}{
 		Action: "delete_msg",
+		Echo:   echoSign,
 		Params: struct {
 			MessageId int64 `json:"message_id"`
 		}{
@@ -503,6 +533,27 @@ func (s *sBot) RecallMessage(ctx context.Context, msgId int64) {
 		},
 	}
 	reqJson, err := sonic.ConfigDefault.Marshal(req)
+	if err != nil {
+		g.Log().Error(ctx, err)
+		return
+	}
+	// callback
+	wg := sync.WaitGroup{}
+	defer wg.Wait()
+	wgDone := sync.OnceFunc(wg.Done)
+	wg.Add(1)
+	callback := func(ctx context.Context, asyncCtx context.Context) {
+		defer wgDone()
+		if err = s.defaultEchoHandler(asyncCtx); err != nil {
+			return
+		}
+	}
+	timeout := func(ctx context.Context) {
+		defer wgDone()
+		err = errors.New("echo timeout")
+	}
+	// echo
+	err = s.pushEchoCache(ctx, echoSign, callback, timeout)
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return
@@ -534,9 +585,12 @@ func (s *sBot) MutePrototype(ctx context.Context, groupId, userId int64, seconds
 		// (30*24*60-1)*60=2591940 秒
 		seconds = 2591940
 	}
+	// echo sign
+	echoSign := s.generateEchoSignWithTrace(ctx)
 	// 参数
 	req := struct {
 		Action string `json:"action"`
+		Echo   string `json:"echo"`
 		Params struct {
 			GroupId  int64 `json:"group_id"`
 			UserId   int64 `json:"user_id"`
@@ -544,6 +598,7 @@ func (s *sBot) MutePrototype(ctx context.Context, groupId, userId int64, seconds
 		} `json:"params"`
 	}{
 		Action: "set_group_ban",
+		Echo:   echoSign,
 		Params: struct {
 			GroupId  int64 `json:"group_id"`
 			UserId   int64 `json:"user_id"`
@@ -555,6 +610,27 @@ func (s *sBot) MutePrototype(ctx context.Context, groupId, userId int64, seconds
 		},
 	}
 	reqJson, err := sonic.ConfigDefault.Marshal(req)
+	if err != nil {
+		g.Log().Error(ctx, err)
+		return
+	}
+	// callback
+	wg := sync.WaitGroup{}
+	defer wg.Wait()
+	wgDone := sync.OnceFunc(wg.Done)
+	wg.Add(1)
+	callback := func(ctx context.Context, asyncCtx context.Context) {
+		defer wgDone()
+		if err = s.defaultEchoHandler(asyncCtx); err != nil {
+			return
+		}
+	}
+	timeout := func(ctx context.Context) {
+		defer wgDone()
+		err = errors.New("echo timeout")
+	}
+	// echo
+	err = s.pushEchoCache(ctx, echoSign, callback, timeout)
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return
@@ -584,9 +660,12 @@ func (s *sBot) SetGroupCard(ctx context.Context, groupId, userId int64, card str
 		}
 	}()
 
+	// echo sign
+	echoSign := s.generateEchoSignWithTrace(ctx)
 	// 参数
 	req := struct {
 		Action string `json:"action"`
+		Echo   string `json:"echo"`
 		Params struct {
 			GroupId int64  `json:"group_id"`
 			UserId  int64  `json:"user_id"`
@@ -594,6 +673,7 @@ func (s *sBot) SetGroupCard(ctx context.Context, groupId, userId int64, card str
 		} `json:"params"`
 	}{
 		Action: "set_group_card",
+		Echo:   echoSign,
 		Params: struct {
 			GroupId int64  `json:"group_id"`
 			UserId  int64  `json:"user_id"`
@@ -605,6 +685,27 @@ func (s *sBot) SetGroupCard(ctx context.Context, groupId, userId int64, card str
 		},
 	}
 	reqJson, err := sonic.ConfigDefault.Marshal(req)
+	if err != nil {
+		g.Log().Error(ctx, err)
+		return
+	}
+	// callback
+	wg := sync.WaitGroup{}
+	defer wg.Wait()
+	wgDone := sync.OnceFunc(wg.Done)
+	wg.Add(1)
+	callback := func(ctx context.Context, asyncCtx context.Context) {
+		defer wgDone()
+		if err = s.defaultEchoHandler(asyncCtx); err != nil {
+			return
+		}
+	}
+	timeout := func(ctx context.Context) {
+		defer wgDone()
+		err = errors.New("echo timeout")
+	}
+	// echo
+	err = s.pushEchoCache(ctx, echoSign, callback, timeout)
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return
@@ -629,9 +730,12 @@ func (s *sBot) Kick(ctx context.Context, groupId, userId int64, reject ...bool) 
 		}
 	}()
 
+	// echo sign
+	echoSign := s.generateEchoSignWithTrace(ctx)
 	// 参数
 	req := struct {
 		Action string `json:"action"`
+		Echo   string `json:"echo"`
 		Params struct {
 			GroupId          int64 `json:"group_id"`
 			UserId           int64 `json:"user_id"`
@@ -639,6 +743,7 @@ func (s *sBot) Kick(ctx context.Context, groupId, userId int64, reject ...bool) 
 		} `json:"params"`
 	}{
 		Action: "set_group_kick",
+		Echo:   echoSign,
 		Params: struct {
 			GroupId          int64 `json:"group_id"`
 			UserId           int64 `json:"user_id"`
@@ -653,6 +758,27 @@ func (s *sBot) Kick(ctx context.Context, groupId, userId int64, reject ...bool) 
 		req.Params.RejectAddRequest = true
 	}
 	reqJson, err := sonic.ConfigDefault.Marshal(req)
+	if err != nil {
+		g.Log().Error(ctx, err)
+		return
+	}
+	// callback
+	wg := sync.WaitGroup{}
+	defer wg.Wait()
+	wgDone := sync.OnceFunc(wg.Done)
+	wg.Add(1)
+	callback := func(ctx context.Context, asyncCtx context.Context) {
+		defer wgDone()
+		if err = s.defaultEchoHandler(asyncCtx); err != nil {
+			return
+		}
+	}
+	timeout := func(ctx context.Context) {
+		defer wgDone()
+		err = errors.New("echo timeout")
+	}
+	// echo
+	err = s.pushEchoCache(ctx, echoSign, callback, timeout)
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return

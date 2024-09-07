@@ -18,7 +18,7 @@ const (
 
 type echoModel struct {
 	LastContext  context.Context
-	CallbackFunc func(ctx context.Context, rsyncCtx context.Context)
+	CallbackFunc func(ctx context.Context, asyncCtx context.Context)
 	TimeoutFunc  func(ctx context.Context)
 }
 
@@ -49,21 +49,24 @@ func (s *sBot) catchEcho(ctx context.Context) (catch bool) {
 	return
 }
 
-func (s *sBot) defaultEchoHandler(rsyncCtx context.Context) error {
-	if s.getEchoStatus(rsyncCtx) != "ok" {
-		switch s.getEchoStatus(rsyncCtx) {
+func (s *sBot) defaultEchoHandler(asyncCtx context.Context) error {
+	if s.getEchoStatus(asyncCtx) != "ok" {
+		switch s.getEchoStatus(asyncCtx) {
 		case "async":
 			return errors.New("已提交 async 处理")
 		case "failed":
-			return errors.New(s.getEchoFailedMsg(rsyncCtx))
+			return errors.New(s.getEchoFailedMsg(asyncCtx))
 		}
 	}
 	return nil
 }
 
 func (s *sBot) pushEchoCache(ctx context.Context, echoSign string,
-	callbackFunc func(ctx context.Context, rsyncCtx context.Context),
+	callbackFunc func(ctx context.Context, asyncCtx context.Context),
 	timeoutFunc func(ctx context.Context)) error {
+	if callbackFunc == nil || timeoutFunc == nil {
+		return errors.New("callbackFunc or timeoutFunc must not be nil")
+	}
 	echoKey := getEchoCacheKey(echoSign)
 	// 放入缓存
 	if err := gcache.Set(ctx, echoKey, &echoModel{

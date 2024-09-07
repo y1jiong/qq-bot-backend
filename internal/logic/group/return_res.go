@@ -194,7 +194,7 @@ func (s *sGroup) KickFromListReturnRes(ctx context.Context,
 		return
 	}
 	// 局部变量
-	kickMap := make(map[string]any)
+	kickSet := make(map[string]struct{})
 	// 解析数组
 	for _, v := range membersArr {
 		// map 断言
@@ -202,27 +202,35 @@ func (s *sGroup) KickFromListReturnRes(ctx context.Context,
 			if kk["role"] != "member" {
 				continue
 			}
-			// 放入待踢出 map
+			// 放入待踢出 set
 			userId := gconv.String(kk["user_id"])
 			if _, ok := listMap[userId]; ok {
-				kickMap[userId] = nil
+				kickSet[userId] = struct{}{}
 			}
 		}
 	}
 	// 不需要执行踢出
-	if len(kickMap) == 0 {
+	if len(kickSet) == 0 {
 		retMsg = "list(" + listName + ") 中的 group(" + gconv.String(groupId) + ") member 无需踢出"
 		return
 	}
 	// 踢人过程
 	retMsg = "正在踢出 list(" + listName + ") 中的 group(" + gconv.String(groupId) +
-		") member\n共 " + gconv.String(listMapLen) + " 条，有 " + gconv.String(len(kickMap)) + " 条需要踢出"
+		") member\n共 " + gconv.String(listMapLen) + " 条，有 " + gconv.String(len(kickSet)) + " 条需要踢出"
 	service.Bot().SendMsgIfNotApiReq(ctx, retMsg)
-	for k := range kickMap {
-		// 踢人
-		service.Bot().Kick(ctx, groupId, gconv.Int64(k))
-		// 随机延时
-		time.Sleep(time.Duration(grand.N(1000, 10000)) * time.Millisecond)
+	{
+		cnt := 0
+		kickSetLastOneCnt := len(kickSet) - 1
+		for k := range kickSet {
+			// 踢人
+			service.Bot().Kick(ctx, groupId, gconv.Int64(k))
+			cnt++
+			if cnt == kickSetLastOneCnt {
+				break
+			}
+			// 随机延时
+			time.Sleep(time.Duration(grand.N(1000, 10000)) * time.Millisecond)
+		}
 	}
 	// 检查有没有踢出失败的
 	// 获取群成员列表
@@ -232,7 +240,7 @@ func (s *sGroup) KickFromListReturnRes(ctx context.Context,
 		return
 	}
 	// 局部变量
-	kickMap = make(map[string]any)
+	kickSet = make(map[string]struct{})
 	// 解析数组
 	for _, v := range membersArr {
 		// map 断言
@@ -240,16 +248,16 @@ func (s *sGroup) KickFromListReturnRes(ctx context.Context,
 			if kk["role"] != "member" {
 				continue
 			}
-			// 放入待踢出 map
+			// 放入未踢出 set
 			userId := gconv.String(kk["user_id"])
 			if _, ok := listMap[userId]; ok {
-				kickMap[userId] = nil
+				kickSet[userId] = struct{}{}
 			}
 		}
 	}
 	// 回执
 	retMsg = "已踢出 list(" + listName + ") 中的 group(" + gconv.String(groupId) +
-		") member\n共 " + gconv.String(listMapLen) + " 条，有 " + gconv.String(len(kickMap)) + " 条未踢出"
+		") member\n共 " + gconv.String(listMapLen) + " 条，有 " + gconv.String(len(kickSet)) + " 条未踢出"
 	return
 }
 
@@ -289,7 +297,7 @@ func (s *sGroup) KeepFromListReturnRes(ctx context.Context,
 		return
 	}
 	// 局部变量
-	kickMap := make(map[string]any)
+	kickSet := make(map[string]struct{})
 	// 解析数组
 	for _, v := range membersArr {
 		// map 断言
@@ -297,27 +305,35 @@ func (s *sGroup) KeepFromListReturnRes(ctx context.Context,
 			if kk["role"] != "member" {
 				continue
 			}
-			// 放入待踢出 map
+			// 放入待踢出 set
 			userId := gconv.String(kk["user_id"])
 			if _, ok := listMap[userId]; !ok {
-				kickMap[userId] = nil
+				kickSet[userId] = struct{}{}
 			}
 		}
 	}
 	// 不需要执行踢出
-	if len(kickMap) == 0 {
+	if len(kickSet) == 0 {
 		retMsg = "list(" + listName + ") 中的 group(" + gconv.String(groupId) + ") member 无需踢出"
 		return
 	}
 	// 踢人过程
 	retMsg = "正在踢出不在 list(" + listName + ") 中的 group(" + gconv.String(groupId) +
-		") member\n共 " + gconv.String(listMapLen) + " 条，有 " + gconv.String(len(kickMap)) + " 条需要踢出"
+		") member\n共 " + gconv.String(listMapLen) + " 条，有 " + gconv.String(len(kickSet)) + " 条需要踢出"
 	service.Bot().SendMsgIfNotApiReq(ctx, retMsg)
-	for k := range kickMap {
-		// 踢人
-		service.Bot().Kick(ctx, groupId, gconv.Int64(k))
-		// 随机延时
-		time.Sleep(time.Duration(grand.N(1000, 10000)) * time.Millisecond)
+	{
+		cnt := 0
+		kickSetLastOneCnt := len(kickSet) - 1
+		for k := range kickSet {
+			// 踢人
+			service.Bot().Kick(ctx, groupId, gconv.Int64(k))
+			cnt++
+			if cnt == kickSetLastOneCnt {
+				break
+			}
+			// 随机延时
+			time.Sleep(time.Duration(grand.N(1000, 10000)) * time.Millisecond)
+		}
 	}
 	// 检查有没有踢出失败的
 	// 获取群成员列表
@@ -327,7 +343,7 @@ func (s *sGroup) KeepFromListReturnRes(ctx context.Context,
 		return
 	}
 	// 局部变量
-	kickMap = make(map[string]any)
+	kickSet = make(map[string]struct{})
 	// 解析数组
 	for _, v := range membersArr {
 		// map 断言
@@ -335,16 +351,16 @@ func (s *sGroup) KeepFromListReturnRes(ctx context.Context,
 			if kk["role"] != "member" {
 				continue
 			}
-			// 放入待踢出 map
+			// 放入未踢出 set
 			userId := gconv.String(kk["user_id"])
 			if _, ok := listMap[userId]; !ok {
-				kickMap[userId] = nil
+				kickSet[userId] = struct{}{}
 			}
 		}
 	}
 	// 回执
 	retMsg = "已踢出不在 list(" + listName + ") 中的 group(" + gconv.String(groupId) +
-		") member\n共 " + gconv.String(listMapLen) + " 条，有 " + gconv.String(len(kickMap)) + " 条未踢出"
+		") member\n共 " + gconv.String(listMapLen) + " 条，有 " + gconv.String(len(kickSet)) + " 条未踢出"
 	return
 }
 

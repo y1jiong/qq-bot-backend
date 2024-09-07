@@ -2,11 +2,15 @@ package command
 
 import (
 	"context"
+	"github.com/gogf/gf/v2/net/gtrace"
 	"github.com/gogf/gf/v2/util/gconv"
 	"qq-bot-backend/internal/service"
 )
 
 func tryUser(ctx context.Context, cmd string) (catch bool, retMsg string) {
+	ctx, span := gtrace.NewSpan(ctx, "command.tryUser")
+	defer span.End()
+
 	switch {
 	case nextBranchRe.MatchString(cmd):
 		next := nextBranchRe.FindStringSubmatch(cmd)

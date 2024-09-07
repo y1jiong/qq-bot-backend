@@ -2,11 +2,15 @@ package command
 
 import (
 	"context"
+	"github.com/gogf/gf/v2/net/gtrace"
 	"qq-bot-backend/internal/consts"
 	"qq-bot-backend/internal/service"
 )
 
 func tryNamespace(ctx context.Context, cmd string) (catch bool, retMsg string) {
+	ctx, span := gtrace.NewSpan(ctx, "command.tryNamespace")
+	defer span.End()
+
 	switch {
 	case nextBranchRe.MatchString(cmd):
 		next := nextBranchRe.FindStringSubmatch(cmd)

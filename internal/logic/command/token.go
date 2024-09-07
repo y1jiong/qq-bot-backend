@@ -2,10 +2,14 @@ package command
 
 import (
 	"context"
+	"github.com/gogf/gf/v2/net/gtrace"
 	"qq-bot-backend/internal/service"
 )
 
 func tryToken(ctx context.Context, cmd string) (catch bool, retMsg string) {
+	ctx, span := gtrace.NewSpan(ctx, "command.tryToken")
+	defer span.End()
+
 	switch {
 	case nextBranchRe.MatchString(cmd):
 		// 权限校验

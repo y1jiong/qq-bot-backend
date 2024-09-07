@@ -138,7 +138,7 @@ func (s *sBot) GetCardOldNew(ctx context.Context) (oldCard, newCard string) {
 	return
 }
 
-func (s *sBot) GetGroupMemberInfo(ctx context.Context, groupId, userId int64) (member ast.Node, err error) {
+func (s *sBot) GetGroupMemberInfo(ctx context.Context, groupId, userId int64) (member *ast.Node, err error) {
 	ctx, span := gtrace.NewSpan(ctx, "bot.GetGroupMemberInfo")
 	defer span.End()
 	span.SetAttributes(
@@ -185,12 +185,12 @@ func (s *sBot) GetGroupMemberInfo(ctx context.Context, groupId, userId int64) (m
 	defer wg.Wait()
 	wgDone := sync.OnceFunc(wg.Done)
 	wg.Add(1)
-	callback := func(ctx context.Context, rsyncCtx context.Context) {
+	callback := func(ctx context.Context, asyncCtx context.Context) {
 		defer wgDone()
-		if err = s.defaultEchoHandler(rsyncCtx); err != nil {
+		if err = s.defaultEchoHandler(asyncCtx); err != nil {
 			return
 		}
-		member = *s.getData(rsyncCtx)
+		member = s.getData(asyncCtx)
 	}
 	timeout := func(ctx context.Context) {
 		defer wgDone()
@@ -255,12 +255,12 @@ func (s *sBot) GetGroupMemberList(ctx context.Context, groupId int64, useCache .
 	defer wg.Wait()
 	wgDone := sync.OnceFunc(wg.Done)
 	wg.Add(1)
-	callback := func(ctx context.Context, rsyncCtx context.Context) {
+	callback := func(ctx context.Context, asyncCtx context.Context) {
 		defer wgDone()
-		if err = s.defaultEchoHandler(rsyncCtx); err != nil {
+		if err = s.defaultEchoHandler(asyncCtx); err != nil {
 			return
 		}
-		received := s.getData(rsyncCtx)
+		received := s.getData(asyncCtx)
 		members, _ = received.Array()
 	}
 	timeout := func(ctx context.Context) {
@@ -320,12 +320,12 @@ func (s *sBot) RequestMessage(ctx context.Context, messageId int64) (messageMap 
 	defer wg.Wait()
 	wgDone := sync.OnceFunc(wg.Done)
 	wg.Add(1)
-	callback := func(ctx context.Context, rsyncCtx context.Context) {
+	callback := func(ctx context.Context, asyncCtx context.Context) {
 		defer wgDone()
-		if err = s.defaultEchoHandler(rsyncCtx); err != nil {
+		if err = s.defaultEchoHandler(asyncCtx); err != nil {
 			return
 		}
-		received := s.getData(rsyncCtx)
+		received := s.getData(asyncCtx)
 		messageMap, _ = received.Map()
 	}
 	timeout := func(ctx context.Context) {
@@ -391,12 +391,12 @@ func (s *sBot) GetGroupInfo(ctx context.Context, groupId int64, noCache ...bool)
 	defer wg.Wait()
 	wgDone := sync.OnceFunc(wg.Done)
 	wg.Add(1)
-	callback := func(ctx context.Context, rsyncCtx context.Context) {
+	callback := func(ctx context.Context, asyncCtx context.Context) {
 		defer wgDone()
-		if err = s.defaultEchoHandler(rsyncCtx); err != nil {
+		if err = s.defaultEchoHandler(asyncCtx); err != nil {
 			return
 		}
-		received := s.getData(rsyncCtx)
+		received := s.getData(asyncCtx)
 		infoMap, _ = received.Map()
 	}
 	timeout := func(ctx context.Context) {
@@ -448,17 +448,18 @@ func (s *sBot) GetLoginInfo(ctx context.Context) (userId int64, nickname string)
 	defer wg.Wait()
 	wgDone := sync.OnceFunc(wg.Done)
 	wg.Add(1)
-	callback := func(ctx context.Context, rsyncCtx context.Context) {
+	callback := func(ctx context.Context, asyncCtx context.Context) {
 		defer wgDone()
-		if err = s.defaultEchoHandler(rsyncCtx); err != nil {
+		if err = s.defaultEchoHandler(asyncCtx); err != nil {
 			return
 		}
-		received := s.getData(rsyncCtx)
+		received := s.getData(asyncCtx)
 		userId, _ = received.Get("user_id").StrictInt64()
 		nickname, _ = received.Get("nickname").StrictString()
 	}
 	timeout := func(ctx context.Context) {
 		defer wgDone()
+		err = errors.New("echo timeout")
 	}
 	// echo
 	err = s.pushEchoCache(ctx, echoSign, callback, timeout)

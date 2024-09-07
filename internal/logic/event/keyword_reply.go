@@ -25,7 +25,7 @@ var (
 	placeholderRe   = regexp.MustCompile(`\{(.+?)(\d+)?}`)
 )
 
-func decrementPlaceholderIndex(text string) string {
+func decreasePlaceholderIndex(text string) string {
 	arr := placeholderRe.FindAllStringSubmatch(text, -1)
 	for _, sub := range arr {
 		if len(sub) < 3 {
@@ -265,7 +265,7 @@ func (s *sEvent) keywordReplyCommand(ctx context.Context, message, hit, text str
 	subMatch[1] = strings.ReplaceAll(subMatch[1], "{message}", message)
 	subMatch[1] = strings.ReplaceAll(subMatch[1], "{remain}", remain)
 	// 转换占位符
-	subMatch[1] = decrementPlaceholderIndex(subMatch[1])
+	subMatch[1] = decreasePlaceholderIndex(subMatch[1])
 	// 为什么是 " &&"？因为 " &&" 后可能是换行符，需要替换为 " "
 	subMatch[1] = strings.ReplaceAll(subMatch[1], " &&\r", " && ")
 	subMatch[1] = strings.ReplaceAll(subMatch[1], " &&\n", " && ")
