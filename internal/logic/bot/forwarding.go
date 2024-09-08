@@ -12,6 +12,7 @@ import (
 	"io"
 	"net/http"
 	"qq-bot-backend/internal/consts"
+	"qq-bot-backend/internal/util/codec"
 	"sync"
 )
 
@@ -32,9 +33,9 @@ var initForwardClient = sync.OnceFunc(func() {
 })
 
 func (s *sBot) Forward(ctx context.Context, url, authorization string) error {
-	ctx, span := gtrace.NewSpan(ctx, "bot.Forward")
+	ctx, span := gtrace.NewSpan(ctx, codec.GetBaseURL(url))
 	defer span.End()
-	span.SetAttributes(attribute.String("forward.url", url))
+	span.SetAttributes(attribute.String("http.url", url))
 	var err error
 	defer func() {
 		if err != nil {
@@ -46,16 +47,20 @@ func (s *sBot) Forward(ctx context.Context, url, authorization string) error {
 	if err != nil {
 		return err
 	}
+
 	req, err := http.NewRequest(http.MethodPost, url, bytes.NewReader(payload))
 	if err != nil {
 		return err
 	}
+
 	// Inject trace
 	otel.GetTextMapPropagator().Inject(ctx, propagation.HeaderCarrier(req.Header))
+
 	req.Header.Set("User-Agent", consts.ProjName+"/"+consts.Version)
 	if authorization != "" {
 		req.Header.Set("Authorization", "Bearer "+authorization)
 	}
+	req.Header.Set("Content-Type", "application/json")
 
 	initForwardClient()
 	resp, err := forwardClient.Do(req)

@@ -9,6 +9,7 @@ import (
 	"qq-bot-backend/internal/dao"
 	"qq-bot-backend/internal/model/entity"
 	"qq-bot-backend/internal/service"
+	"qq-bot-backend/internal/util/codec"
 	"strings"
 	"time"
 )
@@ -213,7 +214,7 @@ func (s *sList) QueryListReturnRes(ctx context.Context, listName string, keys ..
 			g.Log().Error(ctx, err)
 			return
 		}
-		keys[0] = service.Codec().DecodeBlank(keys[0])
+		keys[0] = codec.DecodeBlank(keys[0])
 		if _, ok := listJson.CheckGet(keys[0]); !ok {
 			retMsg = "在 list(" + listName + ") 中未找到 key(" + keys[0] + ")"
 			return
@@ -264,7 +265,7 @@ func (s *sList) AddListDataReturnRes(ctx context.Context, listName, key string, 
 		return
 	}
 	// 按照 url escape 解码空格和 %
-	key = service.Codec().DecodeBlank(key)
+	key = codec.DecodeBlank(key)
 	if len(value) > 0 {
 		listJson.Set(key, value[0])
 	} else {
@@ -316,7 +317,7 @@ func (s *sList) RemoveListDataReturnRes(ctx context.Context, listName, key strin
 		return
 	}
 	// 按照 url escape 解码空格和 %
-	key = service.Codec().DecodeBlank(key)
+	key = codec.DecodeBlank(key)
 	if _, ok := listJson.CheckGet(key); !ok {
 		// 未找到 key
 		retMsg = "在 list(" + listName + ") 中未找到 key(" + key + ")"
@@ -511,8 +512,8 @@ func (s *sList) CopyListKeyReturnRes(ctx context.Context, listName, srcKey, dstK
 		return
 	}
 	// 按照 url escape 解码空格和 %
-	srcKey = service.Codec().DecodeBlank(srcKey)
-	dstKey = service.Codec().DecodeBlank(dstKey)
+	srcKey = codec.DecodeBlank(srcKey)
+	dstKey = codec.DecodeBlank(dstKey)
 	if _, ok := listJson.CheckGet(srcKey); !ok {
 		retMsg = "在 list(" + listName + ") 中未找到 key(" + srcKey + ")"
 		return

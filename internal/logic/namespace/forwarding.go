@@ -59,7 +59,7 @@ func (s *sNamespace) GetForwardingToAliasList(ctx context.Context) (aliasList ma
 func (s *sNamespace) GetForwardingTo(ctx context.Context, alias string) (url, authorization string) {
 	data := &struct {
 		Authorization string `orm:"authorization"`
-		Url           string `orm:"url"`
+		URL           string `orm:"url"`
 	}{}
 	// 数据库查询 json
 	err := dao.Namespace.Ctx(ctx).
@@ -75,7 +75,7 @@ func (s *sNamespace) GetForwardingTo(ctx context.Context, alias string) (url, au
 		g.Log().Error(ctx, err)
 		return
 	}
-	url = data.Url
+	url = data.URL
 	authorization = data.Authorization
 	return
 }

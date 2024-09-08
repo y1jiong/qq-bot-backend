@@ -9,6 +9,7 @@ import (
 	"github.com/gorilla/websocket"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/codes"
+	"qq-bot-backend/internal/util/segment"
 	"sync"
 )
 
@@ -43,7 +44,7 @@ func (s *sBot) SendMessage(ctx context.Context,
 		Echo   string `json:"echo"`
 		Params struct {
 			MessageType string `json:"message_type,omitempty"`
-			Message     string `json:"message"`
+			Message     any    `json:"message"`
 			AutoEscape  bool   `json:"auto_escape,omitempty"`
 			UserId      int64  `json:"user_id,omitempty"`
 			GroupId     int64  `json:"group_id,omitempty"`
@@ -53,7 +54,7 @@ func (s *sBot) SendMessage(ctx context.Context,
 		Echo:   echoSign,
 		Params: struct {
 			MessageType string `json:"message_type,omitempty"`
-			Message     string `json:"message"`
+			Message     any    `json:"message"`
 			AutoEscape  bool   `json:"auto_escape,omitempty"`
 			UserId      int64  `json:"user_id,omitempty"`
 			GroupId     int64  `json:"group_id,omitempty"`
@@ -65,6 +66,16 @@ func (s *sBot) SendMessage(ctx context.Context,
 			GroupId:     groupId,
 		},
 	}
+	// message segment
+	if s.isMessageSegment(ctx) {
+		if plain {
+			req.Params.Message = segment.NewTextSegment(msg)
+			req.Params.AutoEscape = false
+		} else {
+			req.Params.Message = segment.ParseMessage(msg)
+		}
+	}
+
 	reqJson, err := sonic.ConfigDefault.Marshal(req)
 	if err != nil {
 		g.Log().Error(ctx, err)
@@ -309,15 +320,15 @@ func (s *sBot) UploadFile(ctx context.Context, url string) (filePath string, err
 		Action string `json:"action"`
 		Echo   string `json:"echo"`
 		Params struct {
-			Url string `json:"url"`
+			URL string `json:"url"`
 		} `json:"params"`
 	}{
 		Action: "download_file",
 		Echo:   echoSign,
 		Params: struct {
-			Url string `json:"url"`
+			URL string `json:"url"`
 		}{
-			Url: url,
+			URL: url,
 		},
 	}
 	reqJson, err := sonic.ConfigDefault.Marshal(req)

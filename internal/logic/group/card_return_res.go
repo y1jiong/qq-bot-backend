@@ -7,6 +7,7 @@ import (
 	"github.com/gogf/gf/v2/util/gconv"
 	"qq-bot-backend/internal/dao"
 	"qq-bot-backend/internal/service"
+	"qq-bot-backend/internal/util/codec"
 	"regexp"
 )
 
@@ -146,7 +147,7 @@ func (s *sGroup) CheckCardWithRegexpReturnRes(ctx context.Context,
 		return
 	}
 	// compile regexp
-	exp = service.Codec().DecodeCqCode(exp)
+	exp = codec.DecodeCqCode(exp)
 	reg, err := regexp.Compile(exp)
 	if err != nil {
 		retMsg = "正则表达式编译失败"

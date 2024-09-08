@@ -11,6 +11,7 @@ import (
 	"net/http"
 	"net/url"
 	"qq-bot-backend/internal/service"
+	"qq-bot-backend/internal/util/codec"
 	"regexp"
 	"strconv"
 	"strings"
@@ -111,8 +112,8 @@ func (s *sEvent) keywordReplyWebhook(ctx context.Context, userId, groupId int64,
 		attribute.String("keyword_reply_webhook.value", value),
 	)
 
-	// Url
-	subMatch := webhookPrefixRe.FindStringSubmatch(service.Codec().DecodeCqCode(value))
+	// URL
+	subMatch := webhookPrefixRe.FindStringSubmatch(codec.DecodeCqCode(value))
 	method := strings.ToUpper(subMatch[1])
 	if method == "" {
 		method = http.MethodGet
@@ -123,8 +124,8 @@ func (s *sEvent) keywordReplyWebhook(ctx context.Context, userId, groupId int64,
 	urlLink := subMatch[5]
 	// Arguments
 	var err error
-	message = service.Codec().DecodeCqCode(message)
-	hit = service.Codec().DecodeCqCode(hit)
+	message = codec.DecodeCqCode(message)
+	hit = codec.DecodeCqCode(hit)
 	remain := strings.Replace(message, hit, "", 1)
 	// Headers
 	if headers != "" {
@@ -136,7 +137,7 @@ func (s *sEvent) keywordReplyWebhook(ctx context.Context, userId, groupId int64,
 		headers = strings.ReplaceAll(headers, "{userId}", gconv.String(userId))
 		headers = strings.ReplaceAll(headers, "{groupId}", gconv.String(groupId))
 	}
-	// Url escape
+	// URL escape
 	urlLink = strings.ReplaceAll(urlLink, "{message}", url.QueryEscape(message))
 	urlLink = strings.ReplaceAll(urlLink, "{remain}", url.QueryEscape(remain))
 	urlLink = strings.ReplaceAll(urlLink, "{nickname}", url.QueryEscape(nickname))
@@ -176,36 +177,36 @@ func (s *sEvent) keywordReplyWebhook(ctx context.Context, userId, groupId int64,
 	}
 	// 媒体文件
 	{
-		var mediumUrl string
+		var mediumURL string
 		// 如果是图片
 		if strings.HasPrefix(contentType, "image/") {
-			mediumUrl, err = service.File().CacheFile(ctx, body, 5*time.Minute)
+			mediumURL, err = service.File().CacheFile(ctx, body, 5*time.Minute)
 			if err != nil {
 				replyMsg = "Image cache failed"
 				return
 			}
-			replyMsg = "[CQ:image,file=" + mediumUrl + "]"
+			replyMsg = "[CQ:image,file=" + mediumURL + "]"
 			return
 		}
 		// 如果是音频
 		if strings.HasPrefix(contentType, "audio/") {
-			mediumUrl, err = service.File().CacheFile(ctx, body, 5*time.Minute)
+			mediumURL, err = service.File().CacheFile(ctx, body, 5*time.Minute)
 			if err != nil {
 				replyMsg = "Audio cache failed"
 				return
 			}
-			replyMsg = "[CQ:record,file=" + mediumUrl + "]"
+			replyMsg = "[CQ:record,file=" + mediumURL + "]"
 			noReplyPrefix = true
 			return
 		}
 		// 如果是视频
 		if strings.HasPrefix(contentType, "video/") {
-			mediumUrl, err = service.File().CacheFile(ctx, body, 5*time.Minute)
+			mediumURL, err = service.File().CacheFile(ctx, body, 5*time.Minute)
 			if err != nil {
 				replyMsg = "Video cache failed"
 				return
 			}
-			replyMsg = "[CQ:video,file=" + mediumUrl + "]"
+			replyMsg = "[CQ:video,file=" + mediumURL + "]"
 			noReplyPrefix = true
 			return
 		}
@@ -259,7 +260,7 @@ func (s *sEvent) keywordReplyCommand(ctx context.Context, message, hit, text str
 	)
 
 	// 解码提取
-	subMatch := commandPrefixRe.FindStringSubmatch(service.Codec().DecodeCqCode(text))
+	subMatch := commandPrefixRe.FindStringSubmatch(codec.DecodeCqCode(text))
 	// 占位符替换
 	remain := strings.Replace(message, hit, "", 1)
 	subMatch[1] = strings.ReplaceAll(subMatch[1], "{message}", message)
@@ -306,7 +307,7 @@ func (s *sEvent) keywordReplyRewrite(ctx context.Context, try func(context.Conte
 		return
 	}
 	// 解码提取
-	subMatch := rewritePrefixRe.FindStringSubmatch(service.Codec().DecodeCqCode(text))
+	subMatch := rewritePrefixRe.FindStringSubmatch(codec.DecodeCqCode(text))
 	// 占位符替换
 	remain := strings.Replace(message, hit, "", 1)
 	subMatch[1] = strings.ReplaceAll(subMatch[1], "{message}", message)

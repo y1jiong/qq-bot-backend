@@ -1,10 +1,8 @@
 package codec
 
-import (
-	"strings"
-)
+import "strings"
 
-func (s *sCodec) DecodeCqCode(src string) (dest string) {
+func DecodeCqCode(src string) (dest string) {
 	dest = strings.ReplaceAll(src, "&#91;", "[")
 	dest = strings.ReplaceAll(dest, "&#93;", "]")
 	dest = strings.ReplaceAll(dest, "&#44;", ",")
@@ -13,7 +11,7 @@ func (s *sCodec) DecodeCqCode(src string) (dest string) {
 	return
 }
 
-func (s *sCodec) EncodeCqCode(src string) (dest string) {
+func EncodeCqCode(src string) (dest string) {
 	// 必须第一个
 	dest = strings.ReplaceAll(src, "&", "&amp;")
 	dest = strings.ReplaceAll(dest, "[", "&#91;")
@@ -22,6 +20,6 @@ func (s *sCodec) EncodeCqCode(src string) (dest string) {
 	return
 }
 
-func (s *sCodec) IsIncludeCqCode(str string) bool {
+func IsIncludeCqCode(str string) bool {
 	return strings.Contains(str, "[CQ:")
 }

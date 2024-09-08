@@ -7,7 +7,6 @@ package logic
 import (
 	_ "qq-bot-backend/internal/logic/bot"
 	_ "qq-bot-backend/internal/logic/cfg"
-	_ "qq-bot-backend/internal/logic/codec"
 	_ "qq-bot-backend/internal/logic/command"
 	_ "qq-bot-backend/internal/logic/event"
 	_ "qq-bot-backend/internal/logic/file"

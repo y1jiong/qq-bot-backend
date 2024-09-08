@@ -38,7 +38,7 @@ func (s *sFile) getCachedFileId(ctx context.Context, content []byte, duration ti
 	return
 }
 
-func (s *sFile) getCachedFileUrl(ctx context.Context, id string) (url string, err error) {
+func (s *sFile) getCachedFileURL(ctx context.Context, id string) (url string, err error) {
 	r := g.RequestFromCtx(ctx)
 	url = r.GetSchema() + "://" + r.Host + "/file/" + id
 	return
@@ -49,6 +49,6 @@ func (s *sFile) CacheFile(ctx context.Context, content []byte, duration time.Dur
 	if err != nil {
 		return
 	}
-	url, err = s.getCachedFileUrl(ctx, id)
+	url, err = s.getCachedFileURL(ctx, id)
 	return
 }

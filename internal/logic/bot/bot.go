@@ -80,6 +80,8 @@ func (s *sBot) Process(ctx context.Context, rawJson []byte, nextProcess func(ctx
 		return
 	}
 	ctx = s.CtxWithReqJson(ctx, &reqJson)
+	// message segment
+	s.tryMessageSegmentToString(ctx)
 	// debug mode
 	if service.Cfg().IsDebugEnabled(ctx) && s.GetPostType(ctx) != "meta_event" {
 		g.Log().Debug(ctx, "\n", rawJson)
