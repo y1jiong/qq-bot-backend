@@ -31,7 +31,7 @@ func (ms *messageSegment) String() string {
 
 	data := make([]string, 0, len(ms.Data))
 	for k, v := range ms.Data {
-		data = append(data, fmt.Sprintf("%s=%s", k, codec.EncodeCqCode(v)))
+		data = append(data, fmt.Sprintf("%s=%s", k, codec.EncodeCQCode(v)))
 	}
 
 	return fmt.Sprintf("[CQ:%s,%s]", ms.Type, strings.Join(data, ","))
@@ -71,7 +71,7 @@ func ParseMessage(message string) messageSegments {
 
 func ParseJSON(jsonBytes []byte) (messageSegments, error) {
 	var segments messageSegments
-	if err := sonic.ConfigStd.Unmarshal(jsonBytes, &segments); err != nil {
+	if err := sonic.ConfigDefault.Unmarshal(jsonBytes, &segments); err != nil {
 		return nil, err
 	}
 	return segments, nil
@@ -101,7 +101,7 @@ func newCQCodeSegment(cqCode string) *messageSegment {
 	for _, param := range strings.Split(dataStr, ",") {
 		kv := strings.SplitN(param, "=", 2)
 		if len(kv) == 2 {
-			data[kv[0]] = codec.DecodeCqCode(kv[1])
+			data[kv[0]] = codec.DecodeCQCode(kv[1])
 		}
 	}
 

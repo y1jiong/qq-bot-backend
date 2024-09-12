@@ -147,7 +147,7 @@ func (s *sGroup) CheckCardWithRegexpReturnRes(ctx context.Context,
 		return
 	}
 	// compile regexp
-	exp = codec.DecodeCqCode(exp)
+	exp = codec.DecodeCQCode(exp)
 	reg, err := regexp.Compile(exp)
 	if err != nil {
 		retMsg = "正则表达式编译失败"

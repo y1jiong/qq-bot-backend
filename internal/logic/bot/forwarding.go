@@ -32,11 +32,10 @@ var initForwardClient = sync.OnceFunc(func() {
 	}
 })
 
-func (s *sBot) Forward(ctx context.Context, url, authorization string) error {
+func (s *sBot) Forward(ctx context.Context, url, authorization string) (err error) {
 	ctx, span := gtrace.NewSpan(ctx, codec.GetBaseURL(url))
 	defer span.End()
 	span.SetAttributes(attribute.String("http.url", url))
-	var err error
 	defer func() {
 		if err != nil {
 			span.SetStatus(codes.Error, err.Error())

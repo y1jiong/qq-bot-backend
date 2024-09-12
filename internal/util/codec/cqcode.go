@@ -2,7 +2,7 @@ package codec
 
 import "strings"
 
-func DecodeCqCode(src string) (dest string) {
+func DecodeCQCode(src string) (dest string) {
 	dest = strings.ReplaceAll(src, "&#91;", "[")
 	dest = strings.ReplaceAll(dest, "&#93;", "]")
 	dest = strings.ReplaceAll(dest, "&#44;", ",")
@@ -11,7 +11,7 @@ func DecodeCqCode(src string) (dest string) {
 	return
 }
 
-func EncodeCqCode(src string) (dest string) {
+func EncodeCQCode(src string) (dest string) {
 	// 必须第一个
 	dest = strings.ReplaceAll(src, "&", "&amp;")
 	dest = strings.ReplaceAll(dest, "[", "&#91;")
@@ -20,6 +20,6 @@ func EncodeCqCode(src string) (dest string) {
 	return
 }
 
-func IsIncludeCqCode(str string) bool {
+func IsIncludeCQCode(str string) bool {
 	return strings.Contains(str, "[CQ:")
 }

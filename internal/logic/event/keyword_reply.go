@@ -113,7 +113,7 @@ func (s *sEvent) keywordReplyWebhook(ctx context.Context, userId, groupId int64,
 	)
 
 	// URL
-	subMatch := webhookPrefixRe.FindStringSubmatch(codec.DecodeCqCode(value))
+	subMatch := webhookPrefixRe.FindStringSubmatch(codec.DecodeCQCode(value))
 	method := strings.ToUpper(subMatch[1])
 	if method == "" {
 		method = http.MethodGet
@@ -124,8 +124,8 @@ func (s *sEvent) keywordReplyWebhook(ctx context.Context, userId, groupId int64,
 	urlLink := subMatch[5]
 	// Arguments
 	var err error
-	message = codec.DecodeCqCode(message)
-	hit = codec.DecodeCqCode(hit)
+	message = codec.DecodeCQCode(message)
+	hit = codec.DecodeCQCode(hit)
 	remain := strings.Replace(message, hit, "", 1)
 	// Headers
 	if headers != "" {
@@ -260,7 +260,7 @@ func (s *sEvent) keywordReplyCommand(ctx context.Context, message, hit, text str
 	)
 
 	// 解码提取
-	subMatch := commandPrefixRe.FindStringSubmatch(codec.DecodeCqCode(text))
+	subMatch := commandPrefixRe.FindStringSubmatch(codec.DecodeCQCode(text))
 	// 占位符替换
 	remain := strings.Replace(message, hit, "", 1)
 	subMatch[1] = strings.ReplaceAll(subMatch[1], "{message}", message)
@@ -307,7 +307,7 @@ func (s *sEvent) keywordReplyRewrite(ctx context.Context, try func(context.Conte
 		return
 	}
 	// 解码提取
-	subMatch := rewritePrefixRe.FindStringSubmatch(codec.DecodeCqCode(text))
+	subMatch := rewritePrefixRe.FindStringSubmatch(codec.DecodeCQCode(text))
 	// 占位符替换
 	remain := strings.Replace(message, hit, "", 1)
 	subMatch[1] = strings.ReplaceAll(subMatch[1], "{message}", message)
