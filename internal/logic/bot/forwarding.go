@@ -32,7 +32,7 @@ var initForwardClient = sync.OnceFunc(func() {
 	}
 })
 
-func (s *sBot) Forward(ctx context.Context, url, authorization string) (err error) {
+func (s *sBot) Forward(ctx context.Context, url, key string) (err error) {
 	ctx, span := gtrace.NewSpan(ctx, codec.GetBaseURL(url))
 	defer span.End()
 	span.SetAttributes(attribute.String("http.url", url))
@@ -56,8 +56,8 @@ func (s *sBot) Forward(ctx context.Context, url, authorization string) (err erro
 	otel.GetTextMapPropagator().Inject(ctx, propagation.HeaderCarrier(req.Header))
 
 	req.Header.Set("User-Agent", consts.ProjName+"/"+consts.Version)
-	if authorization != "" {
-		req.Header.Set("Authorization", "Bearer "+authorization)
+	if key != "" {
+		req.Header.Set("Authorization", "Bearer "+key)
 	}
 	req.Header.Set("Content-Type", "application/json")
 

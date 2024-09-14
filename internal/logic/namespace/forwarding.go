@@ -14,10 +14,10 @@ const (
 
 	// toMapKey forwarding -> to
 	toMapKey = "to"
-	// authorizationKey forwarding -> to -> authorization
-	authorizationKey = "authorization"
 	// urlKey forwarding -> to -> url
 	urlKey = "url"
+	// keyKey forwarding -> to -> key
+	keyKey = "key"
 
 	// matchMapKey forwarding -> match
 	matchMapKey = "match"
@@ -56,18 +56,18 @@ func (s *sNamespace) GetForwardingToAliasList(ctx context.Context) (aliasList ma
 	return
 }
 
-func (s *sNamespace) GetForwardingTo(ctx context.Context, alias string) (url, authorization string) {
+func (s *sNamespace) GetForwardingTo(ctx context.Context, alias string) (url, key string) {
 	data := &struct {
-		Authorization string `orm:"authorization"`
-		URL           string `orm:"url"`
+		URL string `orm:"url"`
+		Key string `orm:"key"`
 	}{}
 	// 数据库查询 json
 	err := dao.Namespace.Ctx(ctx).
-		Fields(fmt.Sprintf(`%v#>>'{%v,%v,%v,%v}' as "authorization"`,
-			dao.Namespace.Columns().SettingJson, forwardingMapKey, toMapKey, alias, authorizationKey),
-		).
 		Fields(fmt.Sprintf(`%v#>>'{%v,%v,%v,%v}' as "url"`,
 			dao.Namespace.Columns().SettingJson, forwardingMapKey, toMapKey, alias, urlKey),
+		).
+		Fields(fmt.Sprintf(`%v#>>'{%v,%v,%v,%v}' as "key"`,
+			dao.Namespace.Columns().SettingJson, forwardingMapKey, toMapKey, alias, keyKey),
 		).
 		Where(dao.Namespace.Columns().Namespace, globalNamespace).
 		Scan(&data)
@@ -76,7 +76,7 @@ func (s *sNamespace) GetForwardingTo(ctx context.Context, alias string) (url, au
 		return
 	}
 	url = data.URL
-	authorization = data.Authorization
+	key = data.Key
 	return
 }
 

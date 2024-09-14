@@ -23,7 +23,7 @@ type (
 		LoadConnectionPool(key int64) context.Context
 		CacheMessageContext(ctx context.Context, userId int64, lastMessageId int64, currentMessageId int64) error
 		GetCachedMessageContext(ctx context.Context, userId int64, lastMessageId int64) (currentMessageIds []int64, exist bool, err error)
-		Forward(ctx context.Context, url string, authorization string) error
+		Forward(ctx context.Context, url string, key string) (err error)
 		GetPostType(ctx context.Context) string
 		GetMsgType(ctx context.Context) string
 		GuessMsgType(groupId int64) string

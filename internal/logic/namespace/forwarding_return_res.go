@@ -9,7 +9,7 @@ import (
 	"strconv"
 )
 
-func (s *sNamespace) AddForwardingToReturnRes(ctx context.Context, alias, url, authorization string) (retMsg string) {
+func (s *sNamespace) AddForwardingToReturnRes(ctx context.Context, alias, url, key string) (retMsg string) {
 	// 参数合法性校验
 	if alias == "" || url == "" {
 		return
@@ -39,12 +39,13 @@ func (s *sNamespace) AddForwardingToReturnRes(ctx context.Context, alias, url, a
 		return
 	}
 	_, _ = settingJson.Get(forwardingMapKey).Get(toMapKey).Set(alias, ast.NewNull())
-	// authorizationKey urlKey
+	// urlKey
 	_, _ = settingJson.Get(forwardingMapKey).Get(toMapKey).Get(alias).Set(
 		urlKey, ast.NewString(url))
-	if authorization != "" {
+	// keyKey
+	if key != "" {
 		_, _ = settingJson.Get(forwardingMapKey).Get(toMapKey).Get(alias).Set(
-			authorizationKey, ast.NewString(authorization))
+			keyKey, ast.NewString(key))
 	}
 	settingStr, _ := settingJson.Raw()
 	// 更新

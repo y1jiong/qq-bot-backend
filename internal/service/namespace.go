@@ -12,10 +12,10 @@ import (
 type (
 	INamespace interface {
 		GetForwardingToAliasList(ctx context.Context) (aliasList map[string]any)
-		GetForwardingTo(ctx context.Context, alias string) (url string, authorization string)
+		GetForwardingTo(ctx context.Context, alias string) (url string, key string)
 		IsForwardingMatchUserId(ctx context.Context, userId string) bool
 		IsForwardingMatchGroupId(ctx context.Context, groupId string) bool
-		AddForwardingToReturnRes(ctx context.Context, alias string, url string, authorization string) (retMsg string)
+		AddForwardingToReturnRes(ctx context.Context, alias string, url string, key string) (retMsg string)
 		RemoveForwardingToReturnRes(ctx context.Context, alias string) (retMsg string)
 		AddForwardingMatchUserIdReturnRes(ctx context.Context, userId string) (retMsg string)
 		AddForwardingMatchGroupIdReturnRes(ctx context.Context, groupId string) (retMsg string)

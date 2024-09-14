@@ -23,11 +23,11 @@ func (s *sEvent) TryForward(ctx context.Context) (catch bool) {
 	}
 	aliasList := service.Namespace().GetForwardingToAliasList(ctx)
 	for alias := range aliasList {
-		url, authorization := service.Namespace().GetForwardingTo(ctx, alias)
+		url, key := service.Namespace().GetForwardingTo(ctx, alias)
 		if url == "" {
 			continue
 		}
-		err := service.Bot().Forward(ctx, url, authorization)
+		err := service.Bot().Forward(ctx, url, key)
 		if err != nil {
 			g.Log().Notice(ctx, "forward", url, err)
 		}

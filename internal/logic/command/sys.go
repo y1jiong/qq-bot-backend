@@ -109,7 +109,7 @@ func trySysForward(ctx context.Context, cmd string) (catch bool, retMsg string) 
 				args[0] = ne[1]
 				args[1] = dv[1]
 				args[2] = dv[2]
-				// /sys forward add <alias> <url> <authorization>
+				// /sys forward add <alias> <url> <key>
 				retMsg = service.Namespace().AddForwardingToReturnRes(ctx, args[0], args[1], args[2])
 				catch = true
 			}
