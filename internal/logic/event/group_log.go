@@ -21,8 +21,10 @@ func (s *sEvent) TryLogLeave(ctx context.Context) (catch bool) {
 		// 没有设置 leave list
 		return
 	}
-	// 处理
+
 	catch = true
+
+	// 处理
 	action := service.Bot().GetSubType(ctx)
 	userId := service.Bot().GetUserId(ctx)
 	operatorId := service.Bot().GetOperatorId(ctx)

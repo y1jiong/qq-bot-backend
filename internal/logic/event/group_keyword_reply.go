@@ -64,6 +64,7 @@ func (s *sEvent) TryGroupKeywordReply(ctx context.Context) (catch bool) {
 		replyMsg = "[CQ:reply,id=" + gconv.String(service.Bot().GetMsgId(ctx)) + "]" + replyMsg
 	}
 	service.Bot().SendMsgCacheContext(ctx, replyMsg, true)
+
 	catch = true
 	return
 }

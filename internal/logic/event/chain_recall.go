@@ -21,6 +21,7 @@ func (s *sEvent) TryChainRecall(ctx context.Context) (catch bool) {
 	for _, msgId := range msgIds {
 		service.Bot().RecallMessage(ctx, msgId)
 	}
+
 	catch = true
 	return
 }

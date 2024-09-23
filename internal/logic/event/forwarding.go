@@ -31,6 +31,7 @@ func (s *sEvent) TryForward(ctx context.Context) (catch bool) {
 		if err != nil {
 			g.Log().Notice(ctx, "forward", url, err)
 		}
+
 		catch = true
 	}
 	return

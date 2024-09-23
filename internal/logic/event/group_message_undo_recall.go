@@ -56,6 +56,9 @@ func (s *sEvent) TryUndoMessageRecall(ctx context.Context) (catch bool) {
 	groupId := gconv.Int64(messageMap["group_id"])
 	// 获取撤回的消息
 	message := gconv.String(messageMap["message"])
+	if message == "" {
+		return
+	}
 	// 防止过度触发反撤回
 	service.Util().AutoMute(ctx, "recall", groupId, userId,
 		2, 5, 5, gconv.Duration("1m"))
@@ -76,6 +79,7 @@ func (s *sEvent) TryUndoMessageRecall(ctx context.Context) (catch bool) {
 	g.Log().Info(ctx, msg)
 	_, _ = service.Bot().SendMessage(ctx,
 		"group", 0, notificationGroupId, msg, false)
+
 	catch = true
 	return
 }

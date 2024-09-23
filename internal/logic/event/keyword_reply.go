@@ -90,6 +90,7 @@ func (s *sEvent) TryKeywordReply(ctx context.Context) (catch bool) {
 		replyMsg = "[CQ:reply,id=" + gconv.String(service.Bot().GetMsgId(ctx)) + "]" + replyMsg
 	}
 	service.Bot().SendMsg(ctx, replyMsg)
+
 	catch = true
 	return
 }

@@ -64,6 +64,7 @@ func (s *sEvent) TryKeywordRecall(ctx context.Context) (catch bool) {
 	// 禁言
 	service.Util().AutoMute(ctx, "keyword", groupId, userId,
 		1, 5, 0, gconv.Duration("16h"))
+
 	catch = true
 	return
 }

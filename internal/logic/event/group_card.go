@@ -23,7 +23,9 @@ func (s *sEvent) TryLockCard(ctx context.Context) (catch bool) {
 		// 不需要锁定
 		return
 	}
+
 	catch = true
+
 	oldCard, newCard := service.Bot().GetCardOldNew(ctx)
 	if oldCard == "" || oldCard == newCard {
 		// 无旧名片允许修改一次
