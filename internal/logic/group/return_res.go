@@ -370,16 +370,16 @@ func (s *sGroup) CheckExistReturnRes(ctx context.Context) (retMsg string) {
 	waitForDelGroups := make([]int64, 0)
 	loginUserId, _ := service.Bot().GetLoginInfo(ctx)
 	for {
-		var groupE []*entity.Group
+		var groupEs []*entity.Group
 		err := dao.Group.Ctx(ctx).
 			Fields(dao.Group.Columns().GroupId).
 			Page(pageNum, pageSize).
-			Scan(&groupE)
+			Scan(&groupEs)
 		if err != nil {
 			g.Log().Error(ctx, err)
 			return
 		}
-		for _, v := range groupE {
+		for _, v := range groupEs {
 			vGroupId := v.GroupId
 			_, err = service.Bot().GetGroupInfo(ctx, vGroupId, true)
 			// 判断群是否已经解散或者登录账号不在群内
@@ -398,7 +398,7 @@ func (s *sGroup) CheckExistReturnRes(ctx context.Context) (retMsg string) {
 			waitForDelGroups = append(waitForDelGroups, vGroupId)
 		}
 		// 结束条件
-		if len(groupE) < pageSize {
+		if len(groupEs) < pageSize {
 			break
 		}
 		pageNum++

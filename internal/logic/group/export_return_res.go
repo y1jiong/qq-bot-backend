@@ -37,7 +37,7 @@ func (s *sGroup) ExportGroupMemberListReturnRes(ctx context.Context,
 		return
 	}
 	// 获取群成员列表
-	membersArr, err := service.Bot().GetGroupMemberList(ctx, groupId)
+	membersArr, err := service.Bot().GetGroupMemberList(ctx, groupId, true)
 	if err != nil {
 		retMsg = "获取群成员列表失败"
 		return

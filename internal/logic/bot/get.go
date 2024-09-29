@@ -142,7 +142,7 @@ func (s *sBot) GetCardOldNew(ctx context.Context) (oldCard, newCard string) {
 	return
 }
 
-func (s *sBot) GetGroupMemberInfo(ctx context.Context, groupId, userId int64) (member *ast.Node, err error) {
+func (s *sBot) GetGroupMemberInfo(ctx context.Context, groupId, userId int64, noCache ...bool) (member *ast.Node, err error) {
 	ctx, span := gtrace.NewSpan(ctx, "bot.GetGroupMemberInfo")
 	defer span.End()
 	span.SetAttributes(
@@ -179,6 +179,9 @@ func (s *sBot) GetGroupMemberInfo(ctx context.Context, groupId, userId int64) (m
 			NoCache: false,
 		},
 	}
+	if len(noCache) > 0 && noCache[0] {
+		req.Params.NoCache = true
+	}
 	reqJson, err := sonic.ConfigDefault.Marshal(req)
 	if err != nil {
 		g.Log().Error(ctx, err)
@@ -192,6 +195,9 @@ func (s *sBot) GetGroupMemberInfo(ctx context.Context, groupId, userId int64) (m
 	callback := func(ctx context.Context, asyncCtx context.Context) {
 		defer wgDone()
 		if err = s.defaultEchoHandler(asyncCtx); err != nil {
+			if !req.Params.NoCache {
+				member, err = s.GetGroupMemberInfo(ctx, groupId, userId, true)
+			}
 			return
 		}
 		member = s.getData(asyncCtx)
@@ -215,7 +221,7 @@ func (s *sBot) GetGroupMemberInfo(ctx context.Context, groupId, userId int64) (m
 	return
 }
 
-func (s *sBot) GetGroupMemberList(ctx context.Context, groupId int64, useCache ...bool) (members []any, err error) {
+func (s *sBot) GetGroupMemberList(ctx context.Context, groupId int64, noCache ...bool) (members []any, err error) {
 	ctx, span := gtrace.NewSpan(ctx, "bot.GetGroupMemberList")
 	defer span.End()
 	span.SetAttributes(attribute.Int64("get_group_member_list.group_id", groupId))
@@ -243,11 +249,11 @@ func (s *sBot) GetGroupMemberList(ctx context.Context, groupId int64, useCache .
 			NoCache bool  `json:"no_cache"`
 		}{
 			GroupId: groupId,
-			NoCache: true,
+			NoCache: false,
 		},
 	}
-	if len(useCache) > 0 && useCache[0] {
-		req.Params.NoCache = false
+	if len(noCache) > 0 && noCache[0] {
+		req.Params.NoCache = true
 	}
 	reqJson, err := sonic.ConfigDefault.Marshal(req)
 	if err != nil {
@@ -262,6 +268,9 @@ func (s *sBot) GetGroupMemberList(ctx context.Context, groupId int64, useCache .
 	callback := func(ctx context.Context, asyncCtx context.Context) {
 		defer wgDone()
 		if err = s.defaultEchoHandler(asyncCtx); err != nil {
+			if !req.Params.NoCache {
+				members, err = s.GetGroupMemberList(ctx, groupId, true)
+			}
 			return
 		}
 		received := s.getData(asyncCtx)
@@ -398,6 +407,9 @@ func (s *sBot) GetGroupInfo(ctx context.Context, groupId int64, noCache ...bool)
 	callback := func(ctx context.Context, asyncCtx context.Context) {
 		defer wgDone()
 		if err = s.defaultEchoHandler(asyncCtx); err != nil {
+			if !req.Params.NoCache {
+				infoMap, err = s.GetGroupInfo(ctx, groupId, true)
+			}
 			return
 		}
 		received := s.getData(asyncCtx)
@@ -494,13 +506,7 @@ func (s *sBot) IsGroupOwnerOrAdmin(ctx context.Context) bool {
 			g.Log().Error(ctx, err)
 			return false
 		}
-		pairs := []ast.Pair{
-			{
-				Key:   "role",
-				Value: ast.NewString(role),
-			},
-		}
-		_, _ = s.reqJsonFromCtx(ctx).Set("sender", ast.NewObject(pairs))
+		_, _ = s.reqJsonFromCtx(ctx).Set("sender", *member)
 	}
 	return role == "owner" || role == "admin"
 }
