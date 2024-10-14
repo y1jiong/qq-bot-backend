@@ -20,8 +20,7 @@ func (s *sUtil) AutoLimit(ctx context.Context, kind, key string, limitTimes int,
 	if timesVar == nil {
 		// 设置缓存
 		defaultTimes := 1
-		err = gcache.Set(ctx, cacheKey, defaultTimes, duration)
-		if err != nil {
+		if err = gcache.Set(ctx, cacheKey, defaultTimes, duration); err != nil {
 			g.Log().Error(ctx, err)
 			return
 		}

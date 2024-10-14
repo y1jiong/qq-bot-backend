@@ -234,8 +234,7 @@ func (s *sEvent) keywordReplyWebhook(ctx context.Context, userId, groupId int64,
 		return
 	}
 	if node.TypeSafe() != ast.V_STRING {
-		err = node.LoadAll()
-		if err != nil {
+		if err = node.LoadAll(); err != nil {
 			replyMsg = "Wrong JSON format"
 			return
 		}

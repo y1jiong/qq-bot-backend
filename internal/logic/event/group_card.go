@@ -52,8 +52,7 @@ func (s *sEvent) TryLockCard(ctx context.Context) (catch bool) {
 		oldCard = cardVarStr
 	} else {
 		// 设置缓存
-		err = gcache.Set(ctx, cacheKey, oldCard, time.Hour)
-		if err != nil {
+		if err = gcache.Set(ctx, cacheKey, oldCard, time.Hour); err != nil {
 			g.Log().Warning(ctx, err)
 			return
 		}

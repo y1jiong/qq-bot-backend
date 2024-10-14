@@ -207,14 +207,12 @@ func (s *sBot) GetGroupMemberInfo(ctx context.Context, groupId, userId int64, no
 		err = errors.New("echo timeout")
 	}
 	// echo
-	err = s.pushEchoCache(ctx, echoSign, callback, timeout)
-	if err != nil {
+	if err = s.pushEchoCache(ctx, echoSign, callback, timeout); err != nil {
 		g.Log().Error(ctx, err)
 		return
 	}
 	// 发送响应
-	err = s.writeMessage(ctx, websocket.TextMessage, reqJson)
-	if err != nil {
+	if err = s.writeMessage(ctx, websocket.TextMessage, reqJson); err != nil {
 		g.Log().Warning(ctx, err)
 		return
 	}
@@ -281,14 +279,12 @@ func (s *sBot) GetGroupMemberList(ctx context.Context, groupId int64, noCache ..
 		err = errors.New("echo timeout")
 	}
 	// echo
-	err = s.pushEchoCache(ctx, echoSign, callback, timeout)
-	if err != nil {
+	if err = s.pushEchoCache(ctx, echoSign, callback, timeout); err != nil {
 		g.Log().Error(ctx, err)
 		return
 	}
 	// 发送响应
-	err = s.writeMessage(ctx, websocket.TextMessage, reqJson)
-	if err != nil {
+	if err = s.writeMessage(ctx, websocket.TextMessage, reqJson); err != nil {
 		g.Log().Warning(ctx, err)
 		return
 	}
@@ -346,14 +342,12 @@ func (s *sBot) RequestMessage(ctx context.Context, messageId int64) (messageMap 
 		err = errors.New("echo timeout")
 	}
 	// echo
-	err = s.pushEchoCache(ctx, echoSign, callback, timeout)
-	if err != nil {
+	if err = s.pushEchoCache(ctx, echoSign, callback, timeout); err != nil {
 		g.Log().Error(ctx, err)
 		return
 	}
 	// 发送响应
-	err = s.writeMessage(ctx, websocket.TextMessage, reqJson)
-	if err != nil {
+	if err = s.writeMessage(ctx, websocket.TextMessage, reqJson); err != nil {
 		g.Log().Warning(ctx, err)
 		return
 	}
@@ -420,14 +414,12 @@ func (s *sBot) GetGroupInfo(ctx context.Context, groupId int64, noCache ...bool)
 		err = errors.New("echo timeout")
 	}
 	// echo
-	err = s.pushEchoCache(ctx, echoSign, callback, timeout)
-	if err != nil {
+	if err = s.pushEchoCache(ctx, echoSign, callback, timeout); err != nil {
 		g.Log().Error(ctx, err)
 		return
 	}
 	// 发送响应
-	err = s.writeMessage(ctx, websocket.TextMessage, reqJson)
-	if err != nil {
+	if err = s.writeMessage(ctx, websocket.TextMessage, reqJson); err != nil {
 		g.Log().Warning(ctx, err)
 		return
 	}
@@ -478,14 +470,12 @@ func (s *sBot) GetLoginInfo(ctx context.Context) (userId int64, nickname string)
 		err = errors.New("echo timeout")
 	}
 	// echo
-	err = s.pushEchoCache(ctx, echoSign, callback, timeout)
-	if err != nil {
+	if err = s.pushEchoCache(ctx, echoSign, callback, timeout); err != nil {
 		g.Log().Error(ctx, err)
 		return
 	}
 	// 发送响应
-	err = s.writeMessage(ctx, websocket.TextMessage, reqJson)
-	if err != nil {
+	if err = s.writeMessage(ctx, websocket.TextMessage, reqJson); err != nil {
 		g.Log().Warning(ctx, err)
 		return
 	}
