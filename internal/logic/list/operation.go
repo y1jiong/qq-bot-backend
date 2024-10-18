@@ -17,8 +17,7 @@ func (s *sList) UnionOp(ctx context.Context, A, B, C string) (n int, err error) 
 		listC[k] = v
 	}
 	// 保存数据
-	n, err = s.AppendListData(ctx, C, listC)
-	return
+	return s.AppendListData(ctx, C, listC)
 }
 
 func (s *sList) IntersectOp(ctx context.Context, A, B, C string) (n int, err error) {
@@ -33,8 +32,7 @@ func (s *sList) IntersectOp(ctx context.Context, A, B, C string) (n int, err err
 		}
 	}
 	// 保存数据
-	n, err = s.AppendListData(ctx, C, listC)
-	return
+	return s.AppendListData(ctx, C, listC)
 }
 
 func (s *sList) DifferenceOp(ctx context.Context, A, B, C string) (n int, err error) {
@@ -49,6 +47,5 @@ func (s *sList) DifferenceOp(ctx context.Context, A, B, C string) (n int, err er
 		}
 	}
 	// 保存数据
-	n, err = s.AppendListData(ctx, C, listC)
-	return
+	return s.AppendListData(ctx, C, listC)
 }

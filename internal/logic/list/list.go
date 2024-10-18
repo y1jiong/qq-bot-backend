@@ -97,6 +97,5 @@ func (s *sList) GetListNamespace(ctx context.Context, listName string) (namespac
 	if listE == nil {
 		return
 	}
-	namespace = listE.Namespace
-	return
+	return listE.Namespace
 }

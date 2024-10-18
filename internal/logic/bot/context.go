@@ -63,7 +63,5 @@ func (s *sBot) GetCachedMessageContext(ctx context.Context, userId, lastMessageI
 		return
 	}
 
-	exist = true
-	currentMessageIds = v.Int64s()
-	return
+	return v.Int64s(), true, nil
 }

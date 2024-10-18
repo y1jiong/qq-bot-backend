@@ -28,8 +28,7 @@ func (s *sFile) GetCachedFileById(ctx context.Context, id string) (content []byt
 		err = gerror.NewCode(gcode.New(http.StatusNotFound, "", nil), "file not found")
 		return
 	}
-	content = v.Bytes()
-	return
+	return v.Bytes(), nil
 }
 
 func (s *sFile) getCachedFileId(ctx context.Context, content []byte, duration time.Duration) (id string, err error) {
@@ -38,8 +37,7 @@ func (s *sFile) getCachedFileId(ctx context.Context, content []byte, duration ti
 
 func (s *sFile) getCachedFileURL(ctx context.Context, id string) (url string, err error) {
 	r := g.RequestFromCtx(ctx)
-	url = r.GetSchema() + "://" + r.Host + "/file/" + id
-	return
+	return r.GetSchema() + "://" + r.Host + "/file/" + id, nil
 }
 
 func (s *sFile) CacheFile(ctx context.Context, content []byte, duration time.Duration) (url string, err error) {
@@ -47,6 +45,5 @@ func (s *sFile) CacheFile(ctx context.Context, content []byte, duration time.Dur
 	if err != nil {
 		return
 	}
-	url, err = s.getCachedFileURL(ctx, id)
-	return
+	return s.getCachedFileURL(ctx, id)
 }

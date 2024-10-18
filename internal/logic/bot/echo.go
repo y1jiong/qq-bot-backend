@@ -115,6 +115,5 @@ func (s *sBot) popEchoCache(ctx context.Context, echoSign string) (echo *echoMod
 	if err != nil {
 		return
 	}
-	echo = v.Val().(*echoModel)
-	return
+	return v.Val().(*echoModel), nil
 }

@@ -280,7 +280,7 @@ func (s *sEvent) keywordReplyCommand(ctx context.Context, message, hit, text str
 		}
 		replyBuilder.WriteString(tmp + "\n")
 	}
-	replyMsg = strings.TrimRight(replyBuilder.String(), "\n")
+	replyMsg = strings.TrimSuffix(replyBuilder.String(), "\n")
 	return
 }
 

@@ -18,10 +18,7 @@ func (s *sUtil) WebhookGetHeadConnectOptionsTrace(ctx context.Context, header, m
 		return
 	}
 	defer resp.Close()
-	statusCode = resp.StatusCode
-	contentType = resp.Header.Get("Content-Type")
-	body = resp.ReadAll()
-	return
+	return resp.StatusCode, resp.Header.Get("Content-Type"), resp.ReadAll(), nil
 }
 
 func (s *sUtil) WebhookPostPutPatchDelete(ctx context.Context, header, method, url string, payload any) (
@@ -36,8 +33,5 @@ func (s *sUtil) WebhookPostPutPatchDelete(ctx context.Context, header, method, u
 		return
 	}
 	defer resp.Close()
-	statusCode = resp.StatusCode
-	contentType = resp.Header.Get("Content-Type")
-	body = resp.ReadAll()
-	return
+	return resp.StatusCode, resp.Header.Get("Content-Type"), resp.ReadAll(), nil
 }

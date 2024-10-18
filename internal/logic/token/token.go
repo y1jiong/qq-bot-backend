@@ -49,11 +49,7 @@ func (s *sToken) IsCorrectToken(ctx context.Context,
 		return
 	}
 	// 数据处理
-	correct = true
-	name = tokenE.Name
-	ownerId = tokenE.OwnerId
-	botId = tokenE.BindingBotId
-	return
+	return true, tokenE.Name, tokenE.OwnerId, tokenE.BindingBotId
 }
 
 func (s *sToken) UpdateLoginTime(ctx context.Context, token string) {

@@ -75,9 +75,7 @@ func (s *sNamespace) GetForwardingTo(ctx context.Context, alias string) (url, ke
 		g.Log().Error(ctx, err)
 		return
 	}
-	url = data.URL
-	key = data.Key
-	return
+	return data.URL, data.Key
 }
 
 func (s *sNamespace) IsForwardingMatchUserId(ctx context.Context, userId string) bool {

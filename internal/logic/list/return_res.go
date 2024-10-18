@@ -486,7 +486,7 @@ func (s *sList) GlanceListDataReturnRes(ctx context.Context, listName string) (r
 		msgBuilder.WriteString("`" + k + "`\n")
 	}
 	// 回执
-	retMsg = strings.TrimRight(msgBuilder.String(), "\n")
+	retMsg = strings.TrimSuffix(msgBuilder.String(), "\n")
 	return
 }
 
