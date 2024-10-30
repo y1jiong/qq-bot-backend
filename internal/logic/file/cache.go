@@ -32,7 +32,8 @@ func (s *sFile) GetCachedFileById(ctx context.Context, id string) (content []byt
 }
 
 func (s *sFile) getCachedFileId(ctx context.Context, content []byte, duration time.Duration) (id string, err error) {
-	return guid.S(), gcache.Set(ctx, getFileCacheKey(id), content, duration)
+	id = guid.S()
+	return id, gcache.Set(ctx, getFileCacheKey(id), content, duration)
 }
 
 func (s *sFile) getCachedFileURL(ctx context.Context, id string) (url string, err error) {
