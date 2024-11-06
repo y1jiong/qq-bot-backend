@@ -86,7 +86,7 @@ func (s *sNamespace) IsNamespaceOwnerOrAdminOrOperator(ctx context.Context, name
 		return false
 	}
 	return isNamespaceOwnerOrAdmin(ctx, userId, namespaceE) ||
-		service.User().CouldOpNamespace(ctx, gconv.Int64(userId))
+		service.User().CanOpNamespace(ctx, gconv.Int64(userId))
 }
 
 func (s *sNamespace) IsGlobalNamespace(namespace string) bool {

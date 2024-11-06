@@ -70,7 +70,7 @@ func (s *sUser) IsSystemTrustedUser(ctx context.Context, userId int64) bool {
 	return b
 }
 
-func (s *sUser) CouldOpToken(ctx context.Context, userId int64) bool {
+func (s *sUser) CanOpToken(ctx context.Context, userId int64) bool {
 	// 参数合法性校验
 	if userId == 0 {
 		return false
@@ -90,7 +90,7 @@ func (s *sUser) CouldOpToken(ctx context.Context, userId int64) bool {
 	return b
 }
 
-func (s *sUser) CouldOpNamespace(ctx context.Context, userId int64) bool {
+func (s *sUser) CanOpNamespace(ctx context.Context, userId int64) bool {
 	// 参数合法性校验
 	if userId == 0 {
 		return false
@@ -110,7 +110,7 @@ func (s *sUser) CouldOpNamespace(ctx context.Context, userId int64) bool {
 	return b
 }
 
-func (s *sUser) CouldGetRawMsg(ctx context.Context, userId int64) bool {
+func (s *sUser) CanGetRawMsg(ctx context.Context, userId int64) bool {
 	// 参数合法性校验
 	if userId == 0 {
 		return false

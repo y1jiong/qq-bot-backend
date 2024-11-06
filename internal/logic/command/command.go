@@ -76,7 +76,7 @@ func (s *sCommand) TryCommand(ctx context.Context, message string) (catch bool, 
 			catch, retMsg = tryUser(ctx, next[2])
 		case "raw":
 			// 权限校验
-			if !service.User().CouldGetRawMsg(ctx, service.Bot().GetUserId(ctx)) {
+			if !service.User().CanGetRawMsg(ctx, service.Bot().GetUserId(ctx)) {
 				return
 			}
 			// span

@@ -13,7 +13,7 @@ func tryToken(ctx context.Context, cmd string) (catch bool, retMsg string) {
 	switch {
 	case nextBranchRe.MatchString(cmd):
 		// 权限校验
-		if !service.User().CouldOpToken(ctx, service.Bot().GetUserId(ctx)) {
+		if !service.User().CanOpToken(ctx, service.Bot().GetUserId(ctx)) {
 			return
 		}
 		next := nextBranchRe.FindStringSubmatch(cmd)

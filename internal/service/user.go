@@ -21,9 +21,9 @@ type (
 		GrantGetRawMsgReturnRes(ctx context.Context, userId int64) (retMsg string)
 		RevokeGetRawMsgReturnRes(ctx context.Context, userId int64) (retMsg string)
 		IsSystemTrustedUser(ctx context.Context, userId int64) bool
-		CouldOpToken(ctx context.Context, userId int64) bool
-		CouldOpNamespace(ctx context.Context, userId int64) bool
-		CouldGetRawMsg(ctx context.Context, userId int64) bool
+		CanOpToken(ctx context.Context, userId int64) bool
+		CanOpNamespace(ctx context.Context, userId int64) bool
+		CanGetRawMsg(ctx context.Context, userId int64) bool
 	}
 )
 

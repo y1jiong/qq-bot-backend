@@ -16,7 +16,7 @@ import (
 
 func (s *sNamespace) AddNewNamespaceReturnRes(ctx context.Context, namespace string) (retMsg string) {
 	// 权限校验 namespace op
-	if !service.User().CouldOpNamespace(ctx, service.Bot().GetUserId(ctx)) {
+	if !service.User().CanOpNamespace(ctx, service.Bot().GetUserId(ctx)) {
 		return
 	}
 	// 参数合法性校验
@@ -92,7 +92,7 @@ func (s *sNamespace) QueryNamespaceReturnRes(ctx context.Context, namespace stri
 	}
 	// 权限校验 owner or admin or namespace op or public or global
 	if permission, public := isNamespaceOwnerOrAdmin(ctx, service.Bot().GetUserId(ctx), namespaceE) ||
-		service.User().CouldOpNamespace(ctx, service.Bot().GetUserId(ctx)),
+		service.User().CanOpNamespace(ctx, service.Bot().GetUserId(ctx)),
 		s.IsGlobalNamespace(namespace) || s.IsNamespacePropertyPublic(ctx, namespace); !permission && !public {
 		return
 	} else if permission {
@@ -130,7 +130,7 @@ func (s *sNamespace) QueryOwnNamespaceReturnRes(ctx context.Context) (retMsg str
 			dao.Namespace.Columns().Namespace,
 			dao.Namespace.Columns().CreatedAt,
 		)
-	if !service.User().CouldOpNamespace(ctx, userId) {
+	if !service.User().CanOpNamespace(ctx, userId) {
 		query = query.Where(dao.Namespace.Columns().OwnerId, userId)
 		query = query.WhereOr(fmt.Sprintf(`%v#>>'{%v,%v}'='%v'`,
 			dao.Namespace.Columns().SettingJson, propertiesMapKey, propertyPublic, true),
@@ -173,7 +173,7 @@ func (s *sNamespace) AddNamespaceAdminReturnRes(ctx context.Context,
 	}
 	// 权限校验 owner or namespace op
 	if !isNamespaceOwner(service.Bot().GetUserId(ctx), namespaceE) &&
-		!service.User().CouldOpNamespace(ctx, service.Bot().GetUserId(ctx)) {
+		!service.User().CanOpNamespace(ctx, service.Bot().GetUserId(ctx)) {
 		return
 	}
 	// 数据处理
@@ -220,7 +220,7 @@ func (s *sNamespace) RemoveNamespaceAdminReturnRes(ctx context.Context,
 	}
 	// 权限校验 owner or namespace op
 	if !isNamespaceOwner(service.Bot().GetUserId(ctx), namespaceE) &&
-		!service.User().CouldOpNamespace(ctx, service.Bot().GetUserId(ctx)) {
+		!service.User().CanOpNamespace(ctx, service.Bot().GetUserId(ctx)) {
 		return
 	}
 	// 数据处理
@@ -274,7 +274,7 @@ func (s *sNamespace) ResetNamespaceAdminReturnRes(ctx context.Context, namespace
 	}
 	// 权限校验 owner or namespace op
 	if !isNamespaceOwner(service.Bot().GetUserId(ctx), namespaceE) &&
-		!service.User().CouldOpNamespace(ctx, service.Bot().GetUserId(ctx)) {
+		!service.User().CanOpNamespace(ctx, service.Bot().GetUserId(ctx)) {
 		return
 	}
 	// 数据处理
@@ -317,7 +317,7 @@ func (s *sNamespace) ChangeNamespaceOwnerReturnRes(ctx context.Context,
 	}
 	// 权限校验 owner or namespace op
 	if !isNamespaceOwner(service.Bot().GetUserId(ctx), namespaceE) &&
-		!service.User().CouldOpNamespace(ctx, service.Bot().GetUserId(ctx)) {
+		!service.User().CanOpNamespace(ctx, service.Bot().GetUserId(ctx)) {
 		return
 	}
 	// 数据库更新
@@ -347,7 +347,7 @@ func (s *sNamespace) SetNamespacePropertyPublicReturnRes(ctx context.Context,
 	}
 	// 权限校验 owner or namespace op
 	if !isNamespaceOwner(service.Bot().GetUserId(ctx), namespaceE) &&
-		!service.User().CouldOpNamespace(ctx, service.Bot().GetUserId(ctx)) {
+		!service.User().CanOpNamespace(ctx, service.Bot().GetUserId(ctx)) {
 		return
 	}
 	// 数据处理

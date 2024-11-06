@@ -144,7 +144,7 @@ func (s *sToken) QueryOwnTokenReturnRes(ctx context.Context) (retMsg string) {
 			dao.Token.Columns().Name,
 			dao.Token.Columns().CreatedAt,
 		)
-	if !service.User().CouldOpToken(ctx, userId) {
+	if !service.User().CanOpToken(ctx, userId) {
 		query = query.Where(dao.Token.Columns().OwnerId, userId)
 	}
 	err := query.Scan(&tEntities)
