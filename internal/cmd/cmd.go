@@ -24,7 +24,7 @@ var (
 				if err != nil {
 					return err
 				}
-				defer shutdown()
+				defer shutdown(ctx)
 			}
 
 			s := g.Server()
@@ -47,6 +47,7 @@ var (
 				})
 			})
 			s.Run()
+
 			return
 		},
 	}
