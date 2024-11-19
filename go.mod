@@ -5,9 +5,9 @@ go 1.23
 require (
 	github.com/bitly/go-simplejson v0.5.1
 	github.com/bytedance/sonic v1.12.4
-	github.com/gogf/gf/contrib/drivers/pgsql/v2 v2.8.0
-	github.com/gogf/gf/contrib/trace/otlpgrpc/v2 v2.8.0
-	github.com/gogf/gf/v2 v2.8.0
+	github.com/gogf/gf/contrib/drivers/pgsql/v2 v2.7.4
+	github.com/gogf/gf/contrib/trace/otlpgrpc/v2 v2.7.4
+	github.com/gogf/gf/v2 v2.7.4
 	github.com/gorilla/websocket v1.5.3
 	github.com/lukesampson/figlet v0.0.0-20190211215653-8a3ef4a6ac42
 	github.com/nsf/termbox-go v1.1.1

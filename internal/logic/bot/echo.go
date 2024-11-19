@@ -95,7 +95,10 @@ func (s *sBot) pushEchoCache(ctx context.Context, echoSign string,
 		if v == nil {
 			return
 		}
-		echo := v.Val().(*echoModel)
+		echo, ok := v.Val().(*echoModel)
+		if !ok {
+			return
+		}
 		if echo == nil || echo.TimeoutFunc == nil {
 			return
 		}
@@ -115,5 +118,9 @@ func (s *sBot) popEchoCache(ctx context.Context, echoSign string) (echo *echoMod
 	if err != nil {
 		return
 	}
-	return v.Val().(*echoModel), nil
+	echo, ok := v.Val().(*echoModel)
+	if !ok {
+		return nil, errors.New("echo model type error")
+	}
+	return
 }
