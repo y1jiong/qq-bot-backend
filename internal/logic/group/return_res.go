@@ -388,7 +388,7 @@ func (s *sGroup) CheckExistReturnRes(ctx context.Context) (retMsg string) {
 				if err == nil {
 					continue
 				}
-			} else if err.Error() != "群聊不存在" {
+			} else if !strings.Contains(err.Error(), "不存在") {
 				retMsg = "获取群信息失败"
 				return
 			}
