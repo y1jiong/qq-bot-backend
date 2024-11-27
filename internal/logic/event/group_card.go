@@ -77,11 +77,9 @@ func (s *sEvent) TryAutoSetCard(ctx context.Context) (catch bool) {
 	catch = true
 	listMap := service.List().GetListData(ctx, listName)
 	userId := service.Bot().GetUserId(ctx)
-	if _, ok := listMap[gconv.String(userId)].(string); !ok {
-		// 不在 auto_set list 中
-		return
+	if card, ok := listMap[gconv.String(userId)].(string); ok {
+		// 执行设置
+		service.Bot().SetGroupCard(ctx, groupId, userId, card)
 	}
-	// 执行设置
-	service.Bot().SetGroupCard(ctx, groupId, userId, listMap[gconv.String(userId)].(string))
 	return
 }

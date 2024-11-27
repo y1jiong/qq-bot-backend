@@ -19,7 +19,9 @@ func (s *sBot) LeaveConnectionPool(key int64) {
 
 func (s *sBot) LoadConnectionPool(key int64) context.Context {
 	if v, ok := connectionPool.Load(key); ok {
-		return v.(context.Context)
+		if ctx, okay := v.(context.Context); okay {
+			return ctx
+		}
 	}
 	return nil
 }

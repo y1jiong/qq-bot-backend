@@ -31,8 +31,8 @@ func (s *sBot) CtxWithWebSocket(parent context.Context, conn *websocket.Conn) co
 }
 
 func (s *sBot) webSocketFromCtx(ctx context.Context) *websocket.Conn {
-	if v := ctx.Value(ctxKeyForWebSocket); v != nil {
-		return v.(*websocket.Conn)
+	if conn, ok := ctx.Value(ctxKeyForWebSocket).(*websocket.Conn); ok {
+		return conn
 	}
 	return nil
 }
@@ -42,8 +42,8 @@ func (s *sBot) CtxNewWebSocketMutex(parent context.Context) context.Context {
 }
 
 func (s *sBot) webSocketMutexFromCtx(ctx context.Context) *sync.Mutex {
-	if v := ctx.Value(ctxKeyForWebSocketMutex); v != nil {
-		return v.(*sync.Mutex)
+	if mu, ok := ctx.Value(ctxKeyForWebSocketMutex).(*sync.Mutex); ok {
+		return mu
 	}
 	return nil
 }
@@ -53,8 +53,8 @@ func (s *sBot) CtxWithReqJson(ctx context.Context, reqJson *ast.Node) context.Co
 }
 
 func (s *sBot) reqJsonFromCtx(ctx context.Context) *ast.Node {
-	if v := ctx.Value(ctxKeyForReqJson); v != nil {
-		return v.(*ast.Node)
+	if node, ok := ctx.Value(ctxKeyForReqJson).(*ast.Node); ok {
+		return node
 	}
 	return nil
 }
