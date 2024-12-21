@@ -1,4 +1,4 @@
-package util
+package utility
 
 import (
 	"context"
@@ -6,8 +6,8 @@ import (
 	"qq-bot-backend/internal/consts"
 )
 
-func (s *sUtil) WebhookGetHeadConnectOptionsTrace(ctx context.Context, header, method, url string) (
-	statusCode int, contentType string, body []byte, err error) {
+func WebhookGetHeadConnectOptionsTrace(ctx context.Context, header, method, url string,
+) (statusCode int, contentType string, body []byte, err error) {
 	c := gclient.New()
 	c.SetAgent(consts.ProjName + "/" + consts.Version)
 	if header != "" {
@@ -21,8 +21,8 @@ func (s *sUtil) WebhookGetHeadConnectOptionsTrace(ctx context.Context, header, m
 	return resp.StatusCode, resp.Header.Get("Content-Type"), resp.ReadAll(), nil
 }
 
-func (s *sUtil) WebhookPostPutPatchDelete(ctx context.Context, header, method, url string, payload any) (
-	statusCode int, contentType string, body []byte, err error) {
+func WebhookPostPutPatchDelete(ctx context.Context, header, method, url string, payload any,
+) (statusCode int, contentType string, body []byte, err error) {
 	c := gclient.New()
 	c.SetAgent(consts.ProjName + "/" + consts.Version)
 	if header != "" {

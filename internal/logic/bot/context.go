@@ -56,7 +56,8 @@ func (s *sBot) CacheMessageContext(ctx context.Context, userId, lastMessageId, c
 	return gcache.Set(ctx, cacheKey, arr, messageContextExpire)
 }
 
-func (s *sBot) GetCachedMessageContext(ctx context.Context, userId, lastMessageId int64,
+func (s *sBot) GetCachedMessageContext(ctx context.Context,
+	userId, lastMessageId int64,
 ) (currentMessageIds []int64, exist bool, err error) {
 	v, err := gcache.Get(ctx, getMessageContextCacheKey(userId, lastMessageId))
 	if err != nil || v == nil {

@@ -6,6 +6,7 @@ import (
 	"github.com/gogf/gf/v2/net/gtrace"
 	"github.com/gogf/gf/v2/util/gconv"
 	"qq-bot-backend/internal/service"
+	"qq-bot-backend/utility"
 	"strings"
 	"time"
 )
@@ -56,7 +57,7 @@ func (s *sEvent) TryGroupKeywordReply(ctx context.Context) (catch bool) {
 	// 限速
 	const kind = "replyG"
 	gid := gconv.String(groupId)
-	if limited, _ := service.Util().AutoLimit(ctx, kind, gid, 7, time.Minute); limited {
+	if limited, _ := utility.AutoLimit(ctx, kind, gid, 7, time.Minute); limited {
 		g.Log().Notice(ctx, kind, gid, "is limited")
 		return
 	}

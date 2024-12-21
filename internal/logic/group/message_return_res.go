@@ -11,8 +11,7 @@ import (
 	"qq-bot-backend/internal/service"
 )
 
-func (s *sGroup) SetAntiRecallReturnRes(ctx context.Context,
-	groupId int64, enable bool) (retMsg string) {
+func (s *sGroup) SetAntiRecallReturnRes(ctx context.Context, groupId int64, enable bool) (retMsg string) {
 	// 参数合法性校验
 	if groupId == 0 {
 		return
@@ -76,7 +75,8 @@ func (s *sGroup) SetAntiRecallReturnRes(ctx context.Context,
 }
 
 func (s *sGroup) SetMessageNotificationReturnRes(ctx context.Context,
-	groupId int64, notificationGroupId int64) (retMsg string) {
+	groupId int64, notificationGroupId int64,
+) (retMsg string) {
 	// 参数合法性校验
 	if groupId == 0 || notificationGroupId == 0 {
 		return

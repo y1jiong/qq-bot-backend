@@ -12,7 +12,7 @@ import (
 	"io"
 	"net/http"
 	"qq-bot-backend/internal/consts"
-	"qq-bot-backend/internal/util/codec"
+	"qq-bot-backend/utility/codec"
 	"sync"
 )
 

@@ -13,7 +13,8 @@ import (
 )
 
 func (s *sGroup) BindNamespaceReturnRes(ctx context.Context,
-	groupId int64, namespace string) (retMsg string) {
+	groupId int64, namespace string,
+) (retMsg string) {
 	// 参数合法性校验
 	if groupId == 0 {
 		return

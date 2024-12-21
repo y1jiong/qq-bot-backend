@@ -11,7 +11,8 @@ import (
 	"net/http"
 	"net/url"
 	"qq-bot-backend/internal/service"
-	"qq-bot-backend/internal/util/codec"
+	"qq-bot-backend/utility"
+	"qq-bot-backend/utility/codec"
 	"regexp"
 	"strconv"
 	"strings"
@@ -82,7 +83,7 @@ func (s *sEvent) TryKeywordReply(ctx context.Context) (catch bool) {
 	// 限速
 	const kind = "replyU"
 	uid := gconv.String(userId)
-	if limited, _ := service.Util().AutoLimit(ctx, kind, uid, 5, time.Minute); limited {
+	if limited, _ := utility.AutoLimit(ctx, kind, uid, 5, time.Minute); limited {
 		g.Log().Notice(ctx, kind, uid, "is limited")
 		return
 	}
@@ -95,8 +96,10 @@ func (s *sEvent) TryKeywordReply(ctx context.Context) (catch bool) {
 	return
 }
 
-func (s *sEvent) keywordReplyWebhook(ctx context.Context, userId, groupId int64, nickname,
-	message, hit, value string) (replyMsg string, noReplyPrefix bool) {
+func (s *sEvent) keywordReplyWebhook(ctx context.Context,
+	userId, groupId int64,
+	nickname, message, hit, value string,
+) (replyMsg string, noReplyPrefix bool) {
 	// 必须以 hit 开头
 	if !strings.HasPrefix(message, hit) {
 		return
@@ -150,7 +153,7 @@ func (s *sEvent) keywordReplyWebhook(ctx context.Context, userId, groupId int64,
 	var contentType string
 	switch method {
 	case http.MethodGet:
-		statusCode, contentType, body, err = service.Util().WebhookGetHeadConnectOptionsTrace(ctx, headers, method, urlLink)
+		statusCode, contentType, body, err = utility.WebhookGetHeadConnectOptionsTrace(ctx, headers, method, urlLink)
 	case http.MethodPost, http.MethodPut, http.MethodDelete, http.MethodPatch:
 		// Payload
 		msg, _ := sonic.ConfigDefault.MarshalToString(message)
@@ -162,7 +165,7 @@ func (s *sEvent) keywordReplyWebhook(ctx context.Context, userId, groupId int64,
 		payload = strings.ReplaceAll(payload, "{nickname}", nick)
 		payload = strings.ReplaceAll(payload, "{userId}", gconv.String(userId))
 		payload = strings.ReplaceAll(payload, "{groupId}", gconv.String(groupId))
-		statusCode, contentType, body, err = service.Util().WebhookPostPutPatchDelete(ctx, headers, method, urlLink, payload)
+		statusCode, contentType, body, err = utility.WebhookPostPutPatchDelete(ctx, headers, method, urlLink, payload)
 	default:
 		return
 	}
@@ -284,8 +287,10 @@ func (s *sEvent) keywordReplyCommand(ctx context.Context, message, hit, text str
 	return
 }
 
-func (s *sEvent) keywordReplyRewrite(ctx context.Context, try func(context.Context) bool,
-	message, hit, text string) (catch bool) {
+func (s *sEvent) keywordReplyRewrite(ctx context.Context,
+	try func(context.Context) bool,
+	message, hit, text string,
+) (catch bool) {
 	// 必须以 hit 开头
 	if !strings.HasPrefix(message, hit) {
 		return

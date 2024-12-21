@@ -3,7 +3,7 @@ package segment
 import (
 	"fmt"
 	"github.com/bytedance/sonic"
-	"qq-bot-backend/internal/util/codec"
+	"qq-bot-backend/utility/codec"
 	"regexp"
 	"strings"
 )

@@ -9,6 +9,7 @@ import (
 	"go.opentelemetry.io/otel/codes"
 	"net/http"
 	"qq-bot-backend/internal/service"
+	"qq-bot-backend/utility"
 	"strings"
 	"time"
 
@@ -95,7 +96,7 @@ func (c *ControllerV1) Message(ctx context.Context, req *v1.MessageReq) (res *v1
 		g.Log().Info(ctx, tokenName+" access successfully with "+innerStr)
 	}
 	// 限速 一分钟只能发送 7 条消息
-	if limit, _ := service.Util().AutoLimit(ctx,
+	if limit, _ := utility.AutoLimit(ctx,
 		"send_msg", gconv.String(req.UserId+req.GroupId), 7, time.Minute); limit {
 		err = gerror.NewCode(gcode.New(http.StatusTooManyRequests, "", nil),
 			http.StatusText(http.StatusTooManyRequests))

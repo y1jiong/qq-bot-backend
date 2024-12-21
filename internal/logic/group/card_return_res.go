@@ -7,12 +7,13 @@ import (
 	"github.com/gogf/gf/v2/util/gconv"
 	"qq-bot-backend/internal/dao"
 	"qq-bot-backend/internal/service"
-	"qq-bot-backend/internal/util/codec"
+	"qq-bot-backend/utility/codec"
 	"regexp"
 )
 
 func (s *sGroup) SetAutoSetListReturnRes(ctx context.Context,
-	groupId int64, listName string) (retMsg string) {
+	groupId int64, listName string,
+) (retMsg string) {
 	// 参数合法性校验
 	if groupId == 0 {
 		return

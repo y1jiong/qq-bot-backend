@@ -9,7 +9,7 @@ import (
 	"qq-bot-backend/internal/dao"
 	"qq-bot-backend/internal/model/entity"
 	"qq-bot-backend/internal/service"
-	"qq-bot-backend/internal/util/codec"
+	"qq-bot-backend/utility/codec"
 	"strings"
 	"time"
 )

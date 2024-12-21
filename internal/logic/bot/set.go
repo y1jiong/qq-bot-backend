@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 	"github.com/bytedance/sonic/ast"
-	"qq-bot-backend/internal/util/segment"
+	"qq-bot-backend/utility/segment"
 )
 
 func (s *sBot) RewriteMessage(ctx context.Context, message string) {

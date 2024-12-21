@@ -63,7 +63,8 @@ func (s *sBot) defaultEchoHandler(asyncCtx context.Context) error {
 
 func (s *sBot) pushEchoCache(ctx context.Context, echoSign string,
 	callbackFunc func(ctx context.Context, asyncCtx context.Context),
-	timeoutFunc func(ctx context.Context)) error {
+	timeoutFunc func(ctx context.Context),
+) error {
 	if callbackFunc == nil || timeoutFunc == nil {
 		return errors.New("callbackFunc or timeoutFunc must not be nil")
 	}

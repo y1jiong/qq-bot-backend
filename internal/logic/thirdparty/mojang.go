@@ -9,7 +9,7 @@ import (
 	"io"
 	"net/http"
 	"qq-bot-backend/internal/service"
-	"qq-bot-backend/internal/util/codec"
+	"qq-bot-backend/utility/codec"
 	"regexp"
 	"time"
 )

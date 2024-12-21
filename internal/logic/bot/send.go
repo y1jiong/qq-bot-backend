@@ -9,12 +9,16 @@ import (
 	"github.com/gorilla/websocket"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/codes"
-	"qq-bot-backend/internal/util/segment"
+	"qq-bot-backend/utility/segment"
 	"sync"
 )
 
 func (s *sBot) SendMessage(ctx context.Context,
-	messageType string, userId, groupId int64, msg string, plain bool) (messageId int64, err error) {
+	messageType string,
+	userId, groupId int64,
+	msg string,
+	plain bool,
+) (messageId int64, err error) {
 	// 参数校验
 	if userId == 0 && groupId == 0 {
 		return 0, errors.New("userId 和 groupId 不能同时为 0")

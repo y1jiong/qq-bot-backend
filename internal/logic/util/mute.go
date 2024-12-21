@@ -4,12 +4,17 @@ import (
 	"context"
 	"github.com/gogf/gf/v2/util/gconv"
 	"qq-bot-backend/internal/service"
+	"qq-bot-backend/utility"
 	"time"
 )
 
-func (s *sUtil) AutoMute(ctx context.Context, kind string, groupId, userId int64,
-	limitTimes, baseMinutes, limitMinutes int, duration time.Duration) {
-	limited, times := s.AutoLimit(ctx, kind, gconv.String(userId), limitTimes, duration)
+func (s *sUtil) AutoMute(ctx context.Context,
+	kind string,
+	groupId, userId int64,
+	limitTimes, baseMinutes, limitMinutes int,
+	duration time.Duration,
+) {
+	limited, times := utility.AutoLimit(ctx, kind, gconv.String(userId), limitTimes, duration)
 	if !limited {
 		return
 	}
