@@ -4,8 +4,7 @@ import (
 	_ "github.com/gogf/gf/contrib/drivers/pgsql/v2"
 	_ "qq-bot-backend/internal/logic"
 
-	"github.com/gogf/gf/v2/os/gctx"
-
+	"context"
 	"qq-bot-backend/internal/cmd"
 )
 
@@ -14,5 +13,5 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	cmd.Main.Run(gctx.New())
+	cmd.Main.Run(context.Background())
 }

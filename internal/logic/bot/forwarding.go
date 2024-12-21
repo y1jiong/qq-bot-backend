@@ -33,7 +33,7 @@ var initForwardClient = sync.OnceFunc(func() {
 })
 
 func (s *sBot) Forward(ctx context.Context, url, key string) (err error) {
-	ctx, span := gtrace.NewSpan(ctx, codec.GetBaseURL(url))
+	ctx, span := gtrace.NewSpan(ctx, codec.GetRouteURL(url))
 	defer span.End()
 	span.SetAttributes(attribute.String("http.url", url))
 	defer func() {

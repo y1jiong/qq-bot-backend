@@ -12,7 +12,7 @@ func DecodeBlank(src string) (dest string) {
 	return
 }
 
-func GetBaseURL(raw string) string {
+func GetRouteURL(raw string) string {
 	parsed, err := url.Parse(raw)
 	if err != nil {
 		return raw

@@ -32,8 +32,6 @@ var (
 
 func (c *cBot) Websocket(r *ghttp.Request) {
 	ctx := r.Context()
-	// new trace
-	ctx = trace.ContextWithSpanContext(ctx, trace.SpanContext{})
 	ctx, span := gtrace.NewSpan(ctx, "controller.Bot.Websocket")
 	spanEnd := sync.OnceFunc(func() { span.End() })
 	defer func() {
