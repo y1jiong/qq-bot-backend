@@ -45,6 +45,7 @@ type (
 		GetCardOldNew(ctx context.Context) (oldCard string, newCard string)
 		GetGroupMemberInfo(ctx context.Context, groupId int64, userId int64, noCache ...bool) (member *ast.Node, err error)
 		GetGroupMemberList(ctx context.Context, groupId int64, noCache ...bool) (members []any, err error)
+		RequestMessageFromCache(ctx context.Context, messageId int64) (messageMap map[string]any, err error)
 		RequestMessage(ctx context.Context, messageId int64) (messageMap map[string]any, err error)
 		GetGroupInfo(ctx context.Context, groupId int64, noCache ...bool) (infoMap map[string]any, err error)
 		GetLoginInfo(ctx context.Context) (userId int64, nickname string)
@@ -64,13 +65,14 @@ type (
 		UploadFile(ctx context.Context, url string) (filePath string, err error)
 		ApproveJoinGroup(ctx context.Context, flag string, subType string, approve bool, reason string)
 		SetModel(ctx context.Context, model string)
-		RecallMessage(ctx context.Context, msgId int64)
+		RecallMessage(ctx context.Context, messageId int64)
 		MutePrototype(ctx context.Context, groupId int64, userId int64, seconds int)
 		Mute(ctx context.Context, seconds int)
 		SetGroupCard(ctx context.Context, groupId int64, userId int64, card string)
 		Kick(ctx context.Context, groupId int64, userId int64, reject ...bool)
 		RewriteMessage(ctx context.Context, message string)
 		SetHistory(ctx context.Context, history string) error
+		CacheMessageAstNode(ctx context.Context)
 	}
 )
 

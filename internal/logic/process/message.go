@@ -13,6 +13,7 @@ func processMessage(ctx context.Context) {
 		switch subType {
 		case "normal":
 			// 群聊
+			go service.Bot().CacheMessageAstNode(ctx)
 			go service.Event().TryForward(ctx)
 			go service.Event().TryKeywordRecall(ctx)
 			go service.Event().TryGroupKeywordReply(ctx)

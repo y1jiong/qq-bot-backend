@@ -4,7 +4,10 @@ import (
 	"context"
 	"errors"
 	"github.com/bytedance/sonic/ast"
+	"github.com/gogf/gf/v2/os/gcache"
+	"github.com/gogf/gf/v2/util/gconv"
 	"qq-bot-backend/utility/segment"
+	"time"
 )
 
 func (s *sBot) RewriteMessage(ctx context.Context, message string) {
@@ -22,6 +25,14 @@ func (s *sBot) SetHistory(ctx context.Context, history string) error {
 	}
 	_, _ = node.Get(historyKey).Set(history, ast.NewNull())
 	return nil
+}
+
+func (s *sBot) CacheMessageAstNode(ctx context.Context) {
+	_ = gcache.Set(ctx,
+		cacheKeyMsgIdPrefix+gconv.String(s.GetMsgId(ctx)),
+		s.reqJsonFromCtx(ctx),
+		2*time.Minute,
+	)
 }
 
 func (s *sBot) tryMessageSegmentToString(ctx context.Context) {

@@ -21,39 +21,41 @@ func init() {
 }
 
 const (
-	ctxKeyForWebSocketMutex = "ws.mutex"
-	ctxKeyForWebSocket      = "ws"
-	ctxKeyForReqJson        = "reqJson"
+	ctxKeyWebSocketMutex = "ws.mutex"
+	ctxKeyWebSocket      = "ws"
+	ctxKeyReqJson        = "reqJson"
+
+	cacheKeyMsgIdPrefix = "bot.message_id_"
 )
 
 func (s *sBot) CtxWithWebSocket(parent context.Context, conn *websocket.Conn) context.Context {
-	return context.WithValue(parent, ctxKeyForWebSocket, conn)
+	return context.WithValue(parent, ctxKeyWebSocket, conn)
 }
 
 func (s *sBot) webSocketFromCtx(ctx context.Context) *websocket.Conn {
-	if conn, ok := ctx.Value(ctxKeyForWebSocket).(*websocket.Conn); ok {
+	if conn, ok := ctx.Value(ctxKeyWebSocket).(*websocket.Conn); ok {
 		return conn
 	}
 	return nil
 }
 
 func (s *sBot) CtxNewWebSocketMutex(parent context.Context) context.Context {
-	return context.WithValue(parent, ctxKeyForWebSocketMutex, &sync.Mutex{})
+	return context.WithValue(parent, ctxKeyWebSocketMutex, &sync.Mutex{})
 }
 
 func (s *sBot) webSocketMutexFromCtx(ctx context.Context) *sync.Mutex {
-	if mu, ok := ctx.Value(ctxKeyForWebSocketMutex).(*sync.Mutex); ok {
+	if mu, ok := ctx.Value(ctxKeyWebSocketMutex).(*sync.Mutex); ok {
 		return mu
 	}
 	return nil
 }
 
 func (s *sBot) CtxWithReqJson(ctx context.Context, reqJson *ast.Node) context.Context {
-	return context.WithValue(ctx, ctxKeyForReqJson, reqJson)
+	return context.WithValue(ctx, ctxKeyReqJson, reqJson)
 }
 
 func (s *sBot) reqJsonFromCtx(ctx context.Context) *ast.Node {
-	if node, ok := ctx.Value(ctxKeyForReqJson).(*ast.Node); ok {
+	if node, ok := ctx.Value(ctxKeyReqJson).(*ast.Node); ok {
 		return node
 	}
 	return nil

@@ -2,9 +2,11 @@ package event
 
 import (
 	"context"
+	"errors"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/net/gtrace"
 	"github.com/gogf/gf/v2/util/gconv"
+	"go.opentelemetry.io/otel/codes"
 	"qq-bot-backend/internal/service"
 	"regexp"
 )
@@ -16,6 +18,12 @@ var (
 func (s *sEvent) TryUndoMessageRecall(ctx context.Context) (catch bool) {
 	ctx, span := gtrace.NewSpan(ctx, "event.TryUndoMessageRecall")
 	defer span.End()
+	var err error
+	defer func() {
+		if err != nil {
+			span.SetStatus(codes.Error, err.Error())
+		}
+	}()
 
 	{
 		userId := service.Bot().GetUserId(ctx)
@@ -39,26 +47,47 @@ func (s *sEvent) TryUndoMessageRecall(ctx context.Context) (catch bool) {
 	}
 
 	// 获取撤回消息的 id
-	msgId := service.Bot().GetMsgId(ctx)
+	messageId := service.Bot().GetMsgId(ctx)
 	// 获取消息
-	messageMap, err := service.Bot().RequestMessage(ctx, msgId)
+	messageMap, err := service.Bot().RequestMessage(ctx, messageId)
 	if err != nil {
 		service.Bot().SendPlainMsg(ctx, "获取历史消息失败")
 		return
 	}
-	// 获取消息信息
-	senderMap := gconv.Map(messageMap["sender"])
-	nickname := gconv.String(senderMap["card"])
-	if nickname == "" {
-		nickname = gconv.String(senderMap["nickname"])
+	var (
+		nickname     string
+		userId       int64
+		groupId      int64
+		message      string
+		isUsedBackup bool
+	)
+	for {
+		// 获取消息信息
+		senderMap := gconv.Map(messageMap["sender"])
+		nickname = gconv.String(senderMap["card"])
+		if nickname == "" {
+			nickname = gconv.String(senderMap["nickname"])
+		}
+		userId = gconv.Int64(senderMap["user_id"])
+		groupId = gconv.Int64(messageMap["group_id"])
+		// 获取撤回的消息
+		message = gconv.String(messageMap["message"])
+		if message != "" || isUsedBackup {
+			break
+		}
+
+		isUsedBackup = true
+
+		messageMap, err = service.Bot().RequestMessageFromCache(ctx, messageId)
+		if err != nil {
+			return
+		}
 	}
-	userId := gconv.Int64(senderMap["user_id"])
-	groupId := gconv.Int64(messageMap["group_id"])
-	// 获取撤回的消息
-	message := gconv.String(messageMap["message"])
 	if message == "" {
+		err = errors.New("message is empty")
 		return
 	}
+
 	// 防止过度触发反撤回
 	service.Util().AutoMute(ctx, "recall", groupId, userId,
 		2, 5, 5, gconv.Duration("1m"))

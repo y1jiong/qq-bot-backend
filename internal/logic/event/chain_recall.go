@@ -7,7 +7,7 @@ import (
 )
 
 func (s *sEvent) TryChainRecall(ctx context.Context) (catch bool) {
-	msgIds, exist, err := service.Bot().GetCachedMessageContext(ctx,
+	messageIds, exist, err := service.Bot().GetCachedMessageContext(ctx,
 		service.Bot().GetUserId(ctx),
 		service.Bot().GetMsgId(ctx),
 	)
@@ -18,8 +18,8 @@ func (s *sEvent) TryChainRecall(ctx context.Context) (catch bool) {
 	ctx, span := gtrace.NewSpan(ctx, "event.TryChainRecall")
 	defer span.End()
 
-	for _, msgId := range msgIds {
-		service.Bot().RecallMessage(ctx, msgId)
+	for _, messageId := range messageIds {
+		service.Bot().RecallMessage(ctx, messageId)
 	}
 
 	catch = true

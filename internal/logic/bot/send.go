@@ -506,10 +506,10 @@ func (s *sBot) SetModel(ctx context.Context, model string) {
 	}
 }
 
-func (s *sBot) RecallMessage(ctx context.Context, msgId int64) {
+func (s *sBot) RecallMessage(ctx context.Context, messageId int64) {
 	ctx, span := gtrace.NewSpan(ctx, "bot.RecallMessage")
 	defer span.End()
-	span.SetAttributes(attribute.Int64("recall_message.message_id", msgId))
+	span.SetAttributes(attribute.Int64("recall_message.message_id", messageId))
 	var err error
 	defer func() {
 		if err != nil {
@@ -532,7 +532,7 @@ func (s *sBot) RecallMessage(ctx context.Context, msgId int64) {
 		Params: struct {
 			MessageId int64 `json:"message_id"`
 		}{
-			MessageId: msgId,
+			MessageId: messageId,
 		},
 	}
 	reqJson, err := sonic.ConfigDefault.Marshal(req)

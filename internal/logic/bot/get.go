@@ -7,6 +7,7 @@ import (
 	"github.com/bytedance/sonic/ast"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/net/gtrace"
+	"github.com/gogf/gf/v2/os/gcache"
 	"github.com/gogf/gf/v2/util/gconv"
 	"github.com/gorilla/websocket"
 	"go.opentelemetry.io/otel/attribute"
@@ -289,6 +290,35 @@ func (s *sBot) GetGroupMemberList(ctx context.Context, groupId int64, noCache ..
 		return
 	}
 	return
+}
+
+func (s *sBot) RequestMessageFromCache(ctx context.Context, messageId int64) (messageMap map[string]any, err error) {
+	ctx, span := gtrace.NewSpan(ctx, "bot.RequestMessageFromCache")
+	defer span.End()
+	span.SetAttributes(attribute.Int64("request_message_from_cache.message_id", messageId))
+	defer func() {
+		if err != nil {
+			span.SetStatus(codes.Error, err.Error())
+		}
+	}()
+
+	v, err := gcache.Get(ctx, cacheKeyMsgIdPrefix+gconv.String(messageId))
+	if err != nil {
+		return
+	}
+
+	if v == nil || v.IsNil() {
+		messageMap = make(map[string]any)
+		return
+	}
+
+	node, ok := v.Val().(*ast.Node)
+	if !ok {
+		messageMap = make(map[string]any)
+		return
+	}
+
+	return node.Map()
 }
 
 func (s *sBot) RequestMessage(ctx context.Context, messageId int64) (messageMap map[string]any, err error) {
