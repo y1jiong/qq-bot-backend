@@ -71,7 +71,7 @@ func ParseMessage(message string) messageSegments {
 
 func ParseJSON(jsonBytes []byte) (messageSegments, error) {
 	var segments messageSegments
-	if err := sonic.ConfigDefault.Unmarshal(jsonBytes, &segments); err != nil {
+	if err := sonic.Unmarshal(jsonBytes, &segments); err != nil {
 		return nil, err
 	}
 	return segments, nil

@@ -11,12 +11,11 @@ import (
 	"github.com/gogf/gf/v2/os/gtime"
 	"github.com/gogf/gf/v2/util/gconv"
 	"go.opentelemetry.io/otel/codes"
-	"net/http"
+	"qq-bot-backend/internal/consts/errcode"
 	"qq-bot-backend/internal/service"
 	"qq-bot-backend/utility"
 	"time"
 
-	"github.com/gogf/gf/v2/errors/gcode"
 	"github.com/gogf/gf/v2/errors/gerror"
 
 	"qq-bot-backend/api/command/v1"
@@ -35,27 +34,23 @@ func (c *ControllerV1) Command(ctx context.Context, req *v1.CommandReq) (res *v1
 	{
 		msgTime := gtime.New(time.Unix(req.Timestamp, 0))
 		if diff := gtime.Now().Sub(msgTime); diff > 5*time.Second {
-			err = gerror.NewCode(gcode.New(http.StatusBadRequest, "", nil),
-				"message expired")
+			err = gerror.NewCode(errcode.MessageExpired)
 			return
 		} else if diff < -5*time.Second {
-			err = gerror.NewCode(gcode.New(http.StatusTooEarly, "", nil),
-				http.StatusText(http.StatusTooEarly))
+			err = gerror.NewCode(errcode.TooEarly)
 			return
 		}
 	}
 	// 验证 token
 	pass, tokenName, ownerId, botId := service.Token().IsCorrectToken(ctx, req.Token)
 	if !pass {
-		err = gerror.NewCode(gcode.New(http.StatusForbidden, "", nil),
-			"permission denied")
+		err = gerror.NewCode(errcode.PermissionDenied)
 		return
 	}
 	// 防止重放攻击
 	if limit, _ := utility.AutoLimit(ctx,
 		"api.command", req.Signature, 1, 10*time.Second); limit {
-		err = gerror.NewCode(gcode.New(http.StatusConflict, "", nil),
-			http.StatusText(http.StatusConflict))
+		err = gerror.NewCode(errcode.Conflict)
 		return
 	}
 	// 验证签名
@@ -70,8 +65,7 @@ func (c *ControllerV1) Command(ctx context.Context, req *v1.CommandReq) (res *v1
 		hmacSha1.Write([]byte(s))
 		macBase64 := gbase64.Encode(hmacSha1.Sum(nil))
 		if !hmac.Equal(macBase64, []byte(req.Signature)) {
-			err = gerror.NewCode(gcode.New(http.StatusBadRequest, "", nil),
-				"signature error")
+			err = gerror.NewCode(errcode.SignatureError)
 			return
 		}
 	}
@@ -80,8 +74,7 @@ func (c *ControllerV1) Command(ctx context.Context, req *v1.CommandReq) (res *v1
 	// 加载 botId 对应的 botCtx
 	botCtx := service.Bot().LoadConnectionPool(botId)
 	if botCtx == nil {
-		err = gerror.NewCode(gcode.New(http.StatusInternalServerError, "", nil),
-			"bot not connected")
+		err = gerror.NewCode(errcode.BotNotConnected)
 		return
 	}
 	// 初始化内部请求
@@ -94,7 +87,7 @@ func (c *ControllerV1) Command(ctx context.Context, req *v1.CommandReq) (res *v1
 		UserId:  ownerId,
 		GroupId: req.GroupId,
 	}
-	rawJson, err := sonic.ConfigDefault.MarshalToString(innerReq)
+	rawJson, err := sonic.MarshalString(innerReq)
 	if err != nil {
 		return
 	}
@@ -110,8 +103,7 @@ func (c *ControllerV1) Command(ctx context.Context, req *v1.CommandReq) (res *v1
 		var catch bool
 		catch, retMsg = service.Command().TryCommand(botCtx, req.Command)
 		if !catch {
-			err = gerror.NewCode(gcode.New(http.StatusBadRequest, "", nil),
-				"command not found")
+			err = gerror.NewCode(errcode.CommandNotFound)
 			return
 		}
 	}
@@ -124,27 +116,23 @@ func (c *ControllerV1) Command(ctx context.Context, req *v1.CommandReq) (res *v1
 		return
 	}
 	if req.GroupId == 0 || !service.Group().IsBinding(botCtx, req.GroupId) {
-		err = gerror.NewCode(gcode.New(http.StatusBadRequest, "", nil),
-			"group not binding")
+		err = gerror.NewCode(errcode.GroupNotBinding)
 		return
 	}
 	if !service.Bot().IsGroupOwnerOrAdminOrSysTrusted(botCtx) {
-		err = gerror.NewCode(gcode.New(http.StatusForbidden, "", nil),
-			"permission denied")
+		err = gerror.NewCode(errcode.PermissionDenied)
 		return
 	}
 	// 限速 一分钟只能发送 5 条消息
 	if limit, _ := utility.AutoLimit(ctx,
 		"send_msg", gconv.String(req.GroupId), 5, time.Minute); limit {
-		err = gerror.NewCode(gcode.New(http.StatusTooManyRequests, "", nil),
-			http.StatusText(http.StatusTooManyRequests))
+		err = gerror.NewCode(errcode.TooManyRequests)
 		return
 	}
 	// 发送消息
 	_, err = service.Bot().SendMessage(botCtx, "", 0, req.GroupId, retMsg, true)
 	if err != nil {
-		err = gerror.NewCode(gcode.New(http.StatusInternalServerError, "", nil),
-			err.Error())
+		err = gerror.NewCode(errcode.InternalError, err.Error())
 		return
 	}
 	return

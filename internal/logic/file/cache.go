@@ -2,12 +2,11 @@ package file
 
 import (
 	"context"
-	"github.com/gogf/gf/v2/errors/gcode"
 	"github.com/gogf/gf/v2/errors/gerror"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/os/gcache"
 	"github.com/gogf/gf/v2/util/guid"
-	"net/http"
+	"qq-bot-backend/internal/consts/errcode"
 	"time"
 )
 
@@ -25,7 +24,7 @@ func (s *sFile) GetCachedFileById(ctx context.Context, id string) (content []byt
 		return
 	}
 	if v == nil {
-		err = gerror.NewCode(gcode.New(http.StatusNotFound, "", nil), "file not found")
+		err = gerror.NewCode(errcode.FileNotFound)
 		return
 	}
 	return v.Bytes(), nil

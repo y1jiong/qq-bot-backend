@@ -80,7 +80,7 @@ func (s *sBot) SendMessage(ctx context.Context,
 		}
 	}
 
-	reqJson, err := sonic.ConfigDefault.Marshal(req)
+	reqJson, err := sonic.Marshal(req)
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return
@@ -188,7 +188,7 @@ func (s *sBot) SendFileToGroup(ctx context.Context, groupId int64, filePath, nam
 			Folder:  folder,
 		},
 	}
-	reqJson, err := sonic.ConfigDefault.Marshal(req)
+	reqJson, err := sonic.Marshal(req)
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return
@@ -259,7 +259,7 @@ func (s *sBot) SendFileToUser(ctx context.Context, userId int64, filePath, name 
 			Name:   name,
 		},
 	}
-	reqJson, err := sonic.ConfigDefault.Marshal(req)
+	reqJson, err := sonic.Marshal(req)
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return
@@ -329,7 +329,7 @@ func (s *sBot) UploadFile(ctx context.Context, url string) (filePath string, err
 			URL: url,
 		},
 	}
-	reqJson, err := sonic.ConfigDefault.Marshal(req)
+	reqJson, err := sonic.Marshal(req)
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return
@@ -409,7 +409,7 @@ func (s *sBot) ApproveJoinGroup(ctx context.Context, flag, subType string, appro
 			Reason:  reason,
 		},
 	}
-	reqJson, err := sonic.ConfigDefault.Marshal(req)
+	reqJson, err := sonic.Marshal(req)
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return
@@ -472,7 +472,7 @@ func (s *sBot) SetModel(ctx context.Context, model string) {
 			ModelShow: model,
 		},
 	}
-	reqJson, err := sonic.ConfigDefault.Marshal(req)
+	reqJson, err := sonic.Marshal(req)
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return
@@ -535,7 +535,7 @@ func (s *sBot) RecallMessage(ctx context.Context, messageId int64) {
 			MessageId: messageId,
 		},
 	}
-	reqJson, err := sonic.ConfigDefault.Marshal(req)
+	reqJson, err := sonic.Marshal(req)
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return
@@ -610,7 +610,7 @@ func (s *sBot) MutePrototype(ctx context.Context, groupId, userId int64, seconds
 			Duration: seconds,
 		},
 	}
-	reqJson, err := sonic.ConfigDefault.Marshal(req)
+	reqJson, err := sonic.Marshal(req)
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return
@@ -683,7 +683,7 @@ func (s *sBot) SetGroupCard(ctx context.Context, groupId, userId int64, card str
 			Card:    card,
 		},
 	}
-	reqJson, err := sonic.ConfigDefault.Marshal(req)
+	reqJson, err := sonic.Marshal(req)
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return
@@ -754,7 +754,7 @@ func (s *sBot) Kick(ctx context.Context, groupId, userId int64, reject ...bool) 
 	if len(reject) > 0 && reject[0] {
 		req.Params.RejectAddRequest = true
 	}
-	reqJson, err := sonic.ConfigDefault.Marshal(req)
+	reqJson, err := sonic.Marshal(req)
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return

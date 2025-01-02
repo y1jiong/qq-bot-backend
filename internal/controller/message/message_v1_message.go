@@ -7,13 +7,12 @@ import (
 	"github.com/gogf/gf/v2/net/gtrace"
 	"github.com/gogf/gf/v2/util/gconv"
 	"go.opentelemetry.io/otel/codes"
-	"net/http"
+	"qq-bot-backend/internal/consts/errcode"
 	"qq-bot-backend/internal/service"
 	"qq-bot-backend/utility"
 	"strings"
 	"time"
 
-	"github.com/gogf/gf/v2/errors/gcode"
 	"github.com/gogf/gf/v2/errors/gerror"
 
 	"qq-bot-backend/api/message/v1"
@@ -32,8 +31,7 @@ func (c *ControllerV1) Message(ctx context.Context, req *v1.MessageReq) (res *v1
 		// 忽视前置的 Bearer 或 Token 进行鉴权
 		authorizations := strings.Fields(g.RequestFromCtx(ctx).Header.Get("Authorization"))
 		if len(authorizations) < 2 {
-			err = gerror.NewCode(gcode.New(http.StatusForbidden, "", nil),
-				http.StatusText(http.StatusForbidden))
+			err = gerror.NewCode(errcode.Forbidden)
 			return
 		}
 		req.Token = authorizations[1]
@@ -41,26 +39,22 @@ func (c *ControllerV1) Message(ctx context.Context, req *v1.MessageReq) (res *v1
 	// token 验证
 	pass, tokenName, ownerId, botId := service.Token().IsCorrectToken(ctx, req.Token)
 	if !pass {
-		err = gerror.NewCode(gcode.New(http.StatusForbidden, "", nil),
-			http.StatusText(http.StatusForbidden))
+		err = gerror.NewCode(errcode.Forbidden)
 		return
 	}
 	// 权限校验
 	if !service.Namespace().IsNamespaceOwnerOrAdmin(ctx, service.Namespace().GetGlobalNamespace(), ownerId) {
 		if req.GroupId == 0 {
-			err = gerror.NewCode(gcode.New(http.StatusForbidden, "", nil),
-				"permission denied")
+			err = gerror.NewCode(errcode.PermissionDenied)
 			return
 		}
 		namespace := service.Group().GetNamespace(ctx, req.GroupId)
 		if namespace == "" {
-			err = gerror.NewCode(gcode.New(http.StatusForbidden, "", nil),
-				"permission denied")
+			err = gerror.NewCode(errcode.PermissionDenied)
 			return
 		}
 		if !service.Namespace().IsNamespaceOwnerOrAdmin(ctx, namespace, ownerId) {
-			err = gerror.NewCode(gcode.New(http.StatusForbidden, "", nil),
-				"permission denied")
+			err = gerror.NewCode(errcode.PermissionDenied)
 			return
 		}
 	}
@@ -69,8 +63,7 @@ func (c *ControllerV1) Message(ctx context.Context, req *v1.MessageReq) (res *v1
 	// 加载 botId 对应的 botCtx
 	botCtx := service.Bot().LoadConnectionPool(botId)
 	if botCtx == nil {
-		err = gerror.NewCode(gcode.New(http.StatusInternalServerError, "", nil),
-			"bot not connected")
+		err = gerror.NewCode(errcode.BotNotConnected)
 		return
 	}
 	// 规范请求参数
@@ -89,7 +82,7 @@ func (c *ControllerV1) Message(ctx context.Context, req *v1.MessageReq) (res *v1
 			Message: req.Message,
 		}
 		var innerStr string
-		innerStr, err = sonic.ConfigDefault.MarshalToString(inner)
+		innerStr, err = sonic.MarshalString(inner)
 		if err != nil {
 			return
 		}
@@ -98,16 +91,14 @@ func (c *ControllerV1) Message(ctx context.Context, req *v1.MessageReq) (res *v1
 	// 限速 一分钟只能发送 7 条消息
 	if limit, _ := utility.AutoLimit(ctx,
 		"send_msg", gconv.String(req.UserId+req.GroupId), 7, time.Minute); limit {
-		err = gerror.NewCode(gcode.New(http.StatusTooManyRequests, "", nil),
-			http.StatusText(http.StatusTooManyRequests))
+		err = gerror.NewCode(errcode.TooManyRequests)
 		return
 	}
 	// send message
 	_, err = service.Bot().SendMessage(botCtx,
 		service.Bot().GuessMsgType(req.GroupId), req.UserId, req.GroupId, req.Message, false)
 	if err != nil {
-		err = gerror.NewCode(gcode.New(http.StatusInternalServerError, "", nil),
-			err.Error())
+		err = gerror.NewCode(errcode.InternalError, err.Error())
 		return
 	}
 	return

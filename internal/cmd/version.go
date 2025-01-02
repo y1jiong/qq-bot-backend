@@ -18,6 +18,7 @@ var (
 		Brief:         "show version information of current binary",
 		CaseSensitive: true,
 		Func: func(ctx context.Context, parser *gcmd.Parser) (err error) {
+			defer fmt.Println(consts.Description)
 			width, _, err := term.GetSize(int(os.Stdout.Fd()))
 			if err != nil {
 				return
@@ -27,7 +28,6 @@ var (
 				return
 			}
 			figletlib.PrintMsg(strings.ToUpper(consts.ProjName), flfFont, width, flfFont.Settings(), "left")
-			fmt.Println(consts.Description)
 			return
 		},
 	}

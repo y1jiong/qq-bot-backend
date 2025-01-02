@@ -156,9 +156,9 @@ func (s *sEvent) keywordReplyWebhook(ctx context.Context,
 		statusCode, contentType, body, err = utility.WebhookGetHeadConnectOptionsTrace(ctx, headers, method, urlLink)
 	case http.MethodPost, http.MethodPut, http.MethodDelete, http.MethodPatch:
 		// Payload
-		msg, _ := sonic.ConfigDefault.MarshalToString(message)
-		r, _ := sonic.ConfigDefault.MarshalToString(remain)
-		nick, _ := sonic.ConfigDefault.MarshalToString(nickname)
+		msg, _ := sonic.MarshalString(message)
+		r, _ := sonic.MarshalString(remain)
+		nick, _ := sonic.MarshalString(nickname)
 		// 占位符替换
 		payload = strings.ReplaceAll(payload, "{message}", msg)
 		payload = strings.ReplaceAll(payload, "{remain}", r)
