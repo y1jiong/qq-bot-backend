@@ -51,6 +51,7 @@ type (
 		GetLoginInfo(ctx context.Context) (userId int64, nickname string)
 		IsGroupOwnerOrAdmin(ctx context.Context) bool
 		IsGroupOwnerOrAdminOrSysTrusted(ctx context.Context) bool
+		GetVersionInfo(ctx context.Context) (appName string, appVersion string, protocolVersion string, err error)
 		SendMessage(ctx context.Context, messageType string, userId int64, groupId int64, msg string, plain bool) (messageId int64, err error)
 		// SendPlainMsg 适用于*事件*触发的消息发送
 		SendPlainMsg(ctx context.Context, msg string)

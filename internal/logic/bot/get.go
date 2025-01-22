@@ -534,3 +534,59 @@ func (s *sBot) IsGroupOwnerOrAdmin(ctx context.Context) bool {
 func (s *sBot) IsGroupOwnerOrAdminOrSysTrusted(ctx context.Context) bool {
 	return s.IsGroupOwnerOrAdmin(ctx) || service.User().IsSystemTrustedUser(ctx, gconv.Int64(s.GetUserId(ctx)))
 }
+
+func (s *sBot) GetVersionInfo(ctx context.Context) (appName, appVersion, protocolVersion string, err error) {
+	ctx, span := gtrace.NewSpan(ctx, "bot.GetVersionInfo")
+	defer span.End()
+	defer func() {
+		if err != nil {
+			span.SetStatus(codes.Error, err.Error())
+		}
+	}()
+
+	// echo sign
+	echoSign := s.generateEchoSignWithTrace(ctx)
+	// 参数
+	req := struct {
+		Action string `json:"action"`
+		Echo   string `json:"echo"`
+	}{
+		Action: "get_version_info",
+		Echo:   echoSign,
+	}
+	reqJson, err := sonic.Marshal(req)
+	if err != nil {
+		g.Log().Error(ctx, err)
+		return
+	}
+	// callback
+	wg := sync.WaitGroup{}
+	defer wg.Wait()
+	wgDone := sync.OnceFunc(wg.Done)
+	wg.Add(1)
+	callback := func(ctx context.Context, asyncCtx context.Context) {
+		defer wgDone()
+		if err = s.defaultEchoHandler(asyncCtx); err != nil {
+			return
+		}
+		received := s.getData(asyncCtx)
+		appName, _ = received.Get("app_name").StrictString()
+		appVersion, _ = received.Get("app_version").StrictString()
+		protocolVersion, _ = received.Get("protocol_version").StrictString()
+	}
+	timeout := func(ctx context.Context) {
+		defer wgDone()
+		err = errors.New("echo timeout")
+	}
+	// echo
+	if err = s.pushEchoCache(ctx, echoSign, callback, timeout); err != nil {
+		g.Log().Error(ctx, err)
+		return
+	}
+	// 发送响应
+	if err = s.writeMessage(ctx, websocket.TextMessage, reqJson); err != nil {
+		g.Log().Warning(ctx, err)
+		return
+	}
+	return
+}

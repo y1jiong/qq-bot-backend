@@ -22,6 +22,10 @@ func init() {
 	service.RegisterCommand(New())
 }
 
+const (
+	cmdPrefix = "/"
+)
+
 var (
 	nextBranchRe      = regexp.MustCompile(`^(\S+)\s+([\s\S]+)$`)
 	endBranchRe       = regexp.MustCompile(`^\S+$`)
@@ -29,7 +33,7 @@ var (
 )
 
 func (s *sCommand) TryCommand(ctx context.Context, message string) (catch bool, retMsg string) {
-	if !strings.HasPrefix(message, "/") {
+	if !strings.HasPrefix(message, cmdPrefix) {
 		return
 	}
 
@@ -57,10 +61,11 @@ func (s *sCommand) TryCommand(ctx context.Context, message string) (catch bool, 
 			service.Bot().GetCardOrNickname(ctx)+"("+gconv.String(userId)+
 				") in group("+gconv.String(groupId)+") send cmd "+message)
 	}()
-	cmd := strings.Replace(message, "/", "", 1)
+	cmd := strings.Replace(message, cmdPrefix, "", 1)
 	switch {
 	case nextBranchRe.MatchString(cmd):
 		next := nextBranchRe.FindStringSubmatch(cmd)
+
 		switch next[1] {
 		case "list":
 			// /list <>
@@ -75,15 +80,8 @@ func (s *sCommand) TryCommand(ctx context.Context, message string) (catch bool, 
 			// /user <>
 			catch, retMsg = tryUser(ctx, next[2])
 		case "raw":
-			// 权限校验
-			if !service.User().CanGetRawMsg(ctx, service.Bot().GetUserId(ctx)) {
-				return
-			}
-			// span
-			_, span := gtrace.NewSpan(ctx, "command.raw")
 			// /raw <>
-			catch, retMsg = true, next[2]
-			span.End()
+			catch, retMsg = tryRaw(ctx, next[2])
 		case "broadcast":
 			// /broadcast <>
 			catch, retMsg = tryBroadcast(ctx, next[2])
@@ -102,16 +100,14 @@ func (s *sCommand) TryCommand(ctx context.Context, message string) (catch bool, 
 		if !service.User().IsSystemTrustedUser(ctx, service.Bot().GetUserId(ctx)) {
 			return
 		}
+
 		switch cmd {
 		case "status":
 			// /status
 			catch, retMsg = queryProcessStatus(ctx)
 		case "version":
-			// span
-			_, span := gtrace.NewSpan(ctx, "command.version")
 			// /version
-			catch, retMsg = true, consts.Description
-			span.End()
+			catch, retMsg = tryVersion(ctx)
 		case "continue":
 			// /continue
 			catch, retMsg = continueProcess(ctx)
@@ -120,5 +116,33 @@ func (s *sCommand) TryCommand(ctx context.Context, message string) (catch bool, 
 			catch, retMsg = pauseProcess(ctx)
 		}
 	}
+	return
+}
+
+func tryRaw(ctx context.Context, cmd string) (catch bool, retMsg string) {
+	// 权限校验
+	if !service.User().CanGetRawMsg(ctx, service.Bot().GetUserId(ctx)) {
+		return
+	}
+
+	ctx, span := gtrace.NewSpan(ctx, "command.raw")
+	defer span.End()
+
+	catch, retMsg = true, cmd
+	return
+}
+
+func tryVersion(ctx context.Context) (catch bool, retMsg string) {
+	ctx, span := gtrace.NewSpan(ctx, "command.version")
+	defer span.End()
+
+	catch, retMsg = true, consts.Description
+
+	appName, appVersion, protocolVersion, err := service.Bot().GetVersionInfo(ctx)
+	if err != nil {
+		return
+	}
+	// appName/appVersion (protocolVersion)
+	retMsg += "\n" + appName + "/" + appVersion + " (" + protocolVersion + ")"
 	return
 }
