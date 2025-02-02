@@ -136,8 +136,7 @@ func (s *sNamespace) QueryOwnNamespaceReturnRes(ctx context.Context) (retMsg str
 			dao.Namespace.Columns().SettingJson, propertiesMapKey, propertyPublic, true),
 		)
 	}
-	err := query.Scan(&nEntities)
-	if err != nil {
+	if err := query.Scan(&nEntities); err != nil {
 		g.Log().Error(ctx, err)
 		return
 	}

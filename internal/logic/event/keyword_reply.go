@@ -281,7 +281,9 @@ func (s *sEvent) keywordReplyCommand(ctx context.Context, message, hit, text str
 		if !catch {
 			return
 		}
-		replyBuilder.WriteString(tmp + "\n")
+		if tmp != "" {
+			replyBuilder.WriteString(tmp + "\n")
+		}
 	}
 	replyMsg = strings.TrimSuffix(replyBuilder.String(), "\n")
 	return
@@ -305,8 +307,7 @@ func (s *sEvent) keywordReplyRewrite(ctx context.Context,
 	)
 
 	// 防止循环递归
-	err := service.Bot().SetHistory(ctx, hit)
-	if err != nil {
+	if err := service.Bot().SetHistory(ctx, hit); err != nil {
 		// rewrite loop detected
 		g.Log().Notice(ctx, "rewrite loop detected: "+hit)
 		return

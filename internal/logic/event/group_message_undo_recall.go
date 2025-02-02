@@ -54,35 +54,23 @@ func (s *sEvent) TryUndoMessageRecall(ctx context.Context) (catch bool) {
 		service.Bot().SendPlainMsg(ctx, "获取历史消息失败")
 		return
 	}
-	var (
-		nickname     string
-		userId       int64
-		groupId      int64
-		message      string
-		isUsedBackup bool
-	)
-	for {
-		// 获取消息信息
-		senderMap := gconv.Map(messageMap["sender"])
-		nickname = gconv.String(senderMap["card"])
-		if nickname == "" {
-			nickname = gconv.String(senderMap["nickname"])
-		}
-		userId = gconv.Int64(senderMap["user_id"])
-		groupId = gconv.Int64(messageMap["group_id"])
-		// 获取撤回的消息
-		message = gconv.String(messageMap["message"])
-		if message != "" || isUsedBackup {
-			break
-		}
-
-		isUsedBackup = true
-
+	if gconv.String(messageMap["message"]) == "" {
 		messageMap, err = service.Bot().RequestMessageFromCache(ctx, messageId)
 		if err != nil {
 			return
 		}
 	}
+
+	// 获取消息信息
+	senderMap := gconv.Map(messageMap["sender"])
+	nickname := gconv.String(senderMap["card"])
+	if nickname == "" {
+		nickname = gconv.String(senderMap["nickname"])
+	}
+	userId := gconv.Int64(senderMap["user_id"])
+	groupId := gconv.Int64(messageMap["group_id"])
+	// 获取撤回的消息
+	message := gconv.String(messageMap["message"])
 	if message == "" {
 		err = errors.New("message is empty")
 		return

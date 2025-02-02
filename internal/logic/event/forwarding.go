@@ -27,8 +27,7 @@ func (s *sEvent) TryForward(ctx context.Context) (catch bool) {
 		if url == "" {
 			continue
 		}
-		err := service.Bot().Forward(ctx, url, key)
-		if err != nil {
+		if err := service.Bot().Forward(ctx, url, key); err != nil {
 			g.Log().Notice(ctx, "forward", url, err)
 		}
 

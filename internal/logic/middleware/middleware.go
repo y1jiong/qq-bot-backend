@@ -54,8 +54,7 @@ func (s *sMiddleware) RateLimit(r *ghttp.Request) {
 		}
 	}
 	if !exist {
-		err := gcache.Set(r.Context(), cacheKey, 1, intervalTime)
-		if err != nil {
+		if err := gcache.Set(r.Context(), cacheKey, 1, intervalTime); err != nil {
 			r.SetError(err)
 			return
 		}
