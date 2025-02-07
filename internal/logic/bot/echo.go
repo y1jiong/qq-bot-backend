@@ -26,7 +26,7 @@ func getEchoCacheKey(echoSign string) string {
 	return echoPrefix + echoSign
 }
 
-func (s *sBot) catchEcho(ctx context.Context) (catch bool) {
+func (s *sBot) catchEcho(ctx context.Context) (caught bool) {
 	if echoSign := s.getEcho(ctx); echoSign != "" {
 		echo, err := s.popEchoCache(ctx, echoSign)
 		if err != nil {
@@ -36,7 +36,7 @@ func (s *sBot) catchEcho(ctx context.Context) (catch bool) {
 		if echo == nil {
 			return
 		}
-		catch = true
+		caught = true
 		if echo.CallbackFunc == nil {
 			return
 		}

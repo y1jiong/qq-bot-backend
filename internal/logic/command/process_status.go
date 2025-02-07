@@ -7,11 +7,11 @@ import (
 	"qq-bot-backend/internal/service"
 )
 
-func queryProcessStatus(ctx context.Context) (catch bool, retMsg string) {
+func queryProcessStatus(ctx context.Context) (caught bool, retMsg string) {
 	ctx, span := gtrace.NewSpan(ctx, "command.queryProcessStatus")
 	defer span.End()
 
-	catch = true
+	caught = true
 	if service.Process().IsBotProcessEnabled() {
 		retMsg = "正常状态"
 	} else {
@@ -20,11 +20,11 @@ func queryProcessStatus(ctx context.Context) (catch bool, retMsg string) {
 	return
 }
 
-func pauseProcess(ctx context.Context) (catch bool, retMsg string) {
+func pauseProcess(ctx context.Context) (caught bool, retMsg string) {
 	ctx, span := gtrace.NewSpan(ctx, "command.pauseProcess")
 	defer span.End()
 
-	catch = true
+	caught = true
 	if !service.Process().IsBotProcessEnabled() {
 		retMsg = "已处于暂停状态"
 		return
@@ -38,11 +38,11 @@ func pauseProcess(ctx context.Context) (catch bool, retMsg string) {
 	return
 }
 
-func continueProcess(ctx context.Context) (catch bool, retMsg string) {
+func continueProcess(ctx context.Context) (caught bool, retMsg string) {
 	ctx, span := gtrace.NewSpan(ctx, "command.continueProcess")
 	defer span.End()
 
-	catch = true
+	caught = true
 	if service.Process().IsBotProcessEnabled() {
 		retMsg = "已处于正常状态"
 		return

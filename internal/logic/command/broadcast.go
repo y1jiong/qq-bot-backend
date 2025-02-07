@@ -8,7 +8,7 @@ import (
 	"strings"
 )
 
-func tryBroadcast(ctx context.Context, cmd string) (catch bool, retMsg string) {
+func tryBroadcast(ctx context.Context, cmd string) (caught bool, retMsg string) {
 	ctx, span := gtrace.NewSpan(ctx, "command.tryBroadcast")
 	defer span.End()
 
@@ -39,7 +39,7 @@ func tryBroadcast(ctx context.Context, cmd string) (catch bool, retMsg string) {
 				strings.TrimSpace(next[2])+suffix,
 				false,
 			)
-			catch = true
+			caught = true
 		}
 	}
 	return

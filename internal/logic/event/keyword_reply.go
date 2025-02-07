@@ -43,7 +43,7 @@ func decreasePlaceholderIndex(text string) string {
 	return text
 }
 
-func (s *sEvent) TryKeywordReply(ctx context.Context) (catch bool) {
+func (s *sEvent) TryKeywordReply(ctx context.Context) (caught bool) {
 	ctx, span := gtrace.NewSpan(ctx, "event.TryKeywordReply")
 	defer span.End()
 
@@ -71,7 +71,7 @@ func (s *sEvent) TryKeywordReply(ctx context.Context) (catch bool) {
 			userId, 0, service.Bot().GetNickname(ctx),
 			msg, hit, value)
 	case rewritePrefixRe.MatchString(value):
-		catch = s.keywordReplyRewrite(ctx, s.TryKeywordReply, msg, hit, value)
+		caught = s.keywordReplyRewrite(ctx, s.TryKeywordReply, msg, hit, value)
 		replyMsg = ""
 	case commandPrefixRe.MatchString(value):
 		replyMsg = s.keywordReplyCommand(ctx, msg, hit, value)
@@ -92,7 +92,7 @@ func (s *sEvent) TryKeywordReply(ctx context.Context) (catch bool) {
 	}
 	service.Bot().SendMsg(ctx, replyMsg)
 
-	catch = true
+	caught = true
 	return
 }
 
@@ -277,8 +277,8 @@ func (s *sEvent) keywordReplyCommand(ctx context.Context, message, hit, text str
 	commands := strings.Split(subMatch[1], " && ")
 	var replyBuilder strings.Builder
 	for _, command := range commands {
-		catch, tmp := service.Command().TryCommand(ctx, strings.TrimSpace(command))
-		if !catch {
+		caught, tmp := service.Command().TryCommand(ctx, strings.TrimSpace(command))
+		if !caught {
 			return
 		}
 		if tmp != "" {
@@ -292,7 +292,7 @@ func (s *sEvent) keywordReplyCommand(ctx context.Context, message, hit, text str
 func (s *sEvent) keywordReplyRewrite(ctx context.Context,
 	try func(context.Context) bool,
 	message, hit, text string,
-) (catch bool) {
+) (caught bool) {
 	// 必须以 hit 开头
 	if !strings.HasPrefix(message, hit) {
 		return
@@ -326,7 +326,7 @@ func (s *sEvent) keywordReplyRewrite(ctx context.Context,
 	for _, rewrite := range rewrites {
 		service.Bot().RewriteMessage(ctx, strings.TrimSpace(rewrite))
 		// callback
-		catch = try(ctx)
+		caught = try(ctx)
 	}
 	return
 }

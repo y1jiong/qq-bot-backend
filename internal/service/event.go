@@ -11,17 +11,17 @@ import (
 
 type (
 	IEvent interface {
-		TryChainRecall(ctx context.Context) (catch bool)
-		TryForward(ctx context.Context) (catch bool)
-		TryApproveAddGroup(ctx context.Context) (catch bool)
-		TryLockCard(ctx context.Context) (catch bool)
-		TryAutoSetCard(ctx context.Context) (catch bool)
-		TryKeywordRecall(ctx context.Context) (catch bool)
-		TryGroupKeywordReply(ctx context.Context) (catch bool)
-		TryLogLeave(ctx context.Context) (catch bool)
-		TryLogApproval(ctx context.Context) (catch bool)
-		TryUndoMessageRecall(ctx context.Context) (catch bool)
-		TryKeywordReply(ctx context.Context) (catch bool)
+		TryChainRecall(ctx context.Context) (caught bool)
+		TryForward(ctx context.Context) (caught bool)
+		TryApproveAddGroup(ctx context.Context) (caught bool)
+		TryLockCard(ctx context.Context) (caught bool)
+		TryAutoSetCard(ctx context.Context) (caught bool)
+		TryKeywordRecall(ctx context.Context) (caught bool)
+		TryGroupKeywordReply(ctx context.Context) (caught bool)
+		TryLogLeave(ctx context.Context) (caught bool)
+		TryLogApproval(ctx context.Context) (caught bool)
+		TryUndoMessageRecall(ctx context.Context) (caught bool)
+		TryKeywordReply(ctx context.Context) (caught bool)
 	}
 )
 

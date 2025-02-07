@@ -10,7 +10,7 @@ import (
 	"qq-bot-backend/internal/service"
 )
 
-func (s *sEvent) TryKeywordRecall(ctx context.Context) (catch bool) {
+func (s *sEvent) TryKeywordRecall(ctx context.Context) (caught bool) {
 	ctx, span := gtrace.NewSpan(ctx, "event.TryKeywordRecall")
 	defer span.End()
 
@@ -65,6 +65,6 @@ func (s *sEvent) TryKeywordRecall(ctx context.Context) (catch bool) {
 	service.Util().AutoMute(ctx, "keyword", groupId, userId,
 		1, 5, 0, gconv.Duration("16h"))
 
-	catch = true
+	caught = true
 	return
 }

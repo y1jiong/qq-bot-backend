@@ -49,7 +49,7 @@ func (s *sProcess) Process(ctx context.Context) {
 	defer span.End()
 
 	// 优先处理命令
-	if catch, retMsg := service.Command().TryCommand(ctx, service.Bot().GetMessage(ctx)); catch {
+	if caught, retMsg := service.Command().TryCommand(ctx, service.Bot().GetMessage(ctx)); caught {
 		// 处理成功放弃后续逻辑
 		if retMsg != "" {
 			service.Bot().SendMsgCacheContext(ctx, retMsg)

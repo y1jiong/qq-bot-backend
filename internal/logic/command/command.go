@@ -32,7 +32,7 @@ var (
 	dualValueCmdEndRe = regexp.MustCompile(`^(\S+)\s+(\S+)$`)
 )
 
-func (s *sCommand) TryCommand(ctx context.Context, message string) (catch bool, retMsg string) {
+func (s *sCommand) TryCommand(ctx context.Context, message string) (caught bool, retMsg string) {
 	if !strings.HasPrefix(message, cmdPrefix) {
 		return
 	}
@@ -48,7 +48,7 @@ func (s *sCommand) TryCommand(ctx context.Context, message string) (catch bool, 
 	}
 	// 命令 log
 	defer func() {
-		if !catch {
+		if !caught {
 			return
 		}
 		groupId := service.Bot().GetGroupId(ctx)
@@ -69,31 +69,31 @@ func (s *sCommand) TryCommand(ctx context.Context, message string) (catch bool, 
 		switch next[1] {
 		case "list":
 			// /list <>
-			catch, retMsg = tryList(ctx, next[2])
+			caught, retMsg = tryList(ctx, next[2])
 		case "group":
 			// /group <>
-			catch, retMsg = tryGroup(ctx, next[2])
+			caught, retMsg = tryGroup(ctx, next[2])
 		case "namespace":
 			// /namespace <>
-			catch, retMsg = tryNamespace(ctx, next[2])
+			caught, retMsg = tryNamespace(ctx, next[2])
 		case "user":
 			// /user <>
-			catch, retMsg = tryUser(ctx, next[2])
+			caught, retMsg = tryUser(ctx, next[2])
 		case "raw":
 			// /raw <>
-			catch, retMsg = tryRaw(ctx, next[2])
+			caught, retMsg = tryRaw(ctx, next[2])
 		case "broadcast":
 			// /broadcast <>
-			catch, retMsg = tryBroadcast(ctx, next[2])
+			caught, retMsg = tryBroadcast(ctx, next[2])
 		case "token":
 			// /token <>
-			catch, retMsg = tryToken(ctx, next[2])
+			caught, retMsg = tryToken(ctx, next[2])
 		case "sys":
 			// /sys <>
-			catch, retMsg = trySys(ctx, next[2])
+			caught, retMsg = trySys(ctx, next[2])
 		case "model":
 			// /model <>
-			catch, retMsg = tryModelSet(ctx, next[2])
+			caught, retMsg = tryModelSet(ctx, next[2])
 		}
 	case endBranchRe.MatchString(cmd):
 		// 权限校验
@@ -104,22 +104,22 @@ func (s *sCommand) TryCommand(ctx context.Context, message string) (catch bool, 
 		switch cmd {
 		case "status":
 			// /status
-			catch, retMsg = queryProcessStatus(ctx)
+			caught, retMsg = queryProcessStatus(ctx)
 		case "version":
 			// /version
-			catch, retMsg = tryVersion(ctx)
+			caught, retMsg = tryVersion(ctx)
 		case "continue":
 			// /continue
-			catch, retMsg = continueProcess(ctx)
+			caught, retMsg = continueProcess(ctx)
 		case "pause":
 			// /pause
-			catch, retMsg = pauseProcess(ctx)
+			caught, retMsg = pauseProcess(ctx)
 		}
 	}
 	return
 }
 
-func tryRaw(ctx context.Context, cmd string) (catch bool, retMsg string) {
+func tryRaw(ctx context.Context, cmd string) (caught bool, retMsg string) {
 	// 权限校验
 	if !service.User().CanGetRawMsg(ctx, service.Bot().GetUserId(ctx)) {
 		return
@@ -128,15 +128,15 @@ func tryRaw(ctx context.Context, cmd string) (catch bool, retMsg string) {
 	ctx, span := gtrace.NewSpan(ctx, "command.raw")
 	defer span.End()
 
-	catch, retMsg = true, cmd
+	caught, retMsg = true, cmd
 	return
 }
 
-func tryVersion(ctx context.Context) (catch bool, retMsg string) {
+func tryVersion(ctx context.Context) (caught bool, retMsg string) {
 	ctx, span := gtrace.NewSpan(ctx, "command.version")
 	defer span.End()
 
-	catch, retMsg = true, consts.Description
+	caught, retMsg = true, consts.Description
 
 	appName, appVersion, protocolVersion, err := service.Bot().GetVersionInfo(ctx)
 	if err != nil {

@@ -8,7 +8,7 @@ import (
 	"qq-bot-backend/internal/service"
 )
 
-func (s *sEvent) TryForward(ctx context.Context) (catch bool) {
+func (s *sEvent) TryForward(ctx context.Context) (caught bool) {
 	ctx, span := gtrace.NewSpan(ctx, "event.TryForward")
 	defer span.End()
 
@@ -31,7 +31,7 @@ func (s *sEvent) TryForward(ctx context.Context) (catch bool) {
 			g.Log().Notice(ctx, "forward", url, err)
 		}
 
-		catch = true
+		caught = true
 	}
 	return
 }

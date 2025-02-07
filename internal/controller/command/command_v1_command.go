@@ -100,9 +100,9 @@ func (c *ControllerV1) Command(ctx context.Context, req *v1.CommandReq) (res *v1
 		go service.Command().TryCommand(botCtx, req.Command)
 		retMsg = "async"
 	} else {
-		var catch bool
-		catch, retMsg = service.Command().TryCommand(botCtx, req.Command)
-		if !catch {
+		var caught bool
+		caught, retMsg = service.Command().TryCommand(botCtx, req.Command)
+		if !caught {
 			err = gerror.NewCode(errcode.CommandNotFound)
 			return
 		}

@@ -7,7 +7,7 @@ import (
 	"qq-bot-backend/internal/service"
 )
 
-func tryUser(ctx context.Context, cmd string) (catch bool, retMsg string) {
+func tryUser(ctx context.Context, cmd string) (caught bool, retMsg string) {
 	ctx, span := gtrace.NewSpan(ctx, "command.tryUser")
 	defer span.End()
 
@@ -17,17 +17,17 @@ func tryUser(ctx context.Context, cmd string) (catch bool, retMsg string) {
 		switch next[1] {
 		case "join":
 			// /user join <>
-			catch, retMsg = tryUserJoin(ctx, next[2])
+			caught, retMsg = tryUserJoin(ctx, next[2])
 		case "leave":
 			// /user leave <>
-			catch, retMsg = tryUserLeave(ctx, next[2])
+			caught, retMsg = tryUserLeave(ctx, next[2])
 		}
 	case endBranchRe.MatchString(cmd):
 	}
 	return
 }
 
-func tryUserJoin(ctx context.Context, cmd string) (catch bool, retMsg string) {
+func tryUserJoin(ctx context.Context, cmd string) (caught bool, retMsg string) {
 	if !dualValueCmdEndRe.MatchString(cmd) {
 		return
 	}
@@ -35,11 +35,11 @@ func tryUserJoin(ctx context.Context, cmd string) (catch bool, retMsg string) {
 	dv := dualValueCmdEndRe.FindStringSubmatch(cmd)
 	// 执行
 	retMsg = service.Namespace().AddNamespaceAdminReturnRes(ctx, dv[1], gconv.Int64(dv[2]))
-	catch = true
+	caught = true
 	return
 }
 
-func tryUserLeave(ctx context.Context, cmd string) (catch bool, retMsg string) {
+func tryUserLeave(ctx context.Context, cmd string) (caught bool, retMsg string) {
 	if !dualValueCmdEndRe.MatchString(cmd) {
 		return
 	}
@@ -47,6 +47,6 @@ func tryUserLeave(ctx context.Context, cmd string) (catch bool, retMsg string) {
 	dv := dualValueCmdEndRe.FindStringSubmatch(cmd)
 	// 执行
 	retMsg = service.Namespace().RemoveNamespaceAdminReturnRes(ctx, dv[1], gconv.Int64(dv[2]))
-	catch = true
+	caught = true
 	return
 }

@@ -7,7 +7,7 @@ import (
 	"qq-bot-backend/internal/service"
 )
 
-func tryGroup(ctx context.Context, cmd string) (catch bool, retMsg string) {
+func tryGroup(ctx context.Context, cmd string) (caught bool, retMsg string) {
 	ctx, span := gtrace.NewSpan(ctx, "command.tryGroup")
 	defer span.End()
 
@@ -18,52 +18,52 @@ func tryGroup(ctx context.Context, cmd string) (catch bool, retMsg string) {
 		case "query":
 			// /group query <group_id>
 			retMsg = service.Group().QueryGroupReturnRes(ctx, gconv.Int64(next[2]))
-			catch = true
+			caught = true
 		case "approval":
 			// /group approval <>
-			catch, retMsg = tryGroupApproval(ctx, next[2])
+			caught, retMsg = tryGroupApproval(ctx, next[2])
 		case "keyword":
 			// /group keyword <>
-			catch, retMsg = tryGroupKeyword(ctx, next[2])
+			caught, retMsg = tryGroupKeyword(ctx, next[2])
 		case "message":
 			// /group message <>
-			catch, retMsg = tryGroupMessage(ctx, next[2])
+			caught, retMsg = tryGroupMessage(ctx, next[2])
 		case "card":
 			// /group card <>
-			catch, retMsg = tryGroupCard(ctx, next[2])
+			caught, retMsg = tryGroupCard(ctx, next[2])
 		case "export":
 			// /group export <>
-			catch, retMsg = tryGroupExport(ctx, next[2])
+			caught, retMsg = tryGroupExport(ctx, next[2])
 		case "log":
 			// /group log <>
-			catch, retMsg = tryGroupLog(ctx, next[2])
+			caught, retMsg = tryGroupLog(ctx, next[2])
 		case "kick":
 			// /group kick <list_name>
 			retMsg = service.Group().KickFromListReturnRes(ctx, service.Bot().GetGroupId(ctx), next[2])
-			catch = true
+			caught = true
 		case "keep":
 			// /group keep <list_name>
 			retMsg = service.Group().KeepFromListReturnRes(ctx, service.Bot().GetGroupId(ctx), next[2])
-			catch = true
+			caught = true
 		case "clone":
 			// /group clone <group_id>
 			retMsg = service.Group().CloneReturnRes(ctx, service.Bot().GetGroupId(ctx), gconv.Int64(next[2]))
-			catch = true
+			caught = true
 		case "bind":
 			// /group bind <namespace>
 			retMsg = service.Group().BindNamespaceReturnRes(ctx, service.Bot().GetGroupId(ctx), next[2])
-			catch = true
+			caught = true
 		}
 	case endBranchRe.MatchString(cmd):
 		switch cmd {
 		case "query":
 			// /group query
 			retMsg = service.Group().QueryGroupReturnRes(ctx, service.Bot().GetGroupId(ctx))
-			catch = true
+			caught = true
 		case "unbind":
 			// /group unbind
 			retMsg = service.Group().UnbindReturnRes(ctx, service.Bot().GetGroupId(ctx))
-			catch = true
+			caught = true
 		}
 	}
 	return

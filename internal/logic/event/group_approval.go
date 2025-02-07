@@ -11,7 +11,7 @@ import (
 	"regexp"
 )
 
-func (s *sEvent) TryApproveAddGroup(ctx context.Context) (catch bool) {
+func (s *sEvent) TryApproveAddGroup(ctx context.Context) (caught bool) {
 	ctx, span := gtrace.NewSpan(ctx, "event.TryApproveAddGroup")
 	defer span.End()
 
@@ -100,7 +100,7 @@ func (s *sEvent) TryApproveAddGroup(ctx context.Context) (catch bool) {
 			"group", 0, notificationGroupId, logMsg, true)
 	}
 
-	catch = true
+	caught = true
 	return
 }
 

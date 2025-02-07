@@ -6,7 +6,7 @@ import (
 	"qq-bot-backend/internal/service"
 )
 
-func (s *sEvent) TryChainRecall(ctx context.Context) (catch bool) {
+func (s *sEvent) TryChainRecall(ctx context.Context) (caught bool) {
 	messageIds, err := service.Bot().GetCachedMessageContext(ctx)
 	if err != nil || len(messageIds) == 0 {
 		return
@@ -19,6 +19,6 @@ func (s *sEvent) TryChainRecall(ctx context.Context) (catch bool) {
 		service.Bot().RecallMessage(ctx, messageId)
 	}
 
-	catch = true
+	caught = true
 	return
 }

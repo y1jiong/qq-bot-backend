@@ -9,7 +9,7 @@ import (
 	"qq-bot-backend/internal/service"
 )
 
-func (s *sEvent) TryLogLeave(ctx context.Context) (catch bool) {
+func (s *sEvent) TryLogLeave(ctx context.Context) (caught bool) {
 	ctx, span := gtrace.NewSpan(ctx, "event.TryLogLeave")
 	defer span.End()
 
@@ -22,7 +22,7 @@ func (s *sEvent) TryLogLeave(ctx context.Context) (catch bool) {
 		return
 	}
 
-	catch = true
+	caught = true
 
 	// 处理
 	action := service.Bot().GetSubType(ctx)
@@ -55,7 +55,7 @@ func (s *sEvent) TryLogLeave(ctx context.Context) (catch bool) {
 	return
 }
 
-func (s *sEvent) TryLogApproval(ctx context.Context) (catch bool) {
+func (s *sEvent) TryLogApproval(ctx context.Context) (caught bool) {
 	// 获取当前 group log approval list
 	groupId := service.Bot().GetGroupId(ctx)
 	listName := service.Group().GetLogApprovalList(ctx, groupId)
@@ -65,7 +65,7 @@ func (s *sEvent) TryLogApproval(ctx context.Context) (catch bool) {
 		return
 	}
 	// 处理
-	catch = true
+	caught = true
 	userId := service.Bot().GetUserId(ctx)
 	// 初始化数据
 	one := struct {

@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-func (s *sEvent) TryLockCard(ctx context.Context) (catch bool) {
+func (s *sEvent) TryLockCard(ctx context.Context) (caught bool) {
 	ctx, span := gtrace.NewSpan(ctx, "event.TryLockCard")
 	defer span.End()
 
@@ -24,7 +24,7 @@ func (s *sEvent) TryLockCard(ctx context.Context) (catch bool) {
 		return
 	}
 
-	catch = true
+	caught = true
 
 	oldCard, newCard := service.Bot().GetCardOldNew(ctx)
 	if oldCard == "" || oldCard == newCard {
@@ -64,7 +64,7 @@ func (s *sEvent) TryLockCard(ctx context.Context) (catch bool) {
 	return
 }
 
-func (s *sEvent) TryAutoSetCard(ctx context.Context) (catch bool) {
+func (s *sEvent) TryAutoSetCard(ctx context.Context) (caught bool) {
 	// 获取当前 group card auto_set list
 	groupId := service.Bot().GetGroupId(ctx)
 	listName := service.Group().GetCardAutoSetList(ctx, groupId)
@@ -74,7 +74,7 @@ func (s *sEvent) TryAutoSetCard(ctx context.Context) (catch bool) {
 		return
 	}
 	// 处理
-	catch = true
+	caught = true
 	listMap := service.List().GetListData(ctx, listName)
 	userId := service.Bot().GetUserId(ctx)
 	if card, ok := listMap[gconv.String(userId)].(string); ok {

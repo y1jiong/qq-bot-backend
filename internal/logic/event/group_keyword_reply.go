@@ -11,7 +11,7 @@ import (
 	"time"
 )
 
-func (s *sEvent) TryGroupKeywordReply(ctx context.Context) (catch bool) {
+func (s *sEvent) TryGroupKeywordReply(ctx context.Context) (caught bool) {
 	ctx, span := gtrace.NewSpan(ctx, "event.TryGroupKeywordReply")
 	defer span.End()
 
@@ -45,7 +45,7 @@ func (s *sEvent) TryGroupKeywordReply(ctx context.Context) (catch bool) {
 			service.Bot().GetUserId(ctx), groupId, service.Bot().GetCardOrNickname(ctx),
 			msg, hit, value)
 	case rewritePrefixRe.MatchString(value):
-		catch = s.keywordReplyRewrite(ctx, s.TryGroupKeywordReply, msg, hit, value)
+		caught = s.keywordReplyRewrite(ctx, s.TryGroupKeywordReply, msg, hit, value)
 		replyMsg = ""
 	case commandPrefixRe.MatchString(value):
 		replyMsg = s.keywordReplyCommand(ctx, msg, hit, value)
@@ -66,6 +66,6 @@ func (s *sEvent) TryGroupKeywordReply(ctx context.Context) (catch bool) {
 	}
 	service.Bot().SendMsgCacheContext(ctx, replyMsg, true)
 
-	catch = true
+	caught = true
 	return
 }

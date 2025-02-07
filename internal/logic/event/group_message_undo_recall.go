@@ -15,7 +15,7 @@ var (
 	cqReplyRe = regexp.MustCompile(`\[CQ:reply,.+?]`)
 )
 
-func (s *sEvent) TryUndoMessageRecall(ctx context.Context) (catch bool) {
+func (s *sEvent) TryUndoMessageRecall(ctx context.Context) (caught bool) {
 	ctx, span := gtrace.NewSpan(ctx, "event.TryUndoMessageRecall")
 	defer span.End()
 	var err error
@@ -93,6 +93,6 @@ func (s *sEvent) TryUndoMessageRecall(ctx context.Context) (catch bool) {
 	_, _ = service.Bot().SendMessage(ctx,
 		"group", 0, notificationGroupId, msg, false)
 
-	catch = true
+	caught = true
 	return
 }
