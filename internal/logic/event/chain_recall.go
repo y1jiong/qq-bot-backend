@@ -7,10 +7,8 @@ import (
 )
 
 func (s *sEvent) TryChainRecall(ctx context.Context) (catch bool) {
-	messageIds, exist, err := service.Bot().GetCachedMessageContext(ctx,
-		service.Bot().GetMsgId(ctx),
-	)
-	if err != nil || !exist {
+	messageIds, err := service.Bot().GetCachedMessageContext(ctx)
+	if err != nil || len(messageIds) == 0 {
 		return
 	}
 

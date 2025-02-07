@@ -34,30 +34,21 @@ func (s *sMiddleware) ErrCodeToHttpStatus(r *ghttp.Request) {
 func (s *sMiddleware) RateLimit(r *ghttp.Request) {
 	// 前置中间件
 	cacheKey := "RateLimit_" + r.GetRemoteIp()
-	limitTimes := 2
-	intervalTime := time.Second
+	const limitTimes = 2
 	// Rate Limit
-	exist := false
-	if v, err := gcache.Get(r.Context(), cacheKey); v != nil {
-		if err != nil {
-			r.SetError(err)
-			return
-		}
-		if v.Int() >= limitTimes {
+	if v, err := gcache.GetOrSet(r.Context(), cacheKey, 0, time.Second); err == nil {
+		times := v.Int()
+		if times >= limitTimes {
 			r.Response.WriteHeader(http.StatusTooManyRequests)
 			return
 		}
-		_, exist, err = gcache.Update(r.Context(), cacheKey, v.Int()+1)
-		if err != nil {
+		if _, _, err = gcache.Update(r.Context(), cacheKey, times+1); err != nil {
 			r.SetError(err)
 			return
 		}
-	}
-	if !exist {
-		if err := gcache.Set(r.Context(), cacheKey, 1, intervalTime); err != nil {
-			r.SetError(err)
-			return
-		}
+	} else {
+		r.SetError(err)
+		return
 	}
 	// 下一步
 	r.Middleware.Next()

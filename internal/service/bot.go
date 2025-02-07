@@ -21,8 +21,8 @@ type (
 		JoinConnectionPool(ctx context.Context, key int64)
 		LeaveConnectionPool(key int64)
 		LoadConnectionPool(key int64) context.Context
-		CacheMessageContext(ctx context.Context, currentMessageId int64, nextMessageId int64) error
-		GetCachedMessageContext(ctx context.Context, currentMessageId int64) (nextMessageIds []int64, exist bool, err error)
+		CacheMessageContext(ctx context.Context, nextMessageId int64) error
+		GetCachedMessageContext(ctx context.Context) (nextMessageIds []int64, err error)
 		Forward(ctx context.Context, url string, key string) (err error)
 		GetPostType(ctx context.Context) string
 		GetMsgType(ctx context.Context) string

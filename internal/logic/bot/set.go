@@ -26,9 +26,13 @@ func (s *sBot) SetHistory(ctx context.Context, history string) error {
 	return nil
 }
 
+func (s *sBot) getMessageAstNodeCacheKey(ctx context.Context) string {
+	return cacheKeyMsgIdPrefix + gconv.String(s.GetSelfId(ctx)) + "_" + gconv.String(s.GetMsgId(ctx))
+}
+
 func (s *sBot) CacheMessageAstNode(ctx context.Context) {
 	_ = gcache.Set(ctx,
-		cacheKeyMsgIdPrefix+gconv.String(s.GetMsgId(ctx)),
+		s.getMessageAstNodeCacheKey(ctx),
 		s.reqJsonFromCtx(ctx),
 		messageContextTTL,
 	)

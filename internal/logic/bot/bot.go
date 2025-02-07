@@ -25,7 +25,7 @@ const (
 	ctxKeyWebSocket      = "ws"
 	ctxKeyReqJson        = "reqJson"
 
-	cacheKeyMsgIdPrefix = "bot.message_id_"
+	cacheKeyMsgIdPrefix = "msg_id_"
 )
 
 func (s *sBot) CtxWithWebSocket(parent context.Context, conn *websocket.Conn) context.Context {

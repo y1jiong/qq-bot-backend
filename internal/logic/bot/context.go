@@ -35,12 +35,12 @@ func (s *sBot) extractEchoSign(ctx context.Context, echoSign string) context.Con
 	return otel.GetTextMapPropagator().Extract(ctx, propagation.MapCarrier(header))
 }
 
-func getMessageContextCacheKey(currentMessageId int64) string {
-	return messageContextPrefix + gconv.String(currentMessageId)
+func (s *sBot) getMessageContextCacheKey(ctx context.Context) string {
+	return messageContextPrefix + gconv.String(s.GetSelfId(ctx)) + "_" + gconv.String(s.GetMsgId(ctx))
 }
 
-func (s *sBot) CacheMessageContext(ctx context.Context, currentMessageId, nextMessageId int64) error {
-	cacheKey := getMessageContextCacheKey(currentMessageId)
+func (s *sBot) CacheMessageContext(ctx context.Context, nextMessageId int64) error {
+	cacheKey := s.getMessageContextCacheKey(ctx)
 	v, err := gcache.Get(ctx, cacheKey)
 	if err != nil {
 		return err
@@ -55,12 +55,11 @@ func (s *sBot) CacheMessageContext(ctx context.Context, currentMessageId, nextMe
 	return gcache.Set(ctx, cacheKey, arr, messageContextTTL)
 }
 
-func (s *sBot) GetCachedMessageContext(ctx context.Context, currentMessageId int64,
-) (nextMessageIds []int64, exist bool, err error) {
-	v, err := gcache.Get(ctx, getMessageContextCacheKey(currentMessageId))
+func (s *sBot) GetCachedMessageContext(ctx context.Context) (nextMessageIds []int64, err error) {
+	v, err := gcache.Get(ctx, s.getMessageContextCacheKey(ctx))
 	if err != nil || v == nil {
 		return
 	}
 
-	return v.Int64s(), true, nil
+	return v.Int64s(), nil
 }

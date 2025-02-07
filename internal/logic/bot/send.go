@@ -141,7 +141,7 @@ func (s *sBot) SendMsgCacheContext(ctx context.Context, msg string, richText ...
 	if err != nil {
 		return
 	}
-	_ = s.CacheMessageContext(ctx, s.GetMsgId(ctx), sentMsgId)
+	_ = s.CacheMessageContext(ctx, sentMsgId)
 }
 
 func (s *sBot) SendFileToGroup(ctx context.Context, groupId int64, filePath, name, folder string) {

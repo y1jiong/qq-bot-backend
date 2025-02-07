@@ -302,7 +302,7 @@ func (s *sBot) RequestMessageFromCache(ctx context.Context, messageId int64) (me
 		}
 	}()
 
-	v, err := gcache.Get(ctx, cacheKeyMsgIdPrefix+gconv.String(messageId))
+	v, err := gcache.Get(ctx, s.getMessageAstNodeCacheKey(ctx))
 	if err != nil {
 		return
 	}
