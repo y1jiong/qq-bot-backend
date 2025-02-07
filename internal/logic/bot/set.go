@@ -7,7 +7,6 @@ import (
 	"github.com/gogf/gf/v2/os/gcache"
 	"github.com/gogf/gf/v2/util/gconv"
 	"qq-bot-backend/utility/segment"
-	"time"
 )
 
 func (s *sBot) RewriteMessage(ctx context.Context, message string) {
@@ -31,7 +30,7 @@ func (s *sBot) CacheMessageAstNode(ctx context.Context) {
 	_ = gcache.Set(ctx,
 		cacheKeyMsgIdPrefix+gconv.String(s.GetMsgId(ctx)),
 		s.reqJsonFromCtx(ctx),
-		2*time.Minute,
+		messageContextTTL,
 	)
 }
 

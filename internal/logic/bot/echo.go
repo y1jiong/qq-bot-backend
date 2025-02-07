@@ -11,9 +11,9 @@ import (
 )
 
 const (
-	echoPrefix   = "echo_"
-	echoDuration = 60 * time.Second
-	echoTimeout  = echoDuration + 10*time.Second
+	echoPrefix  = "echo_"
+	echoTimeout = 60 * time.Second
+	echoTTL     = echoTimeout + 5*time.Second
 )
 
 type echoModel struct {
@@ -74,12 +74,12 @@ func (s *sBot) pushEchoCache(ctx context.Context, echoSign string,
 		LastContext:  ctx,
 		CallbackFunc: callbackFunc,
 		TimeoutFunc:  timeoutFunc,
-	}, echoTimeout); err != nil {
+	}, echoTTL); err != nil {
 		return err
 	}
 	// 检查超时
 	go func(ctx context.Context, echoKey string) {
-		time.Sleep(echoDuration)
+		time.Sleep(echoTimeout)
 		contain, err := gcache.Contains(ctx, echoKey)
 		if err != nil {
 			g.Log().Error(ctx, err)

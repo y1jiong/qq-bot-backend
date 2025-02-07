@@ -13,7 +13,7 @@ import (
 
 const (
 	messageContextPrefix = "msg_ctx_"
-	messageContextExpire = time.Minute*2 - time.Second*10
+	messageContextTTL    = 2*time.Minute - 5*time.Second
 )
 
 func (s *sBot) generateEchoSignWithTrace(ctx context.Context) string {
@@ -32,16 +32,15 @@ func (s *sBot) extractEchoSign(ctx context.Context, echoSign string) context.Con
 	if err := sonic.UnmarshalString(echoSign, &header); err != nil {
 		return ctx
 	}
-	ctx = otel.GetTextMapPropagator().Extract(ctx, propagation.MapCarrier(header))
-	return ctx
+	return otel.GetTextMapPropagator().Extract(ctx, propagation.MapCarrier(header))
 }
 
-func getMessageContextCacheKey(userId, lastMessageId int64) string {
-	return messageContextPrefix + gconv.String(userId) + "_" + gconv.String(lastMessageId)
+func getMessageContextCacheKey(currentMessageId int64) string {
+	return messageContextPrefix + gconv.String(currentMessageId)
 }
 
-func (s *sBot) CacheMessageContext(ctx context.Context, userId, lastMessageId, currentMessageId int64) error {
-	cacheKey := getMessageContextCacheKey(userId, lastMessageId)
+func (s *sBot) CacheMessageContext(ctx context.Context, currentMessageId, nextMessageId int64) error {
+	cacheKey := getMessageContextCacheKey(currentMessageId)
 	v, err := gcache.Get(ctx, cacheKey)
 	if err != nil {
 		return err
@@ -51,15 +50,14 @@ func (s *sBot) CacheMessageContext(ctx context.Context, userId, lastMessageId, c
 	if arr == nil {
 		arr = make([]int64, 0, 1)
 	}
-	arr = append(arr, currentMessageId)
+	arr = append(arr, nextMessageId)
 
-	return gcache.Set(ctx, cacheKey, arr, messageContextExpire)
+	return gcache.Set(ctx, cacheKey, arr, messageContextTTL)
 }
 
-func (s *sBot) GetCachedMessageContext(ctx context.Context,
-	userId, lastMessageId int64,
-) (currentMessageIds []int64, exist bool, err error) {
-	v, err := gcache.Get(ctx, getMessageContextCacheKey(userId, lastMessageId))
+func (s *sBot) GetCachedMessageContext(ctx context.Context, currentMessageId int64,
+) (nextMessageIds []int64, exist bool, err error) {
+	v, err := gcache.Get(ctx, getMessageContextCacheKey(currentMessageId))
 	if err != nil || v == nil {
 		return
 	}

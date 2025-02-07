@@ -137,12 +137,11 @@ func (s *sBot) SendMsgCacheContext(ctx context.Context, msg string, richText ...
 	if len(richText) > 0 && richText[0] {
 		plain = false
 	}
-	userId := s.GetUserId(ctx)
-	sentMsgId, err := s.SendMessage(ctx, s.GetMsgType(ctx), userId, s.GetGroupId(ctx), msg, plain)
+	sentMsgId, err := s.SendMessage(ctx, s.GetMsgType(ctx), s.GetUserId(ctx), s.GetGroupId(ctx), msg, plain)
 	if err != nil {
 		return
 	}
-	_ = s.CacheMessageContext(ctx, userId, s.GetMsgId(ctx), sentMsgId)
+	_ = s.CacheMessageContext(ctx, s.GetMsgId(ctx), sentMsgId)
 }
 
 func (s *sBot) SendFileToGroup(ctx context.Context, groupId int64, filePath, name, folder string) {

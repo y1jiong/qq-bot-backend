@@ -50,11 +50,7 @@ func (s *sEvent) TryUndoMessageRecall(ctx context.Context) (catch bool) {
 	messageId := service.Bot().GetMsgId(ctx)
 	// 获取消息
 	messageMap, err := service.Bot().RequestMessage(ctx, messageId)
-	if err != nil {
-		service.Bot().SendPlainMsg(ctx, "获取历史消息失败")
-		return
-	}
-	if gconv.String(messageMap["message"]) == "" {
+	if err != nil || gconv.String(messageMap["message"]) == "" {
 		messageMap, err = service.Bot().RequestMessageFromCache(ctx, messageId)
 		if err != nil {
 			return
