@@ -130,8 +130,7 @@ func (s *sBot) GetCard(ctx context.Context) string {
 }
 
 func (s *sBot) GetCardOrNickname(ctx context.Context) string {
-	card := s.GetCard(ctx)
-	if card != "" {
+	if card := s.GetCard(ctx); card != "" {
 		return card
 	}
 	return s.GetNickname(ctx)

@@ -62,8 +62,7 @@ func (s *sBot) reqJsonFromCtx(ctx context.Context) *ast.Node {
 }
 
 func (s *sBot) writeMessage(ctx context.Context, messageType int, data []byte) error {
-	mu := s.webSocketMutexFromCtx(ctx)
-	if mu != nil {
+	if mu := s.webSocketMutexFromCtx(ctx); mu != nil {
 		mu.Lock()
 		defer mu.Unlock()
 	}

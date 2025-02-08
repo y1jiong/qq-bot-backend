@@ -24,8 +24,7 @@ func (s *sNamespace) AddNewNamespaceReturnRes(ctx context.Context, namespace str
 		return
 	}
 	// 数据库查存在
-	one := getNamespace(ctx, namespace)
-	if one != nil {
+	if getNamespace(ctx, namespace) != nil {
 		retMsg = "namespace(" + namespace + ") 已被占用"
 		return
 	}

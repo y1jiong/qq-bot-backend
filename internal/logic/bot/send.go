@@ -291,13 +291,11 @@ func (s *sBot) SendFileToUser(ctx context.Context, userId int64, filePath, name 
 }
 
 func (s *sBot) SendFile(ctx context.Context, filePath, name string) {
-	groupId := s.GetGroupId(ctx)
-	if groupId != 0 {
+	if groupId := s.GetGroupId(ctx); groupId != 0 {
 		s.SendFileToGroup(ctx, groupId, filePath, name, "")
 		return
 	}
-	userId := s.GetUserId(ctx)
-	s.SendFileToUser(ctx, userId, filePath, name)
+	s.SendFileToUser(ctx, s.GetUserId(ctx), filePath, name)
 }
 
 func (s *sBot) UploadFile(ctx context.Context, url string) (filePath string, err error) {

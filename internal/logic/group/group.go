@@ -35,9 +35,8 @@ func (s *sGroup) IsBinding(ctx context.Context, groupId int64) bool {
 }
 
 func (s *sGroup) GetNamespace(ctx context.Context, groupId int64) string {
-	groupE := getGroup(ctx, groupId)
-	if groupE == nil {
-		return ""
+	if groupE := getGroup(ctx, groupId); groupE != nil {
+		return groupE.Namespace
 	}
-	return groupE.Namespace
+	return ""
 }

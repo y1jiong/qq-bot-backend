@@ -12,15 +12,16 @@ func (s *sEvent) TryForward(ctx context.Context) (caught bool) {
 	ctx, span := gtrace.NewSpan(ctx, "event.TryForward")
 	defer span.End()
 
-	groupId := service.Bot().GetGroupId(ctx)
-	userId := service.Bot().GetUserId(ctx)
-	if groupId != 0 {
+	if groupId := service.Bot().GetGroupId(ctx); groupId != 0 {
 		if !service.Namespace().IsForwardingMatchGroupId(ctx, gconv.String(groupId)) {
 			return
 		}
-	} else if userId != 0 && !service.Namespace().IsForwardingMatchUserId(ctx, gconv.String(userId)) {
-		return
+	} else if userId := service.Bot().GetUserId(ctx); userId != 0 {
+		if !service.Namespace().IsForwardingMatchUserId(ctx, gconv.String(userId)) {
+			return
+		}
 	}
+
 	aliasList := service.Namespace().GetForwardingToAliasList(ctx)
 	for alias := range aliasList {
 		url, key := service.Namespace().GetForwardingTo(ctx, alias)

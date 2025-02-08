@@ -21,18 +21,16 @@ func init() {
 }
 
 func (s *sMiddleware) ErrCodeToHttpStatus(r *ghttp.Request) {
-	// 下一步
 	r.Middleware.Next()
-	// 后置中间件
-	err := r.GetError()
-	code := gerror.Code(err)
-	if err != nil && code != gcode.CodeNil && code.Code() >= 100 && code.Code() < 600 {
-		r.Response.WriteHeader(code.Code())
+
+	if err := r.GetError(); err != nil {
+		if code := gerror.Code(err); code != gcode.CodeNil && code.Code() >= 100 && code.Code() < 600 {
+			r.Response.WriteHeader(code.Code())
+		}
 	}
 }
 
 func (s *sMiddleware) RateLimit(r *ghttp.Request) {
-	// 前置中间件
 	cacheKey := "RateLimit_" + r.GetRemoteIp()
 	const limitTimes = 2
 	// Rate Limit
@@ -50,6 +48,6 @@ func (s *sMiddleware) RateLimit(r *ghttp.Request) {
 		r.SetError(err)
 		return
 	}
-	// 下一步
+
 	r.Middleware.Next()
 }

@@ -56,8 +56,8 @@ func (s *sEvent) TryKeywordRecall(ctx context.Context) (caught bool) {
 		msg)
 	g.Log().Info(ctx, logMsg)
 	// 通知
-	notificationGroupId := service.Group().GetMessageNotificationGroupId(ctx, groupId)
-	if notificationGroupId != 0 {
+	if notificationGroupId :=
+		service.Group().GetMessageNotificationGroupId(ctx, groupId); notificationGroupId != 0 {
 		_, _ = service.Bot().SendMessage(ctx,
 			"group", 0, notificationGroupId, logMsg, true)
 	}

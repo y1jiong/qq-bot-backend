@@ -1,7 +1,6 @@
 package segment
 
 import (
-	"fmt"
 	"github.com/bytedance/sonic"
 	"qq-bot-backend/utility/codec"
 	"regexp"
@@ -17,32 +16,32 @@ type messageSegment struct {
 	Data map[string]string `json:"data"`
 }
 
-func (ms *messageSegment) String() string {
-	if ms == nil {
+func (segment *messageSegment) String() string {
+	if segment == nil {
 		return ""
 	}
 
-	if ms.Type == "text" {
-		if text, ok := ms.Data["text"]; ok {
+	if segment.Type == "text" {
+		if text, ok := segment.Data["text"]; ok {
 			return text
 		}
 		return ""
 	}
 
-	data := make([]string, 0, len(ms.Data))
-	for k, v := range ms.Data {
-		data = append(data, fmt.Sprintf("%s=%s", k, codec.EncodeCQCode(v)))
+	data := make([]string, 0, len(segment.Data))
+	for k, v := range segment.Data {
+		data = append(data, k+"="+codec.EncodeCQCode(v))
 	}
 
-	return fmt.Sprintf("[CQ:%s,%s]", ms.Type, strings.Join(data, ","))
+	return "[CQ:" + segment.Type + "," + strings.Join(data, ",") + "]"
 }
 
 type messageSegments []*messageSegment
 
-func (mss *messageSegments) String() string {
+func (segments *messageSegments) String() string {
 	var result strings.Builder
 
-	for _, segment := range *mss {
+	for _, segment := range *segments {
 		result.WriteString(segment.String())
 	}
 
@@ -51,18 +50,26 @@ func (mss *messageSegments) String() string {
 
 func ParseMessage(message string) messageSegments {
 	var segments messageSegments
-	matches := cqCodeRe.Split(message, -1)
-	cqMatches := cqCodeRe.FindAllString(message, -1)
+	idxes := cqCodeRe.FindAllStringIndex(message, -1)
 
-	for i, match := range matches {
-		if match != "" {
-			segments = append(segments, newTextSegment(match))
-		}
-		if i < len(cqMatches) {
-			segment := newCQCodeSegment(cqMatches[i])
-			if segment != nil {
-				segments = append(segments, segment)
+	lastEnd := 0
+	for _, idx := range idxes {
+		if lastEnd < idx[0] {
+			if text := message[lastEnd:idx[0]]; text != "" {
+				segments = append(segments, newTextSegment(text))
 			}
+		}
+
+		if segment := newCQCodeSegment(message[idx[0]:idx[1]]); segment != nil {
+			segments = append(segments, segment)
+		}
+
+		lastEnd = idx[1]
+	}
+
+	if lastEnd < len(message) {
+		if text := message[lastEnd:]; text != "" {
+			segments = append(segments, newTextSegment(text))
 		}
 	}
 
@@ -89,19 +96,28 @@ func newTextSegment(text string) *messageSegment {
 }
 
 func newCQCodeSegment(cqCode string) *messageSegment {
-	matches := cqCodeRe.FindStringSubmatch(cqCode)
-	if len(matches) < 3 {
+	idxes := cqCodeRe.FindStringSubmatchIndex(cqCode)
+	if len(idxes) < 6 {
 		return nil
 	}
 
-	cqType := matches[1]
-	dataStr := matches[2]
+	cqType := cqCode[idxes[2]:idxes[3]]
+	dataStr := cqCode[idxes[4]:idxes[5]]
 
 	data := make(map[string]string)
-	for _, param := range strings.Split(dataStr, ",") {
-		kv := strings.SplitN(param, "=", 2)
-		if len(kv) == 2 {
-			data[kv[0]] = codec.DecodeCQCode(kv[1])
+	beg := 0
+	for beg < len(dataStr) {
+		var param string
+		if end := strings.IndexByte(dataStr[beg:], ','); end != -1 {
+			param = dataStr[beg:end]
+			beg = end + 1
+		} else {
+			param = dataStr[beg:]
+			beg = len(dataStr)
+		}
+
+		if idx := strings.IndexByte(param, '='); idx != -1 {
+			data[param[:idx]] = codec.DecodeCQCode(param[idx+1:])
 		}
 	}
 

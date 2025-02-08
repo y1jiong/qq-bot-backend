@@ -52,11 +52,11 @@ func (s *sBot) tryMessageSegmentToString(ctx context.Context) {
 		return
 	}
 
-	mss, err := segment.ParseJSON(jsonBytes)
+	segments, err := segment.ParseJSON(jsonBytes)
 	if err != nil {
 		return
 	}
 
-	_, _ = node.Set("message", ast.NewString(mss.String()))
+	_, _ = node.Set("message", ast.NewString(segments.String()))
 	_, _ = node.Set("_is_message_segment", ast.NewObject([]ast.Pair{}))
 }

@@ -228,8 +228,7 @@ func (s *sGroup) CheckCardByListReturnRes(ctx context.Context,
 			userId := gconv.String(vv["user_id"])
 			// 匹配
 			if _, okay := fromListData[userId].(string); okay {
-				userCard := gconv.String(vv["card"])
-				if userCard != fromListData[userId] {
+				if userCard := gconv.String(vv["card"]); userCard != fromListData[userId] {
 					membersMap[userId] = userCard
 				}
 			}
