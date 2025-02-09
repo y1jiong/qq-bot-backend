@@ -8,7 +8,7 @@ import (
 )
 
 var (
-	cqCodeRe = regexp.MustCompile(`\[CQ:(\w+),([^]]+)]`)
+	cqCodeRe = regexp.MustCompile(`\[CQ:(\w+)(?:,([^]]+))?]`)
 )
 
 type messageSegment struct {
@@ -26,6 +26,10 @@ func (segment *messageSegment) String() string {
 			return text
 		}
 		return ""
+	}
+
+	if len(segment.Data) == 0 {
+		return "[CQ:" + segment.Type + "]"
 	}
 
 	data := make([]string, 0, len(segment.Data))
@@ -102,13 +106,17 @@ func newCQCodeSegment(cqCode string) *messageSegment {
 	}
 
 	cqType := cqCode[idxes[2]:idxes[3]]
-	dataStr := cqCode[idxes[4]:idxes[5]]
+	var dataStr string
+	if idxes[4] != -1 && idxes[5] != -1 {
+		dataStr = cqCode[idxes[4]:idxes[5]]
+	}
 
 	data := make(map[string]string)
 	beg := 0
 	for beg < len(dataStr) {
 		var param string
 		if end := strings.IndexByte(dataStr[beg:], ','); end != -1 {
+			end += beg
 			param = dataStr[beg:end]
 			beg = end + 1
 		} else {

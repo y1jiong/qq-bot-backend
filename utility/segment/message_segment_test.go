@@ -6,7 +6,7 @@ import (
 )
 
 func BenchmarkParseMessage(b *testing.B) {
-	message := "1[CQ:custom,data=123,flag=1]2[CQ:custom,data=456][CQ:custom,data=789]3"
+	message := "1[CQ:custom,data=123,flag=1,extra=data]2[CQ:custom][CQ:custom,data=,extra=]3"
 
 	b.ReportAllocs()
 	b.ResetTimer()
@@ -29,7 +29,7 @@ func TestParseMessage(t *testing.T) {
 		{
 			name: "normal",
 			args: args{
-				message: "1[CQ:custom,data=123,flag=1]2[CQ:custom,data=456][CQ:custom,data=789]3",
+				message: "1[CQ:custom,data=123,flag=1,extra=data]2[CQ:custom][CQ:custom,data=,extra=]3",
 			},
 			want: messageSegments{
 				{
@@ -41,8 +41,9 @@ func TestParseMessage(t *testing.T) {
 				{
 					Type: "custom",
 					Data: map[string]string{
-						"data": "123",
-						"flag": "1",
+						"data":  "123",
+						"flag":  "1",
+						"extra": "data",
 					},
 				},
 				{
@@ -53,14 +54,13 @@ func TestParseMessage(t *testing.T) {
 				},
 				{
 					Type: "custom",
-					Data: map[string]string{
-						"data": "456",
-					},
+					Data: map[string]string{},
 				},
 				{
 					Type: "custom",
 					Data: map[string]string{
-						"data": "789",
+						"data":  "",
+						"extra": "",
 					},
 				},
 				{
