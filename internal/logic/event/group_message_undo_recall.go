@@ -12,7 +12,7 @@ import (
 )
 
 var (
-	cqReplyRe = regexp.MustCompile(`\[CQ:reply,.+?]`)
+	cqReplyRe = regexp.MustCompile(`\[CQ:reply(?:,[^]]+)?]`)
 )
 
 func (s *sEvent) TryUndoMessageRecall(ctx context.Context) (caught bool) {

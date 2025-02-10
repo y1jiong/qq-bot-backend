@@ -24,7 +24,7 @@ var (
 	webhookPrefixRe = regexp.MustCompile(`^webhook(?::([A-Za-z]{3,7}))?(?:#([\s\S]+)#)?(?:<([\s\S]+)>)?(?:@(.+)@)?://(.+)$`)
 	commandPrefixRe = regexp.MustCompile(`^(?:command|cmd)://([\s\S]+)$`)
 	rewritePrefixRe = regexp.MustCompile(`^rewrite://([\s\S]+)$`)
-	placeholderRe   = regexp.MustCompile(`\{(.+?)(\d+)?}`)
+	placeholderRe   = regexp.MustCompile(`\{([^}\d\s]+)(\d+)?}`)
 )
 
 func decreasePlaceholderIndex(text string) string {
