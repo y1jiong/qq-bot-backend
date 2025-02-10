@@ -43,7 +43,13 @@ func (s *sBot) tryMessageSegmentToString(ctx context.Context) {
 
 	messageNode := node.Get("message")
 
-	if messageNode.Exists() && messageNode.TypeSafe() != ast.V_ARRAY {
+	if !messageNode.Exists() || messageNode.TypeSafe() != ast.V_ARRAY {
+		return
+	}
+	_, _ = node.Set("_is_message_segment", ast.NewObject([]ast.Pair{}))
+
+	if rawMsgNode := node.Get("raw_message"); rawMsgNode.Exists() && rawMsgNode.TypeSafe() == ast.V_STRING {
+		_, _ = node.Set("message", *rawMsgNode)
 		return
 	}
 
@@ -58,5 +64,4 @@ func (s *sBot) tryMessageSegmentToString(ctx context.Context) {
 	}
 
 	_, _ = node.Set("message", ast.NewString(segments.String()))
-	_, _ = node.Set("_is_message_segment", ast.NewObject([]ast.Pair{}))
 }
