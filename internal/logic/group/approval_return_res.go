@@ -75,8 +75,7 @@ func (s *sGroup) AddApprovalPolicyReturnRes(ctx context.Context,
 			// 解码被 CQ Code 转义的字符
 			args[0] = codec.DecodeCQCode(args[0])
 			// 处理正则表达式
-			_, err = regexp.Compile(args[0])
-			if err != nil {
+			if _, err = regexp.Compile(args[0]); err != nil {
 				retMsg = "输入的正则表达式无法通过编译"
 				return
 			}
@@ -88,8 +87,7 @@ func (s *sGroup) AddApprovalPolicyReturnRes(ctx context.Context,
 				return
 			}
 			// 验证是否存在该群
-			_, err = service.Bot().GetGroupInfo(ctx, gconv.Int64(args[0]))
-			if err != nil {
+			if _, err = service.Bot().GetGroupInfo(ctx, gconv.Int64(args[0])); err != nil {
 				retMsg = "group(" + args[0] + ") 未找到"
 				return
 			}

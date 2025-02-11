@@ -107,8 +107,7 @@ func (s *sGroup) SetMessageNotificationReturnRes(ctx context.Context,
 		return
 	}
 	// 验证是否存在该群
-	_, err = service.Bot().GetGroupInfo(ctx, notificationGroupId)
-	if err != nil {
+	if _, err = service.Bot().GetGroupInfo(ctx, notificationGroupId); err != nil {
 		retMsg = "group(" + gconv.String(notificationGroupId) + ") 未找到"
 		return
 	}

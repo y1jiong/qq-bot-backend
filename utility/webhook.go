@@ -14,7 +14,7 @@ func SendWebhookRequest(ctx context.Context, header, method, url string, payload
 		c.SetHeaderRaw(header)
 	}
 
-	resp, err := c.DoRequest(ctx, method, url, payload)
+	resp, err := c.DoRequest(ctx, method, url, payload...)
 	if err != nil || resp == nil {
 		return
 	}

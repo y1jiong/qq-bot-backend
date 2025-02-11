@@ -130,8 +130,14 @@ func (c *ControllerV1) Command(ctx context.Context, req *v1.CommandReq) (res *v1
 		return
 	}
 	// 发送消息
-	_, err = service.Bot().SendMessage(botCtx, "", 0, req.GroupId, retMsg, true)
-	if err != nil {
+	if _, err = service.Bot().SendMessage(
+		botCtx,
+		"",
+		0,
+		req.GroupId,
+		retMsg,
+		true,
+	); err != nil {
 		err = gerror.NewCode(errcode.InternalError, err.Error())
 		return
 	}

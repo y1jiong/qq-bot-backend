@@ -382,16 +382,16 @@ func (s *sGroup) CheckExistReturnRes(ctx context.Context) (retMsg string) {
 		}
 		for _, v := range groupEs {
 			vGroupId := v.GroupId
-			_, err = service.Bot().GetGroupInfo(ctx, vGroupId, true)
 			// 判断群是否已经解散或者登录账号不在群内
-			if err == nil {
-				_, err = service.Bot().GetGroupMemberInfo(ctx, vGroupId, loginUserId)
-				if err == nil {
+			if _, err = service.Bot().GetGroupInfo(ctx, vGroupId, true); err != nil {
+				if !strings.Contains(err.Error(), "不存在") {
+					retMsg = "获取群信息失败"
+					return
+				}
+			} else {
+				if _, err = service.Bot().GetGroupMemberInfo(ctx, vGroupId, loginUserId); err == nil {
 					continue
 				}
-			} else if !strings.Contains(err.Error(), "不存在") {
-				retMsg = "获取群信息失败"
-				return
 			}
 			// 记录信息
 			msgBuilder.WriteString("\ngroup(" + gconv.String(vGroupId) + ")")

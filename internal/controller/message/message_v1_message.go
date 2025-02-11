@@ -95,9 +95,13 @@ func (c *ControllerV1) Message(ctx context.Context, req *v1.MessageReq) (res *v1
 		return
 	}
 	// send message
-	_, err = service.Bot().SendMessage(botCtx,
-		service.Bot().GuessMsgType(req.GroupId), req.UserId, req.GroupId, req.Message, false)
-	if err != nil {
+	if _, err = service.Bot().SendMessage(
+		botCtx,
+		service.Bot().GuessMsgType(req.GroupId),
+		req.UserId,
+		req.GroupId,
+		req.Message, false,
+	); err != nil {
 		err = gerror.NewCode(errcode.InternalError, err.Error())
 		return
 	}
