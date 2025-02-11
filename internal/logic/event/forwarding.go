@@ -2,10 +2,10 @@ package event
 
 import (
 	"context"
-	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/net/gtrace"
 	"github.com/gogf/gf/v2/util/gconv"
 	"qq-bot-backend/internal/service"
+	"sync"
 )
 
 func (s *sEvent) TryForward(ctx context.Context) (caught bool) {
@@ -21,18 +21,22 @@ func (s *sEvent) TryForward(ctx context.Context) (caught bool) {
 			return
 		}
 	}
+	caught = true
+
+	wg := sync.WaitGroup{}
+	defer wg.Wait()
 
 	aliasList := service.Namespace().GetForwardingToAliasList(ctx)
 	for alias := range aliasList {
-		url, key := service.Namespace().GetForwardingTo(ctx, alias)
-		if url == "" {
-			continue
-		}
-		if err := service.Bot().Forward(ctx, url, key); err != nil {
-			g.Log().Notice(ctx, "forward", url, err)
-		}
-
-		caught = true
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			url, key := service.Namespace().GetForwardingTo(ctx, alias)
+			if url == "" {
+				return
+			}
+			service.Bot().Forward(ctx, url, key)
+		}()
 	}
 	return
 }

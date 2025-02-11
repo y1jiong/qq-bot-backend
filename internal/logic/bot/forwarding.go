@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"crypto/tls"
+	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/net/gtrace"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
@@ -32,24 +33,26 @@ var initForwardClient = sync.OnceFunc(func() {
 	}
 })
 
-func (s *sBot) Forward(ctx context.Context, url, key string) (err error) {
+func (s *sBot) Forward(ctx context.Context, url, key string) {
 	ctx, span := gtrace.NewSpan(ctx, codec.GetRouteURL(url))
 	defer span.End()
 	span.SetAttributes(attribute.String("http.url", url))
+	var err error
 	defer func() {
 		if err != nil {
 			span.SetStatus(codes.Error, err.Error())
+			g.Log().Notice(ctx, "forward", url, err)
 		}
 	}()
 
 	payload, err := s.reqJsonFromCtx(ctx).MarshalJSON()
 	if err != nil {
-		return err
+		return
 	}
 
 	req, err := http.NewRequest(http.MethodPost, url, bytes.NewReader(payload))
 	if err != nil {
-		return err
+		return
 	}
 
 	// Inject trace
@@ -64,15 +67,15 @@ func (s *sBot) Forward(ctx context.Context, url, key string) (err error) {
 	initForwardClient()
 	resp, err := forwardClient.Do(req)
 	if err != nil {
-		return err
+		return
 	}
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return err
+		return
 	}
 	if len(body) != 0 {
 		s.SendMsg(ctx, string(body))
 	}
 
-	return resp.Body.Close()
+	err = resp.Body.Close()
 }
