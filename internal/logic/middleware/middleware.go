@@ -34,18 +34,21 @@ func (s *sMiddleware) RateLimit(r *ghttp.Request) {
 	cacheKey := "RateLimit_" + r.GetRemoteIp()
 	const limitTimes = 2
 	// Rate Limit
-	if v, err := gcache.GetOrSet(r.Context(), cacheKey, 0, time.Second); err == nil {
-		times := v.Int()
-		if times >= limitTimes {
-			r.Response.WriteHeader(http.StatusTooManyRequests)
-			return
-		}
-		if _, _, err = gcache.Update(r.Context(), cacheKey, times+1); err != nil {
-			r.SetError(err)
-			return
-		}
-	} else {
+	timesVar, err := gcache.GetOrSet(r.Context(), cacheKey, 0, time.Second)
+	if err != nil {
 		r.SetError(err)
+		return
+	}
+
+	times := timesVar.Int()
+
+	if _, _, err = gcache.Update(r.Context(), cacheKey, times+1); err != nil {
+		r.SetError(err)
+		return
+	}
+
+	if times >= limitTimes {
+		r.Response.WriteHeader(http.StatusTooManyRequests)
 		return
 	}
 

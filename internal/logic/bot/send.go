@@ -73,7 +73,7 @@ func (s *sBot) SendMessage(ctx context.Context,
 	// message segment
 	if s.isMessageSegment(ctx) {
 		if plain {
-			req.Params.Message = segment.NewTextSegment(msg)
+			req.Params.Message = segment.NewTextSegments(msg)
 			req.Params.AutoEscape = false
 		} else {
 			req.Params.Message = segment.ParseMessage(msg)

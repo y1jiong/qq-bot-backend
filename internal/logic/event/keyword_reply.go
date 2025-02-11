@@ -153,7 +153,7 @@ func (s *sEvent) keywordReplyWebhook(ctx context.Context,
 	var contentType string
 	switch method {
 	case http.MethodGet:
-		statusCode, contentType, body, err = utility.WebhookGetHeadConnectOptionsTrace(ctx, headers, method, urlLink)
+		statusCode, contentType, body, err = utility.SendWebhookRequest(ctx, headers, method, urlLink)
 	case http.MethodPost, http.MethodPut, http.MethodDelete, http.MethodPatch:
 		// Payload
 		msg, _ := sonic.MarshalString(message)
@@ -165,7 +165,7 @@ func (s *sEvent) keywordReplyWebhook(ctx context.Context,
 		payload = strings.ReplaceAll(payload, "{nickname}", nick)
 		payload = strings.ReplaceAll(payload, "{userId}", gconv.String(userId))
 		payload = strings.ReplaceAll(payload, "{groupId}", gconv.String(groupId))
-		statusCode, contentType, body, err = utility.WebhookPostPutPatchDelete(ctx, headers, method, urlLink, payload)
+		statusCode, contentType, body, err = utility.SendWebhookRequest(ctx, headers, method, urlLink, payload)
 	default:
 		return
 	}

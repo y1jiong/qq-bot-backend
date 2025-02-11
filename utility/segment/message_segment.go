@@ -88,7 +88,7 @@ func ParseJSON(jsonBytes []byte) (messageSegments, error) {
 	return segments, nil
 }
 
-func NewTextSegment(text string) messageSegments {
+func NewTextSegments(text string) messageSegments {
 	return messageSegments{newTextSegment(text)}
 }
 

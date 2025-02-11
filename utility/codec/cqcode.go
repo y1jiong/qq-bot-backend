@@ -2,22 +2,26 @@ package codec
 
 import "strings"
 
-func DecodeCQCode(src string) (dest string) {
-	dest = strings.ReplaceAll(src, "&#91;", "[")
-	dest = strings.ReplaceAll(dest, "&#93;", "]")
-	dest = strings.ReplaceAll(dest, "&#44;", ",")
-	// 必须最后一个
-	dest = strings.ReplaceAll(dest, "&amp;", "&")
-	return
+var cqCodeDecoder = strings.NewReplacer(
+	"&#91;", "[",
+	"&#93;", "]",
+	"&#44;", ",",
+	"&amp;", "&",
+)
+
+var cqCodeEncoder = strings.NewReplacer(
+	"&", "&amp;",
+	"[", "&#91;",
+	"]", "&#93;",
+	",", "&#44;",
+)
+
+func DecodeCQCode(src string) string {
+	return cqCodeDecoder.Replace(src)
 }
 
-func EncodeCQCode(src string) (dest string) {
-	// 必须第一个
-	dest = strings.ReplaceAll(src, "&", "&amp;")
-	dest = strings.ReplaceAll(dest, "[", "&#91;")
-	dest = strings.ReplaceAll(dest, "]", "&#93;")
-	dest = strings.ReplaceAll(dest, ",", "&#44;")
-	return
+func EncodeCQCode(src string) string {
+	return cqCodeEncoder.Replace(src)
 }
 
 func IsIncludeCQCode(str string) bool {

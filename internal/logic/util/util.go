@@ -36,21 +36,23 @@ func (s *sUtil) MultiContains(str string, m map[string]any) (contains bool, hit 
 	arr := utility.ReverseSortedArrayFromMapKey(m)
 	for _, k := range arr {
 		fields := strings.Fields(k)
-		fieldsLen, count := len(fields), 0
+		allContains := true
 		for _, kk := range fields {
-			if strings.Contains(str, kk) {
-				count++
+			if !strings.Contains(str, kk) {
+				allContains = false
+				break
 			}
 		}
-		if count == fieldsLen {
-			contains = true
-			hit = k
-			if vv, ok := m[k].(string); ok {
-				mValue = vv
-			}
-			if strings.HasPrefix(str, k) {
-				return
-			}
+		if !allContains {
+			continue
+		}
+		contains = true
+		hit = k
+		if vv, ok := m[k].(string); ok {
+			mValue = vv
+		}
+		if strings.HasPrefix(str, k) {
+			return
 		}
 	}
 	return

@@ -6,10 +6,13 @@ import (
 	"strings"
 )
 
-func DecodeBlank(src string) (dest string) {
-	dest = strings.ReplaceAll(src, "%20", " ")
-	dest = strings.ReplaceAll(dest, "%25", "%")
-	return
+var blankDecoder = strings.NewReplacer(
+	"%20", " ",
+	"%25", "%",
+)
+
+func DecodeBlank(src string) string {
+	return blankDecoder.Replace(src)
 }
 
 func GetRouteURL(raw string) string {

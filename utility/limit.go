@@ -15,31 +15,25 @@ func AutoLimit(ctx context.Context,
 	// 缓存键名
 	cacheKey := "LimitTimes_" + kind + "_" + key
 
-	timesVar, err := gcache.Get(ctx, cacheKey)
+	// Try to get the cache value, or set it with the default value if it doesn't exist
+	timesVar, err := gcache.GetOrSet(ctx, cacheKey, 0, duration)
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return
 	}
-	if timesVar == nil {
-		// 设置缓存
-		defaultTimes := 1
-		if err = gcache.Set(ctx, cacheKey, defaultTimes, duration); err != nil {
-			g.Log().Error(ctx, err)
-			return
-		}
-		times = defaultTimes - 1
-	} else {
-		// 更新缓存
-		times = timesVar.Int()
-		_, _, err = gcache.Update(ctx, cacheKey, times+1)
-		if err != nil {
-			g.Log().Error(ctx, err)
-			return
-		}
-	}
-	if times < limitTimes {
+
+	// Convert to int
+	times = timesVar.Int()
+
+	// Update the cache value by incrementing it
+	if _, _, err = gcache.Update(ctx, cacheKey, times+1); err != nil {
+		g.Log().Error(ctx, err)
 		return
 	}
-	limited = true
+
+	// Check if the times exceed the limit
+	if times >= limitTimes {
+		limited = true
+	}
 	return
 }
