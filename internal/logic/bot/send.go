@@ -9,6 +9,7 @@ import (
 	"github.com/gorilla/websocket"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/codes"
+	"qq-bot-backend/internal/service"
 	"qq-bot-backend/utility/segment"
 	"sync"
 )
@@ -22,6 +23,9 @@ func (s *sBot) SendMessage(ctx context.Context,
 	// 参数校验
 	if userId == 0 && groupId == 0 {
 		return 0, errors.New("userId 和 groupId 不能同时为 0")
+	}
+	if msg == "" {
+		return
 	}
 
 	ctx, span := gtrace.NewSpan(ctx, "bot.SendMessage")
@@ -144,7 +148,7 @@ func (s *sBot) SendMsgCacheContext(ctx context.Context, msg string, richText ...
 	_ = s.CacheMessageContext(ctx, sentMsgId)
 }
 
-func (s *sBot) SendFileToGroup(ctx context.Context, groupId int64, filePath, name, folder string) {
+func (s *sBot) SendFileToGroup(ctx context.Context, groupId int64, filePath, name, folder string) (err error) {
 	ctx, span := gtrace.NewSpan(ctx, "bot.SendFileToGroup")
 	defer span.End()
 	span.SetAttributes(
@@ -153,7 +157,6 @@ func (s *sBot) SendFileToGroup(ctx context.Context, groupId int64, filePath, nam
 		attribute.String("send_file_to_group.name", name),
 		attribute.String("send_file_to_group.folder", folder),
 	)
-	var err error
 	defer func() {
 		if err != nil {
 			span.SetStatus(codes.Error, err.Error())
@@ -200,14 +203,12 @@ func (s *sBot) SendFileToGroup(ctx context.Context, groupId int64, filePath, nam
 	callback := func(ctx context.Context, asyncCtx context.Context) {
 		defer wgDone()
 		if err = s.defaultEchoHandler(asyncCtx); err != nil {
-			s.SendMsgIfNotApiReq(ctx, err.Error())
 			return
 		}
 	}
 	timeout := func(ctx context.Context) {
 		defer wgDone()
 		err = errors.New("echo timeout")
-		s.SendMsgIfNotApiReq(ctx, "上传至群文件超时")
 	}
 	// echo
 	if err = s.pushEchoCache(ctx, echoSign, callback, timeout); err != nil {
@@ -216,10 +217,12 @@ func (s *sBot) SendFileToGroup(ctx context.Context, groupId int64, filePath, nam
 	}
 	if err = s.writeMessage(ctx, websocket.TextMessage, reqJson); err != nil {
 		g.Log().Warning(ctx, err)
+		return
 	}
+	return
 }
 
-func (s *sBot) SendFileToUser(ctx context.Context, userId int64, filePath, name string) {
+func (s *sBot) SendFileToUser(ctx context.Context, userId int64, filePath, name string) (err error) {
 	ctx, span := gtrace.NewSpan(ctx, "bot.SendFileToUser")
 	defer span.End()
 	span.SetAttributes(
@@ -227,7 +230,6 @@ func (s *sBot) SendFileToUser(ctx context.Context, userId int64, filePath, name 
 		attribute.String("send_file_to_user.file_path", filePath),
 		attribute.String("send_file_to_user.name", name),
 	)
-	var err error
 	defer func() {
 		if err != nil {
 			span.SetStatus(codes.Error, err.Error())
@@ -271,14 +273,12 @@ func (s *sBot) SendFileToUser(ctx context.Context, userId int64, filePath, name 
 	callback := func(ctx context.Context, asyncCtx context.Context) {
 		defer wgDone()
 		if err = s.defaultEchoHandler(asyncCtx); err != nil {
-			s.SendMsgIfNotApiReq(ctx, err.Error())
 			return
 		}
 	}
 	timeout := func(ctx context.Context) {
 		defer wgDone()
 		err = errors.New("echo timeout")
-		s.SendMsgIfNotApiReq(ctx, "上传文件至私聊超时")
 	}
 	// echo
 	if err = s.pushEchoCache(ctx, echoSign, callback, timeout); err != nil {
@@ -287,15 +287,16 @@ func (s *sBot) SendFileToUser(ctx context.Context, userId int64, filePath, name 
 	}
 	if err = s.writeMessage(ctx, websocket.TextMessage, reqJson); err != nil {
 		g.Log().Warning(ctx, err)
-	}
-}
-
-func (s *sBot) SendFile(ctx context.Context, filePath, name string) {
-	if groupId := s.GetGroupId(ctx); groupId != 0 {
-		s.SendFileToGroup(ctx, groupId, filePath, name, "")
 		return
 	}
-	s.SendFileToUser(ctx, s.GetUserId(ctx), filePath, name)
+	return
+}
+
+func (s *sBot) SendFile(ctx context.Context, filePath, name string) (err error) {
+	if groupId := s.GetGroupId(ctx); groupId != 0 {
+		return s.SendFileToGroup(ctx, groupId, filePath, name, "")
+	}
+	return s.SendFileToUser(ctx, s.GetUserId(ctx), filePath, name)
 }
 
 func (s *sBot) UploadFile(ctx context.Context, url string) (filePath string, err error) {
@@ -339,7 +340,6 @@ func (s *sBot) UploadFile(ctx context.Context, url string) (filePath string, err
 	callback := func(ctx context.Context, asyncCtx context.Context) {
 		defer wgDone()
 		if err = s.defaultEchoHandler(asyncCtx); err != nil {
-			s.SendMsgIfNotApiReq(ctx, err.Error())
 			return
 		}
 		filePath = s.getFileFromData(asyncCtx)
@@ -355,6 +355,7 @@ func (s *sBot) UploadFile(ctx context.Context, url string) (filePath string, err
 	}
 	if err = s.writeMessage(ctx, websocket.TextMessage, reqJson); err != nil {
 		g.Log().Warning(ctx, err)
+		return
 	}
 	return
 }
@@ -434,14 +435,14 @@ func (s *sBot) ApproveJoinGroup(ctx context.Context, flag, subType string, appro
 	// 发送响应
 	if err = s.writeMessage(ctx, websocket.TextMessage, reqJson); err != nil {
 		g.Log().Warning(ctx, err)
+		return
 	}
 }
 
-func (s *sBot) SetModel(ctx context.Context, model string) {
+func (s *sBot) SetModel(ctx context.Context, model string) (err error) {
 	ctx, span := gtrace.NewSpan(ctx, "bot.SetModel")
 	defer span.End()
 	span.SetAttributes(attribute.String("set_model.model", model))
-	var err error
 	defer func() {
 		if err != nil {
 			span.SetStatus(codes.Error, err.Error())
@@ -482,15 +483,12 @@ func (s *sBot) SetModel(ctx context.Context, model string) {
 	callback := func(ctx context.Context, asyncCtx context.Context) {
 		defer wgDone()
 		if err = s.defaultEchoHandler(asyncCtx); err != nil {
-			s.SendMsgIfNotApiReq(ctx, err.Error())
 			return
 		}
-		s.SendMsgIfNotApiReq(ctx, "已更改机型为 '"+model+"'")
 	}
 	timeout := func(ctx context.Context) {
 		defer wgDone()
 		err = errors.New("echo timeout")
-		s.SendMsgIfNotApiReq(ctx, "更改机型超时")
 	}
 	// echo
 	if err = s.pushEchoCache(ctx, echoSign, callback, timeout); err != nil {
@@ -500,7 +498,9 @@ func (s *sBot) SetModel(ctx context.Context, model string) {
 	// 发送响应
 	if err = s.writeMessage(ctx, websocket.TextMessage, reqJson); err != nil {
 		g.Log().Warning(ctx, err)
+		return
 	}
+	return
 }
 
 func (s *sBot) RecallMessage(ctx context.Context, messageId int64) {
@@ -559,11 +559,12 @@ func (s *sBot) RecallMessage(ctx context.Context, messageId int64) {
 	}
 	if err = s.writeMessage(ctx, websocket.TextMessage, reqJson); err != nil {
 		g.Log().Warning(ctx, err)
+		return
 	}
 }
 
-func (s *sBot) MutePrototype(ctx context.Context, groupId, userId int64, seconds int) {
-	ctx, span := gtrace.NewSpan(ctx, "bot.MutePrototype")
+func (s *sBot) Mute(ctx context.Context, groupId, userId int64, seconds int) {
+	ctx, span := gtrace.NewSpan(ctx, "bot.Mute")
 	defer span.End()
 	span.SetAttributes(
 		attribute.Int64("mute_prototype.group_id", groupId),
@@ -634,11 +635,8 @@ func (s *sBot) MutePrototype(ctx context.Context, groupId, userId int64, seconds
 	}
 	if err = s.writeMessage(ctx, websocket.TextMessage, reqJson); err != nil {
 		g.Log().Warning(ctx, err)
+		return
 	}
-}
-
-func (s *sBot) Mute(ctx context.Context, seconds int) {
-	s.MutePrototype(ctx, s.GetGroupId(ctx), s.GetUserId(ctx), seconds)
 }
 
 func (s *sBot) SetGroupCard(ctx context.Context, groupId, userId int64, card string) {
@@ -707,6 +705,7 @@ func (s *sBot) SetGroupCard(ctx context.Context, groupId, userId int64, card str
 	}
 	if err = s.writeMessage(ctx, websocket.TextMessage, reqJson); err != nil {
 		g.Log().Warning(ctx, err)
+		return
 	}
 }
 
@@ -778,5 +777,212 @@ func (s *sBot) Kick(ctx context.Context, groupId, userId int64, reject ...bool) 
 	}
 	if err = s.writeMessage(ctx, websocket.TextMessage, reqJson); err != nil {
 		g.Log().Warning(ctx, err)
+		return
+	}
+}
+
+func (s *sBot) ProfileLike(ctx context.Context, userId int64, times int) (err error) {
+	ctx, span := gtrace.NewSpan(ctx, "bot.ProfileLike")
+	defer span.End()
+	span.SetAttributes(
+		attribute.Int64("like.user_id", userId),
+		attribute.Int("like.times", times),
+	)
+	defer func() {
+		if err != nil {
+			span.SetStatus(codes.Error, err.Error())
+		}
+	}()
+
+	// echo sign
+	echoSign := s.generateEchoSignWithTrace(ctx)
+	// 参数
+	req := struct {
+		Action string `json:"action"`
+		Echo   string `json:"echo"`
+		Params struct {
+			UserId int64 `json:"user_id"`
+			Times  int   `json:"times"`
+		} `json:"params"`
+	}{
+		Action: "send_like",
+		Echo:   echoSign,
+		Params: struct {
+			UserId int64 `json:"user_id"`
+			Times  int   `json:"times"`
+		}{
+			UserId: userId,
+			Times:  times,
+		},
+	}
+	reqJson, err := sonic.Marshal(req)
+	if err != nil {
+		g.Log().Error(ctx, err)
+		return
+	}
+	// callback
+	wg := sync.WaitGroup{}
+	defer wg.Wait()
+	wgDone := sync.OnceFunc(wg.Done)
+	wg.Add(1)
+	callback := func(ctx context.Context, asyncCtx context.Context) {
+		defer wgDone()
+		if err = s.defaultEchoHandler(asyncCtx); err != nil {
+			return
+		}
+	}
+	timeout := func(ctx context.Context) {
+		defer wgDone()
+		err = errors.New("echo timeout")
+	}
+	// echo
+	if err = s.pushEchoCache(ctx, echoSign, callback, timeout); err != nil {
+		g.Log().Error(ctx, err)
+		return
+	}
+	if err = s.writeMessage(ctx, websocket.TextMessage, reqJson); err != nil {
+		g.Log().Warning(ctx, err)
+		return
+	}
+	return
+}
+
+func (s *sBot) EmojiLike(ctx context.Context, messageId int64, emojiId string) (err error) {
+	ctx, span := gtrace.NewSpan(ctx, "bot.EmojiLike")
+	defer span.End()
+	span.SetAttributes(
+		attribute.Int64("emoji_like.message_id", messageId),
+		attribute.String("emoji_like.emoji_id", emojiId),
+	)
+	defer func() {
+		if err != nil {
+			span.SetStatus(codes.Error, err.Error())
+		}
+	}()
+
+	// echo sign
+	echoSign := s.generateEchoSignWithTrace(ctx)
+	// 参数
+	req := struct {
+		Action string `json:"action"`
+		Echo   string `json:"echo"`
+		Params struct {
+			MessageId int64  `json:"message_id"`
+			EmojiId   string `json:"emoji_id"`
+		} `json:"params"`
+	}{
+		Action: "set_msg_emoji_like",
+		Echo:   echoSign,
+		Params: struct {
+			MessageId int64  `json:"message_id"`
+			EmojiId   string `json:"emoji_id"`
+		}{
+			MessageId: messageId,
+			EmojiId:   emojiId,
+		},
+	}
+	reqJson, err := sonic.Marshal(req)
+	if err != nil {
+		g.Log().Error(ctx, err)
+		return
+	}
+	// callback
+	wg := sync.WaitGroup{}
+	defer wg.Wait()
+	wgDone := sync.OnceFunc(wg.Done)
+	wg.Add(1)
+	callback := func(ctx context.Context, asyncCtx context.Context) {
+		defer wgDone()
+		if err = s.defaultEchoHandler(asyncCtx); err != nil {
+			return
+		}
+	}
+	timeout := func(ctx context.Context) {
+		defer wgDone()
+		err = errors.New("echo timeout")
+	}
+	// echo
+	if err = s.pushEchoCache(ctx, echoSign, callback, timeout); err != nil {
+		g.Log().Error(ctx, err)
+		return
+	}
+	if err = s.writeMessage(ctx, websocket.TextMessage, reqJson); err != nil {
+		g.Log().Warning(ctx, err)
+		return
+	}
+	return
+}
+
+func (s *sBot) Poke(ctx context.Context, groupId, userId int64) (err error) {
+	ctx, span := gtrace.NewSpan(ctx, "bot.Poke")
+	defer span.End()
+	span.SetAttributes(
+		attribute.Int64("poke.group_id", groupId),
+		attribute.Int64("poke.user_id", userId),
+	)
+	defer func() {
+		if err != nil {
+			span.SetStatus(codes.Error, err.Error())
+		}
+	}()
+
+	// echo sign
+	echoSign := s.generateEchoSignWithTrace(ctx)
+	// 参数
+	req := struct {
+		Action string `json:"action"`
+		Echo   string `json:"echo"`
+		Params struct {
+			GroupId int64 `json:"group_id,omitempty"`
+			UserId  int64 `json:"user_id"`
+		} `json:"params"`
+	}{
+		Action: "send_poke",
+		Echo:   echoSign,
+		Params: struct {
+			GroupId int64 `json:"group_id,omitempty"`
+			UserId  int64 `json:"user_id"`
+		}{
+			GroupId: groupId,
+			UserId:  userId,
+		},
+	}
+	reqJson, err := sonic.Marshal(req)
+	if err != nil {
+		g.Log().Error(ctx, err)
+		return
+	}
+	// callback
+	wg := sync.WaitGroup{}
+	defer wg.Wait()
+	wgDone := sync.OnceFunc(wg.Done)
+	wg.Add(1)
+	callback := func(ctx context.Context, asyncCtx context.Context) {
+		defer wgDone()
+		if err = s.defaultEchoHandler(asyncCtx); err != nil {
+			return
+		}
+	}
+	timeout := func(ctx context.Context) {
+		defer wgDone()
+		err = errors.New("echo timeout")
+	}
+	// echo
+	if err = s.pushEchoCache(ctx, echoSign, callback, timeout); err != nil {
+		g.Log().Error(ctx, err)
+		return
+	}
+	if err = s.writeMessage(ctx, websocket.TextMessage, reqJson); err != nil {
+		g.Log().Warning(ctx, err)
+		return
+	}
+	return
+}
+
+func (s *sBot) Okay(ctx context.Context) (err error) {
+	if groupId := s.GetGroupId(ctx); groupId != 0 {
+		return s.EmojiLike(ctx, service.Bot().GetMsgId(ctx), "124") // 124: OK
+	} else {
+		return s.Poke(ctx, groupId, s.GetUserId(ctx))
 	}
 }

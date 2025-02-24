@@ -52,6 +52,7 @@ type (
 		IsGroupOwnerOrAdmin(ctx context.Context) bool
 		IsGroupOwnerOrAdminOrSysTrusted(ctx context.Context) bool
 		GetVersionInfo(ctx context.Context) (appName string, appVersion string, protocolVersion string, err error)
+		GetLikes(ctx context.Context) []map[string]any
 		SendMessage(ctx context.Context, messageType string, userId int64, groupId int64, msg string, plain bool) (messageId int64, err error)
 		// SendPlainMsg 适用于*事件*触发的消息发送
 		SendPlainMsg(ctx context.Context, msg string)
@@ -60,17 +61,20 @@ type (
 		SendMsgIfNotApiReq(ctx context.Context, msg string, richText ...bool)
 		// SendMsgCacheContext 适用于*非事件*触发的消息发送
 		SendMsgCacheContext(ctx context.Context, msg string, richText ...bool)
-		SendFileToGroup(ctx context.Context, groupId int64, filePath string, name string, folder string)
-		SendFileToUser(ctx context.Context, userId int64, filePath string, name string)
-		SendFile(ctx context.Context, filePath string, name string)
+		SendFileToGroup(ctx context.Context, groupId int64, filePath string, name string, folder string) (err error)
+		SendFileToUser(ctx context.Context, userId int64, filePath string, name string) (err error)
+		SendFile(ctx context.Context, filePath string, name string) (err error)
 		UploadFile(ctx context.Context, url string) (filePath string, err error)
 		ApproveJoinGroup(ctx context.Context, flag string, subType string, approve bool, reason string)
-		SetModel(ctx context.Context, model string)
+		SetModel(ctx context.Context, model string) (err error)
 		RecallMessage(ctx context.Context, messageId int64)
-		MutePrototype(ctx context.Context, groupId int64, userId int64, seconds int)
-		Mute(ctx context.Context, seconds int)
+		Mute(ctx context.Context, groupId int64, userId int64, seconds int)
 		SetGroupCard(ctx context.Context, groupId int64, userId int64, card string)
 		Kick(ctx context.Context, groupId int64, userId int64, reject ...bool)
+		ProfileLike(ctx context.Context, userId int64, times int) (err error)
+		EmojiLike(ctx context.Context, messageId int64, emojiId string) (err error)
+		Poke(ctx context.Context, groupId int64, userId int64) (err error)
+		Okay(ctx context.Context) (err error)
 		RewriteMessage(ctx context.Context, message string)
 		SetHistory(ctx context.Context, history string) error
 		CacheMessageAstNode(ctx context.Context)

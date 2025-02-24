@@ -25,12 +25,12 @@ func processMessage(ctx context.Context) {
 	case "private":
 		// 私聊消息
 		switch subType {
-		case "group":
-			// 群临时会话
-			go service.Event().TryForward(ctx)
-			go service.Event().TryKeywordReply(ctx)
 		case "friend":
 			// 好友私聊
+			go service.Event().TryForward(ctx)
+			go service.Event().TryKeywordReply(ctx)
+		case "group":
+			// 群临时会话
 			go service.Event().TryForward(ctx)
 			go service.Event().TryKeywordReply(ctx)
 		}

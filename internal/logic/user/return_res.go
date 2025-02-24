@@ -378,3 +378,91 @@ func (s *sUser) RevokeGetRawMsgReturnRes(ctx context.Context, userId int64) (ret
 	retMsg = "系统已撤销 user(" + gconv.String(userId) + ") 获取 raw 的权限"
 	return
 }
+
+func (s *sUser) GrantRecallReturnRes(ctx context.Context, userId int64) (retMsg string) {
+	// 参数合法性校验
+	if userId == 0 {
+		return
+	}
+	// 获取 user
+	userE := getUser(ctx, userId)
+	if userE == nil {
+		// 如果没有获取到 user 则默认创建
+		var err error
+		userE, err = createUser(ctx, userId)
+		if err != nil {
+			g.Log().Error(ctx, err)
+			return
+		}
+	}
+	// 数据处理
+	settingJson, err := sj.NewJson([]byte(userE.SettingJson))
+	if err != nil {
+		g.Log().Error(ctx, err)
+		return
+	}
+	if _, ok := settingJson.CheckGet(recallKey); ok {
+		// 重复授予
+		retMsg = "重复授予 recall 的权限"
+		return
+	}
+	settingJson.Set(recallKey, true)
+	settingBytes, err := settingJson.Encode()
+	if err != nil {
+		g.Log().Error(ctx, err)
+		return
+	}
+	// 数据库更新
+	_, err = dao.User.Ctx(ctx).
+		Where(dao.User.Columns().UserId, userId).
+		Data(dao.User.Columns().SettingJson, string(settingBytes)).
+		Update()
+	if err != nil {
+		g.Log().Error(ctx, err)
+		return
+	}
+	// 回执
+	retMsg = "系统已授予 user(" + gconv.String(userId) + ") recall 的权限"
+	return
+}
+
+func (s *sUser) RevokeRecallReturnRes(ctx context.Context, userId int64) (retMsg string) {
+	// 参数合法性校验
+	if userId == 0 {
+		return
+	}
+	// 获取 user
+	userE := getUser(ctx, userId)
+	if userE == nil {
+		return
+	}
+	// 数据处理
+	settingJson, err := sj.NewJson([]byte(userE.SettingJson))
+	if err != nil {
+		g.Log().Error(ctx, err)
+		return
+	}
+	if _, ok := settingJson.CheckGet(recallKey); !ok {
+		// 并未授予
+		retMsg = "并未授予 recall 的权限"
+		return
+	}
+	settingJson.Del(recallKey)
+	settingBytes, err := settingJson.Encode()
+	if err != nil {
+		g.Log().Error(ctx, err)
+		return
+	}
+	// 数据库更新
+	_, err = dao.User.Ctx(ctx).
+		Where(dao.User.Columns().UserId, userId).
+		Data(dao.User.Columns().SettingJson, string(settingBytes)).
+		Update()
+	if err != nil {
+		g.Log().Error(ctx, err)
+		return
+	}
+	// 回执
+	retMsg = "系统已撤销 user(" + gconv.String(userId) + ") recall 的权限"
+	return
+}

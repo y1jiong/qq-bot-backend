@@ -11,7 +11,6 @@ import (
 
 type (
 	IEvent interface {
-		TryChainRecall(ctx context.Context) (caught bool)
 		TryForward(ctx context.Context) (caught bool)
 		TryApproveAddGroup(ctx context.Context) (caught bool)
 		TryLockCard(ctx context.Context) (caught bool)
@@ -22,6 +21,8 @@ type (
 		TryLogApproval(ctx context.Context) (caught bool)
 		TryUndoMessageRecall(ctx context.Context) (caught bool)
 		TryKeywordReply(ctx context.Context) (caught bool)
+		TryChainRecall(ctx context.Context) (caught bool)
+		TryEmojiRecall(ctx context.Context) (caught bool)
 	}
 )
 

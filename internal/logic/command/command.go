@@ -60,7 +60,11 @@ func (s *sCommand) TryCommand(ctx context.Context, message string) (caught bool,
 		g.Log().Info(ctx,
 			service.Bot().GetCardOrNickname(ctx)+"("+gconv.String(userId)+
 				") in group("+gconv.String(groupId)+") send cmd "+message)
+		if retMsg == "" {
+			_ = service.Bot().Okay(ctx)
+		}
 	}()
+
 	cmd := strings.Replace(message, cmdPrefix, "", 1)
 	switch {
 	case nextBranchRe.MatchString(cmd):
@@ -82,6 +86,9 @@ func (s *sCommand) TryCommand(ctx context.Context, message string) (caught bool,
 		case "raw":
 			// /raw <>
 			caught, retMsg = tryRaw(ctx, next[2])
+		case "like":
+			// /like <>
+			caught, retMsg = tryLike(ctx, next[2])
 		case "broadcast":
 			// /broadcast <>
 			caught, retMsg = tryBroadcast(ctx, next[2])
@@ -121,7 +128,7 @@ func (s *sCommand) TryCommand(ctx context.Context, message string) (caught bool,
 
 func tryRaw(ctx context.Context, cmd string) (caught bool, retMsg string) {
 	// 权限校验
-	if !service.User().CanGetRawMsg(ctx, service.Bot().GetUserId(ctx)) {
+	if !service.User().CanGetRawMessage(ctx, service.Bot().GetUserId(ctx)) {
 		return
 	}
 
@@ -144,5 +151,29 @@ func tryVersion(ctx context.Context) (caught bool, retMsg string) {
 	}
 	// appName/appVersion (protocolVersion)
 	retMsg += "\n" + appName + "/" + appVersion + " (" + protocolVersion + ")"
+	return
+}
+
+func tryLike(ctx context.Context, cmd string) (caught bool, retMsg string) {
+	// 权限校验
+	if !service.User().IsSystemTrustedUser(ctx, service.Bot().GetUserId(ctx)) {
+		return
+	}
+
+	ctx, span := gtrace.NewSpan(ctx, "command.like")
+	defer span.End()
+
+	if !dualValueCmdEndRe.MatchString(cmd) {
+		return
+	}
+	dv := dualValueCmdEndRe.FindStringSubmatch(cmd)
+
+	caught = true
+
+	// /like <user_id> <times>
+	if err := service.Bot().ProfileLike(ctx, gconv.Int64(dv[1]), gconv.Int(dv[2])); err != nil {
+		retMsg = err.Error()
+		return
+	}
 	return
 }

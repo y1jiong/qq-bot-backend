@@ -152,6 +152,10 @@ func trySysGrant(ctx context.Context, cmd string) (caught bool, retMsg string) {
 			// /sys grant raw <user_id>
 			retMsg = service.User().GrantGetRawMsgReturnRes(ctx, gconv.Int64(dv[2]))
 			caught = true
+		case "recall":
+			// /sys grant recall <user_id>
+			retMsg = service.User().GrantRecallReturnRes(ctx, gconv.Int64(dv[2]))
+			caught = true
 		case "namespace":
 			// /sys grant namespace <user_id>
 			retMsg = service.User().GrantOpNamespaceReturnRes(ctx, gconv.Int64(dv[2]))
@@ -173,6 +177,10 @@ func trySysRevoke(ctx context.Context, cmd string) (caught bool, retMsg string) 
 		case "raw":
 			// /sys revoke raw <user_id>
 			retMsg = service.User().RevokeGetRawMsgReturnRes(ctx, gconv.Int64(dv[2]))
+			caught = true
+		case "recall":
+			// /sys revoke recall <user_id>
+			retMsg = service.User().RevokeRecallReturnRes(ctx, gconv.Int64(dv[2]))
 			caught = true
 		case "namespace":
 			// /sys revoke namespace <user_id>

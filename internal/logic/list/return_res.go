@@ -159,7 +159,10 @@ func (s *sList) ExportListReturnRes(ctx context.Context, listName string) (retMs
 		retMsg = "上传文件失败"
 		return
 	}
-	service.Bot().SendFile(ctx, filePath, "list("+listName+").txt")
+	if err = service.Bot().SendFile(ctx, filePath, "list("+listName+").txt"); err != nil {
+		retMsg = "发送文件失败"
+		return
+	}
 	return
 }
 

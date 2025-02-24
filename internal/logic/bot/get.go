@@ -589,3 +589,15 @@ func (s *sBot) GetVersionInfo(ctx context.Context) (appName, appVersion, protoco
 	}
 	return
 }
+
+func (s *sBot) GetLikes(ctx context.Context) []map[string]any {
+	v, _ := s.reqJsonFromCtx(ctx).Get("likes").Array()
+	if len(v) == 0 {
+		return nil
+	}
+	likes := make([]map[string]any, 0, len(v))
+	for _, item := range v {
+		likes = append(likes, gconv.Map(item))
+	}
+	return likes
+}

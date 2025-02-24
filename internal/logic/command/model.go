@@ -23,7 +23,13 @@ func tryModelSet(ctx context.Context, cmd string) (caught bool, retMsg string) {
 	if next[1] != "set" {
 		return
 	}
-	service.Bot().SetModel(ctx, next[2])
+
 	caught = true
+
+	if err := service.Bot().SetModel(ctx, next[2]); err != nil {
+		retMsg = err.Error()
+		return
+	}
+	retMsg = "已更改机型为 '" + next[2] + "'"
 	return
 }

@@ -20,10 +20,13 @@ type (
 		RevokeOpNamespaceReturnRes(ctx context.Context, userId int64) (retMsg string)
 		GrantGetRawMsgReturnRes(ctx context.Context, userId int64) (retMsg string)
 		RevokeGetRawMsgReturnRes(ctx context.Context, userId int64) (retMsg string)
+		GrantRecallReturnRes(ctx context.Context, userId int64) (retMsg string)
+		RevokeRecallReturnRes(ctx context.Context, userId int64) (retMsg string)
 		IsSystemTrustedUser(ctx context.Context, userId int64) bool
 		CanOpToken(ctx context.Context, userId int64) bool
 		CanOpNamespace(ctx context.Context, userId int64) bool
-		CanGetRawMsg(ctx context.Context, userId int64) bool
+		CanGetRawMessage(ctx context.Context, userId int64) bool
+		CanRecallMessage(ctx context.Context, userId int64) bool
 	}
 )
 

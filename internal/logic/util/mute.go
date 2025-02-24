@@ -34,5 +34,5 @@ func (s *sUtil) AutoMute(ctx context.Context,
 		}
 	}
 	// 禁言 BaseMuteMinutes^times 分钟
-	service.Bot().MutePrototype(ctx, groupId, userId, muteMinutes*60)
+	service.Bot().Mute(ctx, groupId, userId, muteMinutes*60)
 }

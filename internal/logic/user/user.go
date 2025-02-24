@@ -24,6 +24,7 @@ const (
 	tokenKey     = "token"
 	namespaceKey = "namespace"
 	rawKey       = "raw"
+	recallKey    = "recall"
 )
 
 func getUser(ctx context.Context, userId int64) (userE *entity.User) {
@@ -87,7 +88,8 @@ func (s *sUser) CanOpToken(ctx context.Context, userId int64) bool {
 		return false
 	}
 	b, _ := settingJson.Get(tokenKey).Bool()
-	return b
+	t, _ := settingJson.Get(trustKey).Bool()
+	return b || t
 }
 
 func (s *sUser) CanOpNamespace(ctx context.Context, userId int64) bool {
@@ -107,10 +109,11 @@ func (s *sUser) CanOpNamespace(ctx context.Context, userId int64) bool {
 		return false
 	}
 	b, _ := settingJson.Get(namespaceKey).Bool()
-	return b
+	t, _ := settingJson.Get(trustKey).Bool()
+	return b || t
 }
 
-func (s *sUser) CanGetRawMsg(ctx context.Context, userId int64) bool {
+func (s *sUser) CanGetRawMessage(ctx context.Context, userId int64) bool {
 	// 参数合法性校验
 	if userId == 0 {
 		return false
@@ -127,5 +130,27 @@ func (s *sUser) CanGetRawMsg(ctx context.Context, userId int64) bool {
 		return false
 	}
 	b, _ := settingJson.Get(rawKey).Bool()
-	return b
+	t, _ := settingJson.Get(trustKey).Bool()
+	return b || t
+}
+
+func (s *sUser) CanRecallMessage(ctx context.Context, userId int64) bool {
+	// 参数合法性校验
+	if userId == 0 {
+		return false
+	}
+	// 获取 user
+	userE := getUser(ctx, userId)
+	if userE == nil {
+		return false
+	}
+	// 数据处理
+	settingJson, err := sonic.GetFromString(userE.SettingJson)
+	if err != nil {
+		g.Log().Error(ctx, err)
+		return false
+	}
+	b, _ := settingJson.Get(recallKey).Bool()
+	t, _ := settingJson.Get(trustKey).Bool()
+	return b || t
 }
