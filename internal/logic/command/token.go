@@ -6,42 +6,41 @@ import (
 	"qq-bot-backend/internal/service"
 )
 
-func tryToken(ctx context.Context, cmd string) (caught bool, retMsg string) {
+func tryToken(ctx context.Context, args []string) (caught bool, retMsg string) {
 	ctx, span := gtrace.NewSpan(ctx, "command.tryToken")
 	defer span.End()
 
 	switch {
-	case nextBranchRe.MatchString(cmd):
+	case len(args) > 1:
 		// 权限校验
 		if !service.User().CanOpToken(ctx, service.Bot().GetUserId(ctx)) {
 			return
 		}
-		next := nextBranchRe.FindStringSubmatch(cmd)
-		switch next[1] {
+		switch args[0] {
 		case "add":
 			// /token add <>
-			caught, retMsg = tryTokenAdd(ctx, next[2])
+			caught, retMsg = tryTokenAdd(ctx, args[1:])
 		case "rm":
 			// /token rm <name>
-			retMsg = service.Token().RemoveTokenReturnRes(ctx, next[2])
+			retMsg = service.Token().RemoveTokenReturnRes(ctx, args[1])
 			caught = true
 		case "chown":
 			// /token chown <>
-			caught, retMsg = tryTokenChown(ctx, next[2])
+			caught, retMsg = tryTokenChown(ctx, args[1:])
 		case "bind":
 			// /token bind <>
-			caught, retMsg = tryTokenBind(ctx, next[2])
+			caught, retMsg = tryTokenBind(ctx, args[1:])
 		case "unbind":
 			// /token unbind <name>
-			retMsg = service.Token().UnbindTokenBotId(ctx, next[2])
+			retMsg = service.Token().UnbindTokenBotId(ctx, args[1])
 			caught = true
 		case "query":
 			// /token query <name>
-			retMsg = service.Token().QueryTokenReturnRes(ctx, next[2])
+			retMsg = service.Token().QueryTokenReturnRes(ctx, args[1])
 			caught = true
 		}
-	case endBranchRe.MatchString(cmd):
-		switch cmd {
+	case len(args) == 1:
+		switch args[0] {
 		case "query":
 			// /token query
 			retMsg = service.Token().QueryOwnTokenReturnRes(ctx)
@@ -51,38 +50,32 @@ func tryToken(ctx context.Context, cmd string) (caught bool, retMsg string) {
 	return
 }
 
-func tryTokenAdd(ctx context.Context, cmd string) (caught bool, retMsg string) {
-	if !dualValueCmdEndRe.MatchString(cmd) {
+func tryTokenAdd(ctx context.Context, args []string) (caught bool, retMsg string) {
+	if len(args) < 2 {
 		return
 	}
 	// /token add <name> <token>
-	dv := dualValueCmdEndRe.FindStringSubmatch(cmd)
-	// 执行
-	retMsg = service.Token().AddNewTokenReturnRes(ctx, dv[1], dv[2])
+	retMsg = service.Token().AddNewTokenReturnRes(ctx, args[0], args[1])
 	caught = true
 	return
 }
 
-func tryTokenChown(ctx context.Context, cmd string) (caught bool, retMsg string) {
-	if !dualValueCmdEndRe.MatchString(cmd) {
+func tryTokenChown(ctx context.Context, args []string) (caught bool, retMsg string) {
+	if len(args) < 2 {
 		return
 	}
 	// /token chown <owner_id> <name>
-	dv := dualValueCmdEndRe.FindStringSubmatch(cmd)
-	// 执行
-	retMsg = service.Token().ChangeTokenOwnerReturnRes(ctx, dv[2], dv[1])
+	retMsg = service.Token().ChangeTokenOwnerReturnRes(ctx, args[0], args[1])
 	caught = true
 	return
 }
 
-func tryTokenBind(ctx context.Context, cmd string) (caught bool, retMsg string) {
-	if !dualValueCmdEndRe.MatchString(cmd) {
+func tryTokenBind(ctx context.Context, args []string) (caught bool, retMsg string) {
+	if len(args) < 2 {
 		return
 	}
 	// /token bind <bot_id> <name>
-	dv := dualValueCmdEndRe.FindStringSubmatch(cmd)
-	// 执行
-	retMsg = service.Token().BindTokenBotId(ctx, dv[2], dv[1])
+	retMsg = service.Token().BindTokenBotId(ctx, args[0], args[1])
 	caught = true
 	return
 }

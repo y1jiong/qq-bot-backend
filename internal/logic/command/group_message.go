@@ -6,32 +6,31 @@ import (
 	"qq-bot-backend/internal/service"
 )
 
-func tryGroupMessage(ctx context.Context, cmd string) (caught bool, retMsg string) {
+func tryGroupMessage(ctx context.Context, args []string) (caught bool, retMsg string) {
 	switch {
-	case nextBranchRe.MatchString(cmd):
-		next := nextBranchRe.FindStringSubmatch(cmd)
-		switch next[1] {
+	case len(args) > 1:
+		switch args[0] {
 		case "enable":
 			// /group message enable <>
-			caught, retMsg = tryGroupMessageEnable(ctx, next[2])
+			caught, retMsg = tryGroupMessageEnable(ctx, args[1:])
 		case "disable":
 			// /group message disable <>
-			caught, retMsg = tryGroupMessageDisable(ctx, next[2])
+			caught, retMsg = tryGroupMessageDisable(ctx, args[1:])
 		case "set":
 			// /group message set <>
-			caught, retMsg = tryGroupMessageSet(ctx, next[2])
+			caught, retMsg = tryGroupMessageSet(ctx, args[1:])
 		case "rm":
 			// /group message rm <>
-			caught, retMsg = tryGroupMessageRemove(ctx, next[2])
+			caught, retMsg = tryGroupMessageRemove(ctx, args[1:])
 		}
 	}
 	return
 }
 
-func tryGroupMessageEnable(ctx context.Context, cmd string) (caught bool, retMsg string) {
+func tryGroupMessageEnable(ctx context.Context, args []string) (caught bool, retMsg string) {
 	switch {
-	case endBranchRe.MatchString(cmd):
-		switch cmd {
+	case len(args) == 1:
+		switch args[0] {
 		case "anti-recall":
 			// /group message enable anti-recall
 			retMsg = service.Group().SetAntiRecallReturnRes(ctx, service.Bot().GetGroupId(ctx), true)
@@ -41,10 +40,10 @@ func tryGroupMessageEnable(ctx context.Context, cmd string) (caught bool, retMsg
 	return
 }
 
-func tryGroupMessageDisable(ctx context.Context, cmd string) (caught bool, retMsg string) {
+func tryGroupMessageDisable(ctx context.Context, args []string) (caught bool, retMsg string) {
 	switch {
-	case endBranchRe.MatchString(cmd):
-		switch cmd {
+	case len(args) == 1:
+		switch args[0] {
 		case "anti-recall":
 			// /group message disable anti-recall
 			retMsg = service.Group().SetAntiRecallReturnRes(ctx, service.Bot().GetGroupId(ctx), false)
@@ -54,18 +53,17 @@ func tryGroupMessageDisable(ctx context.Context, cmd string) (caught bool, retMs
 	return
 }
 
-func tryGroupMessageSet(ctx context.Context, cmd string) (caught bool, retMsg string) {
+func tryGroupMessageSet(ctx context.Context, args []string) (caught bool, retMsg string) {
 	switch {
-	case nextBranchRe.MatchString(cmd):
-		next := nextBranchRe.FindStringSubmatch(cmd)
-		switch next[1] {
+	case len(args) > 1:
+		switch args[0] {
 		case "notification":
 			// /group message set notification <group_id>
-			retMsg = service.Group().SetMessageNotificationReturnRes(ctx, service.Bot().GetGroupId(ctx), gconv.Int64(next[2]))
+			retMsg = service.Group().SetMessageNotificationReturnRes(ctx, service.Bot().GetGroupId(ctx), gconv.Int64(args[1]))
 			caught = true
 		}
-	case endBranchRe.MatchString(cmd):
-		switch cmd {
+	case len(args) == 1:
+		switch args[0] {
 		case "only-anti-recall-member":
 			// /group message set only-anti-recall-member
 			retMsg = service.Group().SetOnlyAntiRecallMemberReturnRes(ctx, service.Bot().GetGroupId(ctx), true)
@@ -75,10 +73,10 @@ func tryGroupMessageSet(ctx context.Context, cmd string) (caught bool, retMsg st
 	return
 }
 
-func tryGroupMessageRemove(ctx context.Context, cmd string) (caught bool, retMsg string) {
+func tryGroupMessageRemove(ctx context.Context, args []string) (caught bool, retMsg string) {
 	switch {
-	case endBranchRe.MatchString(cmd):
-		switch cmd {
+	case len(args) == 1:
+		switch args[0] {
 		case "notification":
 			// /group message rm notification
 			retMsg = service.Group().RemoveMessageNotificationReturnRes(ctx, service.Bot().GetGroupId(ctx))

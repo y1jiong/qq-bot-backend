@@ -6,10 +6,10 @@ import (
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/os/gtime"
 	"github.com/gogf/gf/v2/util/gconv"
+	"github.com/y1jiong/go-shellquote"
 	"qq-bot-backend/internal/dao"
 	"qq-bot-backend/internal/model/entity"
 	"qq-bot-backend/internal/service"
-	"qq-bot-backend/utility/codec"
 	"strings"
 	"time"
 )
@@ -217,7 +217,6 @@ func (s *sList) QueryListReturnRes(ctx context.Context, listName string, keys ..
 			g.Log().Error(ctx, err)
 			return
 		}
-		keys[0] = codec.DecodeBlank(keys[0])
 		if _, ok := listJson.CheckGet(keys[0]); !ok {
 			retMsg = "在 list(" + listName + ") 中未找到 key(" + keys[0] + ")"
 			return
@@ -267,8 +266,6 @@ func (s *sList) AddListDataReturnRes(ctx context.Context, listName, key string, 
 		g.Log().Error(ctx, err)
 		return
 	}
-	// 按照 url escape 解码空格和 %
-	key = codec.DecodeBlank(key)
 	if len(value) > 0 {
 		listJson.Set(key, value[0])
 	} else {
@@ -319,8 +316,6 @@ func (s *sList) RemoveListDataReturnRes(ctx context.Context, listName, key strin
 		g.Log().Error(ctx, err)
 		return
 	}
-	// 按照 url escape 解码空格和 %
-	key = codec.DecodeBlank(key)
 	if _, ok := listJson.CheckGet(key); !ok {
 		// 未找到 key
 		retMsg = "在 list(" + listName + ") 中未找到 key(" + key + ")"
@@ -486,7 +481,7 @@ func (s *sList) GlanceListDataReturnRes(ctx context.Context, listName string) (r
 	listMap := listJson.MustMap(make(map[string]any))
 	var msgBuilder strings.Builder
 	for k := range listMap {
-		msgBuilder.WriteString("`" + k + "`\n")
+		msgBuilder.WriteString(shellquote.Join(k) + "\n")
 	}
 	// 回执
 	retMsg = strings.TrimSuffix(msgBuilder.String(), "\n")
@@ -514,9 +509,6 @@ func (s *sList) CopyListKeyReturnRes(ctx context.Context, listName, srcKey, dstK
 		g.Log().Error(ctx, err)
 		return
 	}
-	// 按照 url escape 解码空格和 %
-	srcKey = codec.DecodeBlank(srcKey)
-	dstKey = codec.DecodeBlank(dstKey)
 	if _, ok := listJson.CheckGet(srcKey); !ok {
 		retMsg = "在 list(" + listName + ") 中未找到 key(" + srcKey + ")"
 		return

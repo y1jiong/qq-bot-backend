@@ -7,55 +7,54 @@ import (
 	"qq-bot-backend/internal/service"
 )
 
-func tryGroup(ctx context.Context, cmd string) (caught bool, retMsg string) {
+func tryGroup(ctx context.Context, args []string) (caught bool, retMsg string) {
 	ctx, span := gtrace.NewSpan(ctx, "command.tryGroup")
 	defer span.End()
 
 	switch {
-	case nextBranchRe.MatchString(cmd):
-		next := nextBranchRe.FindStringSubmatch(cmd)
-		switch next[1] {
+	case len(args) > 1:
+		switch args[0] {
 		case "query":
 			// /group query <group_id>
-			retMsg = service.Group().QueryGroupReturnRes(ctx, gconv.Int64(next[2]))
+			retMsg = service.Group().QueryGroupReturnRes(ctx, gconv.Int64(args[1]))
 			caught = true
 		case "approval":
 			// /group approval <>
-			caught, retMsg = tryGroupApproval(ctx, next[2])
+			caught, retMsg = tryGroupApproval(ctx, args[1:])
 		case "keyword":
 			// /group keyword <>
-			caught, retMsg = tryGroupKeyword(ctx, next[2])
+			caught, retMsg = tryGroupKeyword(ctx, args[1:])
 		case "message":
 			// /group message <>
-			caught, retMsg = tryGroupMessage(ctx, next[2])
+			caught, retMsg = tryGroupMessage(ctx, args[1:])
 		case "card":
 			// /group card <>
-			caught, retMsg = tryGroupCard(ctx, next[2])
+			caught, retMsg = tryGroupCard(ctx, args[1:])
 		case "export":
 			// /group export <>
-			caught, retMsg = tryGroupExport(ctx, next[2])
+			caught, retMsg = tryGroupExport(ctx, args[1:])
 		case "log":
 			// /group log <>
-			caught, retMsg = tryGroupLog(ctx, next[2])
+			caught, retMsg = tryGroupLog(ctx, args[1:])
 		case "kick":
 			// /group kick <list_name>
-			retMsg = service.Group().KickFromListReturnRes(ctx, service.Bot().GetGroupId(ctx), next[2])
+			retMsg = service.Group().KickFromListReturnRes(ctx, service.Bot().GetGroupId(ctx), args[1])
 			caught = true
 		case "keep":
 			// /group keep <list_name>
-			retMsg = service.Group().KeepFromListReturnRes(ctx, service.Bot().GetGroupId(ctx), next[2])
+			retMsg = service.Group().KeepFromListReturnRes(ctx, service.Bot().GetGroupId(ctx), args[1])
 			caught = true
 		case "clone":
 			// /group clone <group_id>
-			retMsg = service.Group().CloneReturnRes(ctx, service.Bot().GetGroupId(ctx), gconv.Int64(next[2]))
+			retMsg = service.Group().CloneReturnRes(ctx, service.Bot().GetGroupId(ctx), gconv.Int64(args[1]))
 			caught = true
 		case "bind":
 			// /group bind <namespace>
-			retMsg = service.Group().BindNamespaceReturnRes(ctx, service.Bot().GetGroupId(ctx), next[2])
+			retMsg = service.Group().BindNamespaceReturnRes(ctx, service.Bot().GetGroupId(ctx), args[1])
 			caught = true
 		}
-	case endBranchRe.MatchString(cmd):
-		switch cmd {
+	case len(args) == 1:
+		switch args[0] {
 		case "query":
 			// /group query
 			retMsg = service.Group().QueryGroupReturnRes(ctx, service.Bot().GetGroupId(ctx))

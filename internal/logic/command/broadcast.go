@@ -4,27 +4,26 @@ import (
 	"context"
 	"github.com/gogf/gf/v2/net/gtrace"
 	"github.com/gogf/gf/v2/util/gconv"
+	"github.com/y1jiong/go-shellquote"
 	"qq-bot-backend/internal/service"
 	"strings"
 )
 
-func tryBroadcast(ctx context.Context, cmd string) (caught bool, retMsg string) {
+func tryBroadcast(ctx context.Context, args []string) (caught bool, retMsg string) {
 	ctx, span := gtrace.NewSpan(ctx, "command.tryBroadcast")
 	defer span.End()
 
 	switch {
-	case nextBranchRe.MatchString(cmd):
-		next := nextBranchRe.FindStringSubmatch(cmd)
-		switch next[1] {
+	case len(args) > 1:
+		switch args[0] {
 		case "group":
 			// /broadcast group <>
-			if !nextBranchRe.MatchString(next[2]) {
+			if len(args) < 3 {
 				break
 			}
 
-			next := nextBranchRe.FindStringSubmatch(next[2])
-			// /broadcast group <group_id> <>
-			dstGroupId := gconv.Int64(next[1])
+			// /broadcast group <group_id> <...content>
+			dstGroupId := gconv.Int64(args[1])
 			userId := service.Bot().GetUserId(ctx)
 			if dstNamespace := service.Group().GetNamespace(ctx, dstGroupId); dstNamespace == "" ||
 				!service.Namespace().IsNamespaceOwnerOrAdminOrOperator(ctx, dstNamespace, userId) {
@@ -36,7 +35,7 @@ func tryBroadcast(ctx context.Context, cmd string) (caught bool, retMsg string) 
 				service.Bot().GetMsgType(ctx),
 				0,
 				dstGroupId,
-				strings.TrimSpace(next[2])+suffix,
+				strings.TrimSpace(shellquote.Join(args[2:]...))+suffix,
 				false,
 			)
 			caught = true

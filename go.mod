@@ -10,6 +10,7 @@ require (
 	github.com/gogf/gf/v2 v2.8.3
 	github.com/gorilla/websocket v1.5.3
 	github.com/lukesampson/figlet v0.0.0-20190211215653-8a3ef4a6ac42
+	github.com/y1jiong/go-shellquote v0.1.0
 	go.opentelemetry.io/otel v1.34.0
 	go.opentelemetry.io/otel/trace v1.34.0
 	golang.org/x/term v0.29.0

@@ -5,10 +5,10 @@ import (
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/net/gtrace"
 	"github.com/gogf/gf/v2/util/gconv"
+	"github.com/y1jiong/go-shellquote"
 	"go.opentelemetry.io/otel/attribute"
 	"qq-bot-backend/internal/consts"
 	"qq-bot-backend/internal/service"
-	"regexp"
 	"strings"
 )
 
@@ -24,12 +24,6 @@ func init() {
 
 const (
 	cmdPrefix = "/"
-)
-
-var (
-	nextBranchRe      = regexp.MustCompile(`^(\S+)\s+([\s\S]+)$`)
-	endBranchRe       = regexp.MustCompile(`^\S+$`)
-	dualValueCmdEndRe = regexp.MustCompile(`^(\S+)\s+(\S+)$`)
 )
 
 func (s *sCommand) TryCommand(ctx context.Context, message string) (caught bool, retMsg string) {
@@ -65,50 +59,51 @@ func (s *sCommand) TryCommand(ctx context.Context, message string) (caught bool,
 		}
 	}()
 
-	cmd := strings.Replace(message, cmdPrefix, "", 1)
+	args, err := shellquote.Split(strings.Replace(message, cmdPrefix, "", 1))
+	if err != nil {
+		return
+	}
 	switch {
-	case nextBranchRe.MatchString(cmd):
-		next := nextBranchRe.FindStringSubmatch(cmd)
-
-		switch next[1] {
+	case len(args) > 1:
+		switch args[0] {
 		case "list":
 			// /list <>
-			caught, retMsg = tryList(ctx, next[2])
+			caught, retMsg = tryList(ctx, args[1:])
 		case "group":
 			// /group <>
-			caught, retMsg = tryGroup(ctx, next[2])
+			caught, retMsg = tryGroup(ctx, args[1:])
 		case "namespace":
 			// /namespace <>
-			caught, retMsg = tryNamespace(ctx, next[2])
+			caught, retMsg = tryNamespace(ctx, args[1:])
 		case "user":
 			// /user <>
-			caught, retMsg = tryUser(ctx, next[2])
+			caught, retMsg = tryUser(ctx, args[1:])
 		case "raw":
 			// /raw <>
-			caught, retMsg = tryRaw(ctx, next[2])
+			caught, retMsg = tryRaw(ctx, args[1:])
 		case "like":
 			// /like <>
-			caught, retMsg = tryLike(ctx, next[2])
+			caught, retMsg = tryLike(ctx, args[1:])
 		case "broadcast":
 			// /broadcast <>
-			caught, retMsg = tryBroadcast(ctx, next[2])
+			caught, retMsg = tryBroadcast(ctx, args[1:])
 		case "token":
 			// /token <>
-			caught, retMsg = tryToken(ctx, next[2])
+			caught, retMsg = tryToken(ctx, args[1:])
 		case "sys":
 			// /sys <>
-			caught, retMsg = trySys(ctx, next[2])
+			caught, retMsg = trySys(ctx, args[1:])
 		case "model":
 			// /model <>
-			caught, retMsg = tryModelSet(ctx, next[2])
+			caught, retMsg = tryModelSet(ctx, args[1:])
 		}
-	case endBranchRe.MatchString(cmd):
+	case len(args) == 1:
 		// 权限校验
 		if !service.User().IsSystemTrustedUser(ctx, service.Bot().GetUserId(ctx)) {
 			return
 		}
 
-		switch cmd {
+		switch args[0] {
 		case "status":
 			// /status
 			caught, retMsg = queryProcessStatus(ctx)
@@ -126,7 +121,7 @@ func (s *sCommand) TryCommand(ctx context.Context, message string) (caught bool,
 	return
 }
 
-func tryRaw(ctx context.Context, cmd string) (caught bool, retMsg string) {
+func tryRaw(ctx context.Context, args []string) (caught bool, retMsg string) {
 	// 权限校验
 	if !service.User().CanGetRawMessage(ctx, service.Bot().GetUserId(ctx)) {
 		return
@@ -135,7 +130,7 @@ func tryRaw(ctx context.Context, cmd string) (caught bool, retMsg string) {
 	ctx, span := gtrace.NewSpan(ctx, "command.raw")
 	defer span.End()
 
-	caught, retMsg = true, cmd
+	caught, retMsg = true, shellquote.Join(args...)
 	return
 }
 
@@ -154,7 +149,7 @@ func tryVersion(ctx context.Context) (caught bool, retMsg string) {
 	return
 }
 
-func tryLike(ctx context.Context, cmd string) (caught bool, retMsg string) {
+func tryLike(ctx context.Context, args []string) (caught bool, retMsg string) {
 	// 权限校验
 	if !service.User().IsSystemTrustedUser(ctx, service.Bot().GetUserId(ctx)) {
 		return
@@ -163,15 +158,14 @@ func tryLike(ctx context.Context, cmd string) (caught bool, retMsg string) {
 	ctx, span := gtrace.NewSpan(ctx, "command.like")
 	defer span.End()
 
-	if !dualValueCmdEndRe.MatchString(cmd) {
+	if len(args) < 2 {
 		return
 	}
-	dv := dualValueCmdEndRe.FindStringSubmatch(cmd)
 
 	caught = true
 
 	// /like <user_id> <times>
-	if err := service.Bot().ProfileLike(ctx, gconv.Int64(dv[1]), gconv.Int(dv[2])); err != nil {
+	if err := service.Bot().ProfileLike(ctx, gconv.Int64(args[0]), gconv.Int(args[1])); err != nil {
 		retMsg = err.Error()
 		return
 	}

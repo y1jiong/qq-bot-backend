@@ -6,7 +6,7 @@ import (
 	"qq-bot-backend/internal/service"
 )
 
-func tryModelSet(ctx context.Context, cmd string) (caught bool, retMsg string) {
+func tryModelSet(ctx context.Context, args []string) (caught bool, retMsg string) {
 	// 权限校验
 	if !service.User().IsSystemTrustedUser(ctx, service.Bot().GetUserId(ctx)) {
 		return
@@ -15,21 +15,21 @@ func tryModelSet(ctx context.Context, cmd string) (caught bool, retMsg string) {
 	ctx, span := gtrace.NewSpan(ctx, "command.tryModelSet")
 	defer span.End()
 
-	// /model set <model>
-	if !nextBranchRe.MatchString(cmd) {
+	// /model <op> <model>
+	if len(args) < 2 {
 		return
 	}
-	next := nextBranchRe.FindStringSubmatch(cmd)
-	if next[1] != "set" {
+	if args[0] != "set" {
 		return
 	}
 
 	caught = true
 
-	if err := service.Bot().SetModel(ctx, next[2]); err != nil {
+	// /model set <model>
+	if err := service.Bot().SetModel(ctx, args[1]); err != nil {
 		retMsg = err.Error()
 		return
 	}
-	retMsg = "已更改机型为 '" + next[2] + "'"
+	retMsg = "已更改机型为 '" + args[1] + "'"
 	return
 }

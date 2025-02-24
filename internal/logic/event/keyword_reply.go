@@ -88,7 +88,9 @@ func (s *sEvent) TryKeywordReply(ctx context.Context) (caught bool) {
 		return
 	}
 	if !noReplyPrefix {
-		replyMsg = "[CQ:reply,id=" + gconv.String(service.Bot().GetMsgId(ctx)) + "]" + replyMsg
+		if msgId := service.Bot().GetMsgId(ctx); msgId != 0 {
+			replyMsg = "[CQ:reply,id=" + gconv.String(msgId) + "]" + replyMsg
+		}
 	}
 	service.Bot().SendMsg(ctx, replyMsg)
 

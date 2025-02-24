@@ -5,44 +5,42 @@ import (
 	"qq-bot-backend/internal/service"
 )
 
-func tryGroupLog(ctx context.Context, cmd string) (caught bool, retMsg string) {
+func tryGroupLog(ctx context.Context, args []string) (caught bool, retMsg string) {
 	switch {
-	case nextBranchRe.MatchString(cmd):
-		next := nextBranchRe.FindStringSubmatch(cmd)
-		switch next[1] {
+	case len(args) > 1:
+		switch args[0] {
 		case "set":
 			// /group log set <>
-			caught, retMsg = tryGroupLogSet(ctx, next[2])
+			caught, retMsg = tryGroupLogSet(ctx, args[1:])
 		case "rm":
 			// /group log rm <>
-			caught, retMsg = tryGroupLogRemove(ctx, next[2])
+			caught, retMsg = tryGroupLogRemove(ctx, args[1:])
 		}
 	}
 	return
 }
 
-func tryGroupLogSet(ctx context.Context, cmd string) (caught bool, retMsg string) {
+func tryGroupLogSet(ctx context.Context, args []string) (caught bool, retMsg string) {
 	switch {
-	case nextBranchRe.MatchString(cmd):
-		next := nextBranchRe.FindStringSubmatch(cmd)
-		switch next[1] {
+	case len(args) > 1:
+		switch args[0] {
 		case "approval":
 			// /group log set approval <list_name>
-			retMsg = service.Group().SetLogApprovalListReturnRes(ctx, service.Bot().GetGroupId(ctx), next[2])
+			retMsg = service.Group().SetLogApprovalListReturnRes(ctx, service.Bot().GetGroupId(ctx), args[1])
 			caught = true
 		case "leave":
 			// /group log set leave <list_name>
-			retMsg = service.Group().SetLogLeaveListReturnRes(ctx, service.Bot().GetGroupId(ctx), next[2])
+			retMsg = service.Group().SetLogLeaveListReturnRes(ctx, service.Bot().GetGroupId(ctx), args[1])
 			caught = true
 		}
 	}
 	return
 }
 
-func tryGroupLogRemove(ctx context.Context, cmd string) (caught bool, retMsg string) {
+func tryGroupLogRemove(ctx context.Context, args []string) (caught bool, retMsg string) {
 	switch {
-	case endBranchRe.MatchString(cmd):
-		switch cmd {
+	case len(args) == 1:
+		switch args[0] {
 		case "approval":
 			// /group log rm approval
 			retMsg = service.Group().RemoveLogApprovalListReturnRes(ctx, service.Bot().GetGroupId(ctx))

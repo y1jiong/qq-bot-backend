@@ -1,26 +1,30 @@
-v1.8
+v1.9
 
 \<required> [optional]
+
+Supports shell quoting and escaping.
+
+以 `...` 开头的参数表示后面所有的参数都会被合并为一个参数。
 
 [TOC]
 
 ## List
 
-| Command                                           | Description                                                                                     | Comment                                                        |
-|---------------------------------------------------|-------------------------------------------------------------------------------------------------|----------------------------------------------------------------|
-| /list add \<list_name> \<namespace>               | 在 namespace 下新增 list_name                                                                       | 需要 list_name 对应的 namespace admin 或更高权限或者 namespace 有 public 属性 |
-| /list join \<list_name> \<key> [value]            | 将 key[:value] 添加到 list_name 中（key value 可作为双因子认证使用）（key 包含**空格**请用`%20`转义替换，包含**%**请用`%25`转义替换） | 同上                                                             |
-| /list copy-key \<list_name> \<src_key> \<dst_key> | 将 list_name 中的 src_key 复制到 dst_key 中（src_key dst_key 包含**空格**请用`%20`转义替换，包含**%**请用`%25`转义替换）    | 同上                                                             |
-| /list leave \<list_name> \<key>                   | 将 key 从 list_name 中移除（key 包含**空格**请用`%20`转义替换，包含**%**请用`%25`转义替换）                               | 同上                                                             |
-| /list len \<list_name>                            | 查询 list_name 里共有多少条数据                                                                           | 同上                                                             |
-| /list query \<list_name> [key]                    | 查询 list_name 或者 list_name 内的 key（key 包含**空格**请用`%20`转义替换，包含**%**请用`%25`转义替换）                    | 同上                                                             |
-| /list export \<list_name>                         | 将 list_name 以文件的方式导出                                                                            | 同上                                                             |
-| /list append \<list_name> \<json>                 | 用 json 追加 list_name 的数据                                                                         | 同上                                                             |
-| /list set \<list_name> \<json>                    | 用 json 覆盖 list_name 的数据                                                                         | 同上                                                             |
-| /list reset \<list_name>                          | 重置 list_name 的数据                                                                                | 同上                                                             |
-| /list rm \<list_name>                             | 删除 list_name（删除后原 list_name 不可使用，只能恢复）                                                          | 同上                                                             |
-| /list recover \<list_name>                        | 恢复 list_name                                                                                    | 同上                                                             |
-| /list glance \<list_name>                         | 快速查询 list_name 里的所有 key                                                                         | 同上或者 list_name 处于 global namespace 中                           |
+| Command                                           | Description                                                             | Comment                                                        |
+|---------------------------------------------------|-------------------------------------------------------------------------|----------------------------------------------------------------|
+| /list add \<list_name> \<namespace>               | 在 namespace 下新增 list_name                                               | 需要 list_name 对应的 namespace admin 或更高权限或者 namespace 有 public 属性 |
+| /list join \<list_name> \<key> [...value]         | 将 key[:value] 添加到 list_name 中（key value 可作为双因子认证使用）（key 包含**空格**请用引号包裹） | 同上                                                             |
+| /list copy-key \<list_name> \<src_key> \<dst_key> | 将 list_name 中的 src_key 复制到 dst_key 中（src_key dst_key 包含**空格**请用引号包裹）    | 同上                                                             |
+| /list leave \<list_name> \<key>                   | 将 key 从 list_name 中移除（key 包含**空格**请用引号包裹）                               | 同上                                                             |
+| /list len \<list_name>                            | 查询 list_name 里共有多少条数据                                                   | 同上                                                             |
+| /list query \<list_name> [key]                    | 查询 list_name 或者 list_name 内的 key（key 包含**空格**请用引号包裹）                    | 同上                                                             |
+| /list export \<list_name>                         | 将 list_name 以文件的方式导出                                                    | 同上                                                             |
+| /list append \<list_name> \<...json>              | 用 json 追加 list_name 的数据                                                 | 同上                                                             |
+| /list set \<list_name> \<...json>                 | 用 json 覆盖 list_name 的数据                                                 | 同上                                                             |
+| /list reset \<list_name>                          | 重置 list_name 的数据                                                        | 同上                                                             |
+| /list rm \<list_name>                             | 删除 list_name（删除后原 list_name 不可使用，只能恢复）                                  | 同上                                                             |
+| /list recover \<list_name>                        | 恢复 list_name                                                            | 同上                                                             |
+| /list glance \<list_name>                         | 快速查询 list_name 里的所有 key                                                 | 同上或者 list_name 处于 global namespace 中                           |
 
 ## List Operation
 
@@ -142,22 +146,22 @@ v1.8
 
 ## Extra
 
-| Command                                 | Description        | Comment                  |
-|-----------------------------------------|--------------------|--------------------------|
-| /raw \<message>                         | 获取 message 的原始信息   | 需要系统授予的获取 raw 的权限        |
-| /broadcast group \<group_id> \<content> | 广播消息到群             | 需要 namespace admin 或更高权限 |
-| /model set \<model>                     | 设置机型               | 需要受系统信任                  |
-| /token add \<name> \<token>             | 添加可让 user 接入本系统的令牌 | 需要系统授予的操作 token 的权限      |
-| /token rm \<name>                       | 删除令牌               | 需要系统授予的操作 token 的权限      |
-| /token query                            | 查询自己所有的令牌          | 需要系统授予的操作 token 的权限      |
-| /token query \<name>                    | 查询令牌               | 需要系统授予的操作 token 的权限      |
-| /token chown \<owner_id> \<name>        | 修改令牌 owner         | 需要系统授予的操作 token 的权限      |
-| /token bind \<bot_id> \<name>           | 绑定令牌使用的机器人账号       | 需要系统授予的操作 token 的权限      |
-| /token unbind \<name>                   | 解绑令牌使用的机器人账号       | 需要系统授予的操作 token 的权限      |
+| Command                                    | Description        | Comment                  |
+|--------------------------------------------|--------------------|--------------------------|
+| /raw \<message>                            | 获取 message 的原始信息   | 需要系统授予的获取 raw 的权限        |
+| /broadcast group \<group_id> \<...content> | 广播消息到群             | 需要 namespace admin 或更高权限 |
+| /model set \<model>                        | 设置机型               | 需要受系统信任                  |
+| /token add \<name> \<token>                | 添加可让 user 接入本系统的令牌 | 需要系统授予的操作 token 的权限      |
+| /token rm \<name>                          | 删除令牌               | 需要系统授予的操作 token 的权限      |
+| /token query                               | 查询自己所有的令牌          | 需要系统授予的操作 token 的权限      |
+| /token query \<name>                       | 查询令牌               | 需要系统授予的操作 token 的权限      |
+| /token chown \<owner_id> \<name>           | 修改令牌 owner         | 需要系统授予的操作 token 的权限      |
+| /token bind \<bot_id> \<name>              | 绑定令牌使用的机器人账号       | 需要系统授予的操作 token 的权限      |
+| /token unbind \<name>                      | 解绑令牌使用的机器人账号       | 需要系统授予的操作 token 的权限      |
 
 ## Advanced features
 
-1. 当 group keyword 使用的 key 有**空格**（转义后为`%20`）时，会对 key 的字符串以**空格**拆分。当检查的文本全部包含拆分字符串，则匹配成功。
+1. 当 group keyword 使用的 key 有**空格**时，会对 key 的字符串以**空格**拆分。当检查的文本全部包含拆分字符串，则匹配成功。
 
    e.g. key: `砍 并夕夕` 文本1：`帮我并夕夕砍一刀`（匹配成功）文本2：`是兄弟就来砍我`（匹配失败）
 
