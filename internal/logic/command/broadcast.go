@@ -19,6 +19,7 @@ func tryBroadcast(ctx context.Context, cmd string) (caught bool, retMsg string) 
 
 	caught = true
 
+	// /broadcast <message>
 	if err := service.Namespace().Broadcast(ctx, namespace, cmd, groupId); err != nil {
 		retMsg = "广播失败"
 	}

@@ -34,7 +34,7 @@ func tryCrontab(ctx context.Context, cmd string) (caught bool, retMsg string) {
 			retMsg = service.Crontab().QueryReturnRes(ctx, next[2], creatorId)
 			caught = true
 		case "add":
-			// /crontab add <name> <expr> <message>
+			// /crontab add <>
 			caught, retMsg = tryCrontabAdd(ctx, next[2])
 		case "rm":
 			// /crontab rm <name>
@@ -52,8 +52,12 @@ func tryCrontab(ctx context.Context, cmd string) (caught bool, retMsg string) {
 			retMsg = service.Crontab().GlanceReturnRes(ctx, creatorId)
 			caught = true
 		case "reload":
+			if !service.User().IsSystemTrustedUser(ctx, service.Bot().GetUserId(ctx)) {
+				break
+			}
 			// /crontab reload
 			service.Crontab().Run(ctx)
+			retMsg = "crontab reloaded"
 			caught = true
 		}
 	}
