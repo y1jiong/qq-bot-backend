@@ -30,6 +30,7 @@ func tryModelSet(ctx context.Context, cmd string) (caught bool, retMsg string) {
 		retMsg = err.Error()
 		return
 	}
+
 	retMsg = "已更改机型为 '" + next[2] + "'"
 	return
 }

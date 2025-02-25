@@ -27,6 +27,10 @@ var (
 				defer shutdown(ctx)
 			}
 
+			// crontab
+			go service.Crontab().Run(ctx)
+
+			// http server
 			s := g.Server()
 			s.Group("/ws", func(group *ghttp.RouterGroup) {
 				group.Middleware(ghttp.MiddlewareHandlerResponse)

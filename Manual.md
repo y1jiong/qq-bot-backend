@@ -1,4 +1,4 @@
-v1.8
+v1.9
 
 \<required> [optional]
 
@@ -40,6 +40,13 @@ v1.8
 | /group query [group_id]  | 查询当前或指定 group 的配置                            | 需要 namespace admin 或更高权限或者对应 namespace 具有 public 属性               |
 | /group kick \<list_name> | 把当前 group 在 list_name 中的成员踢出                 | 需要 group admin 和 namespace admin 或更高权限或者对应 namespace 具有 public 属性 |
 | /group keep \<list_name> | 把当前 group 不在 list_name 中的成员踢出                | 同上                                                                |
+
+## Group Broadcast
+
+| Command                 | Description | Comment                  |
+|-------------------------|-------------|--------------------------|
+| /group broadcast accept | 群接受广播       | 需要 namespace admin 或更高权限 |
+| /group broadcast reject | 群拒绝广播       | 同上                       |
 
 ## Group Approval
 
@@ -140,20 +147,36 @@ v1.8
 | /namespace \<namespace> load list \<list_name>    | 加载属于public namespace 的 list_name | 需要 namespace admin 或更高权限                                                |
 | /namespace \<namespace> unload list \<list_name>  | 卸载属于public namespace 的 list_name | 同上                                                                      |
 
+## Token
+
+| Command                          | Description        | Comment             |
+|----------------------------------|--------------------|---------------------|
+| /token add \<name> \<token>      | 添加可让 user 接入本系统的令牌 | 需要系统授予的操作 token 的权限 |
+| /token rm \<name>                | 删除令牌               | 同上                  |
+| /token query                     | 查询自己所有的令牌          | 同上                  |
+| /token query \<name>             | 查询令牌               | 同上                  |
+| /token chown \<owner_id> \<name> | 修改令牌 owner         | 同上                  |
+| /token bind \<bot_id> \<name>    | 绑定令牌使用的机器人账号       | 同上                  |
+| /token unbind \<name>            | 解绑令牌使用的机器人账号       | 同上                  |
+
+## Crontab
+
+| Command                                 | Description | Comment               |
+|-----------------------------------------|-------------|-----------------------|
+| /crontab add \<name> \<expr> \<message> | 添加定时任务（五段式） | 需要系统授予的操作 crontab 的权限 |
+| /crontab rm \<name>                     | 删除定时任务      | 同上                    |
+| /crontab glance                         | 查询自己所有的定时任务 | 同上                    |
+| /crontab query \<name>                  | 查询定时任务      | 同上                    |
+| /crontab reload                         | 重新加载定时任务    | 需要受系统信任               |
+
 ## Extra
 
-| Command                                 | Description        | Comment                  |
-|-----------------------------------------|--------------------|--------------------------|
-| /raw \<message>                         | 获取 message 的原始信息   | 需要系统授予的获取 raw 的权限        |
-| /broadcast group \<group_id> \<content> | 广播消息到群             | 需要 namespace admin 或更高权限 |
-| /model set \<model>                     | 设置机型               | 需要受系统信任                  |
-| /token add \<name> \<token>             | 添加可让 user 接入本系统的令牌 | 需要系统授予的操作 token 的权限      |
-| /token rm \<name>                       | 删除令牌               | 需要系统授予的操作 token 的权限      |
-| /token query                            | 查询自己所有的令牌          | 需要系统授予的操作 token 的权限      |
-| /token query \<name>                    | 查询令牌               | 需要系统授予的操作 token 的权限      |
-| /token chown \<owner_id> \<name>        | 修改令牌 owner         | 需要系统授予的操作 token 的权限      |
-| /token bind \<bot_id> \<name>           | 绑定令牌使用的机器人账号       | 需要系统授予的操作 token 的权限      |
-| /token unbind \<name>                   | 解绑令牌使用的机器人账号       | 需要系统授予的操作 token 的权限      |
+| Command                   | Description              | Comment                  |
+|---------------------------|--------------------------|--------------------------|
+| /raw \<message>           | 获取 message 的原始信息         | 需要系统授予的获取 raw 的权限        |
+| /broadcast \<message>     | 广播消息到同 namespace 并接受广播的群 | 需要 namespace admin 或更高权限 |
+| /model set \<model>       | 设置机型                     | 需要受系统信任                  |
+| /like \<user_id> \<times> | 个人资料页点赞                  | 需要受系统信任                  |
 
 ## Advanced features
 

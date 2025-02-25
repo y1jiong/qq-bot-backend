@@ -10,12 +10,12 @@ import (
 )
 
 func (s *sBot) RewriteMessage(ctx context.Context, message string) {
-	_, _ = s.reqJsonFromCtx(ctx).Set("raw_message", ast.NewString(message))
+	_, _ = s.reqNodeFromCtx(ctx).Set("raw_message", ast.NewString(message))
 }
 
 func (s *sBot) SetHistory(ctx context.Context, history string) error {
 	const historyKey = "_history"
-	node := s.reqJsonFromCtx(ctx)
+	node := s.reqNodeFromCtx(ctx)
 	if !node.Get(historyKey).Valid() {
 		_, _ = node.Set(historyKey, ast.NewNull())
 	}
@@ -33,13 +33,13 @@ func (s *sBot) getMessageAstNodeCacheKey(ctx context.Context) string {
 func (s *sBot) CacheMessageAstNode(ctx context.Context) {
 	_ = gcache.Set(ctx,
 		s.getMessageAstNodeCacheKey(ctx),
-		s.reqJsonFromCtx(ctx),
+		s.reqNodeFromCtx(ctx),
 		messageContextTTL,
 	)
 }
 
 func (s *sBot) tryMessageSegmentToString(ctx context.Context) {
-	node := s.reqJsonFromCtx(ctx)
+	node := s.reqNodeFromCtx(ctx)
 
 	messageNode := node.Get("message")
 

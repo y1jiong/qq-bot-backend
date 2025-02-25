@@ -12,7 +12,7 @@ import (
 )
 
 const (
-	messageContextPrefix = "msg_ctx_"
+	messageContextPrefix = "bot_msg_ctx_"
 	messageContextTTL    = 2*time.Minute - 5*time.Second
 )
 

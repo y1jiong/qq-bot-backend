@@ -1,11 +1,12 @@
 create table if not exists "group"
 (
-    group_id     bigint                   not null,
-    namespace    text,
-    setting_json jsonb                    not null,
-    created_at   timestamp with time zone not null,
-    updated_at   timestamp with time zone not null,
-    deleted_at   timestamp with time zone,
+    group_id         bigint                   not null,
+    namespace        text,
+    setting_json     jsonb                    not null,
+    created_at       timestamp with time zone not null,
+    updated_at       timestamp with time zone not null,
+    deleted_at       timestamp with time zone,
+    accept_broadcast boolean,
     constraint group_pk
         primary key (group_id)
 );
@@ -39,14 +40,14 @@ create index if not exists namespace_owner_id_index
 
 create table if not exists token
 (
-    name           text                     not null,
-    token          text                     not null,
-    owner_id       bigint                   not null,
-    created_at     timestamp with time zone not null,
-    updated_at     timestamp with time zone not null,
-    deleted_at     timestamp with time zone,
-    last_login_at  timestamp with time zone,
-    binding_bot_id bigint,
+    name          text                     not null,
+    token         text                     not null,
+    owner_id      bigint                   not null,
+    created_at    timestamp with time zone not null,
+    updated_at    timestamp with time zone not null,
+    deleted_at    timestamp with time zone,
+    last_login_at timestamp with time zone,
+    bot_id        bigint,
     constraint token_pk
         primary key (token),
     constraint token_pk_2
@@ -65,5 +66,17 @@ create table if not exists "user"
     deleted_at   timestamp with time zone,
     constraint user_pk
         primary key (user_id)
+);
+
+create table if not exists crontab
+(
+    name       text                     not null,
+    expression text                     not null,
+    creator_id bigint                   not null,
+    bot_id     bigint                   not null,
+    request    jsonb                    not null,
+    created_at timestamp with time zone not null,
+    constraint crontab_pk
+        primary key (name)
 );
 

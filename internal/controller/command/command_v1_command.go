@@ -72,7 +72,7 @@ func (c *ControllerV1) Command(ctx context.Context, req *v1.CommandReq) (res *v1
 	// 记录访问时间
 	service.Token().UpdateLoginTime(ctx, req.Token)
 	// 加载 botId 对应的 botCtx
-	botCtx := service.Bot().LoadConnectionPool(botId)
+	botCtx := service.Bot().LoadConnection(botId)
 	if botCtx == nil {
 		err = gerror.NewCode(errcode.BotNotConnected)
 		return
@@ -87,13 +87,13 @@ func (c *ControllerV1) Command(ctx context.Context, req *v1.CommandReq) (res *v1
 		UserId:  ownerId,
 		GroupId: req.GroupId,
 	}
-	rawJson, err := sonic.MarshalString(innerReq)
+	reqJSON, err := sonic.MarshalString(innerReq)
 	if err != nil {
 		return
 	}
-	reqJson, _ := sonic.GetFromString(rawJson)
-	botCtx = service.Bot().CtxWithReqJson(botCtx, &reqJson)
-	g.Log().Info(ctx, tokenName+" access successfully with "+rawJson)
+	reqNode, _ := sonic.GetFromString(reqJSON)
+	botCtx = service.Bot().CtxWithReqNode(botCtx, &reqNode)
+	g.Log().Info(ctx, tokenName+" access successfully with "+reqJSON)
 	var retMsg string
 	// 异步执行
 	if req.Async {

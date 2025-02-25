@@ -154,6 +154,7 @@ func (s *sGroup) QueryGroupReturnRes(ctx context.Context, groupId int64) (retMsg
 	}
 	// 回执
 	retMsg = dao.Group.Columns().Namespace + ": " + groupE.Namespace + "\n" +
+		dao.Group.Columns().AcceptBroadcast + ": " + gconv.String(groupE.AcceptBroadcast) + "\n" +
 		dao.Group.Columns().SettingJson + ": " + groupE.SettingJson + "\n" +
 		dao.Group.Columns().UpdatedAt + ": " + groupE.UpdatedAt.String()
 	return

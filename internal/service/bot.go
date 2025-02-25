@@ -16,17 +16,17 @@ type (
 	IBot interface {
 		CtxWithWebSocket(parent context.Context, conn *websocket.Conn) context.Context
 		CtxNewWebSocketMutex(parent context.Context) context.Context
-		CtxWithReqJson(ctx context.Context, reqJson *ast.Node) context.Context
-		Process(ctx context.Context, rawJson []byte, nextProcess func(ctx context.Context))
-		JoinConnectionPool(ctx context.Context, key int64)
-		LeaveConnectionPool(key int64)
-		LoadConnectionPool(key int64) context.Context
+		CtxWithReqNode(ctx context.Context, req *ast.Node) context.Context
+		CloneReqNode(ctx context.Context) *ast.Node
+		Process(ctx context.Context, rawJSON []byte, nextProcess func(ctx context.Context))
+		JoinConnection(ctx context.Context, key int64)
+		LeaveConnection(key int64)
+		LoadConnection(key int64) context.Context
 		CacheMessageContext(ctx context.Context, nextMessageId int64) error
 		GetCachedMessageContext(ctx context.Context) (nextMessageIds []int64, err error)
 		Forward(ctx context.Context, url string, key string)
 		GetPostType(ctx context.Context) string
 		GetMsgType(ctx context.Context) string
-		GuessMsgType(groupId int64) string
 		GetRequestType(ctx context.Context) string
 		GetNoticeType(ctx context.Context) string
 		GetSubType(ctx context.Context) string

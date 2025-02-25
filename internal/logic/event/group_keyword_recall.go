@@ -59,7 +59,7 @@ func (s *sEvent) TryKeywordRecall(ctx context.Context) (caught bool) {
 	if notificationGroupId :=
 		service.Group().GetMessageNotificationGroupId(ctx, groupId); notificationGroupId != 0 {
 		_, _ = service.Bot().SendMessage(ctx,
-			"group", 0, notificationGroupId, logMsg, true)
+			"", 0, notificationGroupId, logMsg, true)
 	}
 	// 禁言
 	service.Util().AutoMute(ctx, "keyword", groupId, userId,

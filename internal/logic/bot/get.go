@@ -17,115 +17,108 @@ import (
 )
 
 func (s *sBot) isApiReq(ctx context.Context) bool {
-	return s.reqJsonFromCtx(ctx).Get("api_req").Exists()
+	return s.reqNodeFromCtx(ctx).Get("api_req").Exists()
 }
 
 func (s *sBot) isMessageSegment(ctx context.Context) bool {
-	return s.reqJsonFromCtx(ctx).Get("_is_message_segment").Exists()
+	return s.reqNodeFromCtx(ctx).Get("_is_message_segment").Exists()
 }
 
 func (s *sBot) getEcho(ctx context.Context) string {
-	v, _ := s.reqJsonFromCtx(ctx).Get("echo").StrictString()
+	v, _ := s.reqNodeFromCtx(ctx).Get("echo").StrictString()
 	return v
 }
 
 func (s *sBot) getEchoStatus(ctx context.Context) string {
-	v, _ := s.reqJsonFromCtx(ctx).Get("status").StrictString()
+	v, _ := s.reqNodeFromCtx(ctx).Get("status").StrictString()
 	return v
 }
 
 func (s *sBot) getEchoFailedMsg(ctx context.Context) string {
-	v, _ := s.reqJsonFromCtx(ctx).Get("wording").StrictString()
+	v, _ := s.reqNodeFromCtx(ctx).Get("wording").StrictString()
 	return v
 }
 
 func (s *sBot) GetPostType(ctx context.Context) string {
-	v, _ := s.reqJsonFromCtx(ctx).Get("post_type").StrictString()
+	v, _ := s.reqNodeFromCtx(ctx).Get("post_type").StrictString()
 	return v
 }
 
 func (s *sBot) GetMsgType(ctx context.Context) string {
-	v, _ := s.reqJsonFromCtx(ctx).Get("message_type").StrictString()
+	v, _ := s.reqNodeFromCtx(ctx).Get("message_type").StrictString()
 	return v
 }
 
-func (s *sBot) GuessMsgType(groupId int64) string {
-	if groupId != 0 {
-		return "group"
-	}
-	return "private"
-}
-
 func (s *sBot) GetRequestType(ctx context.Context) string {
-	v, _ := s.reqJsonFromCtx(ctx).Get("request_type").StrictString()
+	v, _ := s.reqNodeFromCtx(ctx).Get("request_type").StrictString()
 	return v
 }
 
 func (s *sBot) GetNoticeType(ctx context.Context) string {
-	v, _ := s.reqJsonFromCtx(ctx).Get("notice_type").StrictString()
+	v, _ := s.reqNodeFromCtx(ctx).Get("notice_type").StrictString()
 	return v
 }
 
 func (s *sBot) GetSubType(ctx context.Context) string {
-	v, _ := s.reqJsonFromCtx(ctx).Get("sub_type").StrictString()
+	v, _ := s.reqNodeFromCtx(ctx).Get("sub_type").StrictString()
 	return v
 }
 
 func (s *sBot) GetMsgId(ctx context.Context) int64 {
-	v, _ := s.reqJsonFromCtx(ctx).Get("message_id").StrictInt64()
+	v, _ := s.reqNodeFromCtx(ctx).Get("message_id").StrictInt64()
 	return v
 }
 
 func (s *sBot) GetMessage(ctx context.Context) string {
-	v, _ := s.reqJsonFromCtx(ctx).Get("raw_message").StrictString()
+	v, _ := s.reqNodeFromCtx(ctx).Get("raw_message").StrictString()
 	if v == "" {
-		v, _ = s.reqJsonFromCtx(ctx).Get("message").StrictString()
+		v, _ = s.reqNodeFromCtx(ctx).Get("message").StrictString()
 	}
 	return v
 }
 
 func (s *sBot) GetUserId(ctx context.Context) int64 {
-	v, _ := s.reqJsonFromCtx(ctx).Get("user_id").StrictInt64()
+	v, _ := s.reqNodeFromCtx(ctx).Get("user_id").StrictInt64()
 	return v
 }
 
 func (s *sBot) GetGroupId(ctx context.Context) int64 {
-	v, _ := s.reqJsonFromCtx(ctx).Get("group_id").StrictInt64()
+	v, _ := s.reqNodeFromCtx(ctx).Get("group_id").StrictInt64()
 	return v
 }
 
 func (s *sBot) GetComment(ctx context.Context) string {
-	v, _ := s.reqJsonFromCtx(ctx).Get("comment").StrictString()
+	v, _ := s.reqNodeFromCtx(ctx).Get("comment").StrictString()
 	return v
 }
 
 func (s *sBot) GetFlag(ctx context.Context) string {
-	v, _ := s.reqJsonFromCtx(ctx).Get("flag").StrictString()
+	v, _ := s.reqNodeFromCtx(ctx).Get("flag").StrictString()
 	return v
 }
 
 func (s *sBot) GetTimestamp(ctx context.Context) int64 {
-	v, _ := s.reqJsonFromCtx(ctx).Get("time").StrictInt64()
+	v, _ := s.reqNodeFromCtx(ctx).Get("time").StrictInt64()
 	return v
 }
 
 func (s *sBot) GetOperatorId(ctx context.Context) int64 {
-	v, _ := s.reqJsonFromCtx(ctx).Get("operator_id").StrictInt64()
+	v, _ := s.reqNodeFromCtx(ctx).Get("operator_id").StrictInt64()
 	return v
 }
 
 func (s *sBot) GetSelfId(ctx context.Context) int64 {
-	v, _ := s.reqJsonFromCtx(ctx).Get("self_id").StrictInt64()
+	v, _ := s.reqNodeFromCtx(ctx).Get("self_id").StrictInt64()
 	return v
 }
 
 func (s *sBot) GetNickname(ctx context.Context) string {
-	v, _ := s.reqJsonFromCtx(ctx).Get("sender").Get("nickname").StrictString()
+	v, _ := s.reqNodeFromCtx(ctx).Get("sender").Get("nickname").StrictString()
 	return v
 }
 
 func (s *sBot) GetCard(ctx context.Context) string {
-	v, _ := s.reqJsonFromCtx(ctx).Get("sender").Get("card").StrictString()
+	v, _ := s.reqNodeFromCtx(ctx).Get("sender").Get("card").StrictString()
 	return v
 }
 
@@ -137,8 +130,8 @@ func (s *sBot) GetCardOrNickname(ctx context.Context) string {
 }
 
 func (s *sBot) GetCardOldNew(ctx context.Context) (oldCard, newCard string) {
-	oldCard, _ = s.reqJsonFromCtx(ctx).Get("card_old").StrictString()
-	newCard, _ = s.reqJsonFromCtx(ctx).Get("card_new").StrictString()
+	oldCard, _ = s.reqNodeFromCtx(ctx).Get("card_old").StrictString()
+	newCard, _ = s.reqNodeFromCtx(ctx).Get("card_new").StrictString()
 	return
 }
 
@@ -182,7 +175,7 @@ func (s *sBot) GetGroupMemberInfo(ctx context.Context, groupId, userId int64, no
 	if len(noCache) > 0 && noCache[0] {
 		req.Params.NoCache = true
 	}
-	reqJson, err := sonic.Marshal(req)
+	reqJSON, err := sonic.Marshal(req)
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return
@@ -212,7 +205,7 @@ func (s *sBot) GetGroupMemberInfo(ctx context.Context, groupId, userId int64, no
 		return
 	}
 	// 发送响应
-	if err = s.writeMessage(ctx, websocket.TextMessage, reqJson); err != nil {
+	if err = s.writeMessage(ctx, websocket.TextMessage, reqJSON); err != nil {
 		g.Log().Warning(ctx, err)
 		return
 	}
@@ -253,7 +246,7 @@ func (s *sBot) GetGroupMemberList(ctx context.Context, groupId int64, noCache ..
 	if len(noCache) > 0 && noCache[0] {
 		req.Params.NoCache = true
 	}
-	reqJson, err := sonic.Marshal(req)
+	reqJSON, err := sonic.Marshal(req)
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return
@@ -284,7 +277,7 @@ func (s *sBot) GetGroupMemberList(ctx context.Context, groupId int64, noCache ..
 		return
 	}
 	// 发送响应
-	if err = s.writeMessage(ctx, websocket.TextMessage, reqJson); err != nil {
+	if err = s.writeMessage(ctx, websocket.TextMessage, reqJSON); err != nil {
 		g.Log().Warning(ctx, err)
 		return
 	}
@@ -348,7 +341,7 @@ func (s *sBot) RequestMessage(ctx context.Context, messageId int64) (messageMap 
 			MessageId: messageId,
 		},
 	}
-	reqJson, err := sonic.Marshal(req)
+	reqJSON, err := sonic.Marshal(req)
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return
@@ -376,7 +369,7 @@ func (s *sBot) RequestMessage(ctx context.Context, messageId int64) (messageMap 
 		return
 	}
 	// 发送响应
-	if err = s.writeMessage(ctx, websocket.TextMessage, reqJson); err != nil {
+	if err = s.writeMessage(ctx, websocket.TextMessage, reqJSON); err != nil {
 		g.Log().Warning(ctx, err)
 		return
 	}
@@ -417,7 +410,7 @@ func (s *sBot) GetGroupInfo(ctx context.Context, groupId int64, noCache ...bool)
 	if len(noCache) > 0 && noCache[0] {
 		req.Params.NoCache = true
 	}
-	reqJson, err := sonic.Marshal(req)
+	reqJSON, err := sonic.Marshal(req)
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return
@@ -448,7 +441,7 @@ func (s *sBot) GetGroupInfo(ctx context.Context, groupId int64, noCache ...bool)
 		return
 	}
 	// 发送响应
-	if err = s.writeMessage(ctx, websocket.TextMessage, reqJson); err != nil {
+	if err = s.writeMessage(ctx, websocket.TextMessage, reqJSON); err != nil {
 		g.Log().Warning(ctx, err)
 		return
 	}
@@ -475,7 +468,7 @@ func (s *sBot) GetLoginInfo(ctx context.Context) (userId int64, nickname string)
 		Action: "get_login_info",
 		Echo:   echoSign,
 	}
-	reqJson, err := sonic.Marshal(req)
+	reqJSON, err := sonic.Marshal(req)
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return
@@ -504,7 +497,7 @@ func (s *sBot) GetLoginInfo(ctx context.Context) (userId int64, nickname string)
 		return
 	}
 	// 发送响应
-	if err = s.writeMessage(ctx, websocket.TextMessage, reqJson); err != nil {
+	if err = s.writeMessage(ctx, websocket.TextMessage, reqJSON); err != nil {
 		g.Log().Warning(ctx, err)
 		return
 	}
@@ -512,7 +505,7 @@ func (s *sBot) GetLoginInfo(ctx context.Context) (userId int64, nickname string)
 }
 
 func (s *sBot) IsGroupOwnerOrAdmin(ctx context.Context) bool {
-	role, _ := s.reqJsonFromCtx(ctx).Get("sender").Get("role").StrictString()
+	role, _ := s.reqNodeFromCtx(ctx).Get("sender").Get("role").StrictString()
 	// lazy load user role
 	if role == "" {
 		member, err := s.GetGroupMemberInfo(ctx, s.GetGroupId(ctx), s.GetUserId(ctx))
@@ -525,7 +518,7 @@ func (s *sBot) IsGroupOwnerOrAdmin(ctx context.Context) bool {
 			g.Log().Error(ctx, err)
 			return false
 		}
-		_, _ = s.reqJsonFromCtx(ctx).Set("sender", *member)
+		_, _ = s.reqNodeFromCtx(ctx).Set("sender", *member)
 	}
 	return role == "owner" || role == "admin"
 }
@@ -553,7 +546,7 @@ func (s *sBot) GetVersionInfo(ctx context.Context) (appName, appVersion, protoco
 		Action: "get_version_info",
 		Echo:   echoSign,
 	}
-	reqJson, err := sonic.Marshal(req)
+	reqJSON, err := sonic.Marshal(req)
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return
@@ -583,7 +576,7 @@ func (s *sBot) GetVersionInfo(ctx context.Context) (appName, appVersion, protoco
 		return
 	}
 	// 发送响应
-	if err = s.writeMessage(ctx, websocket.TextMessage, reqJson); err != nil {
+	if err = s.writeMessage(ctx, websocket.TextMessage, reqJSON); err != nil {
 		g.Log().Warning(ctx, err)
 		return
 	}
@@ -591,7 +584,7 @@ func (s *sBot) GetVersionInfo(ctx context.Context) (appName, appVersion, protoco
 }
 
 func (s *sBot) GetLikes(ctx context.Context) []map[string]any {
-	v, _ := s.reqJsonFromCtx(ctx).Get("likes").Array()
+	v, _ := s.reqNodeFromCtx(ctx).Get("likes").Array()
 	if len(v) == 0 {
 		return nil
 	}

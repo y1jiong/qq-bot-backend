@@ -85,7 +85,7 @@ func (c *cBot) Websocket(r *ghttp.Request) {
 	ctx = service.Bot().CtxNewWebSocketMutex(ctx)
 	// 加入连接池
 	if botId != 0 {
-		service.Bot().JoinConnectionPool(ctx, botId)
+		service.Bot().JoinConnection(ctx, botId)
 		g.Log().Info(ctx, tokenName+"("+gconv.String(botId)+") joined connection pool")
 	}
 
@@ -93,12 +93,12 @@ func (c *cBot) Websocket(r *ghttp.Request) {
 
 	// 消息循环
 	for {
-		var wsReq []byte
-		_, wsReq, err = conn.ReadMessage()
+		var bytes []byte
+		_, bytes, err = conn.ReadMessage()
 		if err != nil {
 			// 离开连接池
 			if botId != 0 {
-				service.Bot().LeaveConnectionPool(botId)
+				service.Bot().LeaveConnection(botId)
 				g.Log().Info(ctx, tokenName+"("+gconv.String(botId)+") left connection pool")
 			}
 			g.Log().Info(ctx, tokenName+" disconnected")
@@ -107,6 +107,6 @@ func (c *cBot) Websocket(r *ghttp.Request) {
 		// new trace
 		ctx := trace.ContextWithSpanContext(ctx, trace.SpanContext{})
 		// 异步处理 WebSocket 请求
-		go service.Bot().Process(ctx, wsReq, service.Process().Process)
+		go service.Bot().Process(ctx, bytes, service.Process().Process)
 	}
 }
