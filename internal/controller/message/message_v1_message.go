@@ -61,7 +61,7 @@ func (c *ControllerV1) Message(ctx context.Context, req *v1.MessageReq) (res *v1
 	// 记录访问时间
 	service.Token().UpdateLoginTime(ctx, req.Token)
 	// 加载 botId 对应的 botCtx
-	botCtx := service.Bot().LoadConnectionPool(botId)
+	botCtx := service.Bot().LoadConnection(botId)
 	if botCtx == nil {
 		err = gerror.NewCode(errcode.BotNotConnected)
 		return

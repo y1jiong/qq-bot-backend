@@ -24,19 +24,23 @@ func tryCrontab(ctx context.Context, cmd string) (caught bool, retMsg string) {
 	case nextBranchRe.MatchString(cmd):
 		next := nextBranchRe.FindStringSubmatch(cmd)
 		switch next[1] {
+		case "query":
+			// /crontab query <name>
+			retMsg = service.Crontab().QueryReturnRes(ctx, next[2])
+			caught = true
 		case "add":
 			// /crontab add <name> <expr> <message>
 			caught, retMsg = tryCrontabAdd(ctx, next[2])
 		case "rm":
 			// /crontab rm <name>
-			retMsg = service.Crontab().Remove(ctx, next[2])
+			retMsg = service.Crontab().RemoveReturnRes(ctx, next[2])
 			caught = true
 		}
 	case endBranchRe.MatchString(cmd):
 		switch cmd {
 		case "glance":
 			// /crontab glance
-			retMsg = service.Crontab().Glance(ctx)
+			retMsg = service.Crontab().GlanceReturnRes(ctx)
 			caught = true
 		}
 	}
@@ -54,7 +58,7 @@ func tryCrontabAdd(ctx context.Context, cmd string) (caught bool, retMsg string)
 		}
 		next = crontabRe.FindStringSubmatch(next[2])
 		// /crontab add <name> <expr> <message>
-		retMsg = service.Crontab().Add(ctx, name, next[1], next[2])
+		retMsg = service.Crontab().AddReturnRes(ctx, name, next[1], next[2])
 		caught = true
 	}
 	return

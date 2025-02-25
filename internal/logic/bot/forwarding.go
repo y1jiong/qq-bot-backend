@@ -18,17 +18,17 @@ import (
 )
 
 var (
-	forwardClient *http.Client
+	forwarding *http.Client
 )
 
-var initForwardClient = sync.OnceFunc(func() {
+var initForwarding = sync.OnceFunc(func() {
 	t := http.DefaultTransport.(*http.Transport).Clone()
 	// No validation for https certification of the server in default.
 	t.TLSClientConfig = &tls.Config{
 		InsecureSkipVerify: true,
 	}
 
-	forwardClient = &http.Client{
+	forwarding = &http.Client{
 		Transport: t,
 	}
 })
@@ -64,8 +64,8 @@ func (s *sBot) Forward(ctx context.Context, url, key string) {
 	}
 	req.Header.Set("Content-Type", "application/json")
 
-	initForwardClient()
-	resp, err := forwardClient.Do(req)
+	initForwarding()
+	resp, err := forwarding.Do(req)
 	if err != nil {
 		return
 	}

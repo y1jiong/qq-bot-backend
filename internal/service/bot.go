@@ -18,9 +18,9 @@ type (
 		CtxNewWebSocketMutex(parent context.Context) context.Context
 		CtxWithReqJson(ctx context.Context, reqJson *ast.Node) context.Context
 		Process(ctx context.Context, rawJson []byte, nextProcess func(ctx context.Context))
-		JoinConnectionPool(ctx context.Context, key int64)
-		LeaveConnectionPool(key int64)
-		LoadConnectionPool(key int64) context.Context
+		JoinConnection(ctx context.Context, key int64)
+		LeaveConnection(key int64)
+		LoadConnection(key int64) context.Context
 		CacheMessageContext(ctx context.Context, nextMessageId int64) error
 		GetCachedMessageContext(ctx context.Context) (nextMessageIds []int64, err error)
 		Forward(ctx context.Context, url string, key string)
