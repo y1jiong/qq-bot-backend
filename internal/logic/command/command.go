@@ -71,33 +71,36 @@ func (s *sCommand) TryCommand(ctx context.Context, message string) (caught bool,
 		next := nextBranchRe.FindStringSubmatch(cmd)
 
 		switch next[1] {
-		case "list":
-			// /list <>
-			caught, retMsg = tryList(ctx, next[2])
-		case "group":
-			// /group <>
-			caught, retMsg = tryGroup(ctx, next[2])
-		case "namespace":
-			// /namespace <>
-			caught, retMsg = tryNamespace(ctx, next[2])
-		case "user":
-			// /user <>
-			caught, retMsg = tryUser(ctx, next[2])
 		case "raw":
 			// /raw <>
 			caught, retMsg = tryRaw(ctx, next[2])
 		case "like":
 			// /like <>
 			caught, retMsg = tryLike(ctx, next[2])
+		case "list":
+			// /list <>
+			caught, retMsg = tryList(ctx, next[2])
+		case "group":
+			// /group <>
+			caught, retMsg = tryGroup(ctx, next[2])
+		case "crontab":
+			// /crontab <>
+			caught, retMsg = tryCrontab(ctx, next[2])
+		case "namespace":
+			// /namespace <>
+			caught, retMsg = tryNamespace(ctx, next[2])
 		case "broadcast":
 			// /broadcast <>
 			caught, retMsg = tryBroadcast(ctx, next[2])
-		case "token":
-			// /token <>
-			caught, retMsg = tryToken(ctx, next[2])
+		case "user":
+			// /user <>
+			caught, retMsg = tryUser(ctx, next[2])
 		case "sys":
 			// /sys <>
 			caught, retMsg = trySys(ctx, next[2])
+		case "token":
+			// /token <>
+			caught, retMsg = tryToken(ctx, next[2])
 		case "model":
 			// /model <>
 			caught, retMsg = tryModelSet(ctx, next[2])
