@@ -108,7 +108,7 @@ func (s *sCommand) TryCommand(ctx context.Context, message string) (caught bool,
 	case endBranchRe.MatchString(cmd):
 		// 权限校验
 		if !service.User().IsSystemTrustedUser(ctx, service.Bot().GetUserId(ctx)) {
-			return
+			break
 		}
 
 		switch cmd {

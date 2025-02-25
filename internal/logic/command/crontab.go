@@ -71,9 +71,10 @@ func tryCrontabAdd(ctx context.Context, cmd string) (caught bool, retMsg string)
 		next := nextBranchRe.FindStringSubmatch(cmd)
 		name := next[1]
 		if !crontabRe.MatchString(next[2]) {
-			return
+			break
 		}
 		next = crontabRe.FindStringSubmatch(next[2])
+
 		node := service.Bot().CloneReqNode(ctx)
 		if node == nil {
 			break
@@ -81,6 +82,7 @@ func tryCrontabAdd(ctx context.Context, cmd string) (caught bool, retMsg string)
 		_, _ = node.Set("raw_message", ast.NewString(next[2]))
 		_, _ = node.Set("message", ast.NewString(next[2]))
 		reqJSON, _ := node.MarshalJSON()
+
 		// /crontab add <name> <expr> <message>
 		retMsg = service.Crontab().AddReturnRes(ctx,
 			name,

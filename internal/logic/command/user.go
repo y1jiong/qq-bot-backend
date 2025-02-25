@@ -22,7 +22,6 @@ func tryUser(ctx context.Context, cmd string) (caught bool, retMsg string) {
 			// /user leave <>
 			caught, retMsg = tryUserLeave(ctx, next[2])
 		}
-	case endBranchRe.MatchString(cmd):
 	}
 	return
 }

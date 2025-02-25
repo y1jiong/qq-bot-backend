@@ -156,7 +156,6 @@ func tryListOp(ctx context.Context, cmd string) (caught bool, retMsg string) {
 		retMsg = service.List().DifferenceListReturnRes(ctx, args[0], args[2], args[3])
 	default:
 		caught = false
-		return
 	}
 	return
 }
