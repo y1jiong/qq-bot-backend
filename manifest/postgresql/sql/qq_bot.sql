@@ -39,14 +39,14 @@ create index if not exists namespace_owner_id_index
 
 create table if not exists token
 (
-    name           text                     not null,
-    token          text                     not null,
-    owner_id       bigint                   not null,
-    created_at     timestamp with time zone not null,
-    updated_at     timestamp with time zone not null,
-    deleted_at     timestamp with time zone,
-    last_login_at  timestamp with time zone,
-    binding_bot_id bigint,
+    name          text                     not null,
+    token         text                     not null,
+    owner_id      bigint                   not null,
+    created_at    timestamp with time zone not null,
+    updated_at    timestamp with time zone not null,
+    deleted_at    timestamp with time zone,
+    last_login_at timestamp with time zone,
+    bot_id        bigint,
     constraint token_pk
         primary key (token),
     constraint token_pk_2

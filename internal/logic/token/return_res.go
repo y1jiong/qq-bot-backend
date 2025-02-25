@@ -131,7 +131,7 @@ func (s *sToken) QueryTokenReturnRes(ctx context.Context, name string) (retMsg s
 		dao.Token.Columns().CreatedAt, tokenE.CreatedAt.String(),
 		dao.Token.Columns().UpdatedAt, tokenE.UpdatedAt.String(),
 		dao.Token.Columns().LastLoginAt, tokenE.LastLoginAt.String(),
-		dao.Token.Columns().BindingBotId, tokenE.BindingBotId)
+		dao.Token.Columns().BotId, tokenE.BotId)
 	return
 }
 
@@ -224,7 +224,7 @@ func (s *sToken) BindTokenBotId(ctx context.Context, botId, name string) (retMsg
 	}
 	// 数据库更新
 	_, err = dao.Token.Ctx(ctx).
-		Data(dao.Token.Columns().BindingBotId, gconv.Int64(botId)).
+		Data(dao.Token.Columns().BotId, gconv.Int64(botId)).
 		Where(dao.Token.Columns().Name, name).
 		Update()
 	if err != nil {
@@ -257,7 +257,7 @@ func (s *sToken) UnbindTokenBotId(ctx context.Context, name string) (retMsg stri
 	}
 	// 数据库更新
 	_, err = dao.Token.Ctx(ctx).
-		Data(dao.Token.Columns().BindingBotId, nil).
+		Data(dao.Token.Columns().BotId, nil).
 		Where(dao.Token.Columns().Name, name).
 		Update()
 	if err != nil {

@@ -20,26 +20,26 @@ type TokenDao struct {
 
 // TokenColumns defines and stores column names for the table token.
 type TokenColumns struct {
-	Name         string //
-	Token        string //
-	OwnerId      string //
-	CreatedAt    string //
-	UpdatedAt    string //
-	DeletedAt    string //
-	LastLoginAt  string //
-	BindingBotId string //
+	Name        string //
+	Token       string //
+	OwnerId     string //
+	CreatedAt   string //
+	UpdatedAt   string //
+	DeletedAt   string //
+	LastLoginAt string //
+	BotId       string //
 }
 
 // tokenColumns holds the columns for the table token.
 var tokenColumns = TokenColumns{
-	Name:         "name",
-	Token:        "token",
-	OwnerId:      "owner_id",
-	CreatedAt:    "created_at",
-	UpdatedAt:    "updated_at",
-	DeletedAt:    "deleted_at",
-	LastLoginAt:  "last_login_at",
-	BindingBotId: "binding_bot_id",
+	Name:        "name",
+	Token:       "token",
+	OwnerId:     "owner_id",
+	CreatedAt:   "created_at",
+	UpdatedAt:   "updated_at",
+	DeletedAt:   "deleted_at",
+	LastLoginAt: "last_login_at",
+	BotId:       "bot_id",
 }
 
 // NewTokenDao creates and returns a new DAO object for table data access.

@@ -37,7 +37,7 @@ func (s *sToken) IsCorrectToken(ctx context.Context,
 		Fields(
 			dao.Token.Columns().Name,
 			dao.Token.Columns().OwnerId,
-			dao.Token.Columns().BindingBotId,
+			dao.Token.Columns().BotId,
 		).
 		Where(dao.Token.Columns().Token, token).
 		Scan(&tokenE)
@@ -49,7 +49,7 @@ func (s *sToken) IsCorrectToken(ctx context.Context,
 		return
 	}
 	// 数据处理
-	return true, tokenE.Name, tokenE.OwnerId, tokenE.BindingBotId
+	return true, tokenE.Name, tokenE.OwnerId, tokenE.BotId
 }
 
 func (s *sToken) UpdateLoginTime(ctx context.Context, token string) {

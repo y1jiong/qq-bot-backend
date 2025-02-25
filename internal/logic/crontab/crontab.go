@@ -21,12 +21,12 @@ func (s *sCrontab) Run(ctx context.Context) {
 
 }
 
-func (s *sCrontab) add(ctx context.Context, name, expr string, selfId int64, reqJSON []byte) (err error) {
+func (s *sCrontab) add(ctx context.Context, name, expr string, botId int64, reqJSON []byte) (err error) {
 	if len(strings.Fields(expr)) == 5 {
 		expr = "# " + expr
 	}
 	_, err = gcron.AddSingleton(ctx, expr, func(ctx context.Context) {
-		botCtx := service.Bot().LoadConnection(selfId)
+		botCtx := service.Bot().LoadConnection(botId)
 		if botCtx == nil {
 			return
 		}
