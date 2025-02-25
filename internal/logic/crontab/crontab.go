@@ -35,13 +35,17 @@ func (s *sCrontab) Run(ctx context.Context) {
 
 	s.renew()
 
+	count := len(tasks)
 	for _, task := range tasks {
 		err = s.add(ctx, task.Name, task.Expression, task.BotId, []byte(task.Request))
 		if err != nil {
 			g.Log().Error(ctx, err)
+			count--
 			continue
 		}
 	}
+
+	g.Log().Info(ctx, "crontab has loaded", count, "tasks")
 }
 
 func (s *sCrontab) getTasks(ctx context.Context) (tasks []entity.Crontab, err error) {

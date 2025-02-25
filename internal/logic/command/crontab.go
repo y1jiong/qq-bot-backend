@@ -9,7 +9,7 @@ import (
 )
 
 var (
-	crontabRe = regexp.MustCompile(`^([0-5]?[0-9]|\*)\s([01]?[0-9]|2[0-3]|\*)\s([012]?[0-9]|3[01]|\*)\s([01]?[0-9]|1[0-2]|\*)\s([0-6]|\*)\s+([\s\S]+)`)
+	crontabRe = regexp.MustCompile(`^(\S+ \S+ \S+ \S+ \S+)\s+([\s\S]+)`)
 )
 
 func tryCrontab(ctx context.Context, cmd string) (caught bool, retMsg string) {

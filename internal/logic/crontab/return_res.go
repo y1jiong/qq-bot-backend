@@ -34,7 +34,7 @@ func (s *sCrontab) GlanceReturnRes(ctx context.Context, creatorId int64) (retMsg
 		}
 	}
 
-	retMsg = builder.String()
+	retMsg = strings.TrimSuffix(builder.String(), "\n")
 	return
 }
 
@@ -71,7 +71,7 @@ func (s *sCrontab) AddReturnRes(ctx context.Context,
 	creatorId, botId int64,
 	reqJSON []byte,
 ) (retMsg string) {
-	if expr[:strings.Index(expr, " ")] == "*" {
+	if strings.HasPrefix(expr, "* ") {
 		retMsg = "不允许设置为每分钟执行"
 		return
 	}
