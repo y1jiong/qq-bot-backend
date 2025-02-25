@@ -20,12 +20,6 @@ func trySys(ctx context.Context, cmd string) (caught bool, retMsg string) {
 	case nextBranchRe.MatchString(cmd):
 		next := nextBranchRe.FindStringSubmatch(cmd)
 		switch next[1] {
-		case "forward":
-			// /sys forward <>
-			caught, retMsg = trySysForward(ctx, next[2])
-		case "check":
-			// /sys check <>
-			caught, retMsg = trySysCheck(ctx, next[2])
 		case "query":
 			// /sys query <user_id>
 			retMsg = service.User().QueryUserReturnRes(ctx, gconv.Int64(next[2]))
@@ -36,6 +30,12 @@ func trySys(ctx context.Context, cmd string) (caught bool, retMsg string) {
 		case "revoke":
 			// /sys revoke <>
 			caught, retMsg = trySysRevoke(ctx, next[2])
+		case "check":
+			// /sys check <>
+			caught, retMsg = trySysCheck(ctx, next[2])
+		case "forward":
+			// /sys forward <>
+			caught, retMsg = trySysForward(ctx, next[2])
 		case "trust":
 			// /sys trust <user_id>
 			retMsg = service.User().SystemTrustUserReturnRes(ctx, gconv.Int64(next[2]))
@@ -153,6 +153,10 @@ func trySysGrant(ctx context.Context, cmd string) (caught bool, retMsg string) {
 			// /sys grant recall <user_id>
 			retMsg = service.User().GrantRecallReturnRes(ctx, gconv.Int64(dv[2]))
 			caught = true
+		case "crontab":
+			// /sys grant crontab <user_id>
+			retMsg = service.User().GrantOpCrontabReturnRes(ctx, gconv.Int64(dv[2]))
+			caught = true
 		case "namespace":
 			// /sys grant namespace <user_id>
 			retMsg = service.User().GrantOpNamespaceReturnRes(ctx, gconv.Int64(dv[2]))
@@ -178,6 +182,10 @@ func trySysRevoke(ctx context.Context, cmd string) (caught bool, retMsg string) 
 		case "recall":
 			// /sys revoke recall <user_id>
 			retMsg = service.User().RevokeRecallReturnRes(ctx, gconv.Int64(dv[2]))
+			caught = true
+		case "crontab":
+			// /sys revoke crontab <user_id>
+			retMsg = service.User().RevokeOpCrontabReturnRes(ctx, gconv.Int64(dv[2]))
 			caught = true
 		case "namespace":
 			// /sys revoke namespace <user_id>
