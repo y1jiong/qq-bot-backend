@@ -87,13 +87,13 @@ func (c *ControllerV1) Command(ctx context.Context, req *v1.CommandReq) (res *v1
 		UserId:  ownerId,
 		GroupId: req.GroupId,
 	}
-	rawJson, err := sonic.MarshalString(innerReq)
+	reqJSON, err := sonic.MarshalString(innerReq)
 	if err != nil {
 		return
 	}
-	reqJson, _ := sonic.GetFromString(rawJson)
-	botCtx = service.Bot().CtxWithReqJson(botCtx, &reqJson)
-	g.Log().Info(ctx, tokenName+" access successfully with "+rawJson)
+	reqNode, _ := sonic.GetFromString(reqJSON)
+	botCtx = service.Bot().CtxWithReqNode(botCtx, &reqNode)
+	g.Log().Info(ctx, tokenName+" access successfully with "+reqJSON)
 	var retMsg string
 	// 异步执行
 	if req.Async {

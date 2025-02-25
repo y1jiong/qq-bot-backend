@@ -6,7 +6,7 @@ import (
 )
 
 func (s *sBot) getData(ctx context.Context) *ast.Node {
-	return s.reqJsonFromCtx(ctx).Get("data")
+	return s.reqNodeFromCtx(ctx).Get("data")
 }
 
 func (s *sBot) getFileFromData(ctx context.Context) string {

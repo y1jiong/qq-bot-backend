@@ -45,7 +45,7 @@ func (s *sBot) Forward(ctx context.Context, url, key string) {
 		}
 	}()
 
-	payload, err := s.reqJsonFromCtx(ctx).MarshalJSON()
+	payload, err := s.reqNodeFromCtx(ctx).MarshalJSON()
 	if err != nil {
 		return
 	}

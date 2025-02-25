@@ -84,7 +84,7 @@ func (s *sBot) SendMessage(ctx context.Context,
 		}
 	}
 
-	reqJson, err := sonic.Marshal(req)
+	reqJSON, err := sonic.Marshal(req)
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return
@@ -111,7 +111,7 @@ func (s *sBot) SendMessage(ctx context.Context,
 		return
 	}
 	// 发送响应
-	if err = s.writeMessage(ctx, websocket.TextMessage, reqJson); err != nil {
+	if err = s.writeMessage(ctx, websocket.TextMessage, reqJSON); err != nil {
 		g.Log().Warning(ctx, err)
 		return
 	}
@@ -190,7 +190,7 @@ func (s *sBot) SendFileToGroup(ctx context.Context, groupId int64, filePath, nam
 			Folder:  folder,
 		},
 	}
-	reqJson, err := sonic.Marshal(req)
+	reqJSON, err := sonic.Marshal(req)
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return
@@ -215,7 +215,7 @@ func (s *sBot) SendFileToGroup(ctx context.Context, groupId int64, filePath, nam
 		g.Log().Error(ctx, err)
 		return
 	}
-	if err = s.writeMessage(ctx, websocket.TextMessage, reqJson); err != nil {
+	if err = s.writeMessage(ctx, websocket.TextMessage, reqJSON); err != nil {
 		g.Log().Warning(ctx, err)
 		return
 	}
@@ -260,7 +260,7 @@ func (s *sBot) SendFileToUser(ctx context.Context, userId int64, filePath, name 
 			Name:   name,
 		},
 	}
-	reqJson, err := sonic.Marshal(req)
+	reqJSON, err := sonic.Marshal(req)
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return
@@ -285,7 +285,7 @@ func (s *sBot) SendFileToUser(ctx context.Context, userId int64, filePath, name 
 		g.Log().Error(ctx, err)
 		return
 	}
-	if err = s.writeMessage(ctx, websocket.TextMessage, reqJson); err != nil {
+	if err = s.writeMessage(ctx, websocket.TextMessage, reqJSON); err != nil {
 		g.Log().Warning(ctx, err)
 		return
 	}
@@ -327,7 +327,7 @@ func (s *sBot) UploadFile(ctx context.Context, url string) (filePath string, err
 			URL: url,
 		},
 	}
-	reqJson, err := sonic.Marshal(req)
+	reqJSON, err := sonic.Marshal(req)
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return
@@ -353,7 +353,7 @@ func (s *sBot) UploadFile(ctx context.Context, url string) (filePath string, err
 		g.Log().Error(ctx, err)
 		return
 	}
-	if err = s.writeMessage(ctx, websocket.TextMessage, reqJson); err != nil {
+	if err = s.writeMessage(ctx, websocket.TextMessage, reqJSON); err != nil {
 		g.Log().Warning(ctx, err)
 		return
 	}
@@ -407,7 +407,7 @@ func (s *sBot) ApproveJoinGroup(ctx context.Context, flag, subType string, appro
 			Reason:  reason,
 		},
 	}
-	reqJson, err := sonic.Marshal(req)
+	reqJSON, err := sonic.Marshal(req)
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return
@@ -433,7 +433,7 @@ func (s *sBot) ApproveJoinGroup(ctx context.Context, flag, subType string, appro
 		return
 	}
 	// 发送响应
-	if err = s.writeMessage(ctx, websocket.TextMessage, reqJson); err != nil {
+	if err = s.writeMessage(ctx, websocket.TextMessage, reqJSON); err != nil {
 		g.Log().Warning(ctx, err)
 		return
 	}
@@ -470,7 +470,7 @@ func (s *sBot) SetModel(ctx context.Context, model string) (err error) {
 			ModelShow: model,
 		},
 	}
-	reqJson, err := sonic.Marshal(req)
+	reqJSON, err := sonic.Marshal(req)
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return
@@ -496,7 +496,7 @@ func (s *sBot) SetModel(ctx context.Context, model string) (err error) {
 		return
 	}
 	// 发送响应
-	if err = s.writeMessage(ctx, websocket.TextMessage, reqJson); err != nil {
+	if err = s.writeMessage(ctx, websocket.TextMessage, reqJSON); err != nil {
 		g.Log().Warning(ctx, err)
 		return
 	}
@@ -532,7 +532,7 @@ func (s *sBot) RecallMessage(ctx context.Context, messageId int64) {
 			MessageId: messageId,
 		},
 	}
-	reqJson, err := sonic.Marshal(req)
+	reqJSON, err := sonic.Marshal(req)
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return
@@ -557,7 +557,7 @@ func (s *sBot) RecallMessage(ctx context.Context, messageId int64) {
 		g.Log().Error(ctx, err)
 		return
 	}
-	if err = s.writeMessage(ctx, websocket.TextMessage, reqJson); err != nil {
+	if err = s.writeMessage(ctx, websocket.TextMessage, reqJSON); err != nil {
 		g.Log().Warning(ctx, err)
 		return
 	}
@@ -608,7 +608,7 @@ func (s *sBot) Mute(ctx context.Context, groupId, userId int64, seconds int) {
 			Duration: seconds,
 		},
 	}
-	reqJson, err := sonic.Marshal(req)
+	reqJSON, err := sonic.Marshal(req)
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return
@@ -633,7 +633,7 @@ func (s *sBot) Mute(ctx context.Context, groupId, userId int64, seconds int) {
 		g.Log().Error(ctx, err)
 		return
 	}
-	if err = s.writeMessage(ctx, websocket.TextMessage, reqJson); err != nil {
+	if err = s.writeMessage(ctx, websocket.TextMessage, reqJSON); err != nil {
 		g.Log().Warning(ctx, err)
 		return
 	}
@@ -678,7 +678,7 @@ func (s *sBot) SetGroupCard(ctx context.Context, groupId, userId int64, card str
 			Card:    card,
 		},
 	}
-	reqJson, err := sonic.Marshal(req)
+	reqJSON, err := sonic.Marshal(req)
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return
@@ -703,7 +703,7 @@ func (s *sBot) SetGroupCard(ctx context.Context, groupId, userId int64, card str
 		g.Log().Error(ctx, err)
 		return
 	}
-	if err = s.writeMessage(ctx, websocket.TextMessage, reqJson); err != nil {
+	if err = s.writeMessage(ctx, websocket.TextMessage, reqJSON); err != nil {
 		g.Log().Warning(ctx, err)
 		return
 	}
@@ -750,7 +750,7 @@ func (s *sBot) Kick(ctx context.Context, groupId, userId int64, reject ...bool) 
 	if len(reject) > 0 && reject[0] {
 		req.Params.RejectAddRequest = true
 	}
-	reqJson, err := sonic.Marshal(req)
+	reqJSON, err := sonic.Marshal(req)
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return
@@ -775,7 +775,7 @@ func (s *sBot) Kick(ctx context.Context, groupId, userId int64, reject ...bool) 
 		g.Log().Error(ctx, err)
 		return
 	}
-	if err = s.writeMessage(ctx, websocket.TextMessage, reqJson); err != nil {
+	if err = s.writeMessage(ctx, websocket.TextMessage, reqJSON); err != nil {
 		g.Log().Warning(ctx, err)
 		return
 	}
@@ -815,7 +815,7 @@ func (s *sBot) ProfileLike(ctx context.Context, userId int64, times int) (err er
 			Times:  times,
 		},
 	}
-	reqJson, err := sonic.Marshal(req)
+	reqJSON, err := sonic.Marshal(req)
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return
@@ -840,7 +840,7 @@ func (s *sBot) ProfileLike(ctx context.Context, userId int64, times int) (err er
 		g.Log().Error(ctx, err)
 		return
 	}
-	if err = s.writeMessage(ctx, websocket.TextMessage, reqJson); err != nil {
+	if err = s.writeMessage(ctx, websocket.TextMessage, reqJSON); err != nil {
 		g.Log().Warning(ctx, err)
 		return
 	}
@@ -881,7 +881,7 @@ func (s *sBot) EmojiLike(ctx context.Context, messageId int64, emojiId string) (
 			EmojiId:   emojiId,
 		},
 	}
-	reqJson, err := sonic.Marshal(req)
+	reqJSON, err := sonic.Marshal(req)
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return
@@ -906,7 +906,7 @@ func (s *sBot) EmojiLike(ctx context.Context, messageId int64, emojiId string) (
 		g.Log().Error(ctx, err)
 		return
 	}
-	if err = s.writeMessage(ctx, websocket.TextMessage, reqJson); err != nil {
+	if err = s.writeMessage(ctx, websocket.TextMessage, reqJSON); err != nil {
 		g.Log().Warning(ctx, err)
 		return
 	}
@@ -947,7 +947,7 @@ func (s *sBot) Poke(ctx context.Context, groupId, userId int64) (err error) {
 			UserId:  userId,
 		},
 	}
-	reqJson, err := sonic.Marshal(req)
+	reqJSON, err := sonic.Marshal(req)
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return
@@ -972,7 +972,7 @@ func (s *sBot) Poke(ctx context.Context, groupId, userId int64) (err error) {
 		g.Log().Error(ctx, err)
 		return
 	}
-	if err = s.writeMessage(ctx, websocket.TextMessage, reqJson); err != nil {
+	if err = s.writeMessage(ctx, websocket.TextMessage, reqJSON); err != nil {
 		g.Log().Warning(ctx, err)
 		return
 	}

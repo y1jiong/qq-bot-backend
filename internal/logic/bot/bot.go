@@ -21,11 +21,11 @@ func init() {
 }
 
 const (
-	ctxKeyWebSocketMutex = "ws.mutex"
-	ctxKeyWebSocket      = "ws"
-	ctxKeyReqJson        = "reqJson"
+	ctxKeyWebSocketMutex = "bot_ws_mutex"
+	ctxKeyWebSocket      = "bot_ws"
+	ctxKeyReq            = "bot_req"
 
-	cacheKeyMsgIdPrefix = "msg_id_"
+	cacheKeyMsgIdPrefix = "bot_msg_id_"
 )
 
 func (s *sBot) CtxWithWebSocket(parent context.Context, conn *websocket.Conn) context.Context {
@@ -50,15 +50,34 @@ func (s *sBot) webSocketMutexFromCtx(ctx context.Context) *sync.Mutex {
 	return nil
 }
 
-func (s *sBot) CtxWithReqJson(ctx context.Context, reqJson *ast.Node) context.Context {
-	return context.WithValue(ctx, ctxKeyReqJson, reqJson)
+func (s *sBot) CtxWithReqNode(ctx context.Context, req *ast.Node) context.Context {
+	return context.WithValue(ctx, ctxKeyReq, req)
 }
 
-func (s *sBot) reqJsonFromCtx(ctx context.Context) *ast.Node {
-	if node, ok := ctx.Value(ctxKeyReqJson).(*ast.Node); ok {
+func (s *sBot) reqNodeFromCtx(ctx context.Context) *ast.Node {
+	if node, ok := ctx.Value(ctxKeyReq).(*ast.Node); ok {
 		return node
 	}
 	return nil
+}
+
+func (s *sBot) CloneReqNode(ctx context.Context) *ast.Node {
+	j, err := s.reqNodeFromCtx(ctx).MarshalJSON()
+	if err != nil {
+		return nil
+	}
+	node, err := sonic.Get(j)
+	if err != nil {
+		return nil
+	}
+
+	_, _ = node.Unset("time")
+	_, _ = node.Unset("message_id")
+	_, _ = node.Unset("message_seq")
+	_, _ = node.Unset("real_id")
+	_, _ = node.Unset("sender")
+
+	return &node
 }
 
 func (s *sBot) writeMessage(ctx context.Context, messageType int, data []byte) error {
@@ -69,23 +88,23 @@ func (s *sBot) writeMessage(ctx context.Context, messageType int, data []byte) e
 	return s.webSocketFromCtx(ctx).WriteMessage(messageType, data)
 }
 
-func (s *sBot) Process(ctx context.Context, rawJson []byte, nextProcess func(ctx context.Context)) {
+func (s *sBot) Process(ctx context.Context, rawJSON []byte, nextProcess func(ctx context.Context)) {
 	// 检查 context 中是否携带 WebSocket 对象
 	if s.webSocketFromCtx(ctx) == nil {
 		panic("context does not include websocket")
 	}
-	// ctx 携带 reqJson
-	reqJson, err := sonic.Get(rawJson)
+	// ctx 携带 reqNode
+	reqNode, err := sonic.Get(rawJSON)
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return
 	}
-	ctx = s.CtxWithReqJson(ctx, &reqJson)
+	ctx = s.CtxWithReqNode(ctx, &reqNode)
 	// message segment
 	s.tryMessageSegmentToString(ctx)
 	// debug mode
 	if service.Cfg().IsDebugEnabled(ctx) && s.GetPostType(ctx) != "meta_event" {
-		g.Log().Debug(ctx, "\n", rawJson)
+		g.Log().Debug(ctx, "\n", rawJSON)
 	}
 	// 捕捉 echo
 	if s.catchEcho(ctx) {

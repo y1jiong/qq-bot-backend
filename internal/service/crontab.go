@@ -14,7 +14,7 @@ type (
 		Run(ctx context.Context)
 		GlanceReturnRes(ctx context.Context) (retMsg string)
 		QueryReturnRes(ctx context.Context, name string) (retMsg string)
-		AddReturnRes(ctx context.Context, name string, expr string, message string) (retMsg string)
+		AddReturnRes(ctx context.Context, name string, expr string, selfId int64, reqJSON []byte) (retMsg string)
 		RemoveReturnRes(ctx context.Context, name string) (retMsg string)
 	}
 )

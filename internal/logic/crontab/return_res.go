@@ -12,7 +12,7 @@ func (s *sCrontab) QueryReturnRes(ctx context.Context, name string) (retMsg stri
 	panic("implement me")
 }
 
-func (s *sCrontab) AddReturnRes(ctx context.Context, name string, expr string, message string) (retMsg string) {
+func (s *sCrontab) AddReturnRes(ctx context.Context, name, expr string, selfId int64, reqJSON []byte) (retMsg string) {
 	panic("implement me")
 }
 

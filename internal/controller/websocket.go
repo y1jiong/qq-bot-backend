@@ -93,8 +93,8 @@ func (c *cBot) Websocket(r *ghttp.Request) {
 
 	// 消息循环
 	for {
-		var wsReq []byte
-		_, wsReq, err = conn.ReadMessage()
+		var bytes []byte
+		_, bytes, err = conn.ReadMessage()
 		if err != nil {
 			// 离开连接池
 			if botId != 0 {
@@ -107,6 +107,6 @@ func (c *cBot) Websocket(r *ghttp.Request) {
 		// new trace
 		ctx := trace.ContextWithSpanContext(ctx, trace.SpanContext{})
 		// 异步处理 WebSocket 请求
-		go service.Bot().Process(ctx, wsReq, service.Process().Process)
+		go service.Bot().Process(ctx, bytes, service.Process().Process)
 	}
 }

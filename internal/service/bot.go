@@ -16,8 +16,9 @@ type (
 	IBot interface {
 		CtxWithWebSocket(parent context.Context, conn *websocket.Conn) context.Context
 		CtxNewWebSocketMutex(parent context.Context) context.Context
-		CtxWithReqJson(ctx context.Context, reqJson *ast.Node) context.Context
-		Process(ctx context.Context, rawJson []byte, nextProcess func(ctx context.Context))
+		CtxWithReqNode(ctx context.Context, req *ast.Node) context.Context
+		CloneReqNode(ctx context.Context) *ast.Node
+		Process(ctx context.Context, rawJSON []byte, nextProcess func(ctx context.Context))
 		JoinConnection(ctx context.Context, key int64)
 		LeaveConnection(key int64)
 		LoadConnection(key int64) context.Context

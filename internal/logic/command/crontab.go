@@ -2,6 +2,7 @@ package command
 
 import (
 	"context"
+	"github.com/bytedance/sonic/ast"
 	"github.com/gogf/gf/v2/net/gtrace"
 	"qq-bot-backend/internal/service"
 	"regexp"
@@ -57,8 +58,15 @@ func tryCrontabAdd(ctx context.Context, cmd string) (caught bool, retMsg string)
 			return
 		}
 		next = crontabRe.FindStringSubmatch(next[2])
+		node := service.Bot().CloneReqNode(ctx)
+		if node == nil {
+			break
+		}
+		_, _ = node.Set("raw_message", ast.NewString(next[2]))
+		_, _ = node.Set("message", ast.NewString(next[2]))
+		reqJSON, _ := node.MarshalJSON()
 		// /crontab add <name> <expr> <message>
-		retMsg = service.Crontab().AddReturnRes(ctx, name, next[1], next[2])
+		retMsg = service.Crontab().AddReturnRes(ctx, name, next[1], service.Bot().GetSelfId(ctx), reqJSON)
 		caught = true
 	}
 	return
