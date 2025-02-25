@@ -67,3 +67,14 @@ create table if not exists "user"
         primary key (user_id)
 );
 
+create table if not exists crontab
+(
+    name       text                     not null,
+    expression text                     not null,
+    bot_id     bigint                   not null,
+    request    jsonb                    not null,
+    created_at timestamp with time zone not null,
+    constraint crontab_pk
+        primary key (name)
+);
+

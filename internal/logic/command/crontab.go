@@ -43,6 +43,10 @@ func tryCrontab(ctx context.Context, cmd string) (caught bool, retMsg string) {
 			// /crontab glance
 			retMsg = service.Crontab().GlanceReturnRes(ctx)
 			caught = true
+		case "reload":
+			// /crontab reload
+			service.Crontab().Run(ctx)
+			caught = true
 		}
 	}
 	return
