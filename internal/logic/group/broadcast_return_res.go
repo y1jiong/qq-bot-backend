@@ -25,6 +25,8 @@ func (s *sGroup) AcceptBroadcastReturnRes(ctx context.Context, groupId int64) (r
 	if err != nil {
 		retMsg = "接受广播失败"
 	}
+
+	retMsg = "接受广播"
 	return
 }
 
@@ -47,5 +49,7 @@ func (s *sGroup) RejectBroadcastReturnRes(ctx context.Context, groupId int64) (r
 	if err != nil {
 		retMsg = "拒绝广播失败"
 	}
+
+	retMsg = "拒绝广播"
 	return
 }
