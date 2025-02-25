@@ -20,22 +20,24 @@ type GroupDao struct {
 
 // GroupColumns defines and stores column names for the table group.
 type GroupColumns struct {
-	GroupId     string //
-	Namespace   string //
-	SettingJson string //
-	CreatedAt   string //
-	UpdatedAt   string //
-	DeletedAt   string //
+	GroupId         string //
+	Namespace       string //
+	SettingJson     string //
+	CreatedAt       string //
+	UpdatedAt       string //
+	DeletedAt       string //
+	AcceptBroadcast string //
 }
 
 // groupColumns holds the columns for the table group.
 var groupColumns = GroupColumns{
-	GroupId:     "group_id",
-	Namespace:   "namespace",
-	SettingJson: "setting_json",
-	CreatedAt:   "created_at",
-	UpdatedAt:   "updated_at",
-	DeletedAt:   "deleted_at",
+	GroupId:         "group_id",
+	Namespace:       "namespace",
+	SettingJson:     "setting_json",
+	CreatedAt:       "created_at",
+	UpdatedAt:       "updated_at",
+	DeletedAt:       "deleted_at",
+	AcceptBroadcast: "accept_broadcast",
 }
 
 // NewGroupDao creates and returns a new DAO object for table data access.

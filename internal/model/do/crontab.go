@@ -14,6 +14,7 @@ type Crontab struct {
 	g.Meta     `orm:"table:crontab, do:true"`
 	Name       interface{} //
 	Expression interface{} //
+	CreatorId  interface{} //
 	BotId      interface{} //
 	Request    interface{} //
 	CreatedAt  *gtime.Time //

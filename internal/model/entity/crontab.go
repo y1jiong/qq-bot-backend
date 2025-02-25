@@ -12,6 +12,7 @@ import (
 type Crontab struct {
 	Name       string      `json:"name"       orm:"name"       ` //
 	Expression string      `json:"expression" orm:"expression" ` //
+	CreatorId  int64       `json:"creator_id" orm:"creator_id" ` //
 	BotId      int64       `json:"bot_id"     orm:"bot_id"     ` //
 	Request    string      `json:"request"    orm:"request"    ` //
 	CreatedAt  *gtime.Time `json:"created_at" orm:"created_at" ` //

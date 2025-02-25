@@ -22,6 +22,7 @@ type CrontabDao struct {
 type CrontabColumns struct {
 	Name       string //
 	Expression string //
+	CreatorId  string //
 	BotId      string //
 	Request    string //
 	CreatedAt  string //
@@ -31,6 +32,7 @@ type CrontabColumns struct {
 var crontabColumns = CrontabColumns{
 	Name:       "name",
 	Expression: "expression",
+	CreatorId:  "creator_id",
 	BotId:      "bot_id",
 	Request:    "request",
 	CreatedAt:  "created_at",

@@ -19,6 +19,9 @@ func tryGroup(ctx context.Context, cmd string) (caught bool, retMsg string) {
 			// /group query <group_id>
 			retMsg = service.Group().QueryGroupReturnRes(ctx, gconv.Int64(next[2]))
 			caught = true
+		case "broadcast":
+			// /group broadcast <>
+			caught, retMsg = tryGroupBroadcast(ctx, next[2])
 		case "approval":
 			// /group approval <>
 			caught, retMsg = tryGroupApproval(ctx, next[2])

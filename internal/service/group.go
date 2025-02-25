@@ -21,6 +21,8 @@ type (
 		IsApprovalAutoRejectEnabled(ctx context.Context, groupId int64) bool
 		AddApprovalPolicyReturnRes(ctx context.Context, groupId int64, policyName string, args ...string) (retMsg string)
 		RemoveApprovalPolicyReturnRes(ctx context.Context, groupId int64, policyName string, args ...string) (retMsg string)
+		AcceptBroadcastReturnRes(ctx context.Context, groupId int64) (retMsg string)
+		RejectBroadcastReturnRes(ctx context.Context, groupId int64) (retMsg string)
 		GetCardAutoSetList(ctx context.Context, groupId int64) (listName string)
 		IsCardLocked(ctx context.Context, groupId int64) bool
 		SetAutoSetListReturnRes(ctx context.Context, groupId int64, listName string) (retMsg string)

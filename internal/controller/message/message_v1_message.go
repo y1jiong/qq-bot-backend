@@ -97,7 +97,7 @@ func (c *ControllerV1) Message(ctx context.Context, req *v1.MessageReq) (res *v1
 	// send message
 	if _, err = service.Bot().SendMessage(
 		botCtx,
-		service.Bot().GuessMsgType(req.GroupId),
+		"",
 		req.UserId,
 		req.GroupId,
 		req.Message, false,

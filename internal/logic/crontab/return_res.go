@@ -3,41 +3,73 @@ package crontab
 import (
 	"context"
 	"github.com/gogf/gf/v2/frame/g"
+	"github.com/gogf/gf/v2/util/gconv"
 	"qq-bot-backend/internal/dao"
+	"qq-bot-backend/internal/model/do"
 	"qq-bot-backend/internal/model/entity"
 	"strings"
 )
 
-func (s *sCrontab) GlanceReturnRes(ctx context.Context) (retMsg string) {
-	tasks, err := s.getTasks(ctx)
+func (s *sCrontab) GlanceReturnRes(ctx context.Context, creatorId int64) (retMsg string) {
+	var tasks []entity.Crontab
+	q := dao.Crontab.Ctx(ctx).
+		Fields(
+			dao.Crontab.Columns().Name,
+			dao.Crontab.Columns().CreatorId,
+		)
+	if creatorId != 0 {
+		q = q.Where(dao.Crontab.Columns().CreatorId, creatorId)
+	}
+	err := q.Scan(&tasks)
 	if err != nil {
 		return
 	}
 
 	builder := strings.Builder{}
 	for _, task := range tasks {
-		builder.WriteString("`" + task.Name + "`\n")
+		if creatorId != 0 {
+			builder.WriteString("`" + task.Name + "`\n")
+		} else {
+			builder.WriteString("`" + task.Name + "` // " + gconv.String(task.CreatorId) + "\n")
+		}
 	}
 
 	retMsg = builder.String()
 	return
 }
 
-func (s *sCrontab) QueryReturnRes(ctx context.Context, name string) (retMsg string) {
+func (s *sCrontab) QueryReturnRes(ctx context.Context, name string, creatorId int64) (retMsg string) {
 	var task *entity.Crontab
-	err := dao.Crontab.Ctx(ctx).
-		Where(dao.Crontab.Columns().Name, name).
-		Scan(&task)
+	q := dao.Crontab.Ctx(ctx).
+		Fields(
+			dao.Crontab.Columns().Name,
+			dao.Crontab.Columns().Expression,
+			dao.Crontab.Columns().Request,
+			dao.Crontab.Columns().CreatorId,
+			dao.Crontab.Columns().CreatedAt,
+		).
+		Where(dao.Crontab.Columns().Name, name)
+	if creatorId != 0 {
+		q = q.Where(dao.Crontab.Columns().CreatorId, creatorId)
+	}
+	err := q.Scan(&task)
 	if err != nil {
 		g.Log().Error(ctx, err)
 		return
 	}
 
-	retMsg = task.Name + "\n" + task.Expression + "\n" + task.Request + "\n" + task.CreatedAt.String()
+	retMsg = dao.Crontab.Columns().Name + ": " + task.Name + "\n" +
+		dao.Crontab.Columns().Expression + ": " + task.Expression + "\n" +
+		dao.Crontab.Columns().CreatorId + ": " + gconv.String(task.CreatorId) + "\n" +
+		dao.Crontab.Columns().Request + ": " + task.Request + "\n" +
+		dao.Crontab.Columns().CreatedAt + ": " + task.CreatedAt.String()
 	return
 }
 
-func (s *sCrontab) AddReturnRes(ctx context.Context, name, expr string, botId int64, reqJSON []byte,
+func (s *sCrontab) AddReturnRes(ctx context.Context,
+	name, expr string,
+	creatorId, botId int64,
+	reqJSON []byte,
 ) (retMsg string) {
 	if expr[:strings.Index(expr, " ")] == "*" {
 		retMsg = "不允许设置为每分钟执行"
@@ -54,6 +86,7 @@ func (s *sCrontab) AddReturnRes(ctx context.Context, name, expr string, botId in
 		Data(entity.Crontab{
 			Name:       name,
 			Expression: expr,
+			CreatorId:  creatorId,
 			BotId:      botId,
 			Request:    string(reqJSON),
 		}).
@@ -69,8 +102,25 @@ func (s *sCrontab) AddReturnRes(ctx context.Context, name, expr string, botId in
 	return
 }
 
-func (s *sCrontab) RemoveReturnRes(ctx context.Context, name string) (retMsg string) {
-	_, err := dao.Crontab.Ctx(ctx).
+func (s *sCrontab) RemoveReturnRes(ctx context.Context, name string, creatorId int64) (retMsg string) {
+	var task *entity.Crontab
+	err := dao.Crontab.Ctx(ctx).
+		Fields(dao.Crontab.Columns().Name).
+		Where(do.Crontab{
+			Name:      name,
+			CreatorId: creatorId,
+		}).
+		Scan(&task)
+	if err != nil {
+		g.Log().Error(ctx, err)
+		return
+	}
+
+	if task == nil {
+		return
+	}
+
+	_, err = dao.Crontab.Ctx(ctx).
 		Where(dao.Crontab.Columns().Name, name).
 		Delete()
 	if err != nil {

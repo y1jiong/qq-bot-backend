@@ -26,22 +26,30 @@ func tryCrontab(ctx context.Context, cmd string) (caught bool, retMsg string) {
 		next := nextBranchRe.FindStringSubmatch(cmd)
 		switch next[1] {
 		case "query":
+			var creatorId int64
+			if userId := service.Bot().GetUserId(ctx); !service.User().IsSystemTrustedUser(ctx, userId) {
+				creatorId = userId
+			}
 			// /crontab query <name>
-			retMsg = service.Crontab().QueryReturnRes(ctx, next[2])
+			retMsg = service.Crontab().QueryReturnRes(ctx, next[2], creatorId)
 			caught = true
 		case "add":
 			// /crontab add <name> <expr> <message>
 			caught, retMsg = tryCrontabAdd(ctx, next[2])
 		case "rm":
 			// /crontab rm <name>
-			retMsg = service.Crontab().RemoveReturnRes(ctx, next[2])
+			retMsg = service.Crontab().RemoveReturnRes(ctx, next[2], service.Bot().GetUserId(ctx))
 			caught = true
 		}
 	case endBranchRe.MatchString(cmd):
 		switch cmd {
 		case "glance":
+			var creatorId int64
+			if userId := service.Bot().GetUserId(ctx); !service.User().IsSystemTrustedUser(ctx, userId) {
+				creatorId = userId
+			}
 			// /crontab glance
-			retMsg = service.Crontab().GlanceReturnRes(ctx)
+			retMsg = service.Crontab().GlanceReturnRes(ctx, creatorId)
 			caught = true
 		case "reload":
 			// /crontab reload
@@ -70,7 +78,13 @@ func tryCrontabAdd(ctx context.Context, cmd string) (caught bool, retMsg string)
 		_, _ = node.Set("message", ast.NewString(next[2]))
 		reqJSON, _ := node.MarshalJSON()
 		// /crontab add <name> <expr> <message>
-		retMsg = service.Crontab().AddReturnRes(ctx, name, next[1], service.Bot().GetSelfId(ctx), reqJSON)
+		retMsg = service.Crontab().AddReturnRes(ctx,
+			name,
+			next[1],
+			service.Bot().GetUserId(ctx),
+			service.Bot().GetSelfId(ctx),
+			reqJSON,
+		)
 		caught = true
 	}
 	return

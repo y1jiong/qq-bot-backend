@@ -27,7 +27,6 @@ type (
 		Forward(ctx context.Context, url string, key string)
 		GetPostType(ctx context.Context) string
 		GetMsgType(ctx context.Context) string
-		GuessMsgType(groupId int64) string
 		GetRequestType(ctx context.Context) string
 		GetNoticeType(ctx context.Context) string
 		GetSubType(ctx context.Context) string

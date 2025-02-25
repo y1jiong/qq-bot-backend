@@ -45,7 +45,14 @@ func (s *sCrontab) Run(ctx context.Context) {
 }
 
 func (s *sCrontab) getTasks(ctx context.Context) (tasks []entity.Crontab, err error) {
-	err = dao.Crontab.Ctx(ctx).Scan(&tasks)
+	err = dao.Crontab.Ctx(ctx).
+		Fields(
+			dao.Crontab.Columns().Name,
+			dao.Crontab.Columns().Expression,
+			dao.Crontab.Columns().BotId,
+			dao.Crontab.Columns().Request,
+		).
+		Scan(&tasks)
 	return
 }
 

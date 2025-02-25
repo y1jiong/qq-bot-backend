@@ -91,7 +91,7 @@ func (s *sEvent) TryUndoMessageRecall(ctx context.Context) (caught bool) {
 	msg += message
 	g.Log().Info(ctx, msg)
 	_, _ = service.Bot().SendMessage(ctx,
-		"group", 0, notificationGroupId, msg, false)
+		"", 0, notificationGroupId, msg, false)
 
 	caught = true
 	return

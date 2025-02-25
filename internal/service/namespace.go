@@ -11,6 +11,7 @@ import (
 
 type (
 	INamespace interface {
+		Broadcast(ctx context.Context, namespace string, message string, originGroupId int64) (err error)
 		GetForwardingToAliasList(ctx context.Context) (aliasList map[string]any)
 		GetForwardingTo(ctx context.Context, alias string) (url string, key string)
 		IsForwardingMatchUserId(ctx context.Context, userId string) bool
