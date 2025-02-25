@@ -70,7 +70,7 @@ func tryTokenChown(ctx context.Context, cmd string) (caught bool, retMsg string)
 	// /token chown <owner_id> <name>
 	dv := dualValueCmdEndRe.FindStringSubmatch(cmd)
 	// 执行
-	retMsg = service.Token().ChangeTokenOwnerReturnRes(ctx, dv[2], dv[1])
+	retMsg = service.Token().ChangeTokenOwnerReturnRes(ctx, dv[1], dv[2])
 	caught = true
 	return
 }
@@ -82,7 +82,7 @@ func tryTokenBind(ctx context.Context, cmd string) (caught bool, retMsg string) 
 	// /token bind <bot_id> <name>
 	dv := dualValueCmdEndRe.FindStringSubmatch(cmd)
 	// 执行
-	retMsg = service.Token().BindTokenBotId(ctx, dv[2], dv[1])
+	retMsg = service.Token().BindTokenBotId(ctx, dv[1], dv[2])
 	caught = true
 	return
 }

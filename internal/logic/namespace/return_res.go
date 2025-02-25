@@ -303,7 +303,7 @@ func (s *sNamespace) ResetNamespaceAdminReturnRes(ctx context.Context, namespace
 }
 
 func (s *sNamespace) ChangeNamespaceOwnerReturnRes(ctx context.Context,
-	namespace, ownerId string) (retMsg string) {
+	ownerId, namespace string) (retMsg string) {
 	// 参数合法性校验
 	if !legalNamespaceNameRe.MatchString(namespace) {
 		return

@@ -170,7 +170,7 @@ func (s *sToken) QueryOwnTokenReturnRes(ctx context.Context) (retMsg string) {
 	return
 }
 
-func (s *sToken) ChangeTokenOwnerReturnRes(ctx context.Context, name, ownerId string) (retMsg string) {
+func (s *sToken) ChangeTokenOwnerReturnRes(ctx context.Context, ownerId, name string) (retMsg string) {
 	// 过滤非法 name
 	if !legalTokenNameRe.MatchString(name) {
 		return
@@ -203,7 +203,7 @@ func (s *sToken) ChangeTokenOwnerReturnRes(ctx context.Context, name, ownerId st
 	return
 }
 
-func (s *sToken) BindTokenBotId(ctx context.Context, name, botId string) (retMsg string) {
+func (s *sToken) BindTokenBotId(ctx context.Context, botId, name string) (retMsg string) {
 	// 过滤非法 name
 	if !legalTokenNameRe.MatchString(name) {
 		return

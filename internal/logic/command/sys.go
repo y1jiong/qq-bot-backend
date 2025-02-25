@@ -85,9 +85,6 @@ func trySysForward(ctx context.Context, cmd string) (caught bool, retMsg string)
 				caught = true
 			}
 		case "reset":
-			if !endBranchRe.MatchString(next[2]) {
-				break
-			}
 			switch next[2] {
 			case "user":
 				// /sys forward reset user

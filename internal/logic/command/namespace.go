@@ -29,7 +29,7 @@ func tryNamespace(ctx context.Context, cmd string) (caught bool, retMsg string) 
 				break
 			}
 			dv := dualValueCmdEndRe.FindStringSubmatch(next[2])
-			retMsg = service.Namespace().ChangeNamespaceOwnerReturnRes(ctx, dv[2], dv[1])
+			retMsg = service.Namespace().ChangeNamespaceOwnerReturnRes(ctx, dv[1], dv[2])
 			caught = true
 		default:
 			// /namespace <namespace> <>

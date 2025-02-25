@@ -42,7 +42,7 @@ type (
 		AddNamespaceAdminReturnRes(ctx context.Context, namespace string, userId int64) (retMsg string)
 		RemoveNamespaceAdminReturnRes(ctx context.Context, namespace string, userId int64) (retMsg string)
 		ResetNamespaceAdminReturnRes(ctx context.Context, namespace string) (retMsg string)
-		ChangeNamespaceOwnerReturnRes(ctx context.Context, namespace string, ownerId string) (retMsg string)
+		ChangeNamespaceOwnerReturnRes(ctx context.Context, ownerId string, namespace string) (retMsg string)
 		SetNamespacePropertyPublicReturnRes(ctx context.Context, namespace string, value bool) (retMsg string)
 	}
 )
