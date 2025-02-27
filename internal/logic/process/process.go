@@ -52,7 +52,7 @@ func (s *sProcess) Process(ctx context.Context) {
 	if caught, retMsg := service.Command().TryCommand(ctx, service.Bot().GetMessage(ctx)); caught {
 		// 处理成功放弃后续逻辑
 		if retMsg != "" {
-			service.Bot().SendMsgCacheContext(ctx, retMsg)
+			service.Bot().SendMsgCacheContext(ctx, retMsg, true)
 		}
 		return
 	}

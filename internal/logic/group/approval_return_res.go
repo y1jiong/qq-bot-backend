@@ -69,7 +69,7 @@ func (s *sGroup) AddApprovalPolicyReturnRes(ctx context.Context,
 		case consts.RegexpCmd:
 			if codec.IsIncludeCQCode(args[0]) {
 				// 包含 CQ Code 时发送表情 gun
-				service.Bot().SendMsgIfNotApiReq(ctx, "[CQ:face,id=288]", true)
+				service.Bot().SendMsgIfNotApiReq(ctx, "[CQ:face,id=288]")
 				return
 			}
 			// 解码被 CQ Code 转义的字符

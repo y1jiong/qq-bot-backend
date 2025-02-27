@@ -9,7 +9,7 @@ func processNotice(ctx context.Context) {
 	switch service.Bot().GetNoticeType(ctx) {
 	case "group_recall":
 		// 群消息撤回
-		go service.Event().TryChainRecall(ctx)
+		go service.Event().TryCascadingRecall(ctx)
 		go service.Event().TryUndoMessageRecall(ctx)
 	case "group_increase":
 		// 群成员增加

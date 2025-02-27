@@ -54,13 +54,12 @@ type (
 		GetVersionInfo(ctx context.Context) (appName string, appVersion string, protocolVersion string, err error)
 		GetLikes(ctx context.Context) []map[string]any
 		SendMessage(ctx context.Context, messageType string, userId int64, groupId int64, msg string, plain bool) (messageId int64, err error)
-		// SendPlainMsg 适用于*事件*触发的消息发送
-		SendPlainMsg(ctx context.Context, msg string)
-		// SendMsg 适用于*事件*触发的消息发送
-		SendMsg(ctx context.Context, msg string)
-		SendMsgIfNotApiReq(ctx context.Context, msg string, richText ...bool)
-		// SendMsgCacheContext 适用于*非事件*触发的消息发送
-		SendMsgCacheContext(ctx context.Context, msg string, richText ...bool)
+		// SendMsg 适用于**不需要**级联撤回的场景
+		SendMsg(ctx context.Context, msg string, plain ...bool)
+		// SendMsgIfNotApiReq 适用于**非API请求**且**需要**级联撤回的场景
+		SendMsgIfNotApiReq(ctx context.Context, msg string, plain ...bool)
+		// SendMsgCacheContext 适用于**需要**级联撤回的场景
+		SendMsgCacheContext(ctx context.Context, msg string, plain ...bool)
 		SendFileToGroup(ctx context.Context, groupId int64, filePath string, name string, folder string) (err error)
 		SendFileToUser(ctx context.Context, userId int64, filePath string, name string) (err error)
 		SendFile(ctx context.Context, filePath string, name string) (err error)

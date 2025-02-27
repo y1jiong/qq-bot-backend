@@ -46,25 +46,22 @@ func (c *cBot) Websocket(r *ghttp.Request) {
 		// 忽视前置的 Bearer 或 Token 进行鉴权
 		authorizations := strings.Fields(r.Header.Get("Authorization"))
 		if len(authorizations) < 2 {
-			r.Response.WriteHeader(http.StatusForbidden)
+			r.Response.WriteHeader(http.StatusUnauthorized)
 			return
 		}
 		token := authorizations[1]
 		var pass bool
 		pass, tokenName, _, botId = service.Token().IsCorrectToken(ctx, token)
-		if service.Cfg().IsDebugEnabled(ctx) {
+		if !pass {
 			// token debug 验证模式
-			if !pass && token != service.Cfg().GetDebugToken(ctx) {
-				r.Response.WriteHeader(http.StatusForbidden)
-				return
+			if service.Cfg().IsDebugEnabled(ctx) && token == service.Cfg().GetDebugToken(ctx) {
+				pass = true
+				if tokenName == "" {
+					tokenName = "debug"
+				}
 			}
-			if tokenName == "" {
-				tokenName = "debug"
-			}
-		} else {
-			// token 正常验证模式
 			if !pass {
-				r.Response.WriteHeader(http.StatusForbidden)
+				r.Response.WriteHeader(http.StatusUnauthorized)
 				return
 			}
 		}

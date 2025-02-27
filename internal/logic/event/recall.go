@@ -7,13 +7,13 @@ import (
 	"qq-bot-backend/internal/service"
 )
 
-func (s *sEvent) TryChainRecall(ctx context.Context) (caught bool) {
+func (s *sEvent) TryCascadingRecall(ctx context.Context) (caught bool) {
 	messageIds, err := service.Bot().GetCachedMessageContext(ctx)
 	if err != nil || len(messageIds) == 0 {
 		return
 	}
 
-	ctx, span := gtrace.NewSpan(ctx, "event.TryChainRecall")
+	ctx, span := gtrace.NewSpan(ctx, "event.TryCascadingRecall")
 	defer span.End()
 
 	for _, messageId := range messageIds {

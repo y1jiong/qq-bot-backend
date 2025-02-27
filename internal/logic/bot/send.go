@@ -117,30 +117,30 @@ func (s *sBot) SendMessage(ctx context.Context,
 	return
 }
 
-// SendPlainMsg 适用于*事件*触发的消息发送
-func (s *sBot) SendPlainMsg(ctx context.Context, msg string) {
-	_, _ = s.SendMessage(ctx, s.GetMsgType(ctx), s.GetUserId(ctx), s.GetGroupId(ctx), msg, true)
+// SendMsg 适用于**不需要**级联撤回的场景
+func (s *sBot) SendMsg(ctx context.Context, msg string, plain ...bool) {
+	p := false
+	if len(plain) > 0 && plain[0] {
+		p = true
+	}
+	_, _ = s.SendMessage(ctx, s.GetMsgType(ctx), s.GetUserId(ctx), s.GetGroupId(ctx), msg, p)
 }
 
-// SendMsg 适用于*事件*触发的消息发送
-func (s *sBot) SendMsg(ctx context.Context, msg string) {
-	_, _ = s.SendMessage(ctx, s.GetMsgType(ctx), s.GetUserId(ctx), s.GetGroupId(ctx), msg, false)
-}
-
-func (s *sBot) SendMsgIfNotApiReq(ctx context.Context, msg string, richText ...bool) {
+// SendMsgIfNotApiReq 适用于**非API请求**且**需要**级联撤回的场景
+func (s *sBot) SendMsgIfNotApiReq(ctx context.Context, msg string, plain ...bool) {
 	if s.isApiReq(ctx) {
 		return
 	}
-	s.SendMsgCacheContext(ctx, msg, richText...)
+	s.SendMsgCacheContext(ctx, msg, plain...)
 }
 
-// SendMsgCacheContext 适用于*非事件*触发的消息发送
-func (s *sBot) SendMsgCacheContext(ctx context.Context, msg string, richText ...bool) {
-	plain := true
-	if len(richText) > 0 && richText[0] {
-		plain = false
+// SendMsgCacheContext 适用于**需要**级联撤回的场景
+func (s *sBot) SendMsgCacheContext(ctx context.Context, msg string, plain ...bool) {
+	p := false
+	if len(plain) > 0 && plain[0] {
+		p = true
 	}
-	sentMsgId, err := s.SendMessage(ctx, s.GetMsgType(ctx), s.GetUserId(ctx), s.GetGroupId(ctx), msg, plain)
+	sentMsgId, err := s.SendMessage(ctx, s.GetMsgType(ctx), s.GetUserId(ctx), s.GetGroupId(ctx), msg, p)
 	if err != nil {
 		return
 	}

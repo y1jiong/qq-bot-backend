@@ -21,7 +21,7 @@ type (
 		TryLogApproval(ctx context.Context) (caught bool)
 		TryUndoMessageRecall(ctx context.Context) (caught bool)
 		TryKeywordReply(ctx context.Context) (caught bool)
-		TryChainRecall(ctx context.Context) (caught bool)
+		TryCascadingRecall(ctx context.Context) (caught bool)
 		TryEmojiRecall(ctx context.Context) (caught bool)
 	}
 )
