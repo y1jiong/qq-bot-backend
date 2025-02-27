@@ -8,7 +8,7 @@ import (
 )
 
 func tryGroup(ctx context.Context, cmd string) (caught bool, retMsg string) {
-	ctx, span := gtrace.NewSpan(ctx, "command.tryGroup")
+	ctx, span := gtrace.NewSpan(ctx, "command.group")
 	defer span.End()
 
 	switch {

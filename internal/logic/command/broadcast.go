@@ -7,7 +7,7 @@ import (
 )
 
 func tryBroadcast(ctx context.Context, cmd string) (caught bool, retMsg string) {
-	ctx, span := gtrace.NewSpan(ctx, "command.tryBroadcast")
+	ctx, span := gtrace.NewSpan(ctx, "command.broadcast")
 	defer span.End()
 
 	groupId := service.Bot().GetGroupId(ctx)

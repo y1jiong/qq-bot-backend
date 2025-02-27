@@ -60,6 +60,19 @@ func (s *sCrontab) getTasks(ctx context.Context) (tasks []entity.Crontab, err er
 	return
 }
 
+func (s *sCrontab) getTask(ctx context.Context, name string) (task *entity.Crontab, err error) {
+	err = dao.Crontab.Ctx(ctx).
+		Fields(
+			dao.Crontab.Columns().Name,
+			dao.Crontab.Columns().Expression,
+			dao.Crontab.Columns().BotId,
+			dao.Crontab.Columns().Request,
+		).
+		Where(dao.Crontab.Columns().Name, name).
+		Scan(&task)
+	return
+}
+
 func (s *sCrontab) lazyInit() {
 	if crontab != nil {
 		return

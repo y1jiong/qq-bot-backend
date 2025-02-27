@@ -111,7 +111,7 @@ func (s *sUser) SystemDistrustUserReturnRes(ctx context.Context, userId int64) (
 		return
 	}
 	// 回执
-	retMsg = "已拒绝信任 user(" + gconv.String(userId) + ")"
+	retMsg = "已不再信任 user(" + gconv.String(userId) + ")"
 	return
 }
 

@@ -370,7 +370,7 @@ func (s *sGroup) CheckExistReturnRes(ctx context.Context) (retMsg string) {
 	pageNum, pageSize := 1, 10
 	var msgBuilder strings.Builder
 	waitForDelGroups := make([]int64, 0)
-	loginUserId, _ := service.Bot().GetLoginInfo(ctx)
+	botId, _ := service.Bot().GetLoginInfo(ctx)
 	for {
 		var groupEs []*entity.Group
 		err := dao.Group.Ctx(ctx).
@@ -390,7 +390,7 @@ func (s *sGroup) CheckExistReturnRes(ctx context.Context) (retMsg string) {
 					return
 				}
 			} else {
-				if _, err = service.Bot().GetGroupMemberInfo(ctx, vGroupId, loginUserId); err == nil {
+				if _, err = service.Bot().GetGroupMemberInfo(ctx, vGroupId, botId); err == nil {
 					continue
 				}
 			}

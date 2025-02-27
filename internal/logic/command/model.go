@@ -12,7 +12,7 @@ func tryModelSet(ctx context.Context, cmd string) (caught bool, retMsg string) {
 		return
 	}
 
-	ctx, span := gtrace.NewSpan(ctx, "command.tryModelSet")
+	ctx, span := gtrace.NewSpan(ctx, "command.modelSet")
 	defer span.End()
 
 	// /model set <model>

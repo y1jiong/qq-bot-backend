@@ -5,17 +5,19 @@ import (
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/util/gconv"
 	"qq-bot-backend/internal/dao"
-	"qq-bot-backend/internal/model/do"
 	"qq-bot-backend/internal/model/entity"
 	"strings"
 )
 
 func (s *sCrontab) GlanceReturnRes(ctx context.Context, creatorId int64) (retMsg string) {
-	var tasks []entity.Crontab
+	var (
+		tasks []entity.Crontab
+	)
+
 	q := dao.Crontab.Ctx(ctx).
 		Fields(
 			dao.Crontab.Columns().Name,
-			dao.Crontab.Columns().CreatorId,
+			dao.Crontab.Columns().Expression,
 		)
 	if creatorId != 0 {
 		q = q.Where(dao.Crontab.Columns().CreatorId, creatorId)
@@ -27,11 +29,7 @@ func (s *sCrontab) GlanceReturnRes(ctx context.Context, creatorId int64) (retMsg
 
 	builder := strings.Builder{}
 	for _, task := range tasks {
-		if creatorId != 0 {
-			builder.WriteString("`" + task.Name + "`\n")
-		} else {
-			builder.WriteString("`" + task.Name + "` // " + gconv.String(task.CreatorId) + "\n")
-		}
+		builder.WriteString(task.Expression + " " + task.Name + "\n")
 	}
 
 	retMsg = strings.TrimSuffix(builder.String(), "\n")
@@ -39,13 +37,17 @@ func (s *sCrontab) GlanceReturnRes(ctx context.Context, creatorId int64) (retMsg
 }
 
 func (s *sCrontab) QueryReturnRes(ctx context.Context, name string, creatorId int64) (retMsg string) {
-	var task *entity.Crontab
+	var (
+		task *entity.Crontab
+	)
+
 	q := dao.Crontab.Ctx(ctx).
 		Fields(
 			dao.Crontab.Columns().Name,
 			dao.Crontab.Columns().Expression,
-			dao.Crontab.Columns().Request,
 			dao.Crontab.Columns().CreatorId,
+			dao.Crontab.Columns().BotId,
+			dao.Crontab.Columns().Request,
 			dao.Crontab.Columns().CreatedAt,
 		).
 		Where(dao.Crontab.Columns().Name, name)
@@ -61,6 +63,7 @@ func (s *sCrontab) QueryReturnRes(ctx context.Context, name string, creatorId in
 	retMsg = dao.Crontab.Columns().Name + ": " + task.Name + "\n" +
 		dao.Crontab.Columns().Expression + ": " + task.Expression + "\n" +
 		dao.Crontab.Columns().CreatorId + ": " + gconv.String(task.CreatorId) + "\n" +
+		dao.Crontab.Columns().BotId + ": " + gconv.String(task.BotId) + "\n" +
 		dao.Crontab.Columns().Request + ": " + task.Request + "\n" +
 		dao.Crontab.Columns().CreatedAt + ": " + task.CreatedAt.String()
 	return
@@ -77,8 +80,8 @@ func (s *sCrontab) AddReturnRes(ctx context.Context,
 	}
 
 	if err := s.add(ctx, name, expr, botId, reqJSON); err != nil {
-		retMsg = "加入定时任务失败"
 		g.Log().Error(ctx, err)
+		retMsg = "加入定时任务失败"
 		return
 	}
 
@@ -93,44 +96,82 @@ func (s *sCrontab) AddReturnRes(ctx context.Context,
 		OmitEmptyData().
 		Insert()
 	if err != nil {
-		retMsg = "持久化失败"
 		g.Log().Error(ctx, err)
+		s.remove(name)
+		retMsg = "持久化失败"
 		return
 	}
 
-	retMsg = name + "\n" + expr
+	retMsg = expr + " " + name
 	return
 }
 
 func (s *sCrontab) RemoveReturnRes(ctx context.Context, name string, creatorId int64) (retMsg string) {
-	var task *entity.Crontab
-	err := dao.Crontab.Ctx(ctx).
-		Fields(dao.Crontab.Columns().Name).
-		Where(do.Crontab{
-			Name:      name,
-			CreatorId: creatorId,
-		}).
-		Scan(&task)
+	q := dao.Crontab.Ctx(ctx).
+		Where(dao.Crontab.Columns().Name, name)
+	if creatorId != 0 {
+		q = q.Where(dao.Crontab.Columns().CreatorId, creatorId)
+	}
+	result, err := q.Delete()
 	if err != nil {
 		g.Log().Error(ctx, err)
-		return
-	}
-
-	if task == nil {
-		return
-	}
-
-	_, err = dao.Crontab.Ctx(ctx).
-		Where(dao.Crontab.Columns().Name, name).
-		Delete()
-	if err != nil {
 		retMsg = "删除失败"
-		g.Log().Error(ctx, err)
+		return
+	}
+
+	if aff, _ := result.RowsAffected(); aff == 0 {
 		return
 	}
 
 	s.remove(name)
 
 	retMsg = name
+	return
+}
+
+func (s *sCrontab) ChangeBotIdReturnRes(ctx context.Context,
+	botId int64, name string, creatorId int64,
+) (retMsg string) {
+	if botId == 0 {
+		return
+	}
+
+	q := dao.Crontab.Ctx(ctx).
+		Data(dao.Crontab.Columns().BotId, botId).
+		Where(dao.Crontab.Columns().Name, name)
+	if creatorId != 0 {
+		q = q.Where(dao.Crontab.Columns().CreatorId, creatorId)
+	}
+	result, err := q.Update()
+	if err != nil {
+		g.Log().Error(ctx, err)
+		retMsg = "修改失败"
+		return
+	}
+
+	if aff, _ := result.RowsAffected(); aff == 0 {
+		return
+	}
+
+	s.remove(name)
+
+	task, err := s.getTask(ctx, name)
+	if err != nil {
+		g.Log().Error(ctx, err)
+		retMsg = "获取失败"
+		return
+	}
+	if task == nil {
+		retMsg = "未找到任务"
+		return
+	}
+
+	if err = s.add(ctx, task.Name, task.Expression, botId, []byte(task.Request)); err != nil {
+		g.Log().Error(ctx, err)
+		retMsg = "重新加入定时任务失败"
+		return
+	}
+
+	retMsg = name + " -> " + gconv.String(botId)
 	return
 }

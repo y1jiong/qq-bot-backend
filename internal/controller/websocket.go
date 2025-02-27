@@ -83,23 +83,37 @@ func (c *cBot) Websocket(r *ghttp.Request) {
 	ctx = service.Bot().CtxWithWebSocket(ctx, conn)
 	// 并发 ws 写锁
 	ctx = service.Bot().CtxNewWebSocketMutex(ctx)
-	// 加入连接池
-	if botId != 0 {
-		service.Bot().JoinConnection(ctx, botId)
-		g.Log().Info(ctx, tokenName+"("+gconv.String(botId)+") joined connection pool")
-	}
+
+	var (
+		waitJoin       = make(chan struct{})
+		joinConnection = sync.OnceFunc(func() { close(waitJoin) })
+	)
+	go func() {
+		<-waitJoin
+
+		// 加入连接
+		if botId == 0 {
+			botId, _ = service.Bot().GetLoginInfo(ctx)
+		}
+		if botId != 0 {
+			service.Bot().JoinConnection(ctx, botId)
+			g.Log().Info(ctx, tokenName+"("+gconv.String(botId)+") joined connection")
+		}
+	}()
 
 	spanEnd()
 
 	// 消息循环
 	for {
+		joinConnection()
+
 		var bytes []byte
 		_, bytes, err = conn.ReadMessage()
 		if err != nil {
-			// 离开连接池
+			// 离开连接
 			if botId != 0 {
 				service.Bot().LeaveConnection(botId)
-				g.Log().Info(ctx, tokenName+"("+gconv.String(botId)+") left connection pool")
+				g.Log().Info(ctx, tokenName+"("+gconv.String(botId)+") left connection")
 			}
 			g.Log().Info(ctx, tokenName+" disconnected")
 			break

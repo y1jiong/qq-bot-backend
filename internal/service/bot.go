@@ -48,7 +48,7 @@ type (
 		RequestMessageFromCache(ctx context.Context, messageId int64) (messageMap map[string]any, err error)
 		RequestMessage(ctx context.Context, messageId int64) (messageMap map[string]any, err error)
 		GetGroupInfo(ctx context.Context, groupId int64, noCache ...bool) (infoMap map[string]any, err error)
-		GetLoginInfo(ctx context.Context) (userId int64, nickname string)
+		GetLoginInfo(ctx context.Context) (botId int64, nickname string)
 		IsGroupOwnerOrAdmin(ctx context.Context) bool
 		IsGroupOwnerOrAdminOrSysTrusted(ctx context.Context) bool
 		GetVersionInfo(ctx context.Context) (appName string, appVersion string, protocolVersion string, err error)

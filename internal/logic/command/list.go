@@ -8,7 +8,7 @@ import (
 )
 
 func tryList(ctx context.Context, cmd string) (caught bool, retMsg string) {
-	ctx, span := gtrace.NewSpan(ctx, "command.tryList")
+	ctx, span := gtrace.NewSpan(ctx, "command.list")
 	defer span.End()
 
 	switch {

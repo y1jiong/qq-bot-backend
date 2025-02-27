@@ -149,25 +149,26 @@ v1.9
 
 ## Token
 
-| Command                          | Description        | Comment             |
-|----------------------------------|--------------------|---------------------|
-| /token add \<name> \<token>      | 添加可让 user 接入本系统的令牌 | 需要系统授予的操作 token 的权限 |
-| /token rm \<name>                | 删除令牌               | 同上                  |
-| /token query                     | 查询自己所有的令牌          | 同上                  |
-| /token query \<name>             | 查询令牌               | 同上                  |
-| /token chown \<owner_id> \<name> | 修改令牌 owner         | 同上                  |
-| /token bind \<bot_id> \<name>    | 绑定令牌使用的机器人账号       | 同上                  |
-| /token unbind \<name>            | 解绑令牌使用的机器人账号       | 同上                  |
+| Command                          | Description       | Comment             |
+|----------------------------------|-------------------|---------------------|
+| /token add \<name> \<token>      | 添加可让 bot 接入本系统的令牌 | 需要系统授予的操作 token 的权限 |
+| /token rm \<name>                | 删除令牌              | 同上                  |
+| /token query                     | 查询自己所有的令牌         | 同上                  |
+| /token query \<name>             | 查询令牌              | 同上                  |
+| /token chown \<owner_id> \<name> | 修改令牌 owner        | 同上                  |
+| /token bind \<bot_id> \<name>    | 绑定令牌使用的 bot_id    | 同上                  |
+| /token unbind \<name>            | 解绑令牌使用的 bot_id    | 同上                  |
 
 ## Crontab
 
-| Command                                 | Description | Comment               |
-|-----------------------------------------|-------------|-----------------------|
-| /crontab add \<name> \<expr> \<message> | 添加定时任务（五段式） | 需要系统授予的操作 crontab 的权限 |
-| /crontab rm \<name>                     | 删除定时任务      | 同上                    |
-| /crontab glance                         | 查询自己所有的定时任务 | 同上                    |
-| /crontab query \<name>                  | 查询定时任务      | 同上                    |
-| /crontab reload                         | 重新加载定时任务    | 需要受系统信任               |
+| Command                                 | Description      | Comment               |
+|-----------------------------------------|------------------|-----------------------|
+| /crontab add \<name> \<expr> \<message> | 添加定时任务（五段式）      | 需要系统授予的操作 crontab 的权限 |
+| /crontab rm \<name>                     | 删除定时任务           | 同上                    |
+| /crontab glance                         | 查询自己所有的定时任务      | 同上                    |
+| /crontab query \<name>                  | 查询定时任务           | 同上                    |
+| /crontab ch-bind \<bot_id> \<name>      | 修改定时任务绑定的 bot_id | 同上                    |
+| /crontab reload                         | 重新加载定时任务         | 需要受系统信任               |
 
 ## Extra
 

@@ -13,7 +13,7 @@ func trySys(ctx context.Context, cmd string) (caught bool, retMsg string) {
 		return
 	}
 
-	ctx, span := gtrace.NewSpan(ctx, "command.trySys")
+	ctx, span := gtrace.NewSpan(ctx, "command.sys")
 	defer span.End()
 
 	switch {

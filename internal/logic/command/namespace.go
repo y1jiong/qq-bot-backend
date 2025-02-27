@@ -8,7 +8,7 @@ import (
 )
 
 func tryNamespace(ctx context.Context, cmd string) (caught bool, retMsg string) {
-	ctx, span := gtrace.NewSpan(ctx, "command.tryNamespace")
+	ctx, span := gtrace.NewSpan(ctx, "command.namespace")
 	defer span.End()
 
 	switch {

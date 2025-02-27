@@ -448,7 +448,7 @@ func (s *sBot) GetGroupInfo(ctx context.Context, groupId int64, noCache ...bool)
 	return
 }
 
-func (s *sBot) GetLoginInfo(ctx context.Context) (userId int64, nickname string) {
+func (s *sBot) GetLoginInfo(ctx context.Context) (botId int64, nickname string) {
 	ctx, span := gtrace.NewSpan(ctx, "bot.GetLoginInfo")
 	defer span.End()
 	var err error
@@ -484,7 +484,7 @@ func (s *sBot) GetLoginInfo(ctx context.Context) (userId int64, nickname string)
 			return
 		}
 		received := s.getData(asyncCtx)
-		userId, _ = received.Get("user_id").StrictInt64()
+		botId, _ = received.Get("user_id").StrictInt64()
 		nickname, _ = received.Get("nickname").StrictString()
 	}
 	timeout := func(ctx context.Context) {

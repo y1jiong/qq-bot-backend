@@ -9,7 +9,6 @@ import (
 	"github.com/gorilla/websocket"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/codes"
-	"qq-bot-backend/internal/service"
 	"qq-bot-backend/utility/segment"
 	"sync"
 )
@@ -504,6 +503,10 @@ func (s *sBot) SetModel(ctx context.Context, model string) (err error) {
 }
 
 func (s *sBot) RecallMessage(ctx context.Context, messageId int64) {
+	if messageId == 0 {
+		return
+	}
+
 	ctx, span := gtrace.NewSpan(ctx, "bot.RecallMessage")
 	defer span.End()
 	span.SetAttributes(attribute.Int64("recall_message.message_id", messageId))
@@ -848,6 +851,10 @@ func (s *sBot) ProfileLike(ctx context.Context, userId int64, times int) (err er
 }
 
 func (s *sBot) EmojiLike(ctx context.Context, messageId int64, emojiId string) (err error) {
+	if messageId == 0 {
+		return
+	}
+
 	ctx, span := gtrace.NewSpan(ctx, "bot.EmojiLike")
 	defer span.End()
 	span.SetAttributes(
@@ -981,7 +988,7 @@ func (s *sBot) Poke(ctx context.Context, groupId, userId int64) (err error) {
 
 func (s *sBot) Okay(ctx context.Context) (err error) {
 	if groupId := s.GetGroupId(ctx); groupId != 0 {
-		return s.EmojiLike(ctx, service.Bot().GetMsgId(ctx), "124") // 124: OK
+		return s.EmojiLike(ctx, s.GetMsgId(ctx), "124") // 124: OK
 	} else {
 		return s.Poke(ctx, groupId, s.GetUserId(ctx))
 	}

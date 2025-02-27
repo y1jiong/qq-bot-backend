@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/bytedance/sonic/ast"
 	"github.com/gogf/gf/v2/net/gtrace"
+	"github.com/gogf/gf/v2/util/gconv"
 	"qq-bot-backend/internal/service"
 	"regexp"
 )
@@ -37,9 +38,16 @@ func tryCrontab(ctx context.Context, cmd string) (caught bool, retMsg string) {
 			// /crontab add <>
 			caught, retMsg = tryCrontabAdd(ctx, next[2])
 		case "rm":
+			var creatorId int64
+			if userId := service.Bot().GetUserId(ctx); !service.User().IsSystemTrustedUser(ctx, userId) {
+				creatorId = userId
+			}
 			// /crontab rm <name>
-			retMsg = service.Crontab().RemoveReturnRes(ctx, next[2], service.Bot().GetUserId(ctx))
+			retMsg = service.Crontab().RemoveReturnRes(ctx, next[2], creatorId)
 			caught = true
+		case "ch-bind":
+			// /crontab ch-bind <>
+			caught, retMsg = tryCrontabChBind(ctx, next[2])
 		}
 	case endBranchRe.MatchString(cmd):
 		switch cmd {
@@ -91,6 +99,21 @@ func tryCrontabAdd(ctx context.Context, cmd string) (caught bool, retMsg string)
 			service.Bot().GetSelfId(ctx),
 			reqJSON,
 		)
+		caught = true
+	}
+	return
+}
+
+func tryCrontabChBind(ctx context.Context, cmd string) (caught bool, retMsg string) {
+	switch {
+	case dualValueCmdEndRe.MatchString(cmd):
+		dv := dualValueCmdEndRe.FindStringSubmatch(cmd)
+		var creatorId int64
+		if userId := service.Bot().GetUserId(ctx); !service.User().IsSystemTrustedUser(ctx, userId) {
+			creatorId = userId
+		}
+		// /crontab ch-bind <bot_id> <name>
+		retMsg = service.Crontab().ChangeBotIdReturnRes(ctx, gconv.Int64(dv[1]), dv[2], creatorId)
 		caught = true
 	}
 	return

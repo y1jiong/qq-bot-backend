@@ -8,7 +8,7 @@ import (
 )
 
 func tryUser(ctx context.Context, cmd string) (caught bool, retMsg string) {
-	ctx, span := gtrace.NewSpan(ctx, "command.tryUser")
+	ctx, span := gtrace.NewSpan(ctx, "command.user")
 	defer span.End()
 
 	switch {

@@ -7,7 +7,7 @@ import (
 )
 
 func tryToken(ctx context.Context, cmd string) (caught bool, retMsg string) {
-	ctx, span := gtrace.NewSpan(ctx, "command.tryToken")
+	ctx, span := gtrace.NewSpan(ctx, "command.token")
 	defer span.End()
 
 	switch {
