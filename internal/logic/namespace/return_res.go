@@ -159,7 +159,8 @@ func (s *sNamespace) QueryOwnNamespaceReturnRes(ctx context.Context) (retMsg str
 }
 
 func (s *sNamespace) AddNamespaceAdminReturnRes(ctx context.Context,
-	namespace string, userId int64) (retMsg string) {
+	namespace string, userId int64,
+) (retMsg string) {
 	// 参数合法性校验
 	if userId == 0 || !legalNamespaceNameRe.MatchString(namespace) {
 		return
@@ -206,7 +207,8 @@ func (s *sNamespace) AddNamespaceAdminReturnRes(ctx context.Context,
 }
 
 func (s *sNamespace) RemoveNamespaceAdminReturnRes(ctx context.Context,
-	namespace string, userId int64) (retMsg string) {
+	namespace string, userId int64,
+) (retMsg string) {
 	// 参数合法性校验
 	if userId == 0 || !legalNamespaceNameRe.MatchString(namespace) {
 		return
@@ -303,7 +305,8 @@ func (s *sNamespace) ResetNamespaceAdminReturnRes(ctx context.Context, namespace
 }
 
 func (s *sNamespace) ChangeNamespaceOwnerReturnRes(ctx context.Context,
-	ownerId, namespace string) (retMsg string) {
+	ownerId, namespace string,
+) (retMsg string) {
 	// 参数合法性校验
 	if !legalNamespaceNameRe.MatchString(namespace) {
 		return
@@ -333,7 +336,8 @@ func (s *sNamespace) ChangeNamespaceOwnerReturnRes(ctx context.Context,
 }
 
 func (s *sNamespace) SetNamespacePropertyPublicReturnRes(ctx context.Context,
-	namespace string, value bool) (retMsg string) {
+	namespace string, value bool,
+) (retMsg string) {
 	// 参数合法性校验
 	if !legalNamespaceNameRe.MatchString(namespace) {
 		return

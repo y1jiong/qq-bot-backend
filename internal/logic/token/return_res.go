@@ -131,7 +131,8 @@ func (s *sToken) QueryTokenReturnRes(ctx context.Context, name string) (retMsg s
 		dao.Token.Columns().CreatedAt, tokenE.CreatedAt.String(),
 		dao.Token.Columns().UpdatedAt, tokenE.UpdatedAt.String(),
 		dao.Token.Columns().LastLoginAt, tokenE.LastLoginAt.String(),
-		dao.Token.Columns().BotId, tokenE.BotId)
+		dao.Token.Columns().BotId, tokenE.BotId,
+	)
 	return
 }
 

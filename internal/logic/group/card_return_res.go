@@ -116,7 +116,8 @@ func (s *sGroup) RemoveAutoSetListReturnRes(ctx context.Context, groupId int64) 
 }
 
 func (s *sGroup) CheckCardWithRegexpReturnRes(ctx context.Context,
-	groupId int64, listName, exp string) (retMsg string) {
+	groupId int64, listName, exp string,
+) (retMsg string) {
 	// 参数合法性校验
 	if groupId == 0 {
 		return
@@ -183,7 +184,8 @@ func (s *sGroup) CheckCardWithRegexpReturnRes(ctx context.Context,
 }
 
 func (s *sGroup) CheckCardByListReturnRes(ctx context.Context,
-	groupId int64, toList, fromList string) (retMsg string) {
+	groupId int64, toList, fromList string,
+) (retMsg string) {
 	// 参数合法性校验
 	if groupId == 0 {
 		return

@@ -43,7 +43,8 @@ func (s *sEvent) TryGroupKeywordReply(ctx context.Context) (caught bool) {
 	case webhookPrefixRe.MatchString(value):
 		replyMsg, noReplyPrefix = s.keywordReplyWebhook(ctx,
 			service.Bot().GetUserId(ctx), groupId, service.Bot().GetCardOrNickname(ctx),
-			msg, hit, value)
+			msg, hit, value,
+		)
 	case rewritePrefixRe.MatchString(value):
 		caught = s.keywordReplyRewrite(ctx, s.TryGroupKeywordReply, msg, hit, value)
 		replyMsg = ""
@@ -56,9 +57,9 @@ func (s *sEvent) TryGroupKeywordReply(ctx context.Context) (caught bool) {
 	}
 	// 限速
 	const kind = "replyG"
-	gid := gconv.String(groupId)
-	if limited, _ := utility.AutoLimit(ctx, kind, gid, 7, time.Minute); limited {
-		g.Log().Notice(ctx, kind, gid, "is limited")
+	key := gconv.String(service.Bot().GetSelfId(ctx)) + "_" + gconv.String(groupId)
+	if limited, _ := utility.AutoLimit(ctx, kind, key, 7, time.Minute); limited {
+		g.Log().Notice(ctx, kind, key, "is limited")
 		return
 	}
 	if !noReplyPrefix {

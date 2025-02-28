@@ -49,7 +49,9 @@ func (c *ControllerV1) Command(ctx context.Context, req *v1.CommandReq) (res *v1
 	}
 	// 防止重放攻击
 	if limit, _ := utility.AutoLimit(ctx,
-		"api.command", req.Signature, 1, 10*time.Second); limit {
+		"api_command_replay", req.Signature,
+		1, 10*time.Second,
+	); limit {
 		err = gerror.NewCode(errcode.Conflict)
 		return
 	}
@@ -125,7 +127,10 @@ func (c *ControllerV1) Command(ctx context.Context, req *v1.CommandReq) (res *v1
 	}
 	// 限速 一分钟只能发送 5 条消息
 	if limit, _ := utility.AutoLimit(ctx,
-		"send_msg", gconv.String(req.GroupId), 5, time.Minute); limit {
+		"api_command_send_msg",
+		gconv.String(botId)+"_"+gconv.String(req.GroupId),
+		5, time.Minute,
+	); limit {
 		err = gerror.NewCode(errcode.TooMany)
 		return
 	}

@@ -90,7 +90,10 @@ func (c *ControllerV1) Message(ctx context.Context, req *v1.MessageReq) (res *v1
 	}
 	// 限速 一分钟只能发送 7 条消息
 	if limit, _ := utility.AutoLimit(ctx,
-		"send_msg", gconv.String(req.UserId+req.GroupId), 7, time.Minute); limit {
+		"api_message_send_msg",
+		gconv.String(botId)+"_"+gconv.String(req.GroupId),
+		7, time.Minute,
+	); limit {
 		err = gerror.NewCode(errcode.TooMany)
 		return
 	}

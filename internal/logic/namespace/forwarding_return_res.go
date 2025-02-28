@@ -41,11 +41,13 @@ func (s *sNamespace) AddForwardingToReturnRes(ctx context.Context, alias, url, k
 	_, _ = settingJson.Get(forwardingMapKey).Get(toMapKey).Set(alias, ast.NewNull())
 	// urlKey
 	_, _ = settingJson.Get(forwardingMapKey).Get(toMapKey).Get(alias).Set(
-		urlKey, ast.NewString(url))
+		urlKey, ast.NewString(url),
+	)
 	// keyKey
 	if key != "" {
 		_, _ = settingJson.Get(forwardingMapKey).Get(toMapKey).Get(alias).Set(
-			keyKey, ast.NewString(key))
+			keyKey, ast.NewString(key),
+		)
 	}
 	settingStr, _ := settingJson.Raw()
 	// 更新

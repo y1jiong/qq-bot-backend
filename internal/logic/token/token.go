@@ -25,8 +25,8 @@ var (
 	legalTokenNameRe = regexp.MustCompile(`^\S{1,16}$`)
 )
 
-func (s *sToken) IsCorrectToken(ctx context.Context,
-	token string) (correct bool, name string, ownerId, botId int64) {
+func (s *sToken) IsCorrectToken(ctx context.Context, token string,
+) (correct bool, name string, ownerId, botId int64) {
 	// 过滤非法 token
 	if !legalTokenRe.MatchString(token) {
 		return

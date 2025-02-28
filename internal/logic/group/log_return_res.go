@@ -115,7 +115,8 @@ func (s *sGroup) RemoveLogLeaveListReturnRes(ctx context.Context, groupId int64)
 }
 
 func (s *sGroup) SetLogApprovalListReturnRes(ctx context.Context,
-	groupId int64, listName string) (retMsg string) {
+	groupId int64, listName string,
+) (retMsg string) {
 	// 参数合法性校验
 	if groupId == 0 {
 		return

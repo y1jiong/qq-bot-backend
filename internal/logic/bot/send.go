@@ -990,6 +990,9 @@ func (s *sBot) Okay(ctx context.Context) (err error) {
 	if groupId := s.GetGroupId(ctx); groupId != 0 {
 		return s.EmojiLike(ctx, s.GetMsgId(ctx), "124") // 124: OK
 	} else {
+		if s.GetMsgId(ctx) == 0 {
+			return
+		}
 		return s.Poke(ctx, groupId, s.GetUserId(ctx))
 	}
 }

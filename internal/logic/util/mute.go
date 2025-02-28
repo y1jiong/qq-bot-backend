@@ -14,7 +14,12 @@ func (s *sUtil) AutoMute(ctx context.Context,
 	limitTimes, baseMinutes, limitMinutes int,
 	duration time.Duration,
 ) {
-	limited, times := utility.AutoLimit(ctx, kind, gconv.String(userId), limitTimes, duration)
+	limited, times := utility.AutoLimit(ctx,
+		kind,
+		gconv.String(groupId)+"_"+gconv.String(userId),
+		limitTimes,
+		duration,
+	)
 	if !limited {
 		return
 	}

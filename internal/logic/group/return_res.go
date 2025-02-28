@@ -161,7 +161,8 @@ func (s *sGroup) QueryGroupReturnRes(ctx context.Context, groupId int64) (retMsg
 }
 
 func (s *sGroup) KickFromListReturnRes(ctx context.Context,
-	groupId int64, listName string) (retMsg string) {
+	groupId int64, listName string,
+) (retMsg string) {
 	// 参数合法性校验
 	if groupId == 0 {
 		return
@@ -264,7 +265,8 @@ func (s *sGroup) KickFromListReturnRes(ctx context.Context,
 }
 
 func (s *sGroup) KeepFromListReturnRes(ctx context.Context,
-	groupId int64, listName string) (retMsg string) {
+	groupId int64, listName string,
+) (retMsg string) {
 	// 参数合法性校验
 	if groupId == 0 {
 		return

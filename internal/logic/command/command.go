@@ -71,6 +71,9 @@ func (s *sCommand) TryCommand(ctx context.Context, message string) (caught bool,
 		next := nextBranchRe.FindStringSubmatch(cmd)
 
 		switch next[1] {
+		case "say":
+			// /say <>
+			caught, retMsg = trySay(ctx, next[2])
 		case "raw":
 			// /raw <>
 			caught, retMsg = tryRaw(ctx, next[2])
@@ -126,6 +129,21 @@ func (s *sCommand) TryCommand(ctx context.Context, message string) (caught bool,
 			caught, retMsg = pauseProcess(ctx)
 		}
 	}
+	return
+}
+
+func trySay(ctx context.Context, cmd string) (caught bool, retMsg string) {
+	// 权限校验
+	if !service.User().CanGetRawMessage(ctx, service.Bot().GetUserId(ctx)) {
+		return
+	}
+
+	ctx, span := gtrace.NewSpan(ctx, "command.say")
+	defer span.End()
+
+	service.Bot().SendMsgCacheContext(ctx, cmd)
+
+	caught = true
 	return
 }
 

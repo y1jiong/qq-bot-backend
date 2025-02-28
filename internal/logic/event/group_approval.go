@@ -69,25 +69,29 @@ func (s *sEvent) TryApproveAddGroup(ctx context.Context) (caught bool) {
 			logMsg = fmt.Sprintf("approve user(%v) join group(%v) with %v",
 				userId,
 				groupId,
-				comment)
+				comment,
+			)
 		} else {
 			logMsg = fmt.Sprintf("REJECT user(%v) join group(%v) with %v",
 				userId,
 				groupId,
-				comment)
+				comment,
+			)
 		}
 	} else if pass {
 		// 打印跳过同意日志
 		logMsg = fmt.Sprintf("skip processing approve user(%v) join group(%v) with %v",
 			userId,
 			groupId,
-			comment)
+			comment,
+		)
 	} else if !pass {
 		// 打印跳过拒绝日志
 		logMsg = fmt.Sprintf("skip processing REJECT user(%v) join group(%v) with %v",
 			userId,
 			groupId,
-			comment)
+			comment,
+		)
 	}
 	if isOnBlacklist {
 		logMsg = "[hit blacklist]" + blackReason + "\n" + logMsg
@@ -97,7 +101,8 @@ func (s *sEvent) TryApproveAddGroup(ctx context.Context) (caught bool) {
 	if notificationGroupId :=
 		service.Group().GetApprovalNotificationGroupId(ctx, groupId); notificationGroupId != 0 {
 		_, _ = service.Bot().SendMessage(ctx,
-			"", 0, notificationGroupId, logMsg, true)
+			"", 0, notificationGroupId, logMsg, true,
+		)
 	}
 
 	caught = true

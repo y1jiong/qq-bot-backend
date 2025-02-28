@@ -69,7 +69,8 @@ func (s *sEvent) TryKeywordReply(ctx context.Context) (caught bool) {
 	case webhookPrefixRe.MatchString(value):
 		replyMsg, noReplyPrefix = s.keywordReplyWebhook(ctx,
 			userId, 0, service.Bot().GetNickname(ctx),
-			msg, hit, value)
+			msg, hit, value,
+		)
 	case rewritePrefixRe.MatchString(value):
 		caught = s.keywordReplyRewrite(ctx, s.TryKeywordReply, msg, hit, value)
 		replyMsg = ""
@@ -82,9 +83,9 @@ func (s *sEvent) TryKeywordReply(ctx context.Context) (caught bool) {
 	}
 	// 限速
 	const kind = "replyU"
-	uid := gconv.String(userId)
-	if limited, _ := utility.AutoLimit(ctx, kind, uid, 5, time.Minute); limited {
-		g.Log().Notice(ctx, kind, uid, "is limited")
+	key := gconv.String(service.Bot().GetSelfId(ctx)) + "_" + gconv.String(userId)
+	if limited, _ := utility.AutoLimit(ctx, kind, key, 5, time.Minute); limited {
+		g.Log().Notice(ctx, kind, key, "is limited")
 		return
 	}
 	if !noReplyPrefix {

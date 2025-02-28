@@ -42,7 +42,8 @@ var (
 			})
 			s.Group("/api", func(group *ghttp.RouterGroup) {
 				group.Middleware(ghttp.MiddlewareCORS, ghttp.MiddlewareHandlerResponse,
-					service.Middleware().ErrCodeToHttpStatus, service.Middleware().RateLimit)
+					service.Middleware().ErrCodeToHttpStatus, service.Middleware().RateLimit,
+				)
 				group.Group("/v1", func(group *ghttp.RouterGroup) {
 					group.Bind(
 						command.NewV1(),

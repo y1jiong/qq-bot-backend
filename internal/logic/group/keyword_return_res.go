@@ -108,7 +108,8 @@ func (s *sGroup) AddKeywordPolicyReturnRes(ctx context.Context,
 }
 
 func (s *sGroup) RemoveKeywordPolicyReturnRes(ctx context.Context,
-	groupId int64, policyName string, args ...string) (retMsg string) {
+	groupId int64, policyName string, args ...string,
+) (retMsg string) {
 	// 参数合法性校验
 	if groupId == 0 {
 		return
