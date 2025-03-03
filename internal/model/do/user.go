@@ -16,5 +16,4 @@ type User struct {
 	SettingJson interface{} //
 	CreatedAt   *gtime.Time //
 	UpdatedAt   *gtime.Time //
-	DeletedAt   *gtime.Time //
 }

@@ -115,12 +115,15 @@ func (s *sCommand) TryCommand(ctx context.Context, message string) (caught bool,
 		}
 
 		switch cmd {
-		case "status":
-			// /status
-			caught, retMsg = queryProcessStatus(ctx)
+		case "readall":
+			// /readall
+			caught, retMsg = tryReadAll(ctx)
 		case "version":
 			// /version
 			caught, retMsg = tryVersion(ctx)
+		case "status":
+			// /status
+			caught, retMsg = queryProcessStatus(ctx)
 		case "continue":
 			// /continue
 			caught, retMsg = continueProcess(ctx)
@@ -129,6 +132,33 @@ func (s *sCommand) TryCommand(ctx context.Context, message string) (caught bool,
 			caught, retMsg = pauseProcess(ctx)
 		}
 	}
+	return
+}
+
+func tryReadAll(ctx context.Context) (caught bool, retMsg string) {
+	ctx, span := gtrace.NewSpan(ctx, "command.readall")
+	defer span.End()
+
+	caught = true
+
+	if err := service.Bot().MarkAllAsRead(ctx); err != nil {
+		retMsg = err.Error()
+	}
+	return
+}
+
+func tryVersion(ctx context.Context) (caught bool, retMsg string) {
+	ctx, span := gtrace.NewSpan(ctx, "command.version")
+	defer span.End()
+
+	caught, retMsg = true, consts.Description
+
+	appName, appVersion, protocolVersion, err := service.Bot().GetVersionInfo(ctx)
+	if err != nil {
+		return
+	}
+	// appName/appVersion (protocolVersion)
+	retMsg += "\n" + appName + "/" + appVersion + " (" + protocolVersion + ")"
 	return
 }
 
@@ -157,21 +187,6 @@ func tryRaw(ctx context.Context, cmd string) (caught bool, retMsg string) {
 	defer span.End()
 
 	caught, retMsg = true, cmd
-	return
-}
-
-func tryVersion(ctx context.Context) (caught bool, retMsg string) {
-	ctx, span := gtrace.NewSpan(ctx, "command.version")
-	defer span.End()
-
-	caught, retMsg = true, consts.Description
-
-	appName, appVersion, protocolVersion, err := service.Bot().GetVersionInfo(ctx)
-	if err != nil {
-		return
-	}
-	// appName/appVersion (protocolVersion)
-	retMsg += "\n" + appName + "/" + appVersion + " (" + protocolVersion + ")"
 	return
 }
 

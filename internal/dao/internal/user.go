@@ -24,7 +24,6 @@ type UserColumns struct {
 	SettingJson string //
 	CreatedAt   string //
 	UpdatedAt   string //
-	DeletedAt   string //
 }
 
 // userColumns holds the columns for the table user.
@@ -33,7 +32,6 @@ var userColumns = UserColumns{
 	SettingJson: "setting_json",
 	CreatedAt:   "created_at",
 	UpdatedAt:   "updated_at",
-	DeletedAt:   "deleted_at",
 }
 
 // NewUserDao creates and returns a new DAO object for table data access.

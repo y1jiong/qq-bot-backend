@@ -39,8 +39,10 @@ func (s *sBot) SendMessage(ctx context.Context,
 	if groupId != 0 {
 		userId = 0
 		span.SetAttributes(attribute.Int64("send_message.group_id", groupId))
+		_ = s.MarkGroupMsgAsRead(ctx, groupId)
 	} else {
 		span.SetAttributes(attribute.Int64("send_message.user_id", userId))
+		_ = s.MarkPrivateMsgAsRead(ctx, userId)
 	}
 
 	// echo sign
@@ -570,9 +572,9 @@ func (s *sBot) Mute(ctx context.Context, groupId, userId int64, seconds int) {
 	ctx, span := gtrace.NewSpan(ctx, "bot.Mute")
 	defer span.End()
 	span.SetAttributes(
-		attribute.Int64("mute_prototype.group_id", groupId),
-		attribute.Int64("mute_prototype.user_id", userId),
-		attribute.Int("mute_prototype.seconds", seconds),
+		attribute.Int64("mute.group_id", groupId),
+		attribute.Int64("mute.user_id", userId),
+		attribute.Int("mute.seconds", seconds),
 	)
 	var err error
 	defer func() {
@@ -788,8 +790,8 @@ func (s *sBot) ProfileLike(ctx context.Context, userId int64, times int) (err er
 	ctx, span := gtrace.NewSpan(ctx, "bot.ProfileLike")
 	defer span.End()
 	span.SetAttributes(
-		attribute.Int64("like.user_id", userId),
-		attribute.Int("like.times", times),
+		attribute.Int64("profile_like.user_id", userId),
+		attribute.Int("profile_like.times", times),
 	)
 	defer func() {
 		if err != nil {
@@ -995,4 +997,178 @@ func (s *sBot) Okay(ctx context.Context) (err error) {
 		}
 		return s.Poke(ctx, groupId, s.GetUserId(ctx))
 	}
+}
+
+func (s *sBot) MarkAllAsRead(ctx context.Context) (err error) {
+	ctx, span := gtrace.NewSpan(ctx, "bot.MarkAllAsRead")
+	defer span.End()
+	defer func() {
+		if err != nil {
+			span.SetStatus(codes.Error, err.Error())
+		}
+	}()
+
+	// echo sign
+	echoSign := s.generateEchoSignWithTrace(ctx)
+	// 参数
+	req := struct {
+		Action string `json:"action"`
+		Echo   string `json:"echo"`
+	}{
+		Action: "_mark_all_as_read",
+		Echo:   echoSign,
+	}
+	reqJSON, err := sonic.Marshal(req)
+	if err != nil {
+		g.Log().Error(ctx, err)
+		return
+	}
+	// callback
+	wg := sync.WaitGroup{}
+	defer wg.Wait()
+	wgDone := sync.OnceFunc(wg.Done)
+	wg.Add(1)
+	callback := func(ctx context.Context, asyncCtx context.Context) {
+		defer wgDone()
+		if err = s.defaultEchoHandler(asyncCtx); err != nil {
+			return
+		}
+	}
+	timeout := func(ctx context.Context) {
+		defer wgDone()
+		err = errors.New("echo timeout")
+	}
+	// echo
+	if err = s.pushEchoCache(ctx, echoSign, callback, timeout); err != nil {
+		g.Log().Error(ctx, err)
+		return
+	}
+	// 发送响应
+	if err = s.writeMessage(ctx, websocket.TextMessage, reqJSON); err != nil {
+		g.Log().Warning(ctx, err)
+		return
+	}
+	return
+}
+
+func (s *sBot) MarkPrivateMsgAsRead(ctx context.Context, userId int64) (err error) {
+	ctx, span := gtrace.NewSpan(ctx, "bot.MarkPrivateMsgAsRead")
+	defer span.End()
+	span.SetAttributes(attribute.Int64("mark_private_msg_as_read.user_id", userId))
+	defer func() {
+		if err != nil {
+			span.SetStatus(codes.Error, err.Error())
+		}
+	}()
+
+	// echo sign
+	echoSign := s.generateEchoSignWithTrace(ctx)
+	// 参数
+	req := struct {
+		Action string `json:"action"`
+		Echo   string `json:"echo"`
+		Params struct {
+			UserId int64 `json:"user_id"`
+		} `json:"params"`
+	}{
+		Action: "mark_private_msg_as_read",
+		Echo:   echoSign,
+		Params: struct {
+			UserId int64 `json:"user_id"`
+		}{
+			UserId: userId,
+		},
+	}
+	reqJSON, err := sonic.Marshal(req)
+	if err != nil {
+		g.Log().Error(ctx, err)
+		return
+	}
+	// callback
+	wg := sync.WaitGroup{}
+	defer wg.Wait()
+	wgDone := sync.OnceFunc(wg.Done)
+	wg.Add(1)
+	callback := func(ctx context.Context, asyncCtx context.Context) {
+		defer wgDone()
+		if err = s.defaultEchoHandler(asyncCtx); err != nil {
+			return
+		}
+	}
+	timeout := func(ctx context.Context) {
+		defer wgDone()
+		err = errors.New("echo timeout")
+	}
+	// echo
+	if err = s.pushEchoCache(ctx, echoSign, callback, timeout); err != nil {
+		g.Log().Error(ctx, err)
+		return
+	}
+	// 发送响应
+	if err = s.writeMessage(ctx, websocket.TextMessage, reqJSON); err != nil {
+		g.Log().Warning(ctx, err)
+		return
+	}
+	return
+}
+
+func (s *sBot) MarkGroupMsgAsRead(ctx context.Context, groupId int64) (err error) {
+	ctx, span := gtrace.NewSpan(ctx, "bot.MarkGroupMsgAsRead")
+	defer span.End()
+	span.SetAttributes(attribute.Int64("mark_group_msg_as_read.group_id", groupId))
+	defer func() {
+		if err != nil {
+			span.SetStatus(codes.Error, err.Error())
+		}
+	}()
+
+	// echo sign
+	echoSign := s.generateEchoSignWithTrace(ctx)
+	// 参数
+	req := struct {
+		Action string `json:"action"`
+		Echo   string `json:"echo"`
+		Params struct {
+			GroupId int64 `json:"group_id"`
+		} `json:"params"`
+	}{
+		Action: "mark_group_msg_as_read",
+		Echo:   echoSign,
+		Params: struct {
+			GroupId int64 `json:"group_id"`
+		}{
+			GroupId: groupId,
+		},
+	}
+	reqJSON, err := sonic.Marshal(req)
+	if err != nil {
+		g.Log().Error(ctx, err)
+		return
+	}
+	// callback
+	wg := sync.WaitGroup{}
+	defer wg.Wait()
+	wgDone := sync.OnceFunc(wg.Done)
+	wg.Add(1)
+	callback := func(ctx context.Context, asyncCtx context.Context) {
+		defer wgDone()
+		if err = s.defaultEchoHandler(asyncCtx); err != nil {
+			return
+		}
+	}
+	timeout := func(ctx context.Context) {
+		defer wgDone()
+		err = errors.New("echo timeout")
+	}
+	// echo
+	if err = s.pushEchoCache(ctx, echoSign, callback, timeout); err != nil {
+		g.Log().Error(ctx, err)
+		return
+	}
+	// 发送响应
+	if err = s.writeMessage(ctx, websocket.TextMessage, reqJSON); err != nil {
+		g.Log().Warning(ctx, err)
+		return
+	}
+	return
 }

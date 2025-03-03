@@ -26,6 +26,14 @@ func tryCrontab(ctx context.Context, cmd string) (caught bool, retMsg string) {
 	case nextBranchRe.MatchString(cmd):
 		next := nextBranchRe.FindStringSubmatch(cmd)
 		switch next[1] {
+		case "oneshot":
+			var creatorId int64
+			if userId := service.Bot().GetUserId(ctx); !service.User().IsSystemTrustedUser(ctx, userId) {
+				creatorId = userId
+			}
+			// /crontab oneshot <name>
+			retMsg = service.Crontab().OneshotReturnRes(ctx, next[2], creatorId)
+			caught = true
 		case "query":
 			var creatorId int64
 			if userId := service.Bot().GetUserId(ctx); !service.User().IsSystemTrustedUser(ctx, userId) {

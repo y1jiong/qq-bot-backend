@@ -63,7 +63,6 @@ create table if not exists "user"
     setting_json jsonb                    not null,
     created_at   timestamp with time zone not null,
     updated_at   timestamp with time zone not null,
-    deleted_at   timestamp with time zone,
     constraint user_pk
         primary key (user_id)
 );

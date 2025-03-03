@@ -2,8 +2,10 @@ package crontab
 
 import (
 	"context"
+	"errors"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/os/gcron"
+	"go.opentelemetry.io/otel/trace"
 	"qq-bot-backend/internal/dao"
 	"qq-bot-backend/internal/model/entity"
 	"qq-bot-backend/internal/service"
@@ -60,16 +62,30 @@ func (s *sCrontab) getTasks(ctx context.Context) (tasks []entity.Crontab, err er
 	return
 }
 
-func (s *sCrontab) getTask(ctx context.Context, name string) (task *entity.Crontab, err error) {
-	err = dao.Crontab.Ctx(ctx).
+func (s *sCrontab) getTask(ctx context.Context, name string, creatorId int64) (task *entity.Crontab, err error) {
+	q := dao.Crontab.Ctx(ctx).
 		Fields(
 			dao.Crontab.Columns().Name,
 			dao.Crontab.Columns().Expression,
 			dao.Crontab.Columns().BotId,
 			dao.Crontab.Columns().Request,
 		).
-		Where(dao.Crontab.Columns().Name, name).
-		Scan(&task)
+		Where(dao.Crontab.Columns().Name, name)
+	if creatorId != 0 {
+		q = q.Where(dao.Crontab.Columns().CreatorId, creatorId)
+	}
+	err = q.Scan(&task)
+	return
+}
+
+func (s *sCrontab) oneshot(botId int64, reqJSON []byte) (err error) {
+	botCtx := service.Bot().LoadConnection(botId)
+	if botCtx == nil {
+		return errors.New("bot not found")
+	}
+	// new trace
+	botCtx = trace.ContextWithSpanContext(botCtx, trace.SpanContext{})
+	service.Bot().Process(botCtx, reqJSON, service.Process().Process)
 	return
 }
 
@@ -94,11 +110,7 @@ func (s *sCrontab) add(ctx context.Context, name, expr string, botId int64, reqJ
 	}
 
 	_, err = crontab.AddSingleton(ctx, expr, func(ctx context.Context) {
-		botCtx := service.Bot().LoadConnection(botId)
-		if botCtx == nil {
-			return
-		}
-		service.Bot().Process(botCtx, reqJSON, service.Process().Process)
+		_ = s.oneshot(botId, reqJSON)
 	}, name)
 
 	return

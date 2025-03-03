@@ -155,7 +155,7 @@ func (s *sCrontab) ChangeBotIdReturnRes(ctx context.Context,
 
 	s.remove(name)
 
-	task, err := s.getTask(ctx, name)
+	task, err := s.getTask(ctx, name, creatorId)
 	if err != nil {
 		g.Log().Error(ctx, err)
 		retMsg = "获取失败"
@@ -173,5 +173,27 @@ func (s *sCrontab) ChangeBotIdReturnRes(ctx context.Context,
 	}
 
 	retMsg = name + " -> " + gconv.String(botId)
+	return
+}
+
+func (s *sCrontab) OneshotReturnRes(ctx context.Context, name string, creatorId int64) (retMsg string) {
+	task, err := s.getTask(ctx, name, creatorId)
+	if err != nil {
+		g.Log().Error(ctx, err)
+		retMsg = "获取失败"
+		return
+	}
+	if task == nil {
+		retMsg = "未找到任务"
+		return
+	}
+
+	if err = s.oneshot(task.BotId, []byte(task.Request)); err != nil {
+		g.Log().Error(ctx, err)
+		retMsg = "执行失败"
+		return
+	}
+
+	retMsg = name
 	return
 }

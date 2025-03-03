@@ -74,6 +74,9 @@ type (
 		EmojiLike(ctx context.Context, messageId int64, emojiId string) (err error)
 		Poke(ctx context.Context, groupId int64, userId int64) (err error)
 		Okay(ctx context.Context) (err error)
+		MarkAllAsRead(ctx context.Context) (err error)
+		MarkPrivateMsgAsRead(ctx context.Context, userId int64) (err error)
+		MarkGroupMsgAsRead(ctx context.Context, groupId int64) (err error)
 		RewriteMessage(ctx context.Context, message string)
 		SetHistory(ctx context.Context, history string) error
 		CacheMessageAstNode(ctx context.Context)

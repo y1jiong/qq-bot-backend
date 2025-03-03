@@ -14,5 +14,4 @@ type User struct {
 	SettingJson string      `json:"setting_json" orm:"setting_json" ` //
 	CreatedAt   *gtime.Time `json:"created_at"   orm:"created_at"   ` //
 	UpdatedAt   *gtime.Time `json:"updated_at"   orm:"updated_at"   ` //
-	DeletedAt   *gtime.Time `json:"deleted_at"   orm:"deleted_at"   ` //
 }
