@@ -40,9 +40,9 @@ func tryList(ctx context.Context, cmd string) (caught bool, retMsg string) {
 			// /list copy-key <list_name> <src_key> <dst_key>
 			retMsg = service.List().CopyListKeyReturnRes(ctx, next[1], dv[1], dv[2])
 			caught = true
-		case "glance":
-			// /list glance <list_name>
-			retMsg = service.List().GlanceListDataReturnRes(ctx, next[2])
+		case "show":
+			// /list show <list_name>
+			retMsg = service.List().ShowListDataReturnRes(ctx, next[2])
 			caught = true
 		case "query":
 			// /list query <>

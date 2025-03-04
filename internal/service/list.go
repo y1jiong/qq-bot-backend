@@ -32,7 +32,7 @@ type (
 		ResetListDataReturnRes(ctx context.Context, listName string) (retMsg string)
 		SetListDataReturnRes(ctx context.Context, listName string, newListStr string) (retMsg string)
 		AppendListDataReturnRes(ctx context.Context, listName string, newListStr string) (retMsg string)
-		GlanceListDataReturnRes(ctx context.Context, listName string) (retMsg string)
+		ShowListDataReturnRes(ctx context.Context, listName string) (retMsg string)
 		CopyListKeyReturnRes(ctx context.Context, listName string, srcKey string, dstKey string) (retMsg string)
 	}
 )

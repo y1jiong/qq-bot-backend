@@ -12,7 +12,7 @@ import (
 type (
 	ICrontab interface {
 		Run(ctx context.Context)
-		GlanceReturnRes(ctx context.Context, creatorId int64) (retMsg string)
+		ShowReturnRes(ctx context.Context, creatorId int64) (retMsg string)
 		QueryReturnRes(ctx context.Context, name string, creatorId int64) (retMsg string)
 		AddReturnRes(ctx context.Context, name string, expr string, creatorId int64, botId int64, reqJSON []byte) (retMsg string)
 		RemoveReturnRes(ctx context.Context, name string, creatorId int64) (retMsg string)

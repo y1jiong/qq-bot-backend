@@ -461,7 +461,7 @@ func (s *sList) AppendListDataReturnRes(ctx context.Context, listName, newListSt
 	return
 }
 
-func (s *sList) GlanceListDataReturnRes(ctx context.Context, listName string) (retMsg string) {
+func (s *sList) ShowListDataReturnRes(ctx context.Context, listName string) (retMsg string) {
 	// 参数合法性校验
 	if !legalListNameRe.MatchString(listName) {
 		return

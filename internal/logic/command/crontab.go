@@ -59,13 +59,13 @@ func tryCrontab(ctx context.Context, cmd string) (caught bool, retMsg string) {
 		}
 	case endBranchRe.MatchString(cmd):
 		switch cmd {
-		case "glance":
+		case "show":
 			var creatorId int64
 			if userId := service.Bot().GetUserId(ctx); !service.User().IsSystemTrustedUser(ctx, userId) {
 				creatorId = userId
 			}
-			// /crontab glance
-			retMsg = service.Crontab().GlanceReturnRes(ctx, creatorId)
+			// /crontab show
+			retMsg = service.Crontab().ShowReturnRes(ctx, creatorId)
 			caught = true
 		case "reload":
 			if !service.User().IsSystemTrustedUser(ctx, service.Bot().GetUserId(ctx)) {

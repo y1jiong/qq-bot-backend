@@ -20,7 +20,7 @@ v1.9
 | /list reset \<list_name>                          | 重置 list_name 的数据                                                                                | 同上                                                             |
 | /list rm \<list_name>                             | 删除 list_name（删除后原 list_name 不可使用，只能恢复）                                                          | 同上                                                             |
 | /list recover \<list_name>                        | 恢复 list_name                                                                                    | 同上                                                             |
-| /list glance \<list_name>                         | 快速查询 list_name 里的所有 key                                                                         | 同上或者 list_name 处于 global namespace 中                           |
+| /list show \<list_name>                           | 快速查询 list_name 里的所有 key                                                                         | 同上或者 list_name 处于 global namespace 中                           |
 
 ## List Operation
 
@@ -165,7 +165,7 @@ v1.9
 |-----------------------------------------|------------------|-----------------------|
 | /crontab add \<name> \<expr> \<message> | 添加定时任务（五段式）      | 需要系统授予的操作 crontab 的权限 |
 | /crontab rm \<name>                     | 删除定时任务           | 同上                    |
-| /crontab glance                         | 查询自己所有的定时任务      | 同上                    |
+| /crontab show                           | 查询自己所有的定时任务      | 同上                    |
 | /crontab query \<name>                  | 查询定时任务           | 同上                    |
 | /crontab ch-bind \<bot_id> \<name>      | 修改定时任务绑定的 bot_id | 同上                    |
 | /crontab oneshot \<name>                | 手动触发一次定时任务       | 同上                    |
@@ -258,7 +258,7 @@ v1.9
    若需要多层占位符，请手动换成 `{<key><number>}` 格式。程序会查找所有符合 `{<key><number>}` 格式的占位符，并将其中的数字递减
    1。当数字递减到 0 时，移除数字后缀。
 
-   e.g. `/list join example cmd cmd:///list glance example && /list len example`
+   e.g. `/list join example cmd cmd:///list show example && /list len example`
 
    **注意**：要触发 Commands 命令组合，消息必须以 Keyword 开头。
 

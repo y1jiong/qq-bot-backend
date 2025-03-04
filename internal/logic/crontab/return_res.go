@@ -9,7 +9,7 @@ import (
 	"strings"
 )
 
-func (s *sCrontab) GlanceReturnRes(ctx context.Context, creatorId int64) (retMsg string) {
+func (s *sCrontab) ShowReturnRes(ctx context.Context, creatorId int64) (retMsg string) {
 	var (
 		tasks []entity.Crontab
 	)
