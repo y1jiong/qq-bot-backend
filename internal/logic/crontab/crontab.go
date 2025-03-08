@@ -47,7 +47,7 @@ func (s *sCrontab) Run(ctx context.Context) {
 		}
 	}
 
-	g.Log().Info(ctx, "crontab has loaded", count, "tasks")
+	g.Log().Info(ctx, "crontab loaded", count, "tasks")
 }
 
 func (s *sCrontab) getTasks(ctx context.Context) (tasks []entity.Crontab, err error) {

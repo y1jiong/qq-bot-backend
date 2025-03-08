@@ -65,6 +65,10 @@ func (c *cBot) Websocket(r *ghttp.Request) {
 				return
 			}
 		}
+		// 试图从 Header 获取 botId
+		if botId == 0 {
+			botId = gconv.Int64(r.Header.Get("X-Self-Id"))
+		}
 		// 记录登录时间
 		service.Token().UpdateLoginTime(ctx, token)
 		span.SetAttributes(attribute.String("websocket.token_name", tokenName))
