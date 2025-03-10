@@ -75,7 +75,7 @@ func (s *sGroup) SetAntiRecallReturnRes(ctx context.Context, groupId int64, enab
 }
 
 func (s *sGroup) SetMessageNotificationReturnRes(ctx context.Context,
-	groupId int64, notificationGroupId int64,
+	groupId, notificationGroupId int64,
 ) (retMsg string) {
 	// 参数合法性校验
 	if groupId == 0 || notificationGroupId == 0 {

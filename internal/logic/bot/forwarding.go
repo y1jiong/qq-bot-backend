@@ -14,7 +14,9 @@ import (
 	"net/http"
 	"qq-bot-backend/internal/consts"
 	"qq-bot-backend/utility/codec"
+	"qq-bot-backend/utility/segment"
 	"sync"
+	"unicode/utf8"
 )
 
 var (
@@ -74,7 +76,12 @@ func (s *sBot) Forward(ctx context.Context, url, key string) {
 		return
 	}
 	if len(body) != 0 {
-		s.SendMsg(ctx, string(body))
+		if len(string(body)) > consts.MaxMessageLength*3 &&
+			utf8.RuneCountInString(segment.FilterCQCode(string(body))) > consts.MaxMessageLength {
+			s.SendForwardMsg(ctx, string(body))
+		} else {
+			s.SendMsg(ctx, string(body))
+		}
 	}
 
 	err = resp.Body.Close()

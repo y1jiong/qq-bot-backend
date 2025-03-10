@@ -53,13 +53,17 @@ type (
 		IsGroupOwnerOrAdminOrSysTrusted(ctx context.Context) bool
 		GetVersionInfo(ctx context.Context) (appName string, appVersion string, protocolVersion string, err error)
 		GetLikes(ctx context.Context) []map[string]any
-		SendMessage(ctx context.Context, messageType string, userId int64, groupId int64, msg string, plain bool) (messageId int64, err error)
+		MessageToFakeNode(userId int64, nickname string, message string) map[string]any
+		SendMessage(ctx context.Context, userId int64, groupId int64, msg string, plain bool) (messageId int64, err error)
 		// SendMsg 适用于**不需要**级联撤回的场景
 		SendMsg(ctx context.Context, msg string, plain ...bool)
 		// SendMsgIfNotApiReq 适用于**非API请求**且**需要**级联撤回的场景
 		SendMsgIfNotApiReq(ctx context.Context, msg string, plain ...bool)
 		// SendMsgCacheContext 适用于**需要**级联撤回的场景
 		SendMsgCacheContext(ctx context.Context, msg string, plain ...bool)
+		SendForwardMessage(ctx context.Context, userId int64, groupId int64, nodes []map[string]any) (messageId int64, err error)
+		SendForwardMsg(ctx context.Context, msg string)
+		SendForwardMsgCacheContext(ctx context.Context, msg string)
 		SendFileToGroup(ctx context.Context, groupId int64, filePath string, name string, folder string) (err error)
 		SendFileToUser(ctx context.Context, userId int64, filePath string, name string) (err error)
 		SendFile(ctx context.Context, filePath string, name string) (err error)

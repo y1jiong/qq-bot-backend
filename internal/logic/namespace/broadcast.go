@@ -28,7 +28,7 @@ func (s *sNamespace) Broadcast(ctx context.Context, namespace, message string, o
 			continue
 		}
 
-		_, _ = service.Bot().SendMessage(ctx, "", 0, group.GroupId, message, false)
+		_, _ = service.Bot().SendMessage(ctx, 0, group.GroupId, message, false)
 
 		time.Sleep(time.Duration(grand.N(1000, 10000)) * time.Millisecond)
 	}

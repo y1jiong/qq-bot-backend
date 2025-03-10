@@ -14,7 +14,6 @@ import (
 )
 
 func (s *sBot) SendMessage(ctx context.Context,
-	messageType string,
 	userId, groupId int64,
 	msg string,
 	plain bool,
@@ -68,11 +67,10 @@ func (s *sBot) SendMessage(ctx context.Context,
 			UserId      int64  `json:"user_id,omitempty"`
 			GroupId     int64  `json:"group_id,omitempty"`
 		}{
-			MessageType: messageType,
-			Message:     msg,
-			AutoEscape:  plain,
-			UserId:      userId,
-			GroupId:     groupId,
+			Message:    msg,
+			AutoEscape: plain,
+			UserId:     userId,
+			GroupId:    groupId,
 		},
 	}
 	// message segment
@@ -125,7 +123,7 @@ func (s *sBot) SendMsg(ctx context.Context, msg string, plain ...bool) {
 	if len(plain) > 0 && plain[0] {
 		p = true
 	}
-	_, _ = s.SendMessage(ctx, s.GetMsgType(ctx), s.GetUserId(ctx), s.GetGroupId(ctx), msg, p)
+	_, _ = s.SendMessage(ctx, s.GetUserId(ctx), s.GetGroupId(ctx), msg, p)
 }
 
 // SendMsgIfNotApiReq 适用于**非API请求**且**需要**级联撤回的场景
@@ -142,7 +140,127 @@ func (s *sBot) SendMsgCacheContext(ctx context.Context, msg string, plain ...boo
 	if len(plain) > 0 && plain[0] {
 		p = true
 	}
-	sentMsgId, err := s.SendMessage(ctx, s.GetMsgType(ctx), s.GetUserId(ctx), s.GetGroupId(ctx), msg, p)
+	sentMsgId, err := s.SendMessage(ctx, s.GetUserId(ctx), s.GetGroupId(ctx), msg, p)
+	if err != nil {
+		return
+	}
+	_ = s.CacheMessageContext(ctx, sentMsgId)
+}
+
+func (s *sBot) SendForwardMessage(ctx context.Context,
+	userId, groupId int64,
+	nodes []map[string]any,
+) (messageId int64, err error) {
+	// 参数校验
+	if userId == 0 && groupId == 0 {
+		return 0, errors.New("userId 和 groupId 不能同时为 0")
+	}
+	if len(nodes) == 0 {
+		return
+	}
+
+	ctx, span := gtrace.NewSpan(ctx, "bot.SendForwardMessage")
+	defer span.End()
+	{
+		messagesJSON, _ := sonic.MarshalString(nodes)
+		span.SetAttributes(attribute.String("send_forward_message.messages", messagesJSON))
+	}
+	defer func() {
+		if err != nil {
+			span.SetStatus(codes.Error, err.Error())
+		}
+	}()
+
+	if groupId != 0 {
+		userId = 0
+		span.SetAttributes(attribute.Int64("send_forward_message.group_id", groupId))
+		_ = s.MarkGroupMsgAsRead(ctx, groupId)
+	} else {
+		span.SetAttributes(attribute.Int64("send_forward_message.user_id", userId))
+		_ = s.MarkPrivateMsgAsRead(ctx, userId)
+	}
+
+	// echo sign
+	echoSign := s.generateEchoSignWithTrace(ctx)
+	// 参数
+	req := struct {
+		Action string `json:"action"`
+		Echo   string `json:"echo"`
+		Params struct {
+			MessageType string           `json:"message_type,omitempty"`
+			UserId      int64            `json:"user_id,omitempty"`
+			GroupId     int64            `json:"group_id,omitempty"`
+			Messages    []map[string]any `json:"messages"`
+		} `json:"params"`
+	}{
+		Action: "send_forward_msg",
+		Echo:   echoSign,
+		Params: struct {
+			MessageType string           `json:"message_type,omitempty"`
+			UserId      int64            `json:"user_id,omitempty"`
+			GroupId     int64            `json:"group_id,omitempty"`
+			Messages    []map[string]any `json:"messages"`
+		}{
+			UserId:   userId,
+			GroupId:  groupId,
+			Messages: nodes,
+		},
+	}
+
+	reqJSON, err := sonic.Marshal(req)
+	if err != nil {
+		g.Log().Error(ctx, err)
+		return
+	}
+	// callback
+	wg := sync.WaitGroup{}
+	defer wg.Wait()
+	wgDone := sync.OnceFunc(wg.Done)
+	wg.Add(1)
+	callback := func(ctx context.Context, asyncCtx context.Context) {
+		defer wgDone()
+		if err = s.defaultEchoHandler(asyncCtx); err != nil {
+			return
+		}
+		messageId = s.getMessageIdFromData(asyncCtx)
+	}
+	timeout := func(ctx context.Context) {
+		defer wgDone()
+		err = errors.New("echo timeout")
+	}
+	// echo
+	if err = s.pushEchoCache(ctx, echoSign, callback, timeout); err != nil {
+		g.Log().Error(ctx, err)
+		return
+	}
+	// 发送响应
+	if err = s.writeMessage(ctx, websocket.TextMessage, reqJSON); err != nil {
+		g.Log().Warning(ctx, err)
+		return
+	}
+	return
+}
+
+func (s *sBot) SendForwardMsg(ctx context.Context, msg string) {
+	botId, nickname := s.GetLoginInfo(ctx)
+	_, _ = s.SendForwardMessage(ctx,
+		s.GetUserId(ctx),
+		s.GetGroupId(ctx),
+		[]map[string]any{
+			s.MessageToFakeNode(botId, nickname, msg),
+		},
+	)
+}
+
+func (s *sBot) SendForwardMsgCacheContext(ctx context.Context, msg string) {
+	botId, nickname := s.GetLoginInfo(ctx)
+	sentMsgId, err := s.SendForwardMessage(ctx,
+		s.GetUserId(ctx),
+		s.GetGroupId(ctx),
+		[]map[string]any{
+			s.MessageToFakeNode(botId, nickname, msg),
+		},
+	)
 	if err != nil {
 		return
 	}
