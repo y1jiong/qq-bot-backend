@@ -192,7 +192,7 @@ func (s *sEvent) keywordReplyWebhook(ctx context.Context,
 				replyMsg = "Image cache failed"
 				return
 			}
-			replyMsg = "[CQ:image,file=" + mediumURL + "]"
+			replyMsg = "[CQ:image,file=" + codec.EncodeCQCode(mediumURL) + "]"
 			return
 		}
 		// 如果是音频
@@ -202,7 +202,7 @@ func (s *sEvent) keywordReplyWebhook(ctx context.Context,
 				replyMsg = "Audio cache failed"
 				return
 			}
-			replyMsg = "[CQ:record,file=" + mediumURL + "]"
+			replyMsg = "[CQ:record,file=" + codec.EncodeCQCode(mediumURL) + "]"
 			noReplyPrefix = true
 			return
 		}
@@ -213,7 +213,7 @@ func (s *sEvent) keywordReplyWebhook(ctx context.Context,
 				replyMsg = "Video cache failed"
 				return
 			}
-			replyMsg = "[CQ:video,file=" + mediumURL + "]"
+			replyMsg = "[CQ:video,file=" + codec.EncodeCQCode(mediumURL) + "]"
 			noReplyPrefix = true
 			return
 		}
