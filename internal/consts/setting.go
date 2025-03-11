@@ -1,5 +1,9 @@
 package consts
 
+const (
+	MaxMessageLength = 140
+)
+
 // group setting cmd
 const (
 	RegexpCmd       = "regexp"

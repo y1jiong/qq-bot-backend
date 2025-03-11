@@ -7,6 +7,7 @@ import (
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gorilla/websocket"
 	"qq-bot-backend/internal/service"
+	"qq-bot-backend/utility/segment"
 	"sync"
 )
 
@@ -78,6 +79,17 @@ func (s *sBot) CloneReqNode(ctx context.Context) *ast.Node {
 	_, _ = node.Unset("sender")
 
 	return &node
+}
+
+func (s *sBot) MessageToFakeNode(userId int64, nickname, message string) map[string]any {
+	return map[string]any{
+		"type": "node",
+		"data": map[string]any{
+			"user_id":  userId,
+			"nickname": nickname,
+			"content":  segment.ParseMessage(message),
+		},
+	}
 }
 
 func (s *sBot) writeMessage(ctx context.Context, messageType int, data []byte) error {

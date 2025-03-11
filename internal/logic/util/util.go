@@ -60,7 +60,7 @@ func (s *sUtil) FindBestKeywordMatch(ctx context.Context, msg string, lists map[
 	return
 }
 
-func (s *sUtil) MatchAllKeywords(str string, m map[string]any) (eureka bool, hit string, mValue string) {
+func (s *sUtil) MatchAllKeywords(str string, m map[string]any) (eureka bool, hit, mValue string) {
 	for _, k := range utility.ReverseSortedArrayFromMapKey(m) {
 		fields := strings.Fields(k)
 		allContains := true

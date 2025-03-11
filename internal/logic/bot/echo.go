@@ -3,9 +3,13 @@ package bot
 import (
 	"context"
 	"errors"
+	"github.com/bytedance/sonic"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/net/gtrace"
 	"github.com/gogf/gf/v2/os/gcache"
+	"github.com/gogf/gf/v2/util/guid"
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/propagation"
 	"go.opentelemetry.io/otel/trace"
 	"time"
 )
@@ -15,6 +19,25 @@ const (
 	echoTimeout = 60 * time.Second
 	echoTTL     = echoTimeout + 5*time.Second
 )
+
+func (s *sBot) generateEchoSignWithTrace(ctx context.Context) string {
+	header := make(map[string]string)
+	otel.GetTextMapPropagator().Inject(ctx, propagation.MapCarrier(header))
+	header["uid"] = guid.S()
+	echoSign, err := sonic.MarshalString(header)
+	if err != nil {
+		return header["uid"]
+	}
+	return echoSign
+}
+
+func (s *sBot) extractEchoSign(ctx context.Context, echoSign string) context.Context {
+	header := make(map[string]string)
+	if err := sonic.UnmarshalString(echoSign, &header); err != nil {
+		return ctx
+	}
+	return otel.GetTextMapPropagator().Extract(ctx, propagation.MapCarrier(header))
+}
 
 type echoModel struct {
 	LastContext  context.Context
