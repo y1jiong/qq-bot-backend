@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"context"
 	"crypto/tls"
-	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/net/gtrace"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
@@ -35,15 +34,13 @@ var initForwarding = sync.OnceFunc(func() {
 	}
 })
 
-func (s *sBot) Forward(ctx context.Context, url, key string) {
+func (s *sBot) Forward(ctx context.Context, url, key string) (err error) {
 	ctx, span := gtrace.NewSpan(ctx, codec.GetRouteURL(url))
 	defer span.End()
 	span.SetAttributes(attribute.String("http.url", url))
-	var err error
 	defer func() {
 		if err != nil {
 			span.SetStatus(codes.Error, err.Error())
-			g.Log().Notice(ctx, "forward", url, err)
 		}
 	}()
 
@@ -84,5 +81,5 @@ func (s *sBot) Forward(ctx context.Context, url, key string) {
 		}
 	}
 
-	err = resp.Body.Close()
+	return resp.Body.Close()
 }

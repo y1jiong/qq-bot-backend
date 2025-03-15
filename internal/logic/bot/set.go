@@ -30,8 +30,8 @@ func (s *sBot) getMessageAstNodeCacheKey(ctx context.Context) string {
 	return cacheKeyMsgIdPrefix + gconv.String(s.GetSelfId(ctx)) + "_" + gconv.String(s.GetMsgId(ctx))
 }
 
-func (s *sBot) CacheMessageAstNode(ctx context.Context) {
-	_ = gcache.Set(ctx,
+func (s *sBot) CacheMessageAstNode(ctx context.Context) error {
+	return gcache.Set(ctx,
 		s.getMessageAstNodeCacheKey(ctx),
 		s.reqNodeFromCtx(ctx),
 		messageContextTTL,

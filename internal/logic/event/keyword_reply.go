@@ -173,7 +173,7 @@ func (s *sEvent) keywordReplyWebhook(ctx context.Context,
 		return
 	}
 	if err != nil {
-		g.Log().Notice(ctx, "webhook", statusCode, method, urlLink, message, err)
+		g.Log().Warning(ctx, "webhook", statusCode, method, urlLink, message, err)
 		return
 	}
 	// Log

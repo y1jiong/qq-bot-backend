@@ -94,7 +94,11 @@ func (c *cBot) Websocket(r *ghttp.Request) {
 
 		// 加入连接
 		if botId == 0 {
-			botId, _ = service.Bot().GetLoginInfo(ctx)
+			var err error
+			botId, _, err = service.Bot().GetLoginInfo(ctx)
+			if err != nil {
+				g.Log().Warning(ctx, err)
+			}
 		}
 		if botId != 0 {
 			service.Bot().JoinConnection(ctx, botId)

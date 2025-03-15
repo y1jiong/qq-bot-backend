@@ -110,7 +110,9 @@ func (s *sCrontab) add(ctx context.Context, name, expr string, botId int64, reqJ
 	}
 
 	_, err = crontab.AddSingleton(ctx, expr, func(ctx context.Context) {
-		_ = s.oneshot(botId, reqJSON)
+		if err := s.oneshot(botId, reqJSON); err != nil {
+			g.Log().Notice(ctx, err)
+		}
 	}, name)
 
 	return

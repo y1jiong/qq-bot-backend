@@ -226,7 +226,9 @@ func (s *sGroup) KickFromListReturnRes(ctx context.Context,
 		kickSetLastOneCnt := len(kickSet) - 1
 		for k := range kickSet {
 			// 踢人
-			service.Bot().Kick(ctx, groupId, gconv.Int64(k))
+			if err = service.Bot().Kick(ctx, groupId, gconv.Int64(k)); err != nil {
+				g.Log().Warning(ctx, err)
+			}
 			cnt++
 			if cnt == kickSetLastOneCnt {
 				break
@@ -330,7 +332,9 @@ func (s *sGroup) KeepFromListReturnRes(ctx context.Context,
 		kickSetLastOneCnt := len(kickSet) - 1
 		for k := range kickSet {
 			// 踢人
-			service.Bot().Kick(ctx, groupId, gconv.Int64(k))
+			if err = service.Bot().Kick(ctx, groupId, gconv.Int64(k)); err != nil {
+				g.Log().Warning(ctx, err)
+			}
 			cnt++
 			if cnt == kickSetLastOneCnt {
 				break
@@ -372,10 +376,15 @@ func (s *sGroup) CheckExistReturnRes(ctx context.Context) (retMsg string) {
 	pageNum, pageSize := 1, 10
 	var msgBuilder strings.Builder
 	waitForDelGroups := make([]int64, 0)
-	botId, _ := service.Bot().GetLoginInfo(ctx)
+	botId, _, err := service.Bot().GetLoginInfo(ctx)
+	if err != nil {
+		g.Log().Warning(ctx, err)
+		retMsg = "获取登录信息失败"
+		return
+	}
 	for {
 		var groupEs []*entity.Group
-		err := dao.Group.Ctx(ctx).
+		err = dao.Group.Ctx(ctx).
 			Fields(dao.Group.Columns().GroupId).
 			Page(pageNum, pageSize).
 			Scan(&groupEs)
