@@ -61,7 +61,9 @@ func (s *sCommand) TryCommand(ctx context.Context, message string) (caught bool,
 			service.Bot().GetCardOrNickname(ctx)+"("+gconv.String(userId)+
 				") in group("+gconv.String(groupId)+") send cmd "+message)
 		if retMsg == "" {
-			_ = service.Bot().Okay(ctx)
+			if err := service.Bot().Okay(ctx); err != nil {
+				g.Log().Warning(ctx, err)
+			}
 		}
 	}()
 

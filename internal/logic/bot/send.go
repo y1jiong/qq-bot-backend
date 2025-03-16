@@ -38,10 +38,14 @@ func (s *sBot) SendMessage(ctx context.Context,
 	if groupId != 0 {
 		userId = 0
 		span.SetAttributes(attribute.Int64("send_message.group_id", groupId))
-		_ = s.MarkGroupMsgAsRead(ctx, groupId)
+		if err = s.MarkGroupMsgAsRead(ctx, groupId); err != nil {
+			g.Log().Warning(ctx, err)
+		}
 	} else {
 		span.SetAttributes(attribute.Int64("send_message.user_id", userId))
-		_ = s.MarkPrivateMsgAsRead(ctx, userId)
+		if err = s.MarkPrivateMsgAsRead(ctx, userId); err != nil {
+			g.Log().Warning(ctx, err)
+		}
 	}
 
 	// echo sign
@@ -123,7 +127,9 @@ func (s *sBot) SendMsg(ctx context.Context, msg string, plain ...bool) {
 	if len(plain) > 0 && plain[0] {
 		p = true
 	}
-	_, _ = s.SendMessage(ctx, s.GetUserId(ctx), s.GetGroupId(ctx), msg, p)
+	if _, err := s.SendMessage(ctx, s.GetUserId(ctx), s.GetGroupId(ctx), msg, p); err != nil {
+		g.Log().Warning(ctx, err)
+	}
 }
 
 // SendMsgIfNotApiReq 适用于**非API请求**且**需要**级联撤回的场景
@@ -144,7 +150,9 @@ func (s *sBot) SendMsgCacheContext(ctx context.Context, msg string, plain ...boo
 	if err != nil {
 		return
 	}
-	_ = s.CacheMessageContext(ctx, sentMsgId)
+	if err = s.CacheMessageContext(ctx, sentMsgId); err != nil {
+		g.Log().Error(ctx, err)
+	}
 }
 
 func (s *sBot) SendForwardMessage(ctx context.Context,
@@ -174,10 +182,14 @@ func (s *sBot) SendForwardMessage(ctx context.Context,
 	if groupId != 0 {
 		userId = 0
 		span.SetAttributes(attribute.Int64("send_forward_message.group_id", groupId))
-		_ = s.MarkGroupMsgAsRead(ctx, groupId)
+		if err = s.MarkGroupMsgAsRead(ctx, groupId); err != nil {
+			g.Log().Warning(ctx, err)
+		}
 	} else {
 		span.SetAttributes(attribute.Int64("send_forward_message.user_id", userId))
-		_ = s.MarkPrivateMsgAsRead(ctx, userId)
+		if err = s.MarkPrivateMsgAsRead(ctx, userId); err != nil {
+			g.Log().Warning(ctx, err)
+		}
 	}
 
 	// echo sign
@@ -242,18 +254,23 @@ func (s *sBot) SendForwardMessage(ctx context.Context,
 }
 
 func (s *sBot) SendForwardMsg(ctx context.Context, msg string) {
-	botId, nickname := s.GetLoginInfo(ctx)
-	_, _ = s.SendForwardMessage(ctx,
+	botId, nickname, err := s.GetLoginInfo(ctx)
+	if err != nil {
+		g.Log().Warning(ctx, err)
+	}
+	if _, err = s.SendForwardMessage(ctx,
 		s.GetUserId(ctx),
 		s.GetGroupId(ctx),
 		[]map[string]any{
 			s.MessageToFakeNode(botId, nickname, msg),
 		},
-	)
+	); err != nil {
+		g.Log().Warning(ctx, err)
+	}
 }
 
 func (s *sBot) SendForwardMsgCacheContext(ctx context.Context, msg string) {
-	botId, nickname := s.GetLoginInfo(ctx)
+	botId, nickname, _ := s.GetLoginInfo(ctx)
 	sentMsgId, err := s.SendForwardMessage(ctx,
 		s.GetUserId(ctx),
 		s.GetGroupId(ctx),
@@ -264,7 +281,9 @@ func (s *sBot) SendForwardMsgCacheContext(ctx context.Context, msg string) {
 	if err != nil {
 		return
 	}
-	_ = s.CacheMessageContext(ctx, sentMsgId)
+	if err = s.CacheMessageContext(ctx, sentMsgId); err != nil {
+		g.Log().Error(ctx, err)
+	}
 }
 
 func (s *sBot) SendFileToGroup(ctx context.Context, groupId int64, filePath, name, folder string) (err error) {
@@ -479,7 +498,8 @@ func (s *sBot) UploadFile(ctx context.Context, url string) (filePath string, err
 	return
 }
 
-func (s *sBot) ApproveJoinGroup(ctx context.Context, flag, subType string, approve bool, reason string) {
+func (s *sBot) ApproveJoinGroup(ctx context.Context, flag, subType string, approve bool, reason string,
+) (err error) {
 	ctx, span := gtrace.NewSpan(ctx, "bot.ApproveJoinGroup")
 	defer span.End()
 	span.SetAttributes(
@@ -488,7 +508,6 @@ func (s *sBot) ApproveJoinGroup(ctx context.Context, flag, subType string, appro
 		attribute.Bool("approve_join_group.approve", approve),
 		attribute.String("approve_join_group.reason", reason),
 	)
-	var err error
 	defer func() {
 		if err != nil {
 			span.SetStatus(codes.Error, err.Error())
@@ -556,6 +575,7 @@ func (s *sBot) ApproveJoinGroup(ctx context.Context, flag, subType string, appro
 		g.Log().Warning(ctx, err)
 		return
 	}
+	return
 }
 
 func (s *sBot) SetModel(ctx context.Context, model string) (err error) {
@@ -622,7 +642,7 @@ func (s *sBot) SetModel(ctx context.Context, model string) (err error) {
 	return
 }
 
-func (s *sBot) RecallMessage(ctx context.Context, messageId int64) {
+func (s *sBot) RecallMessage(ctx context.Context, messageId int64) (err error) {
 	if messageId == 0 {
 		return
 	}
@@ -630,7 +650,6 @@ func (s *sBot) RecallMessage(ctx context.Context, messageId int64) {
 	ctx, span := gtrace.NewSpan(ctx, "bot.RecallMessage")
 	defer span.End()
 	span.SetAttributes(attribute.Int64("recall_message.message_id", messageId))
-	var err error
 	defer func() {
 		if err != nil {
 			span.SetStatus(codes.Error, err.Error())
@@ -684,9 +703,10 @@ func (s *sBot) RecallMessage(ctx context.Context, messageId int64) {
 		g.Log().Warning(ctx, err)
 		return
 	}
+	return
 }
 
-func (s *sBot) Mute(ctx context.Context, groupId, userId int64, seconds int) {
+func (s *sBot) Mute(ctx context.Context, groupId, userId int64, seconds int) (err error) {
 	ctx, span := gtrace.NewSpan(ctx, "bot.Mute")
 	defer span.End()
 	span.SetAttributes(
@@ -694,7 +714,6 @@ func (s *sBot) Mute(ctx context.Context, groupId, userId int64, seconds int) {
 		attribute.Int64("mute.user_id", userId),
 		attribute.Int("mute.seconds", seconds),
 	)
-	var err error
 	defer func() {
 		if err != nil {
 			span.SetStatus(codes.Error, err.Error())
@@ -760,9 +779,10 @@ func (s *sBot) Mute(ctx context.Context, groupId, userId int64, seconds int) {
 		g.Log().Warning(ctx, err)
 		return
 	}
+	return
 }
 
-func (s *sBot) SetGroupCard(ctx context.Context, groupId, userId int64, card string) {
+func (s *sBot) SetGroupCard(ctx context.Context, groupId, userId int64, card string) (err error) {
 	ctx, span := gtrace.NewSpan(ctx, "bot.SetGroupCard")
 	defer span.End()
 	span.SetAttributes(
@@ -770,7 +790,6 @@ func (s *sBot) SetGroupCard(ctx context.Context, groupId, userId int64, card str
 		attribute.Int64("set_group_card.user_id", userId),
 		attribute.String("set_group_card.card", card),
 	)
-	var err error
 	defer func() {
 		if err != nil {
 			span.SetStatus(codes.Error, err.Error())
@@ -830,16 +849,16 @@ func (s *sBot) SetGroupCard(ctx context.Context, groupId, userId int64, card str
 		g.Log().Warning(ctx, err)
 		return
 	}
+	return
 }
 
-func (s *sBot) Kick(ctx context.Context, groupId, userId int64, reject ...bool) {
+func (s *sBot) Kick(ctx context.Context, groupId, userId int64, reject ...bool) (err error) {
 	ctx, span := gtrace.NewSpan(ctx, "bot.Kick")
 	defer span.End()
 	span.SetAttributes(
 		attribute.Int64("kick.group_id", groupId),
 		attribute.Int64("kick.user_id", userId),
 	)
-	var err error
 	defer func() {
 		if err != nil {
 			span.SetStatus(codes.Error, err.Error())
@@ -902,6 +921,7 @@ func (s *sBot) Kick(ctx context.Context, groupId, userId int64, reject ...bool) 
 		g.Log().Warning(ctx, err)
 		return
 	}
+	return
 }
 
 func (s *sBot) ProfileLike(ctx context.Context, userId int64, times int) (err error) {

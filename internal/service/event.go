@@ -11,6 +11,7 @@ import (
 
 type (
 	IEvent interface {
+		TryCacheMessageAstNode(ctx context.Context)
 		TryForward(ctx context.Context) (caught bool)
 		TryApproveAddGroup(ctx context.Context) (caught bool)
 		TryLockCard(ctx context.Context) (caught bool)

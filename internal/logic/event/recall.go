@@ -2,6 +2,7 @@ package event
 
 import (
 	"context"
+	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/net/gtrace"
 	"github.com/gogf/gf/v2/util/gconv"
 	"qq-bot-backend/internal/service"
@@ -17,7 +18,9 @@ func (s *sEvent) TryCascadingRecall(ctx context.Context) (caught bool) {
 	defer span.End()
 
 	for _, messageId := range messageIds {
-		service.Bot().RecallMessage(ctx, messageId)
+		if err = service.Bot().RecallMessage(ctx, messageId); err != nil {
+			g.Log().Warning(ctx, err)
+		}
 	}
 
 	caught = true
@@ -38,7 +41,9 @@ func (s *sEvent) TryEmojiRecall(ctx context.Context) (caught bool) {
 
 	for _, like := range likes {
 		if gconv.String(like["emoji_id"]) == "326" { // 326: 机器人生气
-			service.Bot().RecallMessage(ctx, service.Bot().GetMsgId(ctx))
+			if err := service.Bot().RecallMessage(ctx, service.Bot().GetMsgId(ctx)); err != nil {
+				g.Log().Warning(ctx, err)
+			}
 			caught = true
 			break
 		}

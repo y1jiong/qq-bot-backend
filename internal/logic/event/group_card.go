@@ -51,7 +51,10 @@ func (s *sEvent) TryLockCard(ctx context.Context) (caught bool) {
 	oldCard = lastCard
 
 	// 执行锁定
-	service.Bot().SetGroupCard(ctx, groupId, service.Bot().GetUserId(ctx), oldCard)
+	if err = service.Bot().SetGroupCard(ctx, groupId, service.Bot().GetUserId(ctx), oldCard); err != nil {
+		g.Log().Warning(ctx, err)
+		return
+	}
 	// 发送提示
 	service.Bot().SendMsg(ctx, "[CQ:at,qq="+gconv.String(userId)+"]名片已锁定，请联系管理员修改")
 	return
@@ -72,7 +75,9 @@ func (s *sEvent) TryAutoSetCard(ctx context.Context) (caught bool) {
 	userId := service.Bot().GetUserId(ctx)
 	if card, ok := listMap[gconv.String(userId)].(string); ok {
 		// 执行设置
-		service.Bot().SetGroupCard(ctx, groupId, userId, card)
+		if err := service.Bot().SetGroupCard(ctx, groupId, userId, card); err != nil {
+			g.Log().Warning(ctx, err)
+		}
 	}
 	return
 }

@@ -59,11 +59,14 @@ func (s *sEvent) TryApproveAddGroup(ctx context.Context) (caught bool) {
 		}
 		// 在开启自动通过、自动拒绝和黑名单的条件下发送审核回执
 		// 审核请求回执
-		service.Bot().ApproveJoinGroup(ctx,
+		if err := service.Bot().ApproveJoinGroup(ctx,
 			service.Bot().GetFlag(ctx),
 			service.Bot().GetSubType(ctx),
 			pass,
-			"")
+			"",
+		); err != nil {
+			g.Log().Warning(ctx, err)
+		}
 		// 打印审核日志
 		if pass {
 			logMsg = fmt.Sprintf("approve user(%v) join group(%v) with %v",
@@ -100,7 +103,9 @@ func (s *sEvent) TryApproveAddGroup(ctx context.Context) (caught bool) {
 	// 通知
 	if notificationGroupId :=
 		service.Group().GetApprovalNotificationGroupId(ctx, groupId); notificationGroupId != 0 {
-		_, _ = service.Bot().SendMessage(ctx, 0, notificationGroupId, logMsg, true)
+		if _, err := service.Bot().SendMessage(ctx, 0, notificationGroupId, logMsg, true); err != nil {
+			g.Log().Warning(ctx, err)
+		}
 	}
 
 	caught = true
@@ -133,7 +138,7 @@ func verifyMinecraftGenuine(ctx context.Context, comment string) (genuine bool, 
 	// Minecraft 正版验证
 	genuine, _, uuid, err := service.ThirdParty().QueryMinecraftGenuineUser(ctx, comment)
 	if err != nil {
-		g.Log().Notice(ctx, err)
+		g.Log().Warning(ctx, err)
 	}
 	return
 }

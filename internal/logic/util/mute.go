@@ -2,6 +2,7 @@ package util
 
 import (
 	"context"
+	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/util/gconv"
 	"qq-bot-backend/internal/service"
 	"qq-bot-backend/utility"
@@ -39,5 +40,7 @@ func (s *sUtil) AutoMute(ctx context.Context,
 		}
 	}
 	// 禁言 BaseMuteMinutes^times 分钟
-	service.Bot().Mute(ctx, groupId, userId, muteMinutes*60)
+	if err := service.Bot().Mute(ctx, groupId, userId, muteMinutes*60); err != nil {
+		g.Log().Warning(ctx, err)
+	}
 }

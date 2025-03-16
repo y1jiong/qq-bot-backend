@@ -44,10 +44,8 @@ func (s *sEvent) TryKeywordRecall(ctx context.Context) (caught bool) {
 		// 不需要撤回
 		return
 	}
-	// 撤回
-	service.Bot().RecallMessage(ctx, service.Bot().GetMsgId(ctx))
 	userId := service.Bot().GetUserId(ctx)
-	// 打印撤回日志
+	// 撤回日志
 	logMsg := fmt.Sprintf("recall group(%v) %v(%v) hit(%v) detail %v",
 		groupId,
 		service.Bot().GetCardOrNickname(ctx),
@@ -55,11 +53,18 @@ func (s *sEvent) TryKeywordRecall(ctx context.Context) (caught bool) {
 		hit,
 		msg,
 	)
-	g.Log().Info(ctx, logMsg)
+	// 撤回
+	if err := service.Bot().RecallMessage(ctx, service.Bot().GetMsgId(ctx)); err != nil {
+		g.Log().Warning(ctx, logMsg, err)
+	} else {
+		g.Log().Info(ctx, logMsg)
+	}
 	// 通知
 	if notificationGroupId :=
 		service.Group().GetMessageNotificationGroupId(ctx, groupId); notificationGroupId != 0 {
-		_, _ = service.Bot().SendMessage(ctx, 0, notificationGroupId, logMsg, true)
+		if _, err := service.Bot().SendMessage(ctx, 0, notificationGroupId, logMsg, true); err != nil {
+			g.Log().Warning(ctx, err)
+		}
 	}
 	// 禁言
 	service.Util().AutoMute(ctx, "keyword", groupId, userId,

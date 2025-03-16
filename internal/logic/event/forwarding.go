@@ -2,6 +2,7 @@ package event
 
 import (
 	"context"
+	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/net/gtrace"
 	"github.com/gogf/gf/v2/util/gconv"
 	"qq-bot-backend/internal/service"
@@ -35,7 +36,9 @@ func (s *sEvent) TryForward(ctx context.Context) (caught bool) {
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			service.Bot().Forward(ctx, url, key)
+			if err := service.Bot().Forward(ctx, url, key); err != nil {
+				g.Log().Warning(ctx, "forward", url, err)
+			}
 		}()
 	}
 	return
