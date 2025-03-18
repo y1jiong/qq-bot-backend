@@ -13,9 +13,10 @@ import (
 
 // ListDao is the data access object for the table list.
 type ListDao struct {
-	table   string      // table is the underlying table name of the DAO.
-	group   string      // group is the database configuration group name of the current DAO.
-	columns ListColumns // columns contains all the column names of Table for convenient usage.
+	table    string             // table is the underlying table name of the DAO.
+	group    string             // group is the database configuration group name of the current DAO.
+	columns  ListColumns        // columns contains all the column names of Table for convenient usage.
+	handlers []gdb.ModelHandler // handlers for customized model modification.
 }
 
 // ListColumns defines and stores column names for the table list.
@@ -39,11 +40,12 @@ var listColumns = ListColumns{
 }
 
 // NewListDao creates and returns a new DAO object for table data access.
-func NewListDao() *ListDao {
+func NewListDao(handlers ...gdb.ModelHandler) *ListDao {
 	return &ListDao{
-		group:   "default",
-		table:   "list",
-		columns: listColumns,
+		group:    "default",
+		table:    "list",
+		columns:  listColumns,
+		handlers: handlers,
 	}
 }
 
@@ -69,7 +71,11 @@ func (dao *ListDao) Group() string {
 
 // Ctx creates and returns a Model for the current DAO. It automatically sets the context for the current operation.
 func (dao *ListDao) Ctx(ctx context.Context) *gdb.Model {
-	return dao.DB().Model(dao.table).Safe().Ctx(ctx)
+	model := dao.DB().Model(dao.table)
+	for _, handler := range dao.handlers {
+		model = handler(model)
+	}
+	return model.Safe().Ctx(ctx)
 }
 
 // Transaction wraps the transaction logic using function f.

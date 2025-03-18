@@ -5,9 +5,9 @@ go 1.24
 require (
 	github.com/bitly/go-simplejson v0.5.1
 	github.com/bytedance/sonic v1.13.1
-	github.com/gogf/gf/contrib/drivers/pgsql/v2 v2.8.3
-	github.com/gogf/gf/contrib/trace/otlpgrpc/v2 v2.8.3
-	github.com/gogf/gf/v2 v2.8.3
+	github.com/gogf/gf/contrib/drivers/pgsql/v2 v2.9.0
+	github.com/gogf/gf/contrib/trace/otlpgrpc/v2 v2.9.0
+	github.com/gogf/gf/v2 v2.9.0
 	github.com/gorilla/websocket v1.5.3
 	github.com/lukesampson/figlet v0.0.0-20190211215653-8a3ef4a6ac42
 	go.opentelemetry.io/otel v1.35.0

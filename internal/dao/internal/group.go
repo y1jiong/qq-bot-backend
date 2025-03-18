@@ -13,9 +13,10 @@ import (
 
 // GroupDao is the data access object for the table group.
 type GroupDao struct {
-	table   string       // table is the underlying table name of the DAO.
-	group   string       // group is the database configuration group name of the current DAO.
-	columns GroupColumns // columns contains all the column names of Table for convenient usage.
+	table    string             // table is the underlying table name of the DAO.
+	group    string             // group is the database configuration group name of the current DAO.
+	columns  GroupColumns       // columns contains all the column names of Table for convenient usage.
+	handlers []gdb.ModelHandler // handlers for customized model modification.
 }
 
 // GroupColumns defines and stores column names for the table group.
@@ -41,11 +42,12 @@ var groupColumns = GroupColumns{
 }
 
 // NewGroupDao creates and returns a new DAO object for table data access.
-func NewGroupDao() *GroupDao {
+func NewGroupDao(handlers ...gdb.ModelHandler) *GroupDao {
 	return &GroupDao{
-		group:   "default",
-		table:   "group",
-		columns: groupColumns,
+		group:    "default",
+		table:    "group",
+		columns:  groupColumns,
+		handlers: handlers,
 	}
 }
 
@@ -71,7 +73,11 @@ func (dao *GroupDao) Group() string {
 
 // Ctx creates and returns a Model for the current DAO. It automatically sets the context for the current operation.
 func (dao *GroupDao) Ctx(ctx context.Context) *gdb.Model {
-	return dao.DB().Model(dao.table).Safe().Ctx(ctx)
+	model := dao.DB().Model(dao.table)
+	for _, handler := range dao.handlers {
+		model = handler(model)
+	}
+	return model.Safe().Ctx(ctx)
 }
 
 // Transaction wraps the transaction logic using function f.

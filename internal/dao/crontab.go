@@ -8,20 +8,15 @@ import (
 	"qq-bot-backend/internal/dao/internal"
 )
 
-// internalCrontabDao is an internal type for wrapping the internal DAO implementation.
-type internalCrontabDao = *internal.CrontabDao
-
 // crontabDao is the data access object for the table crontab.
 // You can define custom methods on it to extend its functionality as needed.
 type crontabDao struct {
-	internalCrontabDao
+	*internal.CrontabDao
 }
 
 var (
 	// Crontab is a globally accessible object for table crontab operations.
-	Crontab = crontabDao{
-		internal.NewCrontabDao(),
-	}
+	Crontab = crontabDao{internal.NewCrontabDao()}
 )
 
 // Add your custom methods and functionality below.
