@@ -9,6 +9,7 @@ import (
 	"qq-bot-backend/internal/consts"
 	"qq-bot-backend/internal/service"
 	"regexp"
+	"strings"
 )
 
 func (s *sEvent) TryApproveAddGroup(ctx context.Context) (caught bool) {
@@ -135,6 +136,10 @@ func isMatchRegexp(ctx context.Context, groupId int64, comment string) (match bo
 }
 
 func verifyMinecraftGenuine(ctx context.Context, comment string) (genuine bool, uuid string) {
+	const prefix = "答案："
+	if idx := strings.Index(comment, prefix); idx != -1 {
+		comment = comment[idx+len(prefix):]
+	}
 	// Minecraft 正版验证
 	genuine, _, uuid, err := service.ThirdParty().QueryMinecraftGenuineUser(ctx, comment)
 	if err != nil {

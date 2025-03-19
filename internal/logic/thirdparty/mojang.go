@@ -10,22 +10,11 @@ import (
 	"net/http"
 	"qq-bot-backend/internal/service"
 	"qq-bot-backend/utility/codec"
-	"regexp"
 	"time"
 )
 
-var (
-	// 匹配 Minecraft 玩家名称
-	legalMinecraftNameRe = regexp.MustCompile(`(?:^|[^\w#])(\w{3,16})$`)
-)
-
-func (s *sThirdParty) QueryMinecraftGenuineUser(ctx context.Context, name string) (genuine bool, realName, uuid string, err error) {
-	// 全字匹配
-	if !legalMinecraftNameRe.MatchString(name) {
-		return
-	}
-	name = legalMinecraftNameRe.FindStringSubmatch(name)[1]
-
+func (s *sThirdParty) QueryMinecraftGenuineUser(ctx context.Context, name string,
+) (genuine bool, realName, uuid string, err error) {
 	url := "https://api.mojang.com/users/profiles/minecraft/" + name
 
 	ctx, span := gtrace.NewSpan(ctx, codec.GetRouteURL(url))
