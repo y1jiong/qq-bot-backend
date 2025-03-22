@@ -44,7 +44,7 @@ var (
 			if err = os.WriteFile(installPath, serviceContent, 0600); err != nil {
 				return
 			}
-			g.Log().Notice(ctx, "安装服务成功\n可以使用 systemctl 管理 "+consts.ProjName+" 服务了")
+			g.Log().Notice(ctx, "安装服务成功\n可以使用 systemctl 管理", consts.ProjName, "服务了")
 			return
 		},
 	}
