@@ -16,7 +16,7 @@ import (
 
 const (
 	echoPrefix  = "bot_echo_"
-	echoTimeout = 60 * time.Second
+	echoTimeout = 30 * time.Second
 	echoTTL     = echoTimeout + 5*time.Second
 )
 

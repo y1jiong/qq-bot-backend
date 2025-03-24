@@ -38,14 +38,18 @@ func (s *sBot) SendMessage(ctx context.Context,
 	if groupId != 0 {
 		userId = 0
 		span.SetAttributes(attribute.Int64("send_message.group_id", groupId))
-		if err = s.MarkGroupMsgAsRead(ctx, groupId); err != nil {
-			g.Log().Warning(ctx, err)
-		}
+		go func() {
+			if err := s.MarkGroupMsgAsRead(ctx, groupId); err != nil {
+				g.Log().Warning(ctx, err)
+			}
+		}()
 	} else {
 		span.SetAttributes(attribute.Int64("send_message.user_id", userId))
-		if err = s.MarkPrivateMsgAsRead(ctx, userId); err != nil {
-			g.Log().Warning(ctx, err)
-		}
+		go func() {
+			if err := s.MarkPrivateMsgAsRead(ctx, userId); err != nil {
+				g.Log().Warning(ctx, err)
+			}
+		}()
 	}
 
 	// echo sign
@@ -182,14 +186,18 @@ func (s *sBot) SendForwardMessage(ctx context.Context,
 	if groupId != 0 {
 		userId = 0
 		span.SetAttributes(attribute.Int64("send_forward_message.group_id", groupId))
-		if err = s.MarkGroupMsgAsRead(ctx, groupId); err != nil {
-			g.Log().Warning(ctx, err)
-		}
+		go func() {
+			if err := s.MarkGroupMsgAsRead(ctx, groupId); err != nil {
+				g.Log().Warning(ctx, err)
+			}
+		}()
 	} else {
 		span.SetAttributes(attribute.Int64("send_forward_message.user_id", userId))
-		if err = s.MarkPrivateMsgAsRead(ctx, userId); err != nil {
-			g.Log().Warning(ctx, err)
-		}
+		go func() {
+			if err := s.MarkPrivateMsgAsRead(ctx, userId); err != nil {
+				g.Log().Warning(ctx, err)
+			}
+		}()
 	}
 
 	// echo sign
