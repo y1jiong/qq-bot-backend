@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"github.com/gogf/gf/v2/frame/g"
+	"github.com/gogf/gf/v2/net/gtrace"
 	"github.com/gogf/gf/v2/os/gcron"
 	"go.opentelemetry.io/otel/trace"
 	"qq-bot-backend/internal/dao"
@@ -79,13 +80,14 @@ func (s *sCrontab) getTask(ctx context.Context, name string, creatorId int64) (t
 }
 
 func (s *sCrontab) oneshot(botId int64, reqJSON []byte) (err error) {
-	botCtx := service.Bot().LoadConnection(botId)
-	if botCtx == nil {
+	ctx := service.Bot().LoadConnection(botId)
+	if ctx == nil {
 		return errors.New("bot not found")
 	}
 	// new trace
-	botCtx = trace.ContextWithSpanContext(botCtx, trace.SpanContext{})
-	service.Bot().Process(botCtx, reqJSON, service.Process().Process)
+	ctx, span := gtrace.NewSpan(trace.ContextWithSpanContext(ctx, trace.SpanContext{}), "crontab.oneshot")
+	defer span.End()
+	service.Bot().Process(ctx, reqJSON, service.Process().Process)
 	return
 }
 
