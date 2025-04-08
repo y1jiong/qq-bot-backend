@@ -592,9 +592,9 @@ func (s *sBot) GetLikes(ctx context.Context) []map[string]any {
 	if len(v) == 0 {
 		return nil
 	}
-	likes := make([]map[string]any, 0, len(v))
-	for _, item := range v {
-		likes = append(likes, gconv.Map(item))
+	likes := make([]map[string]any, len(v))
+	for i, item := range v {
+		likes[i] = gconv.Map(item)
 	}
 	return likes
 }
