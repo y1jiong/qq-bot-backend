@@ -19,6 +19,14 @@ import (
 	"time"
 )
 
+const (
+	messagePlaceholder  = "{message}"
+	remainPlaceholder   = "{remain}"
+	nicknamePlaceholder = "{nickname}"
+	userIdPlaceholder   = "{userId}"
+	groupIdPlaceholder  = "{groupId}"
+)
+
 var (
 	cqAtPrefixRe    = regexp.MustCompile(`^\[CQ:at,qq=([^,\]]+)(?:,[^,=]+=[^,\]]*)*]\s*`)
 	webhookPrefixRe = regexp.MustCompile(`^webhook(?::([A-Za-z]{3,7}))?(?:#([\s\S]+)#)?(?:<([\s\S]+)>)?(?:@(.+)@)?://(.+)$`)
@@ -138,18 +146,18 @@ func (s *sEvent) keywordReplyWebhook(ctx context.Context,
 	if headers != "" {
 		headers = strings.ReplaceAll(headers, "\\n", "\n")
 		headers = strings.ReplaceAll(headers, "\r", "\n")
-		headers = strings.ReplaceAll(headers, "{message}", message)
-		headers = strings.ReplaceAll(headers, "{remain}", remain)
-		headers = strings.ReplaceAll(headers, "{nickname}", nickname)
-		headers = strings.ReplaceAll(headers, "{userId}", gconv.String(userId))
-		headers = strings.ReplaceAll(headers, "{groupId}", gconv.String(groupId))
+		headers = strings.ReplaceAll(headers, messagePlaceholder, message)
+		headers = strings.ReplaceAll(headers, remainPlaceholder, remain)
+		headers = strings.ReplaceAll(headers, nicknamePlaceholder, nickname)
+		headers = strings.ReplaceAll(headers, userIdPlaceholder, gconv.String(userId))
+		headers = strings.ReplaceAll(headers, groupIdPlaceholder, gconv.String(groupId))
 	}
 	// URL escape
-	urlLink = strings.ReplaceAll(urlLink, "{message}", url.QueryEscape(message))
-	urlLink = strings.ReplaceAll(urlLink, "{remain}", url.QueryEscape(remain))
-	urlLink = strings.ReplaceAll(urlLink, "{nickname}", url.QueryEscape(nickname))
-	urlLink = strings.ReplaceAll(urlLink, "{userId}", gconv.String(userId))
-	urlLink = strings.ReplaceAll(urlLink, "{groupId}", gconv.String(groupId))
+	urlLink = strings.ReplaceAll(urlLink, messagePlaceholder, url.QueryEscape(message))
+	urlLink = strings.ReplaceAll(urlLink, remainPlaceholder, url.QueryEscape(remain))
+	urlLink = strings.ReplaceAll(urlLink, nicknamePlaceholder, url.QueryEscape(nickname))
+	urlLink = strings.ReplaceAll(urlLink, userIdPlaceholder, gconv.String(userId))
+	urlLink = strings.ReplaceAll(urlLink, groupIdPlaceholder, gconv.String(groupId))
 	// Call webhook
 	var body []byte
 	var statusCode int
@@ -159,15 +167,24 @@ func (s *sEvent) keywordReplyWebhook(ctx context.Context,
 		statusCode, contentType, body, err = utility.SendWebhookRequest(ctx, headers, method, urlLink)
 	case http.MethodPost, http.MethodPut, http.MethodDelete, http.MethodPatch:
 		// Payload
-		msg, _ := sonic.MarshalString(message)
-		r, _ := sonic.MarshalString(remain)
-		nick, _ := sonic.MarshalString(nickname)
+		switch payload {
+		case messagePlaceholder:
+			payload = message
+		case remainPlaceholder:
+			payload = remain
+		case nicknamePlaceholder:
+			payload = nickname
+		default:
+			msg, _ := sonic.MarshalString(message)
+			r, _ := sonic.MarshalString(remain)
+			nick, _ := sonic.MarshalString(nickname)
+			payload = strings.ReplaceAll(payload, messagePlaceholder, msg)
+			payload = strings.ReplaceAll(payload, remainPlaceholder, r)
+			payload = strings.ReplaceAll(payload, nicknamePlaceholder, nick)
+		}
 		// 占位符替换
-		payload = strings.ReplaceAll(payload, "{message}", msg)
-		payload = strings.ReplaceAll(payload, "{remain}", r)
-		payload = strings.ReplaceAll(payload, "{nickname}", nick)
-		payload = strings.ReplaceAll(payload, "{userId}", gconv.String(userId))
-		payload = strings.ReplaceAll(payload, "{groupId}", gconv.String(groupId))
+		payload = strings.ReplaceAll(payload, userIdPlaceholder, gconv.String(userId))
+		payload = strings.ReplaceAll(payload, groupIdPlaceholder, gconv.String(groupId))
 		statusCode, contentType, body, err = utility.SendWebhookRequest(ctx, headers, method, urlLink, payload)
 	default:
 		return
@@ -269,8 +286,8 @@ func (s *sEvent) keywordReplyCommand(ctx context.Context, message, hit, text str
 	subMatch := commandPrefixRe.FindStringSubmatch(codec.DecodeCQCode(text))
 	// 占位符替换
 	remain := strings.Replace(message, hit, "", 1)
-	subMatch[1] = strings.ReplaceAll(subMatch[1], "{message}", message)
-	subMatch[1] = strings.ReplaceAll(subMatch[1], "{remain}", remain)
+	subMatch[1] = strings.ReplaceAll(subMatch[1], messagePlaceholder, message)
+	subMatch[1] = strings.ReplaceAll(subMatch[1], remainPlaceholder, remain)
 	// 转换占位符
 	subMatch[1] = decreasePlaceholderIndex(subMatch[1])
 	// 为什么是 " &&"？因为 " &&" 后可能是换行符，需要替换为 " "
@@ -319,8 +336,8 @@ func (s *sEvent) keywordReplyRewrite(ctx context.Context,
 	subMatch := rewritePrefixRe.FindStringSubmatch(codec.DecodeCQCode(text))
 	// 占位符替换
 	remain := strings.Replace(message, hit, "", 1)
-	subMatch[1] = strings.ReplaceAll(subMatch[1], "{message}", message)
-	subMatch[1] = strings.ReplaceAll(subMatch[1], "{remain}", remain)
+	subMatch[1] = strings.ReplaceAll(subMatch[1], messagePlaceholder, message)
+	subMatch[1] = strings.ReplaceAll(subMatch[1], remainPlaceholder, remain)
 	// 为什么是 " &"？因为 " &" 后可能是换行符，需要替换为 " "
 	subMatch[1] = strings.ReplaceAll(subMatch[1], " &\r", " & ")
 	subMatch[1] = strings.ReplaceAll(subMatch[1], " &\n", " & ")
