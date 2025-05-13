@@ -12,9 +12,12 @@ import (
 	"io"
 	"net/http"
 	"qq-bot-backend/internal/consts"
+	"qq-bot-backend/internal/service"
 	"qq-bot-backend/utility/codec"
 	"qq-bot-backend/utility/segment"
+	"strings"
 	"sync"
+	"time"
 	"unicode/utf8"
 )
 
@@ -68,18 +71,54 @@ func (s *sBot) Forward(ctx context.Context, url, key string) (err error) {
 	if err != nil {
 		return
 	}
+	defer resp.Body.Close()
+
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return
 	}
+
 	if len(body) != 0 {
+		if msg, ok := medium(ctx, resp.Header.Get("Content-Type"), body); ok {
+			// 如果是图片、音频、视频，直接发送
+			s.SendMsg(ctx, msg)
+			return
+		}
 		if len(body) > consts.MaxMessageLength*3 &&
 			utf8.RuneCount(segment.FilterCQCode(body)) > consts.MaxMessageLength {
 			s.SendForwardMsg(ctx, string(body))
-		} else {
-			s.SendMsg(ctx, string(body))
+			return
 		}
+		s.SendMsg(ctx, string(body))
 	}
 
-	return resp.Body.Close()
+	return
+}
+
+func medium(ctx context.Context, contentType string, body []byte) (string, bool) {
+	// 如果是图片
+	if strings.HasPrefix(contentType, "image/") {
+		mediumURL, err := service.File().CacheFile(ctx, body, 5*time.Minute)
+		if err != nil {
+			return "Image cache failed", true
+		}
+		return "[CQ:image,file=" + codec.EncodeCQCode(mediumURL) + "]", true
+	}
+	// 如果是音频
+	if strings.HasPrefix(contentType, "audio/") {
+		mediumURL, err := service.File().CacheFile(ctx, body, 5*time.Minute)
+		if err != nil {
+			return "Audio cache failed", true
+		}
+		return "[CQ:record,file=" + codec.EncodeCQCode(mediumURL) + "]", true
+	}
+	// 如果是视频
+	if strings.HasPrefix(contentType, "video/") {
+		mediumURL, err := service.File().CacheFile(ctx, body, 5*time.Minute)
+		if err != nil {
+			return "Video cache failed", true
+		}
+		return "[CQ:video,file=" + codec.EncodeCQCode(mediumURL) + "]", true
+	}
+	return "", false
 }

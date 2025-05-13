@@ -166,6 +166,13 @@ func (s *sEvent) keywordReplyWebhook(ctx context.Context,
 	case http.MethodGet:
 		statusCode, contentType, body, err = utility.SendWebhookRequest(ctx, headers, method, urlLink)
 	case http.MethodPost, http.MethodPut, http.MethodDelete, http.MethodPatch:
+		if webhookPrefixRe.MatchString(payload) {
+			payload, _ = s.keywordReplyWebhook(ctx,
+				userId, groupId, nickname,
+				codec.EncodeCQCode(message), codec.EncodeCQCode(hit), codec.EncodeCQCode(payload),
+			)
+		}
+
 		// Payload
 		switch payload {
 		case messagePlaceholder:
@@ -185,6 +192,7 @@ func (s *sEvent) keywordReplyWebhook(ctx context.Context,
 		// 占位符替换
 		payload = strings.ReplaceAll(payload, userIdPlaceholder, gconv.String(userId))
 		payload = strings.ReplaceAll(payload, groupIdPlaceholder, gconv.String(groupId))
+
 		statusCode, contentType, body, err = utility.SendWebhookRequest(ctx, headers, method, urlLink, payload)
 	default:
 		return
