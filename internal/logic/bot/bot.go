@@ -72,11 +72,24 @@ func (s *sBot) CloneReqNode(ctx context.Context) *ast.Node {
 		return nil
 	}
 
-	_, _ = node.Unset("time")
-	_, _ = node.Unset("message_id")
-	_, _ = node.Unset("message_seq")
-	_, _ = node.Unset("real_id")
-	_, _ = node.Unset("sender")
+	allowedFields := map[string]struct{}{
+		"message":        {},
+		"self_id":        {},
+		"user_id":        {},
+		"group_id":       {},
+		"sub_type":       {},
+		"post_type":      {},
+		"raw_message":    {},
+		"message_type":   {},
+		"message_format": {},
+	}
+
+	fields, _ := node.Map()
+	for field := range fields {
+		if _, ok := allowedFields[field]; !ok {
+			_, _ = node.Unset(field)
+		}
+	}
 
 	return &node
 }
