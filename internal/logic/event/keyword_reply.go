@@ -30,6 +30,7 @@ const (
 var (
 	cqAtPrefixRe    = regexp.MustCompile(`^\[CQ:at,qq=([^,\]]+)(?:,[^,=]+=[^,\]]*)*]\s*`)
 	webhookPrefixRe = regexp.MustCompile(`^webhook(?::([A-Za-z]{3,7}))?(?:#([\s\S]+)#)?(?:<([\s\S]+)>)?(?:@(.+)@)?://(.+)$`)
+	webhookHolderRe = regexp.MustCompile(`\{\{webhook(?::([A-Za-z]{3,7}))?(?:#([\s\S]+)#)?(?:<([\s\S]+)>)?(?:@(.+)@)?://(.+)}}`)
 	commandPrefixRe = regexp.MustCompile(`^(?:command|cmd)://([\s\S]+)$`)
 	rewritePrefixRe = regexp.MustCompile(`^rewrite://([\s\S]+)$`)
 	placeholderRe   = regexp.MustCompile(`\{([^}\d\s]+)(\d+)?}`)
@@ -171,6 +172,24 @@ func (s *sEvent) keywordReplyWebhook(ctx context.Context,
 				userId, groupId, nickname,
 				codec.EncodeCQCode(message), codec.EncodeCQCode(hit), codec.EncodeCQCode(payload),
 			)
+		}
+		if webhookHolderRe.MatchString(payload) {
+			whs := webhookHolderRe.FindAllString(payload, -1)
+			seen := make(map[string]struct{})
+
+			for _, wh := range whs {
+				if _, saw := seen[wh]; saw {
+					continue
+				}
+				seen[wh] = struct{}{}
+
+				whUri := wh[len("{{") : len(wh)-len("}}")]
+				ret, _ := s.keywordReplyWebhook(ctx,
+					userId, groupId, nickname,
+					codec.EncodeCQCode(message), codec.EncodeCQCode(hit), codec.EncodeCQCode(whUri),
+				)
+				payload = strings.ReplaceAll(payload, wh, ret)
+			}
 		}
 
 		// Payload

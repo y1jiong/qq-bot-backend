@@ -229,7 +229,7 @@ v1.9
 
      `#headers#` 接受换行输入；可以省略。
 
-     `<request body>` 接受换行输入；可以省略。
+     `<request body>` 接受换行输入；可以省略；可递归调用 Webhook，同时也支持占位符写法 `{{webhook...}}`。
 
      `@response.json.path@` 可以省略。
 
