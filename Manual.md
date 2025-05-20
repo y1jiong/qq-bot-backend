@@ -167,6 +167,7 @@ v1.9
 | /crontab rm \<name>                     | 删除定时任务           | 同上                    |
 | /crontab show                           | 查询自己所有的定时任务      | 同上                    |
 | /crontab query \<name>                  | 查询定时任务           | 同上                    |
+| /crontab ch-expr \<expr> \<name>        | 修改定时任务的表达式       | 同上                    |
 | /crontab ch-bind \<bot_id> \<name>      | 修改定时任务绑定的 bot_id | 同上                    |
 | /crontab oneshot \<name>                | 手动触发一次定时任务       | 同上                    |
 | /crontab reload                         | 重新加载定时任务         | 需要受系统信任               |

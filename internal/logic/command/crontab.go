@@ -53,6 +53,9 @@ func tryCrontab(ctx context.Context, cmd string) (caught bool, retMsg string) {
 			// /crontab rm <name>
 			retMsg = service.Crontab().RemoveReturnRes(ctx, next[2], creatorId)
 			caught = true
+		case "ch-expr":
+			// /crontab ch-expr <>
+			caught, retMsg = tryCrontabChExpr(ctx, next[2])
 		case "ch-bind":
 			// /crontab ch-bind <>
 			caught, retMsg = tryCrontabChBind(ctx, next[2])
@@ -107,6 +110,27 @@ func tryCrontabAdd(ctx context.Context, cmd string) (caught bool, retMsg string)
 			service.Bot().GetSelfId(ctx),
 			reqJSON,
 		)
+		caught = true
+	}
+	return
+}
+
+func tryCrontabChExpr(ctx context.Context, cmd string) (caught bool, retMsg string) {
+	switch {
+	case crontabRe.MatchString(cmd):
+		// /crontab ch-expr <expr> <>
+		next := crontabRe.FindStringSubmatch(cmd)
+		if !endBranchRe.MatchString(next[2]) {
+			break
+		}
+		expr := next[1]
+		name := next[2]
+		var creatorId int64
+		if userId := service.Bot().GetUserId(ctx); !service.User().IsSystemTrustedUser(ctx, userId) {
+			creatorId = userId
+		}
+		// /crontab ch-expr <expr> <name>
+		retMsg = service.Crontab().ChangeExpressionReturnRes(ctx, expr, name, creatorId)
 		caught = true
 	}
 	return

@@ -129,6 +129,54 @@ func (s *sCrontab) RemoveReturnRes(ctx context.Context, name string, creatorId i
 	return
 }
 
+func (s *sCrontab) ChangeExpressionReturnRes(ctx context.Context,
+	expr, name string, creatorId int64,
+) (retMsg string) {
+	if strings.HasPrefix(expr, "* ") {
+		retMsg = "不允许设置为每分钟执行"
+		return
+	}
+
+	q := dao.Crontab.Ctx(ctx).
+		Data(dao.Crontab.Columns().Expression, expr).
+		Where(dao.Crontab.Columns().Name, name)
+	if creatorId != 0 {
+		q = q.Where(dao.Crontab.Columns().CreatorId, creatorId)
+	}
+	result, err := q.Update()
+	if err != nil {
+		g.Log().Error(ctx, err)
+		retMsg = "修改失败"
+		return
+	}
+
+	if aff, _ := result.RowsAffected(); aff == 0 {
+		return
+	}
+
+	task, err := s.getTask(ctx, name, creatorId)
+	if err != nil {
+		g.Log().Error(ctx, err)
+		retMsg = "获取失败"
+		return
+	}
+	if task == nil {
+		retMsg = "未找到任务"
+		return
+	}
+
+	s.remove(name)
+
+	if err = s.add(ctx, task.Name, task.Expression, task.BotId, []byte(task.Request)); err != nil {
+		g.Log().Error(ctx, err)
+		retMsg = "重新加入定时任务失败"
+		return
+	}
+
+	retMsg = expr + " " + name
+	return
+}
+
 func (s *sCrontab) ChangeBotIdReturnRes(ctx context.Context,
 	botId int64, name string, creatorId int64,
 ) (retMsg string) {
@@ -153,8 +201,6 @@ func (s *sCrontab) ChangeBotIdReturnRes(ctx context.Context,
 		return
 	}
 
-	s.remove(name)
-
 	task, err := s.getTask(ctx, name, creatorId)
 	if err != nil {
 		g.Log().Error(ctx, err)
@@ -166,7 +212,9 @@ func (s *sCrontab) ChangeBotIdReturnRes(ctx context.Context,
 		return
 	}
 
-	if err = s.add(ctx, task.Name, task.Expression, botId, []byte(task.Request)); err != nil {
+	s.remove(name)
+
+	if err = s.add(ctx, task.Name, task.Expression, task.BotId, []byte(task.Request)); err != nil {
 		g.Log().Error(ctx, err)
 		retMsg = "重新加入定时任务失败"
 		return
