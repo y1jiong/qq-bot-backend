@@ -52,6 +52,22 @@ func (s *sBot) SendMessage(ctx context.Context,
 		}()
 	}
 
+	// 消息长度限制
+	if len(msg) > messageLengthLimit {
+		var botId int64
+		var nickname string
+		botId, nickname, err = s.GetLoginInfo(ctx)
+		if err != nil {
+			g.Log().Warning(ctx, err)
+			return
+		}
+		return s.SendForwardMessage(ctx,
+			userId,
+			groupId,
+			s.MessageToNodes(botId, nickname, msg),
+		)
+	}
+
 	// echo sign
 	echoSign := s.generateEchoSignWithTrace(ctx)
 	// 参数
@@ -265,26 +281,27 @@ func (s *sBot) SendForwardMsg(ctx context.Context, msg string) {
 	botId, nickname, err := s.GetLoginInfo(ctx)
 	if err != nil {
 		g.Log().Warning(ctx, err)
+		return
 	}
 	if _, err = s.SendForwardMessage(ctx,
 		s.GetUserId(ctx),
 		s.GetGroupId(ctx),
-		[]map[string]any{
-			s.MessageToFakeNode(botId, nickname, msg),
-		},
+		s.MessageToNodes(botId, nickname, msg),
 	); err != nil {
 		g.Log().Warning(ctx, err)
 	}
 }
 
 func (s *sBot) SendForwardMsgCacheContext(ctx context.Context, msg string) {
-	botId, nickname, _ := s.GetLoginInfo(ctx)
+	botId, nickname, err := s.GetLoginInfo(ctx)
+	if err != nil {
+		g.Log().Warning(ctx, err)
+		return
+	}
 	sentMsgId, err := s.SendForwardMessage(ctx,
 		s.GetUserId(ctx),
 		s.GetGroupId(ctx),
-		[]map[string]any{
-			s.MessageToFakeNode(botId, nickname, msg),
-		},
+		s.MessageToNodes(botId, nickname, msg),
 	)
 	if err != nil {
 		return

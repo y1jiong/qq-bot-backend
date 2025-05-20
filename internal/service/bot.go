@@ -18,7 +18,7 @@ type (
 		CtxNewWebSocketMutex(parent context.Context) context.Context
 		CtxWithReqNode(ctx context.Context, req *ast.Node) context.Context
 		CloneReqNode(ctx context.Context) *ast.Node
-		MessageToFakeNode(userId int64, nickname string, message string) map[string]any
+		MessageToNodes(userId int64, nickname string, message string) []map[string]any
 		Process(ctx context.Context, rawJSON []byte, nextProcess func(ctx context.Context))
 		JoinConnection(ctx context.Context, key int64)
 		LeaveConnection(key int64)

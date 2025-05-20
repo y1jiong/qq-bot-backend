@@ -7,6 +7,7 @@ import (
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gorilla/websocket"
 	"qq-bot-backend/internal/service"
+	"qq-bot-backend/utility"
 	"qq-bot-backend/utility/segment"
 	"sync"
 )
@@ -27,6 +28,8 @@ const (
 	ctxKeyReq            = "bot_req"
 
 	cacheKeyMsgIdPrefix = "bot_msg_id_"
+
+	messageLengthLimit = 4500
 )
 
 func (s *sBot) CtxWithWebSocket(parent context.Context, conn *websocket.Conn) context.Context {
@@ -94,7 +97,7 @@ func (s *sBot) CloneReqNode(ctx context.Context) *ast.Node {
 	return &node
 }
 
-func (s *sBot) MessageToFakeNode(userId int64, nickname, message string) map[string]any {
+func (s *sBot) buildMessageNode(userId int64, nickname, message string) map[string]any {
 	return map[string]any{
 		"type": "node",
 		"data": map[string]any{
@@ -103,6 +106,17 @@ func (s *sBot) MessageToFakeNode(userId int64, nickname, message string) map[str
 			"content":  segment.ParseMessage(message),
 		},
 	}
+}
+
+func (s *sBot) MessageToNodes(userId int64, nickname, message string) []map[string]any {
+	runes := []rune(message)
+	nodes := make([]map[string]any, 0, (len(runes)+messageLengthLimit-1)/messageLengthLimit)
+	for len(runes) > messageLengthLimit {
+		length := utility.FindNaturalBreakPoint(runes, messageLengthLimit, 100)
+		nodes = append(nodes, s.buildMessageNode(userId, nickname, string(runes[:length])))
+		runes = runes[length:]
+	}
+	return append(nodes, s.buildMessageNode(userId, nickname, string(runes)))
 }
 
 func (s *sBot) writeMessage(ctx context.Context, messageType int, data []byte) error {
