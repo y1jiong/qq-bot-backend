@@ -7,12 +7,10 @@ package service
 
 import (
 	"context"
-	"time"
 )
 
 type (
 	ICfg interface {
-		GetRetryIntervalSeconds(ctx context.Context) time.Duration
 		IsDebugEnabled(ctx context.Context) bool
 		GetDebugToken(ctx context.Context) string
 		GetOTelConfig(ctx context.Context) (endpoint string, traceToken string)

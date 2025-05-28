@@ -10,9 +10,7 @@ import (
 )
 
 func (s *sCrontab) ShowReturnRes(ctx context.Context, creatorId int64) (retMsg string) {
-	var (
-		tasks []entity.Crontab
-	)
+	var tasks []entity.Crontab
 
 	q := dao.Crontab.Ctx(ctx).
 		Fields(
@@ -22,8 +20,7 @@ func (s *sCrontab) ShowReturnRes(ctx context.Context, creatorId int64) (retMsg s
 	if creatorId != 0 {
 		q = q.Where(dao.Crontab.Columns().CreatorId, creatorId)
 	}
-	err := q.Scan(&tasks)
-	if err != nil {
+	if err := q.Scan(&tasks); err != nil {
 		return
 	}
 
@@ -37,9 +34,7 @@ func (s *sCrontab) ShowReturnRes(ctx context.Context, creatorId int64) (retMsg s
 }
 
 func (s *sCrontab) QueryReturnRes(ctx context.Context, name string, creatorId int64) (retMsg string) {
-	var (
-		task *entity.Crontab
-	)
+	var task *entity.Crontab
 
 	q := dao.Crontab.Ctx(ctx).
 		Fields(
@@ -54,8 +49,7 @@ func (s *sCrontab) QueryReturnRes(ctx context.Context, name string, creatorId in
 	if creatorId != 0 {
 		q = q.Where(dao.Crontab.Columns().CreatorId, creatorId)
 	}
-	err := q.Scan(&task)
-	if err != nil {
+	if err := q.Scan(&task); err != nil {
 		g.Log().Error(ctx, err)
 		return
 	}

@@ -9,8 +9,11 @@ import (
 )
 
 func main() {
-	err := cmd.Main.AddCommand(&cmd.Install, &cmd.Uninstall, &cmd.Version)
-	if err != nil {
+	if err := cmd.Main.AddCommand(
+		&cmd.Version,
+		&cmd.Install,
+		&cmd.Uninstall,
+	); err != nil {
 		panic(err)
 	}
 	cmd.Main.Run(context.Background())

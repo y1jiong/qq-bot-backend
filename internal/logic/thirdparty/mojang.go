@@ -8,9 +8,8 @@ import (
 	"go.opentelemetry.io/otel/codes"
 	"io"
 	"net/http"
-	"qq-bot-backend/internal/service"
+	"qq-bot-backend/utility"
 	"qq-bot-backend/utility/codec"
-	"time"
 )
 
 func (s *sThirdParty) QueryMinecraftGenuineUser(ctx context.Context, name string,
@@ -29,13 +28,14 @@ func (s *sThirdParty) QueryMinecraftGenuineUser(ctx context.Context, name string
 
 	// GET 请求 mojang api
 	var resp *http.Response
-	for range 3 {
+	utility.RetryWithBackoff(func() bool {
 		resp, err = http.DefaultClient.Get(url)
-		if err == nil {
-			break
+		if err != nil {
+			span.RecordError(err)
+			return false
 		}
-		time.Sleep(service.Cfg().GetRetryIntervalSeconds(ctx) * time.Second)
-	}
+		return true
+	}, 3, utility.ExponentialBackoffWithJitter)
 	if err != nil || resp == nil {
 		return
 	}

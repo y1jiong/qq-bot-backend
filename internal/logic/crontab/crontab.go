@@ -10,6 +10,7 @@ import (
 	"qq-bot-backend/internal/dao"
 	"qq-bot-backend/internal/model/entity"
 	"qq-bot-backend/internal/service"
+	"qq-bot-backend/utility"
 	"strings"
 	"sync"
 )
@@ -30,9 +31,17 @@ var (
 )
 
 func (s *sCrontab) Run(ctx context.Context) {
-	tasks, err := s.getTasks(ctx)
-	if err != nil {
-		g.Log().Error(ctx, err)
+	var tasks []entity.Crontab
+
+	if !utility.RetryWithBackoff(func() bool {
+		var err error
+		tasks, err = s.getTasks(ctx)
+		if err != nil {
+			g.Log().Error(ctx, err)
+			return false
+		}
+		return true
+	}, 4, utility.ExponentialBackoffWithJitter) {
 		return
 	}
 
@@ -40,8 +49,7 @@ func (s *sCrontab) Run(ctx context.Context) {
 
 	count := len(tasks)
 	for _, task := range tasks {
-		err = s.add(ctx, task.Name, task.Expression, task.BotId, []byte(task.Request))
-		if err != nil {
+		if err := s.add(ctx, task.Name, task.Expression, task.BotId, []byte(task.Request)); err != nil {
 			g.Log().Error(ctx, err)
 			count--
 			continue
