@@ -61,11 +61,14 @@ func (s *sBot) SendMessage(ctx context.Context,
 			g.Log().Warning(ctx, err)
 			return
 		}
-		return s.SendForwardMessage(ctx,
+		if messageId, err = s.SendForwardMessage(ctx,
 			userId,
 			groupId,
 			s.MessageToNodes(botId, nickname, msg),
-		)
+		); err == nil {
+			return
+		}
+		g.Log().Warning(ctx, err)
 	}
 
 	// echo sign
