@@ -187,7 +187,7 @@ func (s *sEvent) keywordReplyWebhook(ctx context.Context,
 
 			whs := webhookHolderRe.FindAllString(payload, -1)
 			seen := make(map[string]struct{})
-			results := make(chan webhookResult, len(whs)/2)
+			results := make(chan webhookResult, len(whs))
 
 			go func() {
 				wg := sync.WaitGroup{}

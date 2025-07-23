@@ -78,7 +78,7 @@ func (s *sBot) Forward(ctx context.Context, url, key string) (err error) {
 		return
 	}
 
-	if len(body) != 0 {
+	if len(body) > 0 {
 		if msg, ok := medium(ctx, resp.Header.Get("Content-Type"), body); ok {
 			// 如果是图片、音频、视频，直接发送
 			s.SendMsg(ctx, msg)
