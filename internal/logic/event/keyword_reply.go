@@ -2,12 +2,6 @@ package event
 
 import (
 	"context"
-	"github.com/bytedance/sonic"
-	"github.com/bytedance/sonic/ast"
-	"github.com/gogf/gf/v2/frame/g"
-	"github.com/gogf/gf/v2/net/gtrace"
-	"github.com/gogf/gf/v2/util/gconv"
-	"go.opentelemetry.io/otel/attribute"
 	"net/http"
 	"net/url"
 	"qq-bot-backend/internal/service"
@@ -18,6 +12,13 @@ import (
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/bytedance/sonic"
+	"github.com/bytedance/sonic/ast"
+	"github.com/gogf/gf/v2/frame/g"
+	"github.com/gogf/gf/v2/net/gtrace"
+	"github.com/gogf/gf/v2/util/gconv"
+	"go.opentelemetry.io/otel/attribute"
 )
 
 const (
@@ -197,16 +198,14 @@ func (s *sEvent) keywordReplyWebhook(ctx context.Context,
 					}
 					seen[wh] = struct{}{}
 
-					wg.Add(1)
-					go func() {
-						defer wg.Done()
+					wg.Go(func() {
 						whUri := wh[len("{{") : len(wh)-len("}}")]
 						ret, _ := s.keywordReplyWebhook(ctx,
 							userId, groupId, nickname,
 							codec.EncodeCQCode(message), codec.EncodeCQCode(hit), codec.EncodeCQCode(whUri),
 						)
 						results <- webhookResult{wh, ret}
-					}()
+					})
 				}
 				wg.Wait()
 				close(results)

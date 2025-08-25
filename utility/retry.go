@@ -1,16 +1,17 @@
 package utility
 
 import (
-	"github.com/gogf/gf/v2/util/grand"
 	"time"
+
+	"github.com/gogf/gf/v2/util/grand"
 )
 
-func RetryWithBackoff(do func() bool, maxRetries int, backoffStrategy func(int)) (success bool) {
-	for i := range maxRetries {
+func RetryWithBackoff(do func() bool, maxAttempts int, backoffStrategy func(int)) (success bool) {
+	for i := range maxAttempts {
 		if do() {
 			return true
 		}
-		if i == maxRetries-1 {
+		if i == maxAttempts-1 {
 			break
 		}
 		backoffStrategy(i)
