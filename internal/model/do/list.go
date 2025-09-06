@@ -12,9 +12,9 @@ import (
 // List is the golang structure of table list for DAO operations like Where/Data.
 type List struct {
 	g.Meta    `orm:"table:list, do:true"`
-	ListName  interface{} //
-	Namespace interface{} //
-	ListJson  interface{} //
+	ListName  any         //
+	Namespace any         //
+	ListJson  any         //
 	CreatedAt *gtime.Time //
 	UpdatedAt *gtime.Time //
 	DeletedAt *gtime.Time //

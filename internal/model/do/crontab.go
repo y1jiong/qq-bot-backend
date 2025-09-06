@@ -12,10 +12,10 @@ import (
 // Crontab is the golang structure of table crontab for DAO operations like Where/Data.
 type Crontab struct {
 	g.Meta     `orm:"table:crontab, do:true"`
-	Name       interface{} //
-	Expression interface{} //
-	CreatorId  interface{} //
-	BotId      interface{} //
-	Request    interface{} //
+	Name       any         //
+	Expression any         //
+	CreatorId  any         //
+	BotId      any         //
+	Request    any         //
 	CreatedAt  *gtime.Time //
 }

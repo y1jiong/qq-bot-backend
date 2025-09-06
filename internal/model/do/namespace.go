@@ -12,9 +12,9 @@ import (
 // Namespace is the golang structure of table namespace for DAO operations like Where/Data.
 type Namespace struct {
 	g.Meta      `orm:"table:namespace, do:true"`
-	Namespace   interface{} //
-	OwnerId     interface{} //
-	SettingJson interface{} //
+	Namespace   any         //
+	OwnerId     any         //
+	SettingJson any         //
 	CreatedAt   *gtime.Time //
 	UpdatedAt   *gtime.Time //
 	DeletedAt   *gtime.Time //

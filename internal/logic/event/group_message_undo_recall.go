@@ -3,12 +3,14 @@ package event
 import (
 	"context"
 	"errors"
+	"qq-bot-backend/internal/service"
+	"regexp"
+	"time"
+
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/net/gtrace"
 	"github.com/gogf/gf/v2/util/gconv"
 	"go.opentelemetry.io/otel/codes"
-	"qq-bot-backend/internal/service"
-	"regexp"
 )
 
 var (
@@ -74,7 +76,7 @@ func (s *sEvent) TryUndoMessageRecall(ctx context.Context) (caught bool) {
 
 	// 防止过度触发反撤回
 	service.Util().AutoMute(ctx, "recall", groupId, userId,
-		2, 5, 5, gconv.Duration("1m"))
+		2, 5, 5, time.Minute)
 
 	// 反撤回
 	notificationGroupId := service.Group().GetMessageNotificationGroupId(ctx, groupId)

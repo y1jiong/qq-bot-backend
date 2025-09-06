@@ -4,6 +4,7 @@ import (
 	"context"
 	"net/http"
 	"net/url"
+	"qq-bot-backend/internal/consts"
 	"qq-bot-backend/internal/service"
 	"qq-bot-backend/utility"
 	"qq-bot-backend/utility/codec"
@@ -96,7 +97,7 @@ func (s *sEvent) TryKeywordReply(ctx context.Context) (caught bool) {
 	// 限速
 	const kind = "replyU"
 	key := gconv.String(service.Bot().GetSelfId(ctx)) + "_" + gconv.String(userId)
-	if limited, _ := utility.AutoLimit(ctx, kind, key, 5, time.Minute); limited {
+	if limited, _ := utility.AutoLimit(ctx, kind, key, consts.MaxSendMessageCount, time.Minute); limited {
 		g.Log().Notice(ctx, kind, key, "is limited")
 		return
 	}

@@ -2,20 +2,20 @@ package message
 
 import (
 	"context"
-	"github.com/bytedance/sonic"
-	"github.com/gogf/gf/v2/frame/g"
-	"github.com/gogf/gf/v2/net/gtrace"
-	"github.com/gogf/gf/v2/util/gconv"
-	"go.opentelemetry.io/otel/codes"
+	"qq-bot-backend/api/message/v1"
+	"qq-bot-backend/internal/consts"
 	"qq-bot-backend/internal/consts/errcode"
 	"qq-bot-backend/internal/service"
 	"qq-bot-backend/utility"
 	"strings"
 	"time"
 
+	"github.com/bytedance/sonic"
 	"github.com/gogf/gf/v2/errors/gerror"
-
-	"qq-bot-backend/api/message/v1"
+	"github.com/gogf/gf/v2/frame/g"
+	"github.com/gogf/gf/v2/net/gtrace"
+	"github.com/gogf/gf/v2/util/gconv"
+	"go.opentelemetry.io/otel/codes"
 )
 
 func (c *ControllerV1) Message(ctx context.Context, req *v1.MessageReq) (res *v1.MessageRes, err error) {
@@ -88,11 +88,11 @@ func (c *ControllerV1) Message(ctx context.Context, req *v1.MessageReq) (res *v1
 		}
 		g.Log().Info(ctx, tokenName+" access successfully with "+innerStr)
 	}
-	// 限速 一分钟只能发送 7 条消息
+	// 限速
 	if limit, _ := utility.AutoLimit(ctx,
 		"api_message_send_msg",
 		gconv.String(botId)+"_"+gconv.String(req.GroupId),
-		7, time.Minute,
+		consts.MaxSendMessageCount, time.Minute,
 	); limit {
 		err = gerror.NewCode(errcode.TooMany)
 		return

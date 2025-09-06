@@ -3,11 +3,12 @@ package event
 import (
 	"context"
 	"fmt"
-	"github.com/gogf/gf/v2/frame/g"
-	"github.com/gogf/gf/v2/net/gtrace"
-	"github.com/gogf/gf/v2/util/gconv"
 	"qq-bot-backend/internal/consts"
 	"qq-bot-backend/internal/service"
+	"time"
+
+	"github.com/gogf/gf/v2/frame/g"
+	"github.com/gogf/gf/v2/net/gtrace"
 )
 
 func (s *sEvent) TryKeywordRecall(ctx context.Context) (caught bool) {
@@ -68,7 +69,7 @@ func (s *sEvent) TryKeywordRecall(ctx context.Context) (caught bool) {
 	}
 	// 禁言
 	service.Util().AutoMute(ctx, "keyword", groupId, userId,
-		1, 5, 0, gconv.Duration("16h"))
+		1, 5, 0, 16*time.Hour)
 
 	caught = true
 	return
