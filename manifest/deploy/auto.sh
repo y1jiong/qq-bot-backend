@@ -16,5 +16,8 @@ chmod 700 ${BIN}
 echo "> sudo systemctl restart ${BIN}.service"
 sudo systemctl restart ${BIN}.service
 
+echo "> rm ._*"
+rm ._*
+
 echo "> rm ${BIN}.${OS_ARCH}.tar.xz"
 rm ${BIN}.${OS_ARCH}.tar.xz

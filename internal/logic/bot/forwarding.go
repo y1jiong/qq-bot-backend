@@ -4,21 +4,23 @@ import (
 	"bytes"
 	"context"
 	"crypto/tls"
-	"github.com/gogf/gf/v2/net/gtrace"
-	"go.opentelemetry.io/otel"
-	"go.opentelemetry.io/otel/attribute"
-	"go.opentelemetry.io/otel/codes"
-	"go.opentelemetry.io/otel/propagation"
 	"io"
 	"net/http"
 	"qq-bot-backend/internal/consts"
 	"qq-bot-backend/internal/service"
+	"qq-bot-backend/utility"
 	"qq-bot-backend/utility/codec"
 	"qq-bot-backend/utility/segment"
 	"strings"
 	"sync"
 	"time"
 	"unicode/utf8"
+
+	"github.com/gogf/gf/v2/net/gtrace"
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/codes"
+	"go.opentelemetry.io/otel/propagation"
 )
 
 var (
@@ -78,19 +80,26 @@ func (s *sBot) Forward(ctx context.Context, url, key string) (err error) {
 		return
 	}
 
-	if len(body) > 0 {
-		if msg, ok := medium(ctx, resp.Header.Get("Content-Type"), body); ok {
-			// 如果是图片、音频、视频，直接发送
-			s.SendMsg(ctx, msg)
-			return
-		}
-		if len(body) > consts.MaxMessageLength*3 &&
-			utf8.RuneCount(segment.FilterCQCode(body)) > consts.MaxMessageLength {
-			s.SendForwardMsg(ctx, string(body))
-			return
-		}
-		s.SendMsg(ctx, string(body))
+	if len(body) == 0 {
+		return
 	}
+
+	const kind = "forwarding"
+	if limited, _ := utility.AutoLimit(ctx, kind, url, consts.MaxSendMessageCount, time.Minute); limited {
+		return
+	}
+
+	if msg, ok := medium(ctx, resp.Header.Get("Content-Type"), body); ok {
+		// 如果是图片、音频、视频，直接发送
+		s.SendMsg(ctx, msg)
+		return
+	}
+	if len(body) > consts.MaxMessageLength*3 &&
+		utf8.RuneCount(segment.FilterCQCode(body)) > consts.MaxMessageLength {
+		s.SendForwardMsg(ctx, string(body))
+		return
+	}
+	s.SendMsg(ctx, string(body))
 
 	return
 }

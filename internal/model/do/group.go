@@ -12,11 +12,11 @@ import (
 // Group is the golang structure of table group for DAO operations like Where/Data.
 type Group struct {
 	g.Meta          `orm:"table:group, do:true"`
-	GroupId         interface{} //
-	Namespace       interface{} //
-	SettingJson     interface{} //
+	GroupId         any         //
+	Namespace       any         //
+	SettingJson     any         //
 	CreatedAt       *gtime.Time //
 	UpdatedAt       *gtime.Time //
 	DeletedAt       *gtime.Time //
-	AcceptBroadcast interface{} //
+	AcceptBroadcast any         //
 }

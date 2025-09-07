@@ -1,7 +1,8 @@
 package consts
 
 const (
-	MaxMessageLength = 140
+	MaxMessageLength    = 140
+	MaxSendMessageCount = 7
 )
 
 // group setting cmd

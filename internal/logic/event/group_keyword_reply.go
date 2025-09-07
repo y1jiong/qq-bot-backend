@@ -2,13 +2,15 @@ package event
 
 import (
 	"context"
-	"github.com/gogf/gf/v2/frame/g"
-	"github.com/gogf/gf/v2/net/gtrace"
-	"github.com/gogf/gf/v2/util/gconv"
+	"qq-bot-backend/internal/consts"
 	"qq-bot-backend/internal/service"
 	"qq-bot-backend/utility"
 	"strings"
 	"time"
+
+	"github.com/gogf/gf/v2/frame/g"
+	"github.com/gogf/gf/v2/net/gtrace"
+	"github.com/gogf/gf/v2/util/gconv"
 )
 
 func (s *sEvent) TryGroupKeywordReply(ctx context.Context) (caught bool) {
@@ -58,7 +60,7 @@ func (s *sEvent) TryGroupKeywordReply(ctx context.Context) (caught bool) {
 	// 限速
 	const kind = "replyG"
 	key := gconv.String(service.Bot().GetSelfId(ctx)) + "_" + gconv.String(groupId)
-	if limited, _ := utility.AutoLimit(ctx, kind, key, 7, time.Minute); limited {
+	if limited, _ := utility.AutoLimit(ctx, kind, key, consts.MaxSendMessageCount, time.Minute); limited {
 		g.Log().Notice(ctx, kind, key, "is limited")
 		return
 	}
