@@ -4,3 +4,6 @@
 link = "pgsql:user:password@tcp(domain:5432)/qq_bot"
 #group = "default"
 jsonCase = "Snake"
+
+[gfcli.gen.dao.typeMapping.bytea]
+type = "[]byte"

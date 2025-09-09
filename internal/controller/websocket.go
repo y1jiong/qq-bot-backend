@@ -1,6 +1,13 @@
 package controller
 
 import (
+	"crypto/subtle"
+	"net/http"
+	"qq-bot-backend/internal/service"
+	"qq-bot-backend/utility"
+	"strings"
+	"sync"
+
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/net/ghttp"
 	"github.com/gogf/gf/v2/net/gtrace"
@@ -8,10 +15,6 @@ import (
 	"github.com/gorilla/websocket"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/trace"
-	"net/http"
-	"qq-bot-backend/internal/service"
-	"strings"
-	"sync"
 )
 
 var (
@@ -54,7 +57,10 @@ func (c *cBot) Websocket(r *ghttp.Request) {
 		pass, tokenName, _, botId = service.Token().IsCorrectToken(ctx, token)
 		if !pass {
 			// token debug 验证模式
-			if service.Cfg().IsDebugEnabled(ctx) && token == service.Cfg().GetDebugToken(ctx) {
+			if service.Cfg().IsDebugEnabled(ctx) && subtle.ConstantTimeCompare(
+				utility.StringToBytes(token),
+				utility.StringToBytes(service.Cfg().GetDebugToken(ctx)),
+			) == 1 {
 				pass = true
 				if tokenName == "" {
 					tokenName = "debug"

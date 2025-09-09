@@ -3,12 +3,13 @@ package token
 import (
 	"context"
 	"fmt"
-	"github.com/gogf/gf/v2/frame/g"
-	"github.com/gogf/gf/v2/util/gconv"
 	"qq-bot-backend/internal/dao"
 	"qq-bot-backend/internal/model/entity"
 	"qq-bot-backend/internal/service"
 	"strings"
+
+	"github.com/gogf/gf/v2/frame/g"
+	"github.com/gogf/gf/v2/util/gconv"
 )
 
 func (s *sToken) AddNewTokenReturnRes(ctx context.Context, name, token string) (retMsg string) {
@@ -39,7 +40,7 @@ func (s *sToken) AddNewTokenReturnRes(ctx context.Context, name, token string) (
 	}
 	tokenE = &entity.Token{
 		Name:    name,
-		Token:   token,
+		Token:   s.hashToken(token),
 		OwnerId: owner,
 	}
 	if !exist {

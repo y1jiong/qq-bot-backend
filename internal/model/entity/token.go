@@ -11,7 +11,7 @@ import (
 // Token is the golang structure for table token.
 type Token struct {
 	Name        string      `json:"name"          orm:"name"          ` //
-	Token       string      `json:"token"         orm:"token"         ` //
+	Token       []byte      `json:"token"         orm:"token"         ` //
 	OwnerId     int64       `json:"owner_id"      orm:"owner_id"      ` //
 	CreatedAt   *gtime.Time `json:"created_at"    orm:"created_at"    ` //
 	UpdatedAt   *gtime.Time `json:"updated_at"    orm:"updated_at"    ` //

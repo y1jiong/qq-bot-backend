@@ -2,12 +2,15 @@ package token
 
 import (
 	"context"
-	"github.com/gogf/gf/v2/frame/g"
-	"github.com/gogf/gf/v2/os/gtime"
+	"crypto/sha256"
 	"qq-bot-backend/internal/dao"
 	"qq-bot-backend/internal/model/entity"
 	"qq-bot-backend/internal/service"
+	"qq-bot-backend/utility"
 	"regexp"
+
+	"github.com/gogf/gf/v2/frame/g"
+	"github.com/gogf/gf/v2/os/gtime"
 )
 
 type sToken struct{}
@@ -39,7 +42,7 @@ func (s *sToken) IsCorrectToken(ctx context.Context, token string,
 			dao.Token.Columns().OwnerId,
 			dao.Token.Columns().BotId,
 		).
-		Where(dao.Token.Columns().Token, token).
+		Where(dao.Token.Columns().Token, s.hashToken(token)).
 		Scan(&tokenE)
 	if err != nil {
 		g.Log().Error(ctx, err)
@@ -56,10 +59,15 @@ func (s *sToken) UpdateLoginTime(ctx context.Context, token string) {
 	// 数据库更新
 	_, err := dao.Token.Ctx(ctx).
 		Data(dao.Token.Columns().LastLoginAt, gtime.Now()).
-		Where(dao.Token.Columns().Token, token).
+		Where(dao.Token.Columns().Token, s.hashToken(token)).
 		Unscoped().
 		Update()
 	if err != nil {
 		g.Log().Error(ctx, err)
 	}
+}
+
+func (s *sToken) hashToken(token string) []byte {
+	hashed := sha256.Sum256(utility.StringToBytes(token))
+	return hashed[:]
 }

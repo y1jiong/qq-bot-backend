@@ -41,7 +41,7 @@ create index if not exists namespace_owner_id_index
 create table if not exists token
 (
     name          text                     not null,
-    token         text                     not null,
+    token         bytea                    not null,
     owner_id      bigint                   not null,
     created_at    timestamp with time zone not null,
     updated_at    timestamp with time zone not null,

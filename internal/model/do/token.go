@@ -13,7 +13,7 @@ import (
 type Token struct {
 	g.Meta      `orm:"table:token, do:true"`
 	Name        any         //
-	Token       any         //
+	Token       []byte      //
 	OwnerId     any         //
 	CreatedAt   *gtime.Time //
 	UpdatedAt   *gtime.Time //
