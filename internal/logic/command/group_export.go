@@ -5,7 +5,7 @@ import (
 	"qq-bot-backend/internal/service"
 )
 
-func tryGroupExport(ctx context.Context, cmd string) (caught bool, retMsg string) {
+func tryGroupExport(ctx context.Context, cmd string) (caught catch, retMsg string) {
 	switch {
 	case nextBranchRe.MatchString(cmd):
 		next := nextBranchRe.FindStringSubmatch(cmd)
@@ -13,7 +13,7 @@ func tryGroupExport(ctx context.Context, cmd string) (caught bool, retMsg string
 		case "member":
 			// /group export member <list_name>
 			retMsg = service.Group().ExportGroupMemberListReturnRes(ctx, service.Bot().GetGroupId(ctx), next[2])
-			caught = true
+			caught = caughtNeedOkay
 		}
 	}
 	return

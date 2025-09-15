@@ -5,7 +5,7 @@ import (
 	"qq-bot-backend/internal/service"
 )
 
-func tryGroupCard(ctx context.Context, cmd string) (caught bool, retMsg string) {
+func tryGroupCard(ctx context.Context, cmd string) (caught catch, retMsg string) {
 	switch {
 	case nextBranchRe.MatchString(cmd):
 		next := nextBranchRe.FindStringSubmatch(cmd)
@@ -25,17 +25,17 @@ func tryGroupCard(ctx context.Context, cmd string) (caught bool, retMsg string) 
 		case "lock":
 			// /group card lock
 			retMsg = service.Group().LockCardReturnRes(ctx, service.Bot().GetGroupId(ctx))
-			caught = true
+			caught = caughtNeedOkay
 		case "unlock":
 			// /group card unlock
 			retMsg = service.Group().UnlockCardReturnRes(ctx, service.Bot().GetGroupId(ctx))
-			caught = true
+			caught = caughtNeedOkay
 		}
 	}
 	return
 }
 
-func tryGroupCardSet(ctx context.Context, cmd string) (caught bool, retMsg string) {
+func tryGroupCardSet(ctx context.Context, cmd string) (caught catch, retMsg string) {
 	switch {
 	case nextBranchRe.MatchString(cmd):
 		next := nextBranchRe.FindStringSubmatch(cmd)
@@ -43,26 +43,26 @@ func tryGroupCardSet(ctx context.Context, cmd string) (caught bool, retMsg strin
 		case "auto-set":
 			// /group card set auto-set <list_name>
 			retMsg = service.Group().SetAutoSetListReturnRes(ctx, service.Bot().GetGroupId(ctx), next[2])
-			caught = true
+			caught = caughtNeedOkay
 		}
 	}
 	return
 }
 
-func tryGroupCardRemove(ctx context.Context, cmd string) (caught bool, retMsg string) {
+func tryGroupCardRemove(ctx context.Context, cmd string) (caught catch, retMsg string) {
 	switch {
 	case endBranchRe.MatchString(cmd):
 		switch cmd {
 		case "auto-set":
 			// /group card rm auto-set
 			retMsg = service.Group().RemoveAutoSetListReturnRes(ctx, service.Bot().GetGroupId(ctx))
-			caught = true
+			caught = caughtNeedOkay
 		}
 	}
 	return
 }
 
-func tryGroupCardCheckout(ctx context.Context, cmd string) (caught bool, retMsg string) {
+func tryGroupCardCheckout(ctx context.Context, cmd string) (caught catch, retMsg string) {
 	switch {
 	case nextBranchRe.MatchString(cmd):
 		next := nextBranchRe.FindStringSubmatch(cmd)
@@ -77,11 +77,11 @@ func tryGroupCardCheckout(ctx context.Context, cmd string) (caught bool, retMsg 
 		case "with":
 			// /group card check <list_name> with <regexp>
 			retMsg = service.Group().CheckCardWithRegexpReturnRes(ctx, service.Bot().GetGroupId(ctx), listName, next[2])
-			caught = true
+			caught = caughtNeedOkay
 		case "by":
 			// /group card check <to_list_name> by <from_list_name>
 			retMsg = service.Group().CheckCardByListReturnRes(ctx, service.Bot().GetGroupId(ctx), listName, next[2])
-			caught = true
+			caught = caughtNeedOkay
 		}
 	}
 	return

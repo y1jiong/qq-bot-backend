@@ -2,12 +2,13 @@ package command
 
 import (
 	"context"
-	"github.com/gogf/gf/v2/net/gtrace"
 	"qq-bot-backend/internal/consts"
 	"qq-bot-backend/internal/service"
+
+	"github.com/gogf/gf/v2/net/gtrace"
 )
 
-func tryNamespace(ctx context.Context, cmd string) (caught bool, retMsg string) {
+func tryNamespace(ctx context.Context, cmd string) (caught catch, retMsg string) {
 	ctx, span := gtrace.NewSpan(ctx, "command.namespace")
 	defer span.End()
 
@@ -18,11 +19,11 @@ func tryNamespace(ctx context.Context, cmd string) (caught bool, retMsg string) 
 		case "add":
 			// /namespace add <namespace>
 			retMsg = service.Namespace().AddNewNamespaceReturnRes(ctx, next[2])
-			caught = true
+			caught = caughtNeedOkay
 		case "rm":
 			// /namespace rm <namespace>
 			retMsg = service.Namespace().RemoveNamespaceReturnRes(ctx, next[2])
-			caught = true
+			caught = caughtNeedOkay
 		case "chown":
 			// /namespace chown <owner_id> <namespace>
 			if !dualValueCmdEndRe.MatchString(next[2]) {
@@ -30,7 +31,7 @@ func tryNamespace(ctx context.Context, cmd string) (caught bool, retMsg string) 
 			}
 			dv := dualValueCmdEndRe.FindStringSubmatch(next[2])
 			retMsg = service.Namespace().ChangeNamespaceOwnerReturnRes(ctx, dv[1], dv[2])
-			caught = true
+			caught = caughtNeedOkay
 		default:
 			// /namespace <namespace> <>
 			caught, retMsg = tryNamespaceNext(ctx, next[1], next[2])
@@ -40,17 +41,17 @@ func tryNamespace(ctx context.Context, cmd string) (caught bool, retMsg string) 
 		case "query":
 			// /namespace query
 			retMsg = service.Namespace().QueryOwnNamespaceReturnRes(ctx)
-			caught = true
+			caught = caughtNeedOkay
 		default:
 			// /namespace <namespace>
 			retMsg = service.Namespace().QueryNamespaceReturnRes(ctx, cmd)
-			caught = true
+			caught = caughtNeedOkay
 		}
 	}
 	return
 }
 
-func tryNamespaceNext(ctx context.Context, namespace, cmd string) (caught bool, retMsg string) {
+func tryNamespaceNext(ctx context.Context, namespace, cmd string) (caught catch, retMsg string) {
 	switch {
 	case nextBranchRe.MatchString(cmd):
 		next := nextBranchRe.FindStringSubmatch(cmd)
@@ -72,7 +73,7 @@ func tryNamespaceNext(ctx context.Context, namespace, cmd string) (caught bool, 
 	return
 }
 
-func tryNamespaceLoad(ctx context.Context, namespace, cmd string) (caught bool, retMsg string) {
+func tryNamespaceLoad(ctx context.Context, namespace, cmd string) (caught catch, retMsg string) {
 	switch {
 	case nextBranchRe.MatchString(cmd):
 		next := nextBranchRe.FindStringSubmatch(cmd)
@@ -83,13 +84,13 @@ func tryNamespaceLoad(ctx context.Context, namespace, cmd string) (caught bool, 
 			}
 			// /namespace <namespace> load list <list_name>
 			retMsg = service.Namespace().LoadNamespaceListReturnRes(ctx, namespace, next[2])
-			caught = true
+			caught = caughtNeedOkay
 		}
 	}
 	return
 }
 
-func tryNamespaceUnload(ctx context.Context, namespace, cmd string) (caught bool, retMsg string) {
+func tryNamespaceUnload(ctx context.Context, namespace, cmd string) (caught catch, retMsg string) {
 	switch {
 	case nextBranchRe.MatchString(cmd):
 		next := nextBranchRe.FindStringSubmatch(cmd)
@@ -100,13 +101,13 @@ func tryNamespaceUnload(ctx context.Context, namespace, cmd string) (caught bool
 			}
 			// /namespace <namespace> unload list <list_name>
 			retMsg = service.Namespace().UnloadNamespaceListReturnRes(ctx, namespace, next[2])
-			caught = true
+			caught = caughtNeedOkay
 		}
 	}
 	return
 }
 
-func tryNamespaceSet(ctx context.Context, namespace, cmd string) (caught bool, retMsg string) {
+func tryNamespaceSet(ctx context.Context, namespace, cmd string) (caught catch, retMsg string) {
 	switch {
 	case nextBranchRe.MatchString(cmd):
 		next := nextBranchRe.FindStringSubmatch(cmd)
@@ -114,20 +115,20 @@ func tryNamespaceSet(ctx context.Context, namespace, cmd string) (caught bool, r
 		case consts.PublicCmd:
 			// /namespace <namespace> set public <true|false>
 			retMsg = service.Namespace().SetNamespacePropertyPublicReturnRes(ctx, namespace, next[2] == "true")
-			caught = true
+			caught = caughtNeedOkay
 		}
 	}
 	return
 }
 
-func tryNamespaceReset(ctx context.Context, namespace, cmd string) (caught bool, retMsg string) {
+func tryNamespaceReset(ctx context.Context, namespace, cmd string) (caught catch, retMsg string) {
 	switch {
 	case endBranchRe.MatchString(cmd):
 		switch cmd {
 		case "admin":
 			// /namespace <namespace> reset admin
 			retMsg = service.Namespace().ResetNamespaceAdminReturnRes(ctx, namespace)
-			caught = true
+			caught = caughtNeedOkay
 		}
 	}
 	return

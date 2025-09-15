@@ -2,11 +2,12 @@ package command
 
 import (
 	"context"
-	"github.com/gogf/gf/v2/net/gtrace"
 	"qq-bot-backend/internal/service"
+
+	"github.com/gogf/gf/v2/net/gtrace"
 )
 
-func tryModelSet(ctx context.Context, cmd string) (caught bool, retMsg string) {
+func tryModelSet(ctx context.Context, cmd string) (caught catch, retMsg string) {
 	// 权限校验
 	if !service.User().IsSystemTrustedUser(ctx, service.Bot().GetUserId(ctx)) {
 		return
@@ -24,7 +25,7 @@ func tryModelSet(ctx context.Context, cmd string) (caught bool, retMsg string) {
 		return
 	}
 
-	caught = true
+	caught = caughtNeedOkay
 
 	if err := service.Bot().SetModel(ctx, next[2]); err != nil {
 		retMsg = err.Error()

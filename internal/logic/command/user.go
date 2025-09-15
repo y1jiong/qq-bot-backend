@@ -2,12 +2,13 @@ package command
 
 import (
 	"context"
+	"qq-bot-backend/internal/service"
+
 	"github.com/gogf/gf/v2/net/gtrace"
 	"github.com/gogf/gf/v2/util/gconv"
-	"qq-bot-backend/internal/service"
 )
 
-func tryUser(ctx context.Context, cmd string) (caught bool, retMsg string) {
+func tryUser(ctx context.Context, cmd string) (caught catch, retMsg string) {
 	ctx, span := gtrace.NewSpan(ctx, "command.user")
 	defer span.End()
 
@@ -26,7 +27,7 @@ func tryUser(ctx context.Context, cmd string) (caught bool, retMsg string) {
 	return
 }
 
-func tryUserJoin(ctx context.Context, cmd string) (caught bool, retMsg string) {
+func tryUserJoin(ctx context.Context, cmd string) (caught catch, retMsg string) {
 	if !dualValueCmdEndRe.MatchString(cmd) {
 		return
 	}
@@ -34,11 +35,11 @@ func tryUserJoin(ctx context.Context, cmd string) (caught bool, retMsg string) {
 	dv := dualValueCmdEndRe.FindStringSubmatch(cmd)
 	// 执行
 	retMsg = service.Namespace().AddNamespaceAdminReturnRes(ctx, dv[1], gconv.Int64(dv[2]))
-	caught = true
+	caught = caughtNeedOkay
 	return
 }
 
-func tryUserLeave(ctx context.Context, cmd string) (caught bool, retMsg string) {
+func tryUserLeave(ctx context.Context, cmd string) (caught catch, retMsg string) {
 	if !dualValueCmdEndRe.MatchString(cmd) {
 		return
 	}
@@ -46,6 +47,6 @@ func tryUserLeave(ctx context.Context, cmd string) (caught bool, retMsg string) 
 	dv := dualValueCmdEndRe.FindStringSubmatch(cmd)
 	// 执行
 	retMsg = service.Namespace().RemoveNamespaceAdminReturnRes(ctx, dv[1], gconv.Int64(dv[2]))
-	caught = true
+	caught = caughtNeedOkay
 	return
 }

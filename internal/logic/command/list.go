@@ -2,12 +2,13 @@ package command
 
 import (
 	"context"
-	"github.com/gogf/gf/v2/net/gtrace"
 	"qq-bot-backend/internal/service"
 	"strings"
+
+	"github.com/gogf/gf/v2/net/gtrace"
 )
 
-func tryList(ctx context.Context, cmd string) (caught bool, retMsg string) {
+func tryList(ctx context.Context, cmd string) (caught catch, retMsg string) {
 	ctx, span := gtrace.NewSpan(ctx, "command.list")
 	defer span.End()
 
@@ -26,7 +27,7 @@ func tryList(ctx context.Context, cmd string) (caught bool, retMsg string) {
 			next := nextBranchRe.FindStringSubmatch(next[2])
 			// /list leave <list_name> <key>
 			retMsg = service.List().RemoveListDataReturnRes(ctx, next[1], next[2])
-			caught = true
+			caught = caughtNeedOkay
 		case "copy-key":
 			// /list copy-key <>
 			if !nextBranchRe.MatchString(next[2]) {
@@ -39,22 +40,22 @@ func tryList(ctx context.Context, cmd string) (caught bool, retMsg string) {
 			dv := dualValueCmdEndRe.FindStringSubmatch(next[2])
 			// /list copy-key <list_name> <src_key> <dst_key>
 			retMsg = service.List().CopyListKeyReturnRes(ctx, next[1], dv[1], dv[2])
-			caught = true
+			caught = caughtNeedOkay
 		case "show":
 			// /list show <list_name>
 			retMsg = service.List().ShowListDataReturnRes(ctx, next[2])
-			caught = true
+			caught = caughtNeedOkay
 		case "query":
 			// /list query <>
 			caught, retMsg = tryListQuery(ctx, next[2])
 		case "len":
 			// /list len <list_name>
 			retMsg = service.List().QueryListLenReturnRes(ctx, next[2])
-			caught = true
+			caught = caughtNeedOkay
 		case "export":
 			// /list export <list_name>
 			retMsg = service.List().ExportListReturnRes(ctx, next[2])
-			caught = true
+			caught = caughtNoOkay
 		case "append":
 			// /list append <>
 			if !nextBranchRe.MatchString(next[2]) {
@@ -63,7 +64,7 @@ func tryList(ctx context.Context, cmd string) (caught bool, retMsg string) {
 			next := nextBranchRe.FindStringSubmatch(next[2])
 			// /list append <list_name> <json>
 			retMsg = service.List().AppendListDataReturnRes(ctx, next[1], next[2])
-			caught = true
+			caught = caughtNeedOkay
 		case "set":
 			// /list set <>
 			if !nextBranchRe.MatchString(next[2]) {
@@ -72,11 +73,11 @@ func tryList(ctx context.Context, cmd string) (caught bool, retMsg string) {
 			next := nextBranchRe.FindStringSubmatch(next[2])
 			// /list set <list_name> <json>
 			retMsg = service.List().SetListDataReturnRes(ctx, next[1], next[2])
-			caught = true
+			caught = caughtNeedOkay
 		case "reset":
 			// /list reset <list_name>
 			retMsg = service.List().ResetListDataReturnRes(ctx, next[2])
-			caught = true
+			caught = caughtNeedOkay
 		case "add":
 			if !dualValueCmdEndRe.MatchString(next[2]) {
 				break
@@ -84,15 +85,15 @@ func tryList(ctx context.Context, cmd string) (caught bool, retMsg string) {
 			// /list add <list_name> <namespace>
 			dv := dualValueCmdEndRe.FindStringSubmatch(next[2])
 			retMsg = service.List().AddListReturnRes(ctx, dv[1], dv[2])
-			caught = true
+			caught = caughtNeedOkay
 		case "rm":
 			// /list rm <list_name>
 			retMsg = service.List().RemoveListReturnRes(ctx, next[2])
-			caught = true
+			caught = caughtNeedOkay
 		case "recover":
 			// /list recover <list_name>
 			retMsg = service.List().RecoverListReturnRes(ctx, next[2])
-			caught = true
+			caught = caughtNeedOkay
 		case "op":
 			// /list op <>
 			caught, retMsg = tryListOp(ctx, next[2])
@@ -101,7 +102,7 @@ func tryList(ctx context.Context, cmd string) (caught bool, retMsg string) {
 	return
 }
 
-func tryListJoin(ctx context.Context, cmd string) (caught bool, retMsg string) {
+func tryListJoin(ctx context.Context, cmd string) (caught catch, retMsg string) {
 	switch {
 	case nextBranchRe.MatchString(cmd):
 		next := nextBranchRe.FindStringSubmatch(cmd)
@@ -110,37 +111,37 @@ func tryListJoin(ctx context.Context, cmd string) (caught bool, retMsg string) {
 			// /list join <list_name> <key> [value]
 			ne := nextBranchRe.FindStringSubmatch(next[2])
 			retMsg = service.List().AddListDataReturnRes(ctx, next[1], ne[1], ne[2])
-			caught = true
+			caught = caughtNeedOkay
 		case endBranchRe.MatchString(next[2]):
 			// /list join <list_name> <key>
 			retMsg = service.List().AddListDataReturnRes(ctx, next[1], next[2])
-			caught = true
+			caught = caughtNeedOkay
 		}
 	}
 	return
 }
 
-func tryListQuery(ctx context.Context, cmd string) (caught bool, retMsg string) {
+func tryListQuery(ctx context.Context, cmd string) (caught catch, retMsg string) {
 	switch {
 	case nextBranchRe.MatchString(cmd):
 		// /list query <list_name> [key]
 		next := nextBranchRe.FindStringSubmatch(cmd)
 		retMsg = service.List().QueryListReturnRes(ctx, next[1], next[2])
-		caught = true
+		caught = caughtNeedOkay
 	case endBranchRe.MatchString(cmd):
 		// /list query <list_name>
 		retMsg = service.List().QueryListReturnRes(ctx, cmd)
-		caught = true
+		caught = caughtNeedOkay
 	}
 	return
 }
 
-func tryListOp(ctx context.Context, cmd string) (caught bool, retMsg string) {
+func tryListOp(ctx context.Context, cmd string) (caught catch, retMsg string) {
 	args := strings.Fields(cmd)
 	if len(args) != 4 {
 		return
 	}
-	caught = true
+	caught = caughtNeedOkay
 	switch args[1] {
 	case "U":
 		// /list op <A> U <B> <C>
@@ -155,7 +156,7 @@ func tryListOp(ctx context.Context, cmd string) (caught bool, retMsg string) {
 		// `A` Difference `B` equals `C`
 		retMsg = service.List().DifferenceListReturnRes(ctx, args[0], args[2], args[3])
 	default:
-		caught = false
+		caught = notCaught
 	}
 	return
 }

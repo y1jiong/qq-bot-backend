@@ -6,7 +6,7 @@ import (
 	"qq-bot-backend/internal/service"
 )
 
-func tryGroupKeyword(ctx context.Context, cmd string) (caught bool, retMsg string) {
+func tryGroupKeyword(ctx context.Context, cmd string) (caught catch, retMsg string) {
 	switch {
 	case nextBranchRe.MatchString(cmd):
 		next := nextBranchRe.FindStringSubmatch(cmd)
@@ -28,7 +28,7 @@ func tryGroupKeyword(ctx context.Context, cmd string) (caught bool, retMsg strin
 	return
 }
 
-func tryGroupKeywordAdd(ctx context.Context, cmd string) (caught bool, retMsg string) {
+func tryGroupKeywordAdd(ctx context.Context, cmd string) (caught catch, retMsg string) {
 	switch {
 	case nextBranchRe.MatchString(cmd):
 		next := nextBranchRe.FindStringSubmatch(cmd)
@@ -38,13 +38,13 @@ func tryGroupKeywordAdd(ctx context.Context, cmd string) (caught bool, retMsg st
 			// /group keyword add whitelist <list_name>
 			// /group keyword add reply <list_name>
 			retMsg = service.Group().AddKeywordPolicyReturnRes(ctx, service.Bot().GetGroupId(ctx), next[1], next[2])
-			caught = true
+			caught = caughtNeedOkay
 		}
 	}
 	return
 }
 
-func tryGroupKeywordEnable(ctx context.Context, cmd string) (caught bool, retMsg string) {
+func tryGroupKeywordEnable(ctx context.Context, cmd string) (caught catch, retMsg string) {
 	switch {
 	case endBranchRe.MatchString(cmd):
 		switch cmd {
@@ -52,13 +52,13 @@ func tryGroupKeywordEnable(ctx context.Context, cmd string) (caught bool, retMsg
 			// /group keyword enable blacklist
 			// /group keyword enable whitelist
 			retMsg = service.Group().AddKeywordPolicyReturnRes(ctx, service.Bot().GetGroupId(ctx), cmd)
-			caught = true
+			caught = caughtNeedOkay
 		}
 	}
 	return
 }
 
-func tryGroupKeywordRemove(ctx context.Context, cmd string) (caught bool, retMsg string) {
+func tryGroupKeywordRemove(ctx context.Context, cmd string) (caught catch, retMsg string) {
 	switch {
 	case nextBranchRe.MatchString(cmd):
 		next := nextBranchRe.FindStringSubmatch(cmd)
@@ -68,13 +68,13 @@ func tryGroupKeywordRemove(ctx context.Context, cmd string) (caught bool, retMsg
 			// /group keyword rm whitelist <list_name>
 			// /group keyword rm reply <list_name>
 			retMsg = service.Group().RemoveKeywordPolicyReturnRes(ctx, service.Bot().GetGroupId(ctx), next[1], next[2])
-			caught = true
+			caught = caughtNeedOkay
 		}
 	}
 	return
 }
 
-func tryGroupKeywordDisable(ctx context.Context, cmd string) (caught bool, retMsg string) {
+func tryGroupKeywordDisable(ctx context.Context, cmd string) (caught catch, retMsg string) {
 	switch {
 	case endBranchRe.MatchString(cmd):
 		switch cmd {
@@ -82,7 +82,7 @@ func tryGroupKeywordDisable(ctx context.Context, cmd string) (caught bool, retMs
 			// /group keyword disable blacklist
 			// /group keyword disable whitelist
 			retMsg = service.Group().RemoveKeywordPolicyReturnRes(ctx, service.Bot().GetGroupId(ctx), cmd)
-			caught = true
+			caught = caughtNeedOkay
 		}
 	}
 	return

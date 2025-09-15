@@ -2,14 +2,15 @@ package command
 
 import (
 	"context"
-	"github.com/gogf/gf/v2/frame/g"
-	"github.com/gogf/gf/v2/net/gtrace"
-	"github.com/gogf/gf/v2/util/gconv"
-	"go.opentelemetry.io/otel/attribute"
 	"qq-bot-backend/internal/consts"
 	"qq-bot-backend/internal/service"
 	"regexp"
 	"strings"
+
+	"github.com/gogf/gf/v2/frame/g"
+	"github.com/gogf/gf/v2/net/gtrace"
+	"github.com/gogf/gf/v2/util/gconv"
+	"go.opentelemetry.io/otel/attribute"
 )
 
 type sCommand struct{}
@@ -26,6 +27,14 @@ const (
 	cmdPrefix = "/"
 )
 
+type catch uint8
+
+const (
+	notCaught catch = iota
+	caughtNeedOkay
+	caughtNoOkay
+)
+
 var (
 	nextBranchRe      = regexp.MustCompile(`^(\S+)\s+([\s\S]+)$`)
 	endBranchRe       = regexp.MustCompile(`^\S+$`)
@@ -33,6 +42,11 @@ var (
 )
 
 func (s *sCommand) TryCommand(ctx context.Context, message string) (caught bool, retMsg string) {
+	c, retMsg := s.tryCommand(ctx, message)
+	return c != notCaught, retMsg
+}
+
+func (s *sCommand) tryCommand(ctx context.Context, message string) (caught catch, retMsg string) {
 	if !strings.HasPrefix(message, cmdPrefix) {
 		return
 	}
@@ -48,7 +62,7 @@ func (s *sCommand) TryCommand(ctx context.Context, message string) (caught bool,
 	}
 	// 命令 log
 	defer func() {
-		if !caught {
+		if caught == notCaught {
 			return
 		}
 		groupId := service.Bot().GetGroupId(ctx)
@@ -60,7 +74,7 @@ func (s *sCommand) TryCommand(ctx context.Context, message string) (caught bool,
 		g.Log().Info(ctx,
 			service.Bot().GetCardOrNickname(ctx)+"("+gconv.String(userId)+
 				") in group("+gconv.String(groupId)+") send cmd "+message)
-		if retMsg == "" {
+		if caught == caughtNeedOkay && retMsg == "" {
 			if err := service.Bot().Okay(ctx); err != nil {
 				g.Log().Warning(ctx, err)
 			}
@@ -137,11 +151,11 @@ func (s *sCommand) TryCommand(ctx context.Context, message string) (caught bool,
 	return
 }
 
-func tryReadAll(ctx context.Context) (caught bool, retMsg string) {
+func tryReadAll(ctx context.Context) (caught catch, retMsg string) {
 	ctx, span := gtrace.NewSpan(ctx, "command.readall")
 	defer span.End()
 
-	caught = true
+	caught = caughtNeedOkay
 
 	if err := service.Bot().MarkAllAsRead(ctx); err != nil {
 		retMsg = err.Error()
@@ -149,11 +163,11 @@ func tryReadAll(ctx context.Context) (caught bool, retMsg string) {
 	return
 }
 
-func tryVersion(ctx context.Context) (caught bool, retMsg string) {
+func tryVersion(ctx context.Context) (caught catch, retMsg string) {
 	ctx, span := gtrace.NewSpan(ctx, "command.version")
 	defer span.End()
 
-	caught, retMsg = true, consts.Description
+	caught, retMsg = caughtNeedOkay, consts.Description
 
 	appName, appVersion, protocolVersion, err := service.Bot().GetVersionInfo(ctx)
 	if err != nil {
@@ -164,7 +178,7 @@ func tryVersion(ctx context.Context) (caught bool, retMsg string) {
 	return
 }
 
-func trySay(ctx context.Context, cmd string) (caught bool, retMsg string) {
+func trySay(ctx context.Context, cmd string) (caught catch, retMsg string) {
 	// 权限校验
 	if !service.User().CanGetRawMessage(ctx, service.Bot().GetUserId(ctx)) {
 		return
@@ -175,11 +189,11 @@ func trySay(ctx context.Context, cmd string) (caught bool, retMsg string) {
 
 	service.Bot().SendMsgCacheContext(ctx, cmd)
 
-	caught = true
+	caught = caughtNoOkay
 	return
 }
 
-func tryRaw(ctx context.Context, cmd string) (caught bool, retMsg string) {
+func tryRaw(ctx context.Context, cmd string) (caught catch, retMsg string) {
 	// 权限校验
 	if !service.User().CanGetRawMessage(ctx, service.Bot().GetUserId(ctx)) {
 		return
@@ -188,11 +202,11 @@ func tryRaw(ctx context.Context, cmd string) (caught bool, retMsg string) {
 	ctx, span := gtrace.NewSpan(ctx, "command.raw")
 	defer span.End()
 
-	caught, retMsg = true, cmd
+	caught, retMsg = caughtNeedOkay, cmd
 	return
 }
 
-func tryLike(ctx context.Context, cmd string) (caught bool, retMsg string) {
+func tryLike(ctx context.Context, cmd string) (caught catch, retMsg string) {
 	// 权限校验
 	if !service.User().IsSystemTrustedUser(ctx, service.Bot().GetUserId(ctx)) {
 		return
@@ -206,7 +220,7 @@ func tryLike(ctx context.Context, cmd string) (caught bool, retMsg string) {
 	}
 	dv := dualValueCmdEndRe.FindStringSubmatch(cmd)
 
-	caught = true
+	caught = caughtNeedOkay
 
 	// /like <user_id> <times>
 	if err := service.Bot().ProfileLike(ctx, gconv.Int64(dv[1]), gconv.Int(dv[2])); err != nil {

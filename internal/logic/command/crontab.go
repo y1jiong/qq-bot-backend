@@ -2,18 +2,19 @@ package command
 
 import (
 	"context"
+	"qq-bot-backend/internal/service"
+	"regexp"
+
 	"github.com/bytedance/sonic/ast"
 	"github.com/gogf/gf/v2/net/gtrace"
 	"github.com/gogf/gf/v2/util/gconv"
-	"qq-bot-backend/internal/service"
-	"regexp"
 )
 
 var (
 	crontabRe = regexp.MustCompile(`^(\S+ \S+ \S+ \S+ \S+)\s+([\s\S]+)`)
 )
 
-func tryCrontab(ctx context.Context, cmd string) (caught bool, retMsg string) {
+func tryCrontab(ctx context.Context, cmd string) (caught catch, retMsg string) {
 	// 权限校验
 	if !service.User().CanOpCrontab(ctx, service.Bot().GetUserId(ctx)) {
 		return
@@ -33,7 +34,7 @@ func tryCrontab(ctx context.Context, cmd string) (caught bool, retMsg string) {
 			}
 			// /crontab oneshot <name>
 			retMsg = service.Crontab().OneshotReturnRes(ctx, next[2], creatorId)
-			caught = true
+			caught = caughtNeedOkay
 		case "query":
 			var creatorId int64
 			if userId := service.Bot().GetUserId(ctx); !service.User().IsSystemTrustedUser(ctx, userId) {
@@ -41,7 +42,7 @@ func tryCrontab(ctx context.Context, cmd string) (caught bool, retMsg string) {
 			}
 			// /crontab query <name>
 			retMsg = service.Crontab().QueryReturnRes(ctx, next[2], creatorId)
-			caught = true
+			caught = caughtNeedOkay
 		case "add":
 			// /crontab add <>
 			caught, retMsg = tryCrontabAdd(ctx, next[2])
@@ -52,7 +53,7 @@ func tryCrontab(ctx context.Context, cmd string) (caught bool, retMsg string) {
 			}
 			// /crontab rm <name>
 			retMsg = service.Crontab().RemoveReturnRes(ctx, next[2], creatorId)
-			caught = true
+			caught = caughtNeedOkay
 		case "ch-expr":
 			// /crontab ch-expr <>
 			caught, retMsg = tryCrontabChExpr(ctx, next[2])
@@ -69,7 +70,7 @@ func tryCrontab(ctx context.Context, cmd string) (caught bool, retMsg string) {
 			}
 			// /crontab show
 			retMsg = service.Crontab().ShowReturnRes(ctx, creatorId)
-			caught = true
+			caught = caughtNeedOkay
 		case "reload":
 			if !service.User().IsSystemTrustedUser(ctx, service.Bot().GetUserId(ctx)) {
 				break
@@ -77,13 +78,13 @@ func tryCrontab(ctx context.Context, cmd string) (caught bool, retMsg string) {
 			// /crontab reload
 			service.Crontab().Run(ctx)
 			retMsg = "crontab reloaded"
-			caught = true
+			caught = caughtNeedOkay
 		}
 	}
 	return
 }
 
-func tryCrontabAdd(ctx context.Context, cmd string) (caught bool, retMsg string) {
+func tryCrontabAdd(ctx context.Context, cmd string) (caught catch, retMsg string) {
 	switch {
 	case nextBranchRe.MatchString(cmd):
 		// /crontab add <name> <>
@@ -110,12 +111,12 @@ func tryCrontabAdd(ctx context.Context, cmd string) (caught bool, retMsg string)
 			service.Bot().GetSelfId(ctx),
 			reqJSON,
 		)
-		caught = true
+		caught = caughtNeedOkay
 	}
 	return
 }
 
-func tryCrontabChExpr(ctx context.Context, cmd string) (caught bool, retMsg string) {
+func tryCrontabChExpr(ctx context.Context, cmd string) (caught catch, retMsg string) {
 	switch {
 	case crontabRe.MatchString(cmd):
 		// /crontab ch-expr <expr> <>
@@ -131,12 +132,12 @@ func tryCrontabChExpr(ctx context.Context, cmd string) (caught bool, retMsg stri
 		}
 		// /crontab ch-expr <expr> <name>
 		retMsg = service.Crontab().ChangeExpressionReturnRes(ctx, expr, name, creatorId)
-		caught = true
+		caught = caughtNeedOkay
 	}
 	return
 }
 
-func tryCrontabChBind(ctx context.Context, cmd string) (caught bool, retMsg string) {
+func tryCrontabChBind(ctx context.Context, cmd string) (caught catch, retMsg string) {
 	switch {
 	case dualValueCmdEndRe.MatchString(cmd):
 		dv := dualValueCmdEndRe.FindStringSubmatch(cmd)
@@ -146,7 +147,7 @@ func tryCrontabChBind(ctx context.Context, cmd string) (caught bool, retMsg stri
 		}
 		// /crontab ch-bind <bot_id> <name>
 		retMsg = service.Crontab().ChangeBotIdReturnRes(ctx, gconv.Int64(dv[1]), dv[2], creatorId)
-		caught = true
+		caught = caughtNeedOkay
 	}
 	return
 }

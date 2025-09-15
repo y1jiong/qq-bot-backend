@@ -2,16 +2,17 @@ package command
 
 import (
 	"context"
+	"qq-bot-backend/internal/service"
+
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/net/gtrace"
-	"qq-bot-backend/internal/service"
 )
 
-func queryProcessStatus(ctx context.Context) (caught bool, retMsg string) {
+func queryProcessStatus(ctx context.Context) (caught catch, retMsg string) {
 	ctx, span := gtrace.NewSpan(ctx, "command.queryProcessStatus")
 	defer span.End()
 
-	caught = true
+	caught = caughtNeedOkay
 	if service.Process().IsBotProcessEnabled() {
 		retMsg = "正常状态"
 	} else {
@@ -20,11 +21,11 @@ func queryProcessStatus(ctx context.Context) (caught bool, retMsg string) {
 	return
 }
 
-func pauseProcess(ctx context.Context) (caught bool, retMsg string) {
+func pauseProcess(ctx context.Context) (caught catch, retMsg string) {
 	ctx, span := gtrace.NewSpan(ctx, "command.pauseProcess")
 	defer span.End()
 
-	caught = true
+	caught = caughtNeedOkay
 	if !service.Process().IsBotProcessEnabled() {
 		retMsg = "已处于暂停状态"
 		return
@@ -38,11 +39,11 @@ func pauseProcess(ctx context.Context) (caught bool, retMsg string) {
 	return
 }
 
-func continueProcess(ctx context.Context) (caught bool, retMsg string) {
+func continueProcess(ctx context.Context) (caught catch, retMsg string) {
 	ctx, span := gtrace.NewSpan(ctx, "command.continueProcess")
 	defer span.End()
 
-	caught = true
+	caught = caughtNeedOkay
 	if service.Process().IsBotProcessEnabled() {
 		retMsg = "已处于正常状态"
 		return

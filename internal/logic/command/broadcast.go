@@ -2,11 +2,12 @@ package command
 
 import (
 	"context"
-	"github.com/gogf/gf/v2/net/gtrace"
 	"qq-bot-backend/internal/service"
+
+	"github.com/gogf/gf/v2/net/gtrace"
 )
 
-func tryBroadcast(ctx context.Context, cmd string) (caught bool, retMsg string) {
+func tryBroadcast(ctx context.Context, cmd string) (caught catch, retMsg string) {
 	ctx, span := gtrace.NewSpan(ctx, "command.broadcast")
 	defer span.End()
 
@@ -17,7 +18,7 @@ func tryBroadcast(ctx context.Context, cmd string) (caught bool, retMsg string) 
 		return
 	}
 
-	caught = true
+	caught = caughtNeedOkay
 
 	// /broadcast <message>
 	if err := service.Namespace().Broadcast(ctx, namespace, cmd, groupId); err != nil {

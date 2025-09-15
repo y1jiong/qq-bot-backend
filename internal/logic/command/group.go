@@ -2,12 +2,13 @@ package command
 
 import (
 	"context"
+	"qq-bot-backend/internal/service"
+
 	"github.com/gogf/gf/v2/net/gtrace"
 	"github.com/gogf/gf/v2/util/gconv"
-	"qq-bot-backend/internal/service"
 )
 
-func tryGroup(ctx context.Context, cmd string) (caught bool, retMsg string) {
+func tryGroup(ctx context.Context, cmd string) (caught catch, retMsg string) {
 	ctx, span := gtrace.NewSpan(ctx, "command.group")
 	defer span.End()
 
@@ -18,7 +19,7 @@ func tryGroup(ctx context.Context, cmd string) (caught bool, retMsg string) {
 		case "query":
 			// /group query <group_id>
 			retMsg = service.Group().QueryGroupReturnRes(ctx, gconv.Int64(next[2]))
-			caught = true
+			caught = caughtNeedOkay
 		case "broadcast":
 			// /group broadcast <>
 			caught, retMsg = tryGroupBroadcast(ctx, next[2])
@@ -43,30 +44,30 @@ func tryGroup(ctx context.Context, cmd string) (caught bool, retMsg string) {
 		case "kick":
 			// /group kick <list_name>
 			retMsg = service.Group().KickFromListReturnRes(ctx, service.Bot().GetGroupId(ctx), next[2])
-			caught = true
+			caught = caughtNeedOkay
 		case "keep":
 			// /group keep <list_name>
 			retMsg = service.Group().KeepFromListReturnRes(ctx, service.Bot().GetGroupId(ctx), next[2])
-			caught = true
+			caught = caughtNeedOkay
 		case "clone":
 			// /group clone <group_id>
 			retMsg = service.Group().CloneReturnRes(ctx, service.Bot().GetGroupId(ctx), gconv.Int64(next[2]))
-			caught = true
+			caught = caughtNeedOkay
 		case "bind":
 			// /group bind <namespace>
 			retMsg = service.Group().BindNamespaceReturnRes(ctx, service.Bot().GetGroupId(ctx), next[2])
-			caught = true
+			caught = caughtNeedOkay
 		}
 	case endBranchRe.MatchString(cmd):
 		switch cmd {
 		case "query":
 			// /group query
 			retMsg = service.Group().QueryGroupReturnRes(ctx, service.Bot().GetGroupId(ctx))
-			caught = true
+			caught = caughtNeedOkay
 		case "unbind":
 			// /group unbind
 			retMsg = service.Group().UnbindReturnRes(ctx, service.Bot().GetGroupId(ctx))
-			caught = true
+			caught = caughtNeedOkay
 		}
 	}
 	return
