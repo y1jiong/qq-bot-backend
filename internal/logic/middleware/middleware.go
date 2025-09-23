@@ -1,13 +1,15 @@
 package middleware
 
 import (
+	"net/http"
+	"qq-bot-backend/internal/consts"
+	"qq-bot-backend/internal/service"
+	"time"
+
 	"github.com/gogf/gf/v2/errors/gcode"
 	"github.com/gogf/gf/v2/errors/gerror"
 	"github.com/gogf/gf/v2/net/ghttp"
 	"github.com/gogf/gf/v2/os/gcache"
-	"net/http"
-	"qq-bot-backend/internal/service"
-	"time"
 )
 
 type sMiddleware struct{}
@@ -32,9 +34,9 @@ func (s *sMiddleware) ErrCodeToHttpStatus(r *ghttp.Request) {
 
 func (s *sMiddleware) RateLimit(r *ghttp.Request) {
 	cacheKey := "RateLimit_" + r.GetRemoteIp()
-	const limitTimes = 2
+
 	// Rate Limit
-	timesVar, err := gcache.GetOrSet(r.Context(), cacheKey, 1, time.Second)
+	timesVar, err := gcache.GetOrSet(r.Context(), cacheKey, 1, time.Minute)
 	if err != nil {
 		r.SetError(err)
 		return
@@ -47,7 +49,7 @@ func (s *sMiddleware) RateLimit(r *ghttp.Request) {
 		return
 	}
 
-	if times > limitTimes {
+	if times > 5*consts.MaxSendMessageCount {
 		r.Response.WriteHeader(http.StatusTooManyRequests)
 		return
 	}

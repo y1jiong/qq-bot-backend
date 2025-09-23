@@ -2,9 +2,11 @@ package utility
 
 import (
 	"context"
-	"github.com/gogf/gf/v2/net/gclient"
 	"qq-bot-backend/internal/consts"
 	"sync"
+	"time"
+
+	"github.com/gogf/gf/v2/net/gclient"
 )
 
 var (
@@ -22,8 +24,7 @@ func SendWebhookRequest(ctx context.Context, header, method, url string, payload
 	sem <- struct{}{}
 	defer func() { <-sem }()
 
-	c := gclient.New()
-	c.SetAgent(consts.ProjName + "/" + consts.Version)
+	c := gclient.New().SetTimeout(30 * time.Second).SetAgent(consts.ProjName + "/" + consts.Version)
 	if header != "" {
 		c.SetHeaderRaw(header)
 	}

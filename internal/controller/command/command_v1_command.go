@@ -31,12 +31,13 @@ func (c *ControllerV1) Command(ctx context.Context, req *v1.CommandReq) (res *v1
 	}()
 
 	// 验证请求时间有效性
+	const requestTimeWindow = 5 * time.Second
 	{
 		msgTime := gtime.New(time.Unix(req.Timestamp, 0))
-		if diff := gtime.Now().Sub(msgTime); diff > 5*time.Second {
+		if diff := gtime.Now().Sub(msgTime); diff > requestTimeWindow {
 			err = gerror.NewCode(errcode.MessageExpired)
 			return
-		} else if diff < -5*time.Second {
+		} else if diff < -requestTimeWindow {
 			err = gerror.NewCode(errcode.TooEarly)
 			return
 		}
@@ -50,7 +51,7 @@ func (c *ControllerV1) Command(ctx context.Context, req *v1.CommandReq) (res *v1
 	// 防止重放攻击
 	if limit, _ := utility.AutoLimit(ctx,
 		"api_command_replay", req.Signature,
-		1, 10*time.Second,
+		1, 2*requestTimeWindow,
 	); limit {
 		err = gerror.NewCode(errcode.Conflict)
 		return

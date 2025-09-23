@@ -2,14 +2,18 @@ package thirdparty
 
 import (
 	"context"
+	"io"
+	"net/http"
+	"qq-bot-backend/internal/consts"
+	"qq-bot-backend/utility"
+	"qq-bot-backend/utility/codec"
+	"time"
+
 	"github.com/bytedance/sonic"
+	"github.com/gogf/gf/v2/net/gclient"
 	"github.com/gogf/gf/v2/net/gtrace"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/codes"
-	"io"
-	"net/http"
-	"qq-bot-backend/utility"
-	"qq-bot-backend/utility/codec"
 )
 
 func (s *sThirdParty) QueryMinecraftGenuineUser(ctx context.Context, name string,
@@ -27,9 +31,9 @@ func (s *sThirdParty) QueryMinecraftGenuineUser(ctx context.Context, name string
 	}()
 
 	// GET 请求 mojang api
-	var resp *http.Response
+	var resp *gclient.Response
 	utility.RetryWithBackoff(func() bool {
-		resp, err = http.DefaultClient.Get(url)
+		resp, err = gclient.New().SetTimeout(30*time.Second).SetAgent(consts.ProjName+"/"+consts.Version).Get(ctx, url)
 		if err != nil {
 			span.RecordError(err)
 			return false
@@ -39,7 +43,7 @@ func (s *sThirdParty) QueryMinecraftGenuineUser(ctx context.Context, name string
 	if err != nil || resp == nil {
 		return
 	}
-	defer resp.Body.Close()
+	defer resp.Close()
 
 	// 判断是否正版
 	if resp.StatusCode != http.StatusOK {
