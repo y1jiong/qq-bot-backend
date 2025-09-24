@@ -2,14 +2,15 @@ package group
 
 import (
 	"context"
-	"github.com/gogf/gf/v2/frame/g"
-	"github.com/gogf/gf/v2/util/gconv"
-	"github.com/gogf/gf/v2/util/grand"
 	"qq-bot-backend/internal/dao"
 	"qq-bot-backend/internal/model/entity"
 	"qq-bot-backend/internal/service"
 	"strings"
 	"time"
+
+	"github.com/gogf/gf/v2/frame/g"
+	"github.com/gogf/gf/v2/util/gconv"
+	"github.com/gogf/gf/v2/util/grand"
 )
 
 func (s *sGroup) BindNamespaceReturnRes(ctx context.Context,
@@ -418,7 +419,7 @@ func (s *sGroup) CheckExistReturnRes(ctx context.Context) (retMsg string) {
 	}
 	if len(waitForDelGroups) > 0 {
 		// 删除 groups
-		_, err := dao.Group.Ctx(ctx).Where(dao.Group.Columns().GroupId, waitForDelGroups).Delete()
+		_, err = dao.Group.Ctx(ctx).Where(dao.Group.Columns().GroupId, waitForDelGroups).Delete()
 		if err != nil {
 			g.Log().Error(ctx, err)
 			return

@@ -361,7 +361,8 @@ func (s *sEvent) keywordReplyCommand(ctx context.Context, message, hit, text str
 	for _, command := range commands {
 		caught, tmp := service.Command().TryCommand(ctx, strings.TrimSpace(command))
 		if !caught {
-			return
+			replyBuilder.WriteString("not a command:" + command + "\n")
+			break
 		}
 		if tmp != "" {
 			replyBuilder.WriteString(tmp + "\n")

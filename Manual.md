@@ -196,48 +196,48 @@ v1.9
 
    **协议头**
 
-   * `GET`：`webhook://` 或 `webhook:get://`
-   * `POST`：`webhook:post://`
-   * `PUT`：`webhook:put://`
-   * `DELETE`：`webhook:delete://`
-   * `PATCH`：`webhook:patch://`
+    * `GET`：`webhook://` 或 `webhook:get://`
+    * `POST`：`webhook:post://`
+    * `PUT`：`webhook:put://`
+    * `DELETE`：`webhook:delete://`
+    * `PATCH`：`webhook:patch://`
 
    使用协议头作为回复内容的开头，将会执行协议头之后的 url。
 
    **可用的占位符**
 
-   * `{message}` 用户发送的消息
-   * `{remain}` 除去 Keyword 剩下的字符串
-   * `{nickname}` 用户昵称
-   * `{userId}` 用户 ID
-   * `{groupId}` 群 ID
+    * `{message}` 用户发送的消息
+    * `{remain}` 除去 Keyword 剩下的字符串
+    * `{nickname}` 用户昵称
+    * `{userId}` 用户 ID
+    * `{groupId}` 群 ID
 
    **Method**
 
-   * `GET`：
+    * `GET`：
 
-     template: `webhook#headers#@response.json.path@://url`
+      template: `webhook#headers#@response.json.path@://url`
 
-     `#headers#` 接受换行输入；可以省略。
+      `#headers#` 接受换行输入；可以省略。
 
-     `@response.json.path@` 可以省略。
+      `@response.json.path@` 可以省略。
 
-     e.g. `/list join example get webhook@data.text@://https://example.com/{groupId}/{userId}/{message}`
+      e.g. `/list join example get webhook@data.text@://https://example.com/{groupId}/{userId}/{message}`
 
-   * `POST`、`PUT`、`DELETE`、`PATCH`：
+    * `POST`、`PUT`、`DELETE`、`PATCH`：
 
-     template: `webhook:post#headers#<request body>@response.json.path@://url`
+      template: `webhook:post#headers#<request body>@response.json.path@://url`
 
-     `#headers#` 接受换行输入；可以省略。
+      `#headers#` 接受换行输入；可以省略。
 
-     `<request body>` 接受换行输入；可以省略；可递归调用 Webhook，同时也支持占位符写法 `{{webhook...}}`。
+      `<request body>` 接受换行输入；可以省略；可递归调用 Webhook，同时也支持占位符写法 `{{webhook...}}`。
 
-     `@response.json.path@` 可以省略。
+      `@response.json.path@` 可以省略。
 
-     e.g.
-     `/list join example post webhook:post#Authorization: Bearer\nX-Id: {userId}#<{"group_id":{groupId},"user_id":{userId},"message":{message},"remain":{remain}}>@data.text@://https://example.com/{groupId}/{userId}/{message}`
+      e.g.
+      `/list join example post webhook:post#Authorization: Bearer\nX-Id: {userId}#<{"group_id":{groupId},"user_id":{userId},"message":{message},"remain":{remain}}>@data.text@://https://example.com/{groupId}/{userId}/{message}`
 
-   **注意**：要触发 Webhook，消息必须以 Keyword 开头。
+   **注意**：要触发 Webhook，消息必须以 Keyword 开头；Keyword 以 `$` 结尾表示为精确匹配。
 
    例如：`bb` 是 Keyword。用户发送 `bb 123`，触发 Webhook；用户发送 `aa bb`，不会触发 Webhook。
 
@@ -253,15 +253,15 @@ v1.9
 
    **可用的占位符**
 
-   * `{message}` 用户发送的消息
-   * `{remain}` 除去 Keyword 剩下的字符串
+    * `{message}` 用户发送的消息
+    * `{remain}` 除去 Keyword 剩下的字符串
 
    若需要多层占位符，请手动换成 `{<key><number>}` 格式。程序会查找所有符合 `{<key><number>}` 格式的占位符，并将其中的数字递减
    1。当数字递减到 0 时，移除数字后缀。
 
    e.g. `/list join example cmd cmd:///list show example && /list len example`
 
-   **注意**：要触发 Commands 命令组合，消息必须以 Keyword 开头。
+   **注意**：要触发 Commands 命令组合，消息必须以 Keyword 开头；Keyword 以 `$` 结尾表示为精确匹配。
 
 4. 关键字回复支持 Rewrite 消息
 
@@ -275,11 +275,11 @@ v1.9
 
    **可用的占位符**
 
-   * `{message}` 用户发送的消息
-   * `{remain}` 除去 Keyword 剩下的字符串
+    * `{message}` 用户发送的消息
+    * `{remain}` 除去 Keyword 剩下的字符串
 
    e.g. `/list join example rewrite rewrite://{remain} & {message}`
 
-   **注意**：要触发 Rewrite，消息必须以 Keyword 开头。
+   **注意**：要触发 Rewrite，消息必须以 Keyword 开头；Keyword 以 `$` 结尾表示为精确匹配。
 
    例如：`bb` 是 Keyword。用户发送 `bb 123`，触发 Rewrite；用户发送 `aa bb`，不会触发 Rewrite。

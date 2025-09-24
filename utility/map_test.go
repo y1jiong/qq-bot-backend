@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-func TestReverseSortedArrayFromMapKey(t *testing.T) {
+func TestSortArrayReverseFromMapKey(t *testing.T) {
 	tests := []struct {
 		name    string
 		m       map[string]any
@@ -29,8 +29,8 @@ func TestReverseSortedArrayFromMapKey(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if gotArr := ReverseSortedArrayFromMapKey(tt.m); !reflect.DeepEqual(gotArr, tt.wantArr) {
-				t.Errorf("ReverseSortedArrayFromMapKey() = %v, want %v", gotArr, tt.wantArr)
+			if gotArr := SortArrayReverseFromMapKey(tt.m); !reflect.DeepEqual(gotArr, tt.wantArr) {
+				t.Errorf("SortArrayReverseFromMapKey() = %v, want %v", gotArr, tt.wantArr)
 			}
 		})
 	}
