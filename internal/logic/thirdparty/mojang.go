@@ -20,7 +20,7 @@ func (s *sThirdParty) QueryMinecraftGenuineUser(ctx context.Context, name string
 ) (genuine bool, realName, uuid string, err error) {
 	url := "https://api.mojang.com/users/profiles/minecraft/" + name
 
-	ctx, span := gtrace.NewSpan(ctx, codec.GetRouteURL(url))
+	ctx, span := gtrace.NewSpan(ctx, codec.GetAbsoluteURL(url))
 	defer span.End()
 	span.SetAttributes(attribute.String("http.url", url))
 	span.SetAttributes(attribute.String("minecraft.name", name))

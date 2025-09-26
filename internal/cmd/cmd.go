@@ -2,15 +2,16 @@ package cmd
 
 import (
 	"context"
-	"github.com/gogf/gf/contrib/trace/otlpgrpc/v2"
-	"github.com/gogf/gf/v2/frame/g"
-	"github.com/gogf/gf/v2/net/ghttp"
-	"github.com/gogf/gf/v2/os/gcmd"
 	"qq-bot-backend/internal/consts"
 	"qq-bot-backend/internal/controller"
 	"qq-bot-backend/internal/controller/command"
 	"qq-bot-backend/internal/controller/message"
 	"qq-bot-backend/internal/service"
+
+	"github.com/gogf/gf/contrib/trace/otlpgrpc/v2"
+	"github.com/gogf/gf/v2/frame/g"
+	"github.com/gogf/gf/v2/net/ghttp"
+	"github.com/gogf/gf/v2/os/gcmd"
 )
 
 var (
@@ -19,7 +20,7 @@ var (
 		CaseSensitive: true,
 		Func: func(ctx context.Context, parser *gcmd.Parser) (err error) {
 			// OpenTelemetry
-			if endpoint, traceToken := service.Cfg().GetOTelConfig(ctx); endpoint != "" {
+			if endpoint, traceToken := service.Cfg().GetOTel(ctx); endpoint != "" {
 				shutdown, err := otlpgrpc.Init(consts.ProjName, endpoint, traceToken)
 				if err != nil {
 					return err

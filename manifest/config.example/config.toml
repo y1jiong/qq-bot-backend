@@ -75,6 +75,9 @@ link = "pgsql:user:password@tcp(domain:5432)/qq_bot?TimeZone=Asia/Shanghai"
 endpoint = "localhost:4317"
 #traceToken = ""
 
+[ocr]
+url = ""
+
 [bot.debug]
 enabled = true
 token = ""

@@ -2,6 +2,7 @@ package cfg
 
 import (
 	"context"
+
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/os/gcfg"
 )
@@ -11,7 +12,7 @@ const (
 	pathOTelTraceToken = "otel.traceToken"
 )
 
-func (s *sCfg) GetOTelConfig(ctx context.Context) (endpoint, traceToken string) {
+func (s *sCfg) GetOTel(ctx context.Context) (endpoint, traceToken string) {
 	const def = ""
 	e, err := gcfg.Instance().Get(ctx, pathOTelEndpoint, def)
 	if err != nil {

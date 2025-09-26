@@ -13,7 +13,8 @@ type (
 	ICfg interface {
 		IsDebugEnabled(ctx context.Context) bool
 		GetDebugToken(ctx context.Context) string
-		GetOTelConfig(ctx context.Context) (endpoint string, traceToken string)
+		GetOcrURL(ctx context.Context) string
+		GetOTel(ctx context.Context) (endpoint string, traceToken string)
 	}
 )
 

@@ -15,7 +15,7 @@ func DecodeBlank(src string) string {
 	return blankDecoder.Replace(src)
 }
 
-func GetRouteURL(raw string) string {
+func GetAbsoluteURL(raw string) string {
 	parsed, err := url.Parse(raw)
 	if err != nil {
 		return raw
