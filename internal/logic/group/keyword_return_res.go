@@ -2,12 +2,13 @@ package group
 
 import (
 	"context"
-	sj "github.com/bitly/go-simplejson"
-	"github.com/gogf/gf/v2/frame/g"
-	"github.com/gogf/gf/v2/util/gconv"
 	"qq-bot-backend/internal/consts"
 	"qq-bot-backend/internal/dao"
 	"qq-bot-backend/internal/service"
+
+	sj "github.com/bitly/go-simplejson"
+	"github.com/gogf/gf/v2/frame/g"
+	"github.com/gogf/gf/v2/util/gconv"
 )
 
 func (s *sGroup) AddKeywordPolicyReturnRes(ctx context.Context,
@@ -144,8 +145,12 @@ func (s *sGroup) RemoveKeywordPolicyReturnRes(ctx context.Context,
 				retMsg = "在 " + consts.ReplyCmd + " 中未找到 list(" + args[0] + ")"
 				return
 			}
-			delete(replyLists, args[0])
-			settingJson.Set(keywordReplyListsMapKey, replyLists)
+			if len(replyLists) > 1 {
+				delete(replyLists, args[0])
+				settingJson.Set(keywordReplyListsMapKey, replyLists)
+			} else {
+				settingJson.Del(keywordReplyListsMapKey)
+			}
 		case consts.BlacklistCmd:
 			// 移除某个黑名单
 			blacklists := settingJson.Get(keywordBlacklistsMapKey).MustMap(make(map[string]any))
@@ -153,8 +158,12 @@ func (s *sGroup) RemoveKeywordPolicyReturnRes(ctx context.Context,
 				retMsg = "在 " + consts.BlacklistCmd + " 中未找到 list(" + args[0] + ")"
 				return
 			}
-			delete(blacklists, args[0])
-			settingJson.Set(keywordBlacklistsMapKey, blacklists)
+			if len(blacklists) > 1 {
+				delete(blacklists, args[0])
+				settingJson.Set(keywordBlacklistsMapKey, blacklists)
+			} else {
+				settingJson.Del(keywordBlacklistsMapKey)
+			}
 		case consts.WhitelistCmd:
 			// 移除某个白名单
 			whitelists := settingJson.Get(keywordWhitelistsMapKey).MustMap(make(map[string]any))
@@ -162,8 +171,12 @@ func (s *sGroup) RemoveKeywordPolicyReturnRes(ctx context.Context,
 				retMsg = "在 " + consts.WhitelistCmd + " 中未找到 list(" + args[0] + ")"
 				return
 			}
-			delete(whitelists, args[0])
-			settingJson.Set(keywordWhitelistsMapKey, whitelists)
+			if len(whitelists) > 1 {
+				delete(whitelists, args[0])
+				settingJson.Set(keywordWhitelistsMapKey, whitelists)
+			} else {
+				settingJson.Del(keywordWhitelistsMapKey)
+			}
 		}
 	} else {
 		// 删除 policyName
@@ -172,8 +185,12 @@ func (s *sGroup) RemoveKeywordPolicyReturnRes(ctx context.Context,
 			retMsg = "在 " + approvalPolicyMapKey + " 中未找到 " + policyName
 			return
 		}
-		delete(policyMap, policyName)
-		settingJson.Set(keywordPolicyMapKey, policyMap)
+		if len(policyMap) > 1 {
+			delete(policyMap, policyName)
+			settingJson.Set(keywordPolicyMapKey, policyMap)
+		} else {
+			settingJson.Del(keywordPolicyMapKey)
+		}
 	}
 	// 保存数据
 	settingBytes, err := settingJson.Encode()

@@ -3,15 +3,16 @@ package namespace
 import (
 	"context"
 	"fmt"
+	"qq-bot-backend/internal/dao"
+	"qq-bot-backend/internal/model/entity"
+	"qq-bot-backend/internal/service"
+	"strings"
+
 	sj "github.com/bitly/go-simplejson"
 	"github.com/bytedance/sonic"
 	"github.com/bytedance/sonic/ast"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/util/gconv"
-	"qq-bot-backend/internal/dao"
-	"qq-bot-backend/internal/model/entity"
-	"qq-bot-backend/internal/service"
-	"strings"
 )
 
 func (s *sNamespace) AddNewNamespaceReturnRes(ctx context.Context, namespace string) (retMsg string) {
@@ -236,13 +237,13 @@ func (s *sNamespace) RemoveNamespaceAdminReturnRes(ctx context.Context,
 		return
 	}
 	// 删除 userId 的 admin 权限
-	delete(admins, gconv.String(userId))
-	// 保存数据
-	if len(admins) == 0 {
-		settingJson.Del(adminsMapKey)
-	} else {
+	if len(admins) > 1 {
+		delete(admins, gconv.String(userId))
 		settingJson.Set(adminsMapKey, admins)
+	} else {
+		settingJson.Del(adminsMapKey)
 	}
+	// 保存数据
 	settingBytes, err := settingJson.Encode()
 	if err != nil {
 		g.Log().Error(ctx, err)

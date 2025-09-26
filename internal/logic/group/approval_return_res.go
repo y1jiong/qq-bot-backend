@@ -2,14 +2,15 @@ package group
 
 import (
 	"context"
-	sj "github.com/bitly/go-simplejson"
-	"github.com/gogf/gf/v2/frame/g"
-	"github.com/gogf/gf/v2/util/gconv"
 	"qq-bot-backend/internal/consts"
 	"qq-bot-backend/internal/dao"
 	"qq-bot-backend/internal/service"
 	"qq-bot-backend/utility/codec"
 	"regexp"
+
+	sj "github.com/bitly/go-simplejson"
+	"github.com/gogf/gf/v2/frame/g"
+	"github.com/gogf/gf/v2/util/gconv"
 )
 
 func (s *sGroup) AddApprovalPolicyReturnRes(ctx context.Context,
@@ -182,8 +183,12 @@ func (s *sGroup) RemoveApprovalPolicyReturnRes(ctx context.Context,
 				retMsg = "在 " + consts.WhitelistCmd + " 中未找到 list(" + args[0] + ")"
 				return
 			}
-			delete(whitelists, args[0])
-			settingJson.Set(approvalWhitelistsMapKey, whitelists)
+			if len(whitelists) > 1 {
+				delete(whitelists, args[0])
+				settingJson.Set(approvalWhitelistsMapKey, whitelists)
+			} else {
+				settingJson.Del(approvalWhitelistsMapKey)
+			}
 		case consts.BlacklistCmd:
 			// 处理黑名单
 			blacklists := settingJson.Get(approvalBlacklistsMapKey).MustMap(make(map[string]any))
@@ -191,8 +196,12 @@ func (s *sGroup) RemoveApprovalPolicyReturnRes(ctx context.Context,
 				retMsg = "在 " + consts.BlacklistCmd + " 中未找到 list(" + args[0] + ")"
 				return
 			}
-			delete(blacklists, args[0])
-			settingJson.Set(approvalBlacklistsMapKey, blacklists)
+			if len(blacklists) > 1 {
+				delete(blacklists, args[0])
+				settingJson.Set(approvalBlacklistsMapKey, blacklists)
+			} else {
+				settingJson.Del(approvalBlacklistsMapKey)
+			}
 		}
 	} else {
 		switch policyName {
@@ -227,8 +236,12 @@ func (s *sGroup) RemoveApprovalPolicyReturnRes(ctx context.Context,
 				retMsg = "在 " + approvalPolicyMapKey + " 中未找到 " + policyName
 				return
 			}
-			delete(policyMap, policyName)
-			settingJson.Set(approvalPolicyMapKey, policyMap)
+			if len(policyMap) > 1 {
+				delete(policyMap, policyName)
+				settingJson.Set(approvalPolicyMapKey, policyMap)
+			} else {
+				settingJson.Del(approvalPolicyMapKey)
+			}
 		}
 	}
 	// 保存数据
