@@ -58,10 +58,10 @@ func (c *ControllerV1) Command(ctx context.Context, req *v1.CommandReq) (res *v1
 	}
 	// 验证签名
 	{
-		// 以 token+command+group_id+timestamp+message_sync+async 为原文，
+		// 以 token+command+group_id+timestamp+chat_echo+async 为原文，
 		// 以 token_name 为 key 的 HmacSHA256 值的 base64 值
 		s := req.Token + req.Command + gconv.String(req.GroupId) +
-			gconv.String(req.Timestamp) + gconv.String(req.MessageSync) +
+			gconv.String(req.Timestamp) + gconv.String(req.ChatEcho) +
 			gconv.String(req.Async)
 		// HmacSHA256
 		h := hmac.New(sha256.New, []byte(tokenName))
@@ -114,8 +114,8 @@ func (c *ControllerV1) Command(ctx context.Context, req *v1.CommandReq) (res *v1
 	res = &v1.CommandRes{
 		Message: retMsg,
 	}
-	// 检查是否需要同步消息
-	if !req.MessageSync || req.Async {
+	// 检查是否需要回显到聊天
+	if !req.ChatEcho || req.Async {
 		return
 	}
 	if req.GroupId == 0 || !service.Group().IsBinding(botCtx, req.GroupId) {
