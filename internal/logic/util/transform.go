@@ -4,6 +4,7 @@ import (
 	"context"
 	"qq-bot-backend/internal/service"
 	"qq-bot-backend/utility/segment"
+	"strings"
 
 	"github.com/gogf/gf/v2/frame/g"
 )
@@ -13,8 +14,8 @@ func (s *sUtil) ToPlainText(ctx context.Context, message string) string {
 
 	for idx, seg := range segments {
 		switch seg.Type {
-		case segment.TypeAt:
-			segments[idx] = segment.NewTextSegments("").First()
+		case segment.TypeAt, segment.TypeReply:
+			segments[idx] = nil
 
 		case segment.TypeImage:
 			if url := service.Cfg().GetOcrURL(ctx); url != "" {
@@ -35,5 +36,5 @@ func (s *sUtil) ToPlainText(ctx context.Context, message string) string {
 		}
 	}
 
-	return segments.String()
+	return strings.TrimSpace(segments.String())
 }
