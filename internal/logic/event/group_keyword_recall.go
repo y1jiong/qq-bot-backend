@@ -28,7 +28,7 @@ func (s *sEvent) TryKeywordRecall(ctx context.Context) (caught bool) {
 		return
 	}
 	// 获取聊天信息
-	msg := service.Util().TransformCQCode(ctx, service.Bot().GetMessage(ctx))
+	msg := service.Util().ToPlainText(ctx, service.Bot().GetMessage(ctx))
 	shouldRecall := false
 	// 命中规则
 	hit := ""

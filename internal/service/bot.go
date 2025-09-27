@@ -46,6 +46,7 @@ type (
 		GetCardOldNew(ctx context.Context) (oldCard string, newCard string)
 		GetGroupMemberInfo(ctx context.Context, groupId int64, userId int64, noCache ...bool) (member *ast.Node, err error)
 		GetGroupMemberList(ctx context.Context, groupId int64, noCache ...bool) (members []any, err error)
+		RequestMsg(ctx context.Context, messageId int64) (messageMap map[string]any, err error)
 		RequestMessageFromCache(ctx context.Context, messageId int64) (messageMap map[string]any, err error)
 		RequestMessage(ctx context.Context, messageId int64) (messageMap map[string]any, err error)
 		GetGroupInfo(ctx context.Context, groupId int64, noCache ...bool) (infoMap map[string]any, err error)
@@ -54,6 +55,7 @@ type (
 		IsGroupOwnerOrAdminOrSysTrusted(ctx context.Context) bool
 		GetVersionInfo(ctx context.Context) (appName string, appVersion string, protocolVersion string, err error)
 		GetLikes(ctx context.Context) []map[string]any
+		GetReplyMessage(ctx context.Context) (string, error)
 		SendMessage(ctx context.Context, userId int64, groupId int64, msg string, plain bool) (messageId int64, err error)
 		// SendMsg 适用于**不需要**级联撤回的场景
 		SendMsg(ctx context.Context, msg string, plain ...bool)

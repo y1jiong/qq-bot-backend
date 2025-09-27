@@ -5,6 +5,7 @@ import (
 	"qq-bot-backend/internal/consts"
 	"qq-bot-backend/internal/service"
 	"qq-bot-backend/utility"
+	"qq-bot-backend/utility/segment"
 	"strings"
 	"time"
 
@@ -66,7 +67,7 @@ func (s *sEvent) TryGroupKeywordReply(ctx context.Context) (caught bool) {
 	}
 	if !noReplyPrefix {
 		if msgId := service.Bot().GetMsgId(ctx); msgId != 0 {
-			replyMsg = "[CQ:reply,id=" + gconv.String(msgId) + "]" + replyMsg
+			replyMsg = segment.NewReplySegments(gconv.String(msgId)).String() + replyMsg
 		}
 	}
 	service.Bot().SendMsgCacheContext(ctx, replyMsg)

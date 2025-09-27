@@ -8,6 +8,7 @@ import (
 	"qq-bot-backend/internal/service"
 	"qq-bot-backend/utility"
 	"qq-bot-backend/utility/codec"
+	"qq-bot-backend/utility/segment"
 	"regexp"
 	"strconv"
 	"strings"
@@ -103,7 +104,7 @@ func (s *sEvent) TryKeywordReply(ctx context.Context) (caught bool) {
 	}
 	if !noReplyPrefix {
 		if msgId := service.Bot().GetMsgId(ctx); msgId != 0 {
-			replyMsg = "[CQ:reply,id=" + gconv.String(msgId) + "]" + replyMsg
+			replyMsg = segment.NewReplySegments(gconv.String(msgId)).String() + replyMsg
 		}
 	}
 	service.Bot().SendMsg(ctx, replyMsg)

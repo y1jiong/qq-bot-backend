@@ -8,12 +8,15 @@ import (
 	"github.com/gogf/gf/v2/frame/g"
 )
 
-func (s *sUtil) TransformCQCode(ctx context.Context, message string) string {
+func (s *sUtil) ToPlainText(ctx context.Context, message string) string {
 	segments := segment.ParseMessage(message)
 
 	for idx, seg := range segments {
 		switch seg.Type {
-		case "image":
+		case segment.TypeAt:
+			segments[idx] = segment.NewTextSegments("").First()
+
+		case segment.TypeImage:
 			if url := service.Cfg().GetOcrURL(ctx); url != "" {
 				image, err := s.httpGetQQImage(ctx, seg.Data["url"])
 				if err != nil {
@@ -27,9 +30,7 @@ func (s *sUtil) TransformCQCode(ctx context.Context, message string) string {
 					continue
 				}
 
-				if textSegments := segment.NewTextSegments(text); len(textSegments) > 0 {
-					segments[idx] = textSegments[0]
-				}
+				segments[idx] = segment.NewTextSegments(text).First()
 			}
 		}
 	}

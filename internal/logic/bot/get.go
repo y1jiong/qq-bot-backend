@@ -3,6 +3,10 @@ package bot
 import (
 	"context"
 	"errors"
+	"qq-bot-backend/internal/service"
+	"qq-bot-backend/utility/segment"
+	"sync"
+
 	"github.com/bytedance/sonic"
 	"github.com/bytedance/sonic/ast"
 	"github.com/gogf/gf/v2/frame/g"
@@ -12,8 +16,6 @@ import (
 	"github.com/gorilla/websocket"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/codes"
-	"qq-bot-backend/internal/service"
-	"sync"
 )
 
 func (s *sBot) isApiReq(ctx context.Context) bool {
@@ -282,6 +284,18 @@ func (s *sBot) GetGroupMemberList(ctx context.Context, groupId int64, noCache ..
 	if err = s.writeMessage(ctx, websocket.TextMessage, reqJSON); err != nil {
 		g.Log().Warning(ctx, err)
 		return
+	}
+	return
+}
+
+func (s *sBot) RequestMsg(ctx context.Context, messageId int64,
+) (messageMap map[string]any, err error) {
+	messageMap, err = s.RequestMessageFromCache(ctx, messageId)
+	if err != nil || (gconv.String(messageMap["raw_message"]) == "" && segment.ToString(messageMap["message"]) == "") {
+		messageMap, err = s.RequestMessage(ctx, messageId)
+		if err != nil {
+			return
+		}
 	}
 	return
 }
@@ -597,4 +611,21 @@ func (s *sBot) GetLikes(ctx context.Context) []map[string]any {
 		likes[i] = gconv.Map(item)
 	}
 	return likes
+}
+
+func (s *sBot) GetReplyMessage(ctx context.Context) (string, error) {
+	for _, seg := range segment.ParseMessage(s.GetMessage(ctx)) {
+		if seg.Type == segment.TypeReply {
+			msgMap, err := s.RequestMsg(ctx, gconv.Int64(seg.Data["id"]))
+			if err != nil {
+				return "", err
+			}
+			if msg, ok := msgMap["raw_message"]; ok {
+				return gconv.String(msg), nil
+			} else {
+				return segment.ToString(msgMap["message"]), nil
+			}
+		}
+	}
+	return "", errors.New("no reply segment found")
 }

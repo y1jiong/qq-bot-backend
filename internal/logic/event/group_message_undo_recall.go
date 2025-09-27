@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"qq-bot-backend/internal/service"
+	"qq-bot-backend/utility/segment"
 	"regexp"
 	"time"
 
@@ -51,12 +52,9 @@ func (s *sEvent) TryUndoMessageRecall(ctx context.Context) (caught bool) {
 	// 获取撤回消息的 id
 	messageId := service.Bot().GetMsgId(ctx)
 	// 获取消息
-	messageMap, err := service.Bot().RequestMessage(ctx, messageId)
-	if err != nil || gconv.String(messageMap["message"]) == "" {
-		messageMap, err = service.Bot().RequestMessageFromCache(ctx, messageId)
-		if err != nil {
-			return
-		}
+	messageMap, err := service.Bot().RequestMsg(ctx, messageId)
+	if err != nil {
+		return
 	}
 
 	// 获取消息信息
@@ -68,7 +66,12 @@ func (s *sEvent) TryUndoMessageRecall(ctx context.Context) (caught bool) {
 	userId := gconv.Int64(senderMap["user_id"])
 	groupId := gconv.Int64(messageMap["group_id"])
 	// 获取撤回的消息
-	message := gconv.String(messageMap["message"])
+	var message string
+	if msg, ok := messageMap["raw_message"]; ok {
+		message = gconv.String(msg)
+	} else {
+		message = segment.ToString(messageMap["message"])
+	}
 	if message == "" {
 		err = errors.New("message is empty")
 		return

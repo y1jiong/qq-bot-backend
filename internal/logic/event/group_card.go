@@ -2,13 +2,15 @@ package event
 
 import (
 	"context"
+	"qq-bot-backend/internal/service"
+	"qq-bot-backend/utility/segment"
+	"strings"
+	"time"
+
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/net/gtrace"
 	"github.com/gogf/gf/v2/os/gcache"
 	"github.com/gogf/gf/v2/util/gconv"
-	"qq-bot-backend/internal/service"
-	"strings"
-	"time"
 )
 
 func (s *sEvent) TryLockCard(ctx context.Context) (caught bool) {
@@ -56,7 +58,7 @@ func (s *sEvent) TryLockCard(ctx context.Context) (caught bool) {
 		return
 	}
 	// 发送提示
-	service.Bot().SendMsg(ctx, "[CQ:at,qq="+gconv.String(userId)+"]名片已锁定，请联系管理员修改")
+	service.Bot().SendMsg(ctx, segment.NewAtSegments(gconv.String(userId)).String()+"名片已锁定，请联系管理员修改")
 	return
 }
 
