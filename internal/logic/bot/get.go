@@ -613,6 +613,15 @@ func (s *sBot) GetLikes(ctx context.Context) []map[string]any {
 	return likes
 }
 
+func (s *sBot) GetReplyMsgId(ctx context.Context) int64 {
+	for _, seg := range segment.ParseMessage(s.GetMessage(ctx)) {
+		if seg.Type == segment.TypeReply {
+			return gconv.Int64(seg.Data["id"])
+		}
+	}
+	return 0
+}
+
 func (s *sBot) GetReplyMessage(ctx context.Context) (string, error) {
 	for _, seg := range segment.ParseMessage(s.GetMessage(ctx)) {
 		if seg.Type == segment.TypeReply {

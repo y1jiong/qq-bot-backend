@@ -12,11 +12,11 @@ func tryGroupBroadcast(ctx context.Context, cmd string) (caught catch, retMsg st
 		case "accept":
 			// /group broadcast accept
 			retMsg = service.Group().AcceptBroadcastReturnRes(ctx, service.Bot().GetGroupId(ctx))
-			caught = caughtNeedOkay
+			caught = caughtOkay
 		case "reject":
 			// /group broadcast reject
 			retMsg = service.Group().RejectBroadcastReturnRes(ctx, service.Bot().GetGroupId(ctx))
-			caught = caughtNeedOkay
+			caught = caughtOkay
 		}
 	}
 	return

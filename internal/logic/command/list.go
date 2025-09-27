@@ -27,7 +27,7 @@ func tryList(ctx context.Context, cmd string) (caught catch, retMsg string) {
 			next := nextBranchRe.FindStringSubmatch(next[2])
 			// /list leave <list_name> <key>
 			retMsg = service.List().RemoveListDataReturnRes(ctx, next[1], next[2])
-			caught = caughtNeedOkay
+			caught = caughtOkay
 		case "copy-key":
 			// /list copy-key <>
 			if !nextBranchRe.MatchString(next[2]) {
@@ -40,22 +40,22 @@ func tryList(ctx context.Context, cmd string) (caught catch, retMsg string) {
 			dv := dualValueCmdEndRe.FindStringSubmatch(next[2])
 			// /list copy-key <list_name> <src_key> <dst_key>
 			retMsg = service.List().CopyListKeyReturnRes(ctx, next[1], dv[1], dv[2])
-			caught = caughtNeedOkay
+			caught = caughtOkay
 		case "show":
 			// /list show <list_name>
 			retMsg = service.List().ShowListDataReturnRes(ctx, next[2])
-			caught = caughtNeedOkay
+			caught = caughtOkay
 		case "query":
 			// /list query <>
 			caught, retMsg = tryListQuery(ctx, next[2])
 		case "len":
 			// /list len <list_name>
 			retMsg = service.List().QueryListLenReturnRes(ctx, next[2])
-			caught = caughtNeedOkay
+			caught = caughtOkay
 		case "export":
 			// /list export <list_name>
 			retMsg = service.List().ExportListReturnRes(ctx, next[2])
-			caught = caughtNoOkay
+			caught = caughtNoReact
 		case "append":
 			// /list append <>
 			if !nextBranchRe.MatchString(next[2]) {
@@ -64,7 +64,7 @@ func tryList(ctx context.Context, cmd string) (caught catch, retMsg string) {
 			next := nextBranchRe.FindStringSubmatch(next[2])
 			// /list append <list_name> <json>
 			retMsg = service.List().AppendListDataReturnRes(ctx, next[1], next[2])
-			caught = caughtNeedOkay
+			caught = caughtOkay
 		case "set":
 			// /list set <>
 			if !nextBranchRe.MatchString(next[2]) {
@@ -73,11 +73,11 @@ func tryList(ctx context.Context, cmd string) (caught catch, retMsg string) {
 			next := nextBranchRe.FindStringSubmatch(next[2])
 			// /list set <list_name> <json>
 			retMsg = service.List().SetListDataReturnRes(ctx, next[1], next[2])
-			caught = caughtNeedOkay
+			caught = caughtOkay
 		case "reset":
 			// /list reset <list_name>
 			retMsg = service.List().ResetListDataReturnRes(ctx, next[2])
-			caught = caughtNeedOkay
+			caught = caughtOkay
 		case "add":
 			if !dualValueCmdEndRe.MatchString(next[2]) {
 				break
@@ -85,15 +85,15 @@ func tryList(ctx context.Context, cmd string) (caught catch, retMsg string) {
 			// /list add <list_name> <namespace>
 			dv := dualValueCmdEndRe.FindStringSubmatch(next[2])
 			retMsg = service.List().AddListReturnRes(ctx, dv[1], dv[2])
-			caught = caughtNeedOkay
+			caught = caughtOkay
 		case "rm":
 			// /list rm <list_name>
 			retMsg = service.List().RemoveListReturnRes(ctx, next[2])
-			caught = caughtNeedOkay
+			caught = caughtOkay
 		case "recover":
 			// /list recover <list_name>
 			retMsg = service.List().RecoverListReturnRes(ctx, next[2])
-			caught = caughtNeedOkay
+			caught = caughtOkay
 		case "op":
 			// /list op <>
 			caught, retMsg = tryListOp(ctx, next[2])
@@ -111,11 +111,11 @@ func tryListJoin(ctx context.Context, cmd string) (caught catch, retMsg string) 
 			// /list join <list_name> <key> [value]
 			ne := nextBranchRe.FindStringSubmatch(next[2])
 			retMsg = service.List().AddListDataReturnRes(ctx, next[1], ne[1], ne[2])
-			caught = caughtNeedOkay
+			caught = caughtOkay
 		case endBranchRe.MatchString(next[2]):
 			// /list join <list_name> <key>
 			retMsg = service.List().AddListDataReturnRes(ctx, next[1], next[2])
-			caught = caughtNeedOkay
+			caught = caughtOkay
 		}
 	}
 	return
@@ -127,11 +127,11 @@ func tryListQuery(ctx context.Context, cmd string) (caught catch, retMsg string)
 		// /list query <list_name> [key]
 		next := nextBranchRe.FindStringSubmatch(cmd)
 		retMsg = service.List().QueryListReturnRes(ctx, next[1], next[2])
-		caught = caughtNeedOkay
+		caught = caughtOkay
 	case endBranchRe.MatchString(cmd):
 		// /list query <list_name>
 		retMsg = service.List().QueryListReturnRes(ctx, cmd)
-		caught = caughtNeedOkay
+		caught = caughtOkay
 	}
 	return
 }
@@ -141,7 +141,7 @@ func tryListOp(ctx context.Context, cmd string) (caught catch, retMsg string) {
 	if len(args) != 4 {
 		return
 	}
-	caught = caughtNeedOkay
+	caught = caughtOkay
 	switch args[1] {
 	case "U":
 		// /list op <A> U <B> <C>

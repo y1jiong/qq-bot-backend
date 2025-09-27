@@ -34,7 +34,7 @@ func tryCrontab(ctx context.Context, cmd string) (caught catch, retMsg string) {
 			}
 			// /crontab oneshot <name>
 			retMsg = service.Crontab().OneshotReturnRes(ctx, next[2], creatorId)
-			caught = caughtNeedOkay
+			caught = caughtOkay
 		case "query":
 			var creatorId int64
 			if userId := service.Bot().GetUserId(ctx); !service.User().IsSystemTrustedUser(ctx, userId) {
@@ -42,7 +42,7 @@ func tryCrontab(ctx context.Context, cmd string) (caught catch, retMsg string) {
 			}
 			// /crontab query <name>
 			retMsg = service.Crontab().QueryReturnRes(ctx, next[2], creatorId)
-			caught = caughtNeedOkay
+			caught = caughtOkay
 		case "add":
 			// /crontab add <>
 			caught, retMsg = tryCrontabAdd(ctx, next[2])
@@ -53,7 +53,7 @@ func tryCrontab(ctx context.Context, cmd string) (caught catch, retMsg string) {
 			}
 			// /crontab rm <name>
 			retMsg = service.Crontab().RemoveReturnRes(ctx, next[2], creatorId)
-			caught = caughtNeedOkay
+			caught = caughtOkay
 		case "ch-expr":
 			// /crontab ch-expr <>
 			caught, retMsg = tryCrontabChExpr(ctx, next[2])
@@ -70,7 +70,7 @@ func tryCrontab(ctx context.Context, cmd string) (caught catch, retMsg string) {
 			}
 			// /crontab show
 			retMsg = service.Crontab().ShowReturnRes(ctx, creatorId)
-			caught = caughtNeedOkay
+			caught = caughtOkay
 		case "reload":
 			if !service.User().IsSystemTrustedUser(ctx, service.Bot().GetUserId(ctx)) {
 				break
@@ -78,7 +78,7 @@ func tryCrontab(ctx context.Context, cmd string) (caught catch, retMsg string) {
 			// /crontab reload
 			service.Crontab().Run(ctx)
 			retMsg = "crontab reloaded"
-			caught = caughtNeedOkay
+			caught = caughtOkay
 		}
 	}
 	return
@@ -111,7 +111,7 @@ func tryCrontabAdd(ctx context.Context, cmd string) (caught catch, retMsg string
 			service.Bot().GetSelfId(ctx),
 			reqJSON,
 		)
-		caught = caughtNeedOkay
+		caught = caughtOkay
 	}
 	return
 }
@@ -132,7 +132,7 @@ func tryCrontabChExpr(ctx context.Context, cmd string) (caught catch, retMsg str
 		}
 		// /crontab ch-expr <expr> <name>
 		retMsg = service.Crontab().ChangeExpressionReturnRes(ctx, expr, name, creatorId)
-		caught = caughtNeedOkay
+		caught = caughtOkay
 	}
 	return
 }
@@ -147,7 +147,7 @@ func tryCrontabChBind(ctx context.Context, cmd string) (caught catch, retMsg str
 		}
 		// /crontab ch-bind <bot_id> <name>
 		retMsg = service.Crontab().ChangeBotIdReturnRes(ctx, gconv.Int64(dv[1]), dv[2], creatorId)
-		caught = caughtNeedOkay
+		caught = caughtOkay
 	}
 	return
 }

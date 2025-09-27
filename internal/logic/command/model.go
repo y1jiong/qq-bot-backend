@@ -25,7 +25,7 @@ func tryModelSet(ctx context.Context, cmd string) (caught catch, retMsg string) 
 		return
 	}
 
-	caught = caughtNeedOkay
+	caught = caughtOkay
 
 	if err := service.Bot().SetModel(ctx, next[2]); err != nil {
 		retMsg = err.Error()

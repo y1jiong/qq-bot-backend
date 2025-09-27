@@ -36,7 +36,7 @@ func tryGroupMessageEnable(ctx context.Context, cmd string) (caught catch, retMs
 		case "anti-recall":
 			// /group message enable anti-recall
 			retMsg = service.Group().SetAntiRecallReturnRes(ctx, service.Bot().GetGroupId(ctx), true)
-			caught = caughtNeedOkay
+			caught = caughtOkay
 		}
 	}
 	return
@@ -49,7 +49,7 @@ func tryGroupMessageDisable(ctx context.Context, cmd string) (caught catch, retM
 		case "anti-recall":
 			// /group message disable anti-recall
 			retMsg = service.Group().SetAntiRecallReturnRes(ctx, service.Bot().GetGroupId(ctx), false)
-			caught = caughtNeedOkay
+			caught = caughtOkay
 		}
 	}
 	return
@@ -63,14 +63,14 @@ func tryGroupMessageSet(ctx context.Context, cmd string) (caught catch, retMsg s
 		case "notification":
 			// /group message set notification <group_id>
 			retMsg = service.Group().SetMessageNotificationReturnRes(ctx, service.Bot().GetGroupId(ctx), gconv.Int64(next[2]))
-			caught = caughtNeedOkay
+			caught = caughtOkay
 		}
 	case endBranchRe.MatchString(cmd):
 		switch cmd {
 		case "only-anti-recall-member":
 			// /group message set only-anti-recall-member
 			retMsg = service.Group().SetOnlyAntiRecallMemberReturnRes(ctx, service.Bot().GetGroupId(ctx), true)
-			caught = caughtNeedOkay
+			caught = caughtOkay
 		}
 	}
 	return
@@ -83,11 +83,11 @@ func tryGroupMessageRemove(ctx context.Context, cmd string) (caught catch, retMs
 		case "notification":
 			// /group message rm notification
 			retMsg = service.Group().RemoveMessageNotificationReturnRes(ctx, service.Bot().GetGroupId(ctx))
-			caught = caughtNeedOkay
+			caught = caughtOkay
 		case "only-anti-recall-member":
 			// /group message rm only-anti-recall-member
 			retMsg = service.Group().SetOnlyAntiRecallMemberReturnRes(ctx, service.Bot().GetGroupId(ctx), false)
-			caught = caughtNeedOkay
+			caught = caughtOkay
 		}
 	}
 	return

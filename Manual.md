@@ -178,6 +178,8 @@ v1.9
 |---------------------------|--------------------------|--------------------------|
 | /say \<message>           | 按原样发送 message            | 需要系统授予的获取 raw 的权限        |
 | /raw \<message>           | 获取 message 的原始信息         | 需要系统授予的获取 raw 的权限        |
+| /recall                   | 撤回引用消息                   | 需要 namespace admin 或更高权限 |
+| /plain                    | 获取引用消息的纯文本形式             | 需要系统授予的获取 raw 的权限        |
 | /broadcast \<message>     | 广播消息到同 namespace 并接受广播的群 | 需要 namespace admin 或更高权限 |
 | /readall                  | 标记所有已读                   | 需要受系统信任                  |
 | /model set \<model>       | 设置机型                     | 需要受系统信任                  |

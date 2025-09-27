@@ -38,7 +38,7 @@ func tryGroupKeywordAdd(ctx context.Context, cmd string) (caught catch, retMsg s
 			// /group keyword add whitelist <list_name>
 			// /group keyword add reply <list_name>
 			retMsg = service.Group().AddKeywordPolicyReturnRes(ctx, service.Bot().GetGroupId(ctx), next[1], next[2])
-			caught = caughtNeedOkay
+			caught = caughtOkay
 		}
 	}
 	return
@@ -52,7 +52,7 @@ func tryGroupKeywordEnable(ctx context.Context, cmd string) (caught catch, retMs
 			// /group keyword enable blacklist
 			// /group keyword enable whitelist
 			retMsg = service.Group().AddKeywordPolicyReturnRes(ctx, service.Bot().GetGroupId(ctx), cmd)
-			caught = caughtNeedOkay
+			caught = caughtOkay
 		}
 	}
 	return
@@ -68,7 +68,7 @@ func tryGroupKeywordRemove(ctx context.Context, cmd string) (caught catch, retMs
 			// /group keyword rm whitelist <list_name>
 			// /group keyword rm reply <list_name>
 			retMsg = service.Group().RemoveKeywordPolicyReturnRes(ctx, service.Bot().GetGroupId(ctx), next[1], next[2])
-			caught = caughtNeedOkay
+			caught = caughtOkay
 		}
 	}
 	return
@@ -82,7 +82,7 @@ func tryGroupKeywordDisable(ctx context.Context, cmd string) (caught catch, retM
 			// /group keyword disable blacklist
 			// /group keyword disable whitelist
 			retMsg = service.Group().RemoveKeywordPolicyReturnRes(ctx, service.Bot().GetGroupId(ctx), cmd)
-			caught = caughtNeedOkay
+			caught = caughtOkay
 		}
 	}
 	return

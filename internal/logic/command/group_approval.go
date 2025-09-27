@@ -40,7 +40,7 @@ func tryGroupApprovalSet(ctx context.Context, cmd string) (caught catch, retMsg 
 			// /group approval set regexp <regexp>
 			// /group approval set notification <group_id>
 			retMsg = service.Group().AddApprovalPolicyReturnRes(ctx, service.Bot().GetGroupId(ctx), next[1], next[2])
-			caught = caughtNeedOkay
+			caught = caughtOkay
 		}
 	}
 	return
@@ -55,7 +55,7 @@ func tryGroupApprovalAdd(ctx context.Context, cmd string) (caught catch, retMsg 
 			// /group approval add whitelist <list_name>
 			// /group approval add blacklist <list_name>
 			retMsg = service.Group().AddApprovalPolicyReturnRes(ctx, service.Bot().GetGroupId(ctx), next[1], next[2])
-			caught = caughtNeedOkay
+			caught = caughtOkay
 		}
 	}
 	return
@@ -75,7 +75,7 @@ func tryGroupApprovalEnable(ctx context.Context, cmd string) (caught catch, retM
 			// /group approval enable auto-pass
 			// /group approval enable auto-reject
 			retMsg = service.Group().AddApprovalPolicyReturnRes(ctx, service.Bot().GetGroupId(ctx), cmd)
-			caught = caughtNeedOkay
+			caught = caughtOkay
 		}
 	}
 	return
@@ -90,14 +90,14 @@ func tryGroupApprovalRemove(ctx context.Context, cmd string) (caught catch, retM
 			// /group approval rm whitelist <list_name>
 			// /group approval rm blacklist <list_name>
 			retMsg = service.Group().RemoveApprovalPolicyReturnRes(ctx, service.Bot().GetGroupId(ctx), next[1], next[2])
-			caught = caughtNeedOkay
+			caught = caughtOkay
 		}
 	case endBranchRe.MatchString(cmd):
 		switch cmd {
 		case consts.NotificationCmd:
 			// /group approval rm notification
 			retMsg = service.Group().RemoveApprovalPolicyReturnRes(ctx, service.Bot().GetGroupId(ctx), cmd)
-			caught = caughtNeedOkay
+			caught = caughtOkay
 		}
 	}
 	return
@@ -117,7 +117,7 @@ func tryGroupApprovalDisable(ctx context.Context, cmd string) (caught catch, ret
 			// /group approval disable auto-pass
 			// /group approval disable auto-reject
 			retMsg = service.Group().RemoveApprovalPolicyReturnRes(ctx, service.Bot().GetGroupId(ctx), cmd)
-			caught = caughtNeedOkay
+			caught = caughtOkay
 		}
 	}
 	return

@@ -3,14 +3,15 @@ package bot
 import (
 	"context"
 	"errors"
+	"qq-bot-backend/utility/segment"
+	"sync"
+
 	"github.com/bytedance/sonic"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/net/gtrace"
 	"github.com/gorilla/websocket"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/codes"
-	"qq-bot-backend/utility/segment"
-	"sync"
 )
 
 func (s *sBot) SendMessage(ctx context.Context,

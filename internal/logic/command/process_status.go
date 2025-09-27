@@ -12,7 +12,7 @@ func queryProcessStatus(ctx context.Context) (caught catch, retMsg string) {
 	ctx, span := gtrace.NewSpan(ctx, "command.queryProcessStatus")
 	defer span.End()
 
-	caught = caughtNeedOkay
+	caught = caughtOkay
 	if service.Process().IsBotProcessEnabled() {
 		retMsg = "正常状态"
 	} else {
@@ -25,7 +25,7 @@ func pauseProcess(ctx context.Context) (caught catch, retMsg string) {
 	ctx, span := gtrace.NewSpan(ctx, "command.pauseProcess")
 	defer span.End()
 
-	caught = caughtNeedOkay
+	caught = caughtOkay
 	if !service.Process().IsBotProcessEnabled() {
 		retMsg = "已处于暂停状态"
 		return
@@ -43,7 +43,7 @@ func continueProcess(ctx context.Context) (caught catch, retMsg string) {
 	ctx, span := gtrace.NewSpan(ctx, "command.continueProcess")
 	defer span.End()
 
-	caught = caughtNeedOkay
+	caught = caughtOkay
 	if service.Process().IsBotProcessEnabled() {
 		retMsg = "已处于正常状态"
 		return

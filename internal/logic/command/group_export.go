@@ -13,7 +13,7 @@ func tryGroupExport(ctx context.Context, cmd string) (caught catch, retMsg strin
 		case "member":
 			// /group export member <list_name>
 			retMsg = service.Group().ExportGroupMemberListReturnRes(ctx, service.Bot().GetGroupId(ctx), next[2])
-			caught = caughtNeedOkay
+			caught = caughtOkay
 		}
 	}
 	return

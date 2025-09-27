@@ -55,6 +55,7 @@ type (
 		IsGroupOwnerOrAdminOrSysTrusted(ctx context.Context) bool
 		GetVersionInfo(ctx context.Context) (appName string, appVersion string, protocolVersion string, err error)
 		GetLikes(ctx context.Context) []map[string]any
+		GetReplyMsgId(ctx context.Context) int64
 		GetReplyMessage(ctx context.Context) (string, error)
 		SendMessage(ctx context.Context, userId int64, groupId int64, msg string, plain bool) (messageId int64, err error)
 		// SendMsg 适用于**不需要**级联撤回的场景

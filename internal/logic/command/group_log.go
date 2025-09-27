@@ -29,11 +29,11 @@ func tryGroupLogSet(ctx context.Context, cmd string) (caught catch, retMsg strin
 		case "approval":
 			// /group log set approval <list_name>
 			retMsg = service.Group().SetLogApprovalListReturnRes(ctx, service.Bot().GetGroupId(ctx), next[2])
-			caught = caughtNeedOkay
+			caught = caughtOkay
 		case "leave":
 			// /group log set leave <list_name>
 			retMsg = service.Group().SetLogLeaveListReturnRes(ctx, service.Bot().GetGroupId(ctx), next[2])
-			caught = caughtNeedOkay
+			caught = caughtOkay
 		}
 	}
 	return
@@ -46,11 +46,11 @@ func tryGroupLogRemove(ctx context.Context, cmd string) (caught catch, retMsg st
 		case "approval":
 			// /group log rm approval
 			retMsg = service.Group().RemoveLogApprovalListReturnRes(ctx, service.Bot().GetGroupId(ctx))
-			caught = caughtNeedOkay
+			caught = caughtOkay
 		case "leave":
 			// /group log rm leave
 			retMsg = service.Group().RemoveLogLeaveListReturnRes(ctx, service.Bot().GetGroupId(ctx))
-			caught = caughtNeedOkay
+			caught = caughtOkay
 		}
 	}
 	return

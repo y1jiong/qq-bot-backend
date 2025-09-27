@@ -25,11 +25,11 @@ func tryGroupCard(ctx context.Context, cmd string) (caught catch, retMsg string)
 		case "lock":
 			// /group card lock
 			retMsg = service.Group().LockCardReturnRes(ctx, service.Bot().GetGroupId(ctx))
-			caught = caughtNeedOkay
+			caught = caughtOkay
 		case "unlock":
 			// /group card unlock
 			retMsg = service.Group().UnlockCardReturnRes(ctx, service.Bot().GetGroupId(ctx))
-			caught = caughtNeedOkay
+			caught = caughtOkay
 		}
 	}
 	return
@@ -43,7 +43,7 @@ func tryGroupCardSet(ctx context.Context, cmd string) (caught catch, retMsg stri
 		case "auto-set":
 			// /group card set auto-set <list_name>
 			retMsg = service.Group().SetAutoSetListReturnRes(ctx, service.Bot().GetGroupId(ctx), next[2])
-			caught = caughtNeedOkay
+			caught = caughtOkay
 		}
 	}
 	return
@@ -56,7 +56,7 @@ func tryGroupCardRemove(ctx context.Context, cmd string) (caught catch, retMsg s
 		case "auto-set":
 			// /group card rm auto-set
 			retMsg = service.Group().RemoveAutoSetListReturnRes(ctx, service.Bot().GetGroupId(ctx))
-			caught = caughtNeedOkay
+			caught = caughtOkay
 		}
 	}
 	return
@@ -77,11 +77,11 @@ func tryGroupCardCheckout(ctx context.Context, cmd string) (caught catch, retMsg
 		case "with":
 			// /group card check <list_name> with <regexp>
 			retMsg = service.Group().CheckCardWithRegexpReturnRes(ctx, service.Bot().GetGroupId(ctx), listName, next[2])
-			caught = caughtNeedOkay
+			caught = caughtOkay
 		case "by":
 			// /group card check <to_list_name> by <from_list_name>
 			retMsg = service.Group().CheckCardByListReturnRes(ctx, service.Bot().GetGroupId(ctx), listName, next[2])
-			caught = caughtNeedOkay
+			caught = caughtOkay
 		}
 	}
 	return

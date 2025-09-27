@@ -19,7 +19,7 @@ func tryGroup(ctx context.Context, cmd string) (caught catch, retMsg string) {
 		case "query":
 			// /group query <group_id>
 			retMsg = service.Group().QueryGroupReturnRes(ctx, gconv.Int64(next[2]))
-			caught = caughtNeedOkay
+			caught = caughtOkay
 		case "broadcast":
 			// /group broadcast <>
 			caught, retMsg = tryGroupBroadcast(ctx, next[2])
@@ -44,30 +44,30 @@ func tryGroup(ctx context.Context, cmd string) (caught catch, retMsg string) {
 		case "kick":
 			// /group kick <list_name>
 			retMsg = service.Group().KickFromListReturnRes(ctx, service.Bot().GetGroupId(ctx), next[2])
-			caught = caughtNeedOkay
+			caught = caughtOkay
 		case "keep":
 			// /group keep <list_name>
 			retMsg = service.Group().KeepFromListReturnRes(ctx, service.Bot().GetGroupId(ctx), next[2])
-			caught = caughtNeedOkay
+			caught = caughtOkay
 		case "clone":
 			// /group clone <group_id>
 			retMsg = service.Group().CloneReturnRes(ctx, service.Bot().GetGroupId(ctx), gconv.Int64(next[2]))
-			caught = caughtNeedOkay
+			caught = caughtOkay
 		case "bind":
 			// /group bind <namespace>
 			retMsg = service.Group().BindNamespaceReturnRes(ctx, service.Bot().GetGroupId(ctx), next[2])
-			caught = caughtNeedOkay
+			caught = caughtOkay
 		}
 	case endBranchRe.MatchString(cmd):
 		switch cmd {
 		case "query":
 			// /group query
 			retMsg = service.Group().QueryGroupReturnRes(ctx, service.Bot().GetGroupId(ctx))
-			caught = caughtNeedOkay
+			caught = caughtOkay
 		case "unbind":
 			// /group unbind
 			retMsg = service.Group().UnbindReturnRes(ctx, service.Bot().GetGroupId(ctx))
-			caught = caughtNeedOkay
+			caught = caughtOkay
 		}
 	}
 	return

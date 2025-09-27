@@ -35,7 +35,7 @@ func tryUserJoin(ctx context.Context, cmd string) (caught catch, retMsg string) 
 	dv := dualValueCmdEndRe.FindStringSubmatch(cmd)
 	// 执行
 	retMsg = service.Namespace().AddNamespaceAdminReturnRes(ctx, dv[1], gconv.Int64(dv[2]))
-	caught = caughtNeedOkay
+	caught = caughtOkay
 	return
 }
 
@@ -47,6 +47,6 @@ func tryUserLeave(ctx context.Context, cmd string) (caught catch, retMsg string)
 	dv := dualValueCmdEndRe.FindStringSubmatch(cmd)
 	// 执行
 	retMsg = service.Namespace().RemoveNamespaceAdminReturnRes(ctx, dv[1], gconv.Int64(dv[2]))
-	caught = caughtNeedOkay
+	caught = caughtOkay
 	return
 }
