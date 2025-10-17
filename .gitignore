@@ -22,4 +22,5 @@ manifest/build/
 manifest/config/
 manifest/log/
 hack/
+/log/
 *.exe
