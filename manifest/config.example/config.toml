@@ -72,7 +72,7 @@ writerColorEnable = false # 日志文件是否带上颜色。默认false，表�
 link = "pgsql:user:password@tcp(domain:5432)/qq_bot?TimeZone=Asia/Shanghai"
 
 [otel]
-endpoint = "localhost:4317"
+#endpoint = "localhost:4317"
 #traceToken = ""
 
 [ocr]
