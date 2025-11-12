@@ -2,13 +2,14 @@ package namespace
 
 import (
 	"context"
-	"github.com/bytedance/sonic"
-	"github.com/gogf/gf/v2/frame/g"
-	"github.com/gogf/gf/v2/util/gconv"
 	"qq-bot-backend/internal/dao"
 	"qq-bot-backend/internal/model/entity"
 	"qq-bot-backend/internal/service"
 	"regexp"
+
+	"github.com/bytedance/sonic"
+	"github.com/gogf/gf/v2/frame/g"
+	"github.com/gogf/gf/v2/util/gconv"
 )
 
 type sNamespace struct{}
@@ -76,25 +77,10 @@ func (s *sNamespace) IsNamespaceOwnerOrAdmin(ctx context.Context, namespace stri
 }
 
 func (s *sNamespace) IsNamespaceOwnerOrAdminOrOperator(ctx context.Context, namespace string, userId int64) bool {
-	// 参数合法性校验
-	if userId == 0 || !legalNamespaceNameRe.MatchString(namespace) {
-		return false
-	}
-	// 过程
-	namespaceE := getNamespace(ctx, namespace)
-	if namespaceE == nil {
-		return false
-	}
-	return isNamespaceOwnerOrAdmin(ctx, userId, namespaceE) ||
-		service.User().CanOpNamespace(ctx, gconv.Int64(userId))
+	return s.IsNamespaceOwnerOrAdmin(ctx, namespace, userId) || service.User().CanOpNamespace(ctx, gconv.Int64(userId))
 }
 
 func (s *sNamespace) IsGlobalNamespace(namespace string) bool {
-	// 参数合法性校验
-	if !legalNamespaceNameRe.MatchString(namespace) {
-		return false
-	}
-	// 判断
 	return namespace == globalNamespace
 }
 
