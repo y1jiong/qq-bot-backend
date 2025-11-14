@@ -2,13 +2,14 @@ package namespace
 
 import (
 	"context"
-	"github.com/gogf/gf/v2/frame/g"
-	"github.com/gogf/gf/v2/util/grand"
 	"qq-bot-backend/internal/dao"
 	"qq-bot-backend/internal/model/do"
 	"qq-bot-backend/internal/model/entity"
 	"qq-bot-backend/internal/service"
 	"time"
+
+	"github.com/gogf/gf/v2/frame/g"
+	"github.com/gogf/gf/v2/util/grand"
 )
 
 func (s *sNamespace) Broadcast(ctx context.Context, namespace, message string, originGroupId int64) (err error) {
@@ -33,7 +34,11 @@ func (s *sNamespace) Broadcast(ctx context.Context, namespace, message string, o
 			g.Log().Warning(ctx, err)
 		}
 
-		time.Sleep(time.Duration(grand.N(1000, 10000)) * time.Millisecond)
+		select {
+		case <-ctx.Done():
+			return ctx.Err()
+		case <-time.After(time.Duration(grand.N(1000, 10000)) * time.Millisecond):
+		}
 	}
 
 	return

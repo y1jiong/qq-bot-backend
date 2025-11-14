@@ -9,3 +9,5 @@
 1. 如果在 `defer` 语句中或过程中（例如 `defer wg.Wait()`）修改返回值，需要使用命名返回值
 
 2. 命令参数合法性校验在最后进行
+
+3. 不要用 `time.Sleep()`，要用 `select` `<-ctx.Done()` 和 `<-time.After()` 实现超时控制

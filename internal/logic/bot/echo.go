@@ -3,6 +3,8 @@ package bot
 import (
 	"context"
 	"errors"
+	"time"
+
 	"github.com/bytedance/sonic"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/net/gtrace"
@@ -11,7 +13,6 @@ import (
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/propagation"
 	"go.opentelemetry.io/otel/trace"
-	"time"
 )
 
 const (
@@ -91,18 +92,28 @@ func (s *sBot) pushEchoCache(ctx context.Context, echoSign string,
 	if callbackFunc == nil || timeoutFunc == nil {
 		return errors.New("callbackFunc or timeoutFunc must not be nil")
 	}
+
+	timeoutCtx, cancel := context.WithTimeout(ctx, echoTimeout)
+	callbackFuncWrap := func(ctx context.Context, asyncCtx context.Context) {
+		callbackFunc(ctx, asyncCtx)
+		cancel()
+	}
+
 	echoKey := getEchoCacheKey(echoSign)
 	// 放入缓存
 	if err := gcache.Set(ctx, echoKey, &echoModel{
 		LastContext:  ctx,
-		CallbackFunc: callbackFunc,
+		CallbackFunc: callbackFuncWrap,
 		TimeoutFunc:  timeoutFunc,
 	}, echoTTL); err != nil {
+		cancel()
 		return err
 	}
+
 	// 检查超时
-	go func(ctx context.Context, echoKey string) {
-		time.Sleep(echoTimeout)
+	go func() {
+		<-timeoutCtx.Done()
+
 		contain, err := gcache.Contains(ctx, echoKey)
 		if err != nil {
 			g.Log().Error(ctx, err)
@@ -128,7 +139,8 @@ func (s *sBot) pushEchoCache(ctx context.Context, echoSign string,
 		}
 		// 执行超时回调
 		echo.TimeoutFunc(echo.LastContext)
-	}(ctx, echoKey)
+	}()
+
 	return nil
 }
 

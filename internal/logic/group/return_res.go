@@ -235,7 +235,11 @@ func (s *sGroup) KickFromListReturnRes(ctx context.Context,
 				break
 			}
 			// 随机延时
-			time.Sleep(time.Duration(grand.N(1000, 10000)) * time.Millisecond)
+			select {
+			case <-ctx.Done():
+				return
+			case <-time.After(time.Duration(grand.N(1000, 10000)) * time.Millisecond):
+			}
 		}
 	}
 	// 检查有没有踢出失败的
@@ -341,7 +345,11 @@ func (s *sGroup) KeepFromListReturnRes(ctx context.Context,
 				break
 			}
 			// 随机延时
-			time.Sleep(time.Duration(grand.N(1000, 10000)) * time.Millisecond)
+			select {
+			case <-ctx.Done():
+				return
+			case <-time.After(time.Duration(grand.N(1000, 10000)) * time.Millisecond):
+			}
 		}
 	}
 	// 检查有没有踢出失败的

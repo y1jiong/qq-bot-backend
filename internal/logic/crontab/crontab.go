@@ -3,16 +3,17 @@ package crontab
 import (
 	"context"
 	"errors"
-	"github.com/gogf/gf/v2/frame/g"
-	"github.com/gogf/gf/v2/net/gtrace"
-	"github.com/gogf/gf/v2/os/gcron"
-	"go.opentelemetry.io/otel/trace"
 	"qq-bot-backend/internal/dao"
 	"qq-bot-backend/internal/model/entity"
 	"qq-bot-backend/internal/service"
 	"qq-bot-backend/utility"
 	"strings"
 	"sync"
+
+	"github.com/gogf/gf/v2/frame/g"
+	"github.com/gogf/gf/v2/net/gtrace"
+	"github.com/gogf/gf/v2/os/gcron"
+	"go.opentelemetry.io/otel/trace"
 )
 
 type sCrontab struct{}
@@ -33,7 +34,7 @@ var (
 func (s *sCrontab) Run(ctx context.Context) {
 	var tasks []entity.Crontab
 
-	if !utility.RetryWithBackoff(func() bool {
+	if err := utility.RetryWithBackoff(ctx, func() bool {
 		var err error
 		tasks, err = s.getTasks(ctx)
 		if err != nil {
@@ -41,7 +42,7 @@ func (s *sCrontab) Run(ctx context.Context) {
 			return false
 		}
 		return true
-	}, 4, utility.ExponentialBackoffWithJitter) {
+	}, 4, utility.ExponentialBackoffWithJitter(ctx)); err != nil {
 		return
 	}
 

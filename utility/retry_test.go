@@ -1,70 +1,123 @@
 package utility
 
 import (
+	"context"
+	"errors"
 	"testing"
 	"time"
 )
 
-// 模拟一个操作，成功于第 attemptSuccess 次调用
-func mockDoFactory(successAt int) func() bool {
-	attempt := 0
-	return func() bool {
-		attempt++
-		return attempt >= successAt
+func TestRetryWithBackoff_SuccessFirstTry(t *testing.T) {
+	ctx := context.Background()
+	calls := 0
+	backoffCalls := 0
+
+	err := RetryWithBackoff(ctx, func() bool {
+		calls++
+		return true
+	}, 3, func(int) {
+		backoffCalls++
+	})
+
+	if err != nil {
+		t.Fatalf("expected nil error, got %v", err)
 	}
-}
-
-// 固定退避策略：每次都等同样的时间
-func fixedBackoff(duration time.Duration) func(int) {
-	return func(int) {
-		time.Sleep(duration)
+	if calls != 1 {
+		t.Fatalf("expected 1 call, got %d", calls)
 	}
-}
-
-func TestRetryWithBackoff_SuccessOnFirstTry(t *testing.T) {
-	success := RetryWithBackoff(
-		mockDoFactory(1),
-		3,
-		fixedBackoff(0),
-	)
-
-	if !success {
-		t.Errorf("expected success on first try, got failure")
+	if backoffCalls != 0 {
+		t.Fatalf("expected 0 backoff calls, got %d", backoffCalls)
 	}
 }
 
 func TestRetryWithBackoff_SuccessAfterRetries(t *testing.T) {
-	success := RetryWithBackoff(
-		mockDoFactory(2),
-		3,
-		fixedBackoff(0),
-	)
+	ctx := context.Background()
+	calls := 0
+	backoffCalls := 0
 
-	if !success {
-		t.Errorf("expected success after retry, got failure")
+	err := RetryWithBackoff(ctx, func() bool {
+		calls++
+		return calls == 3
+	}, 5, func(int) {
+		backoffCalls++
+	})
+
+	if err != nil {
+		t.Fatalf("expected nil error, got %v", err)
+	}
+	if calls != 3 {
+		t.Fatalf("expected 3 calls, got %d", calls)
+	}
+	// when success on third attempt, backoff should have been called for attempts 0 and 1
+	if backoffCalls != 2 {
+		t.Fatalf("expected 2 backoff calls, got %d", backoffCalls)
 	}
 }
 
-func TestRetryWithBackoff_FailureAfterMaxRetries(t *testing.T) {
-	success := RetryWithBackoff(
-		mockDoFactory(5), // Will never succeed within 3 retries
-		3,
-		fixedBackoff(0),
-	)
+func TestRetryWithBackoff_MaxRetryExceeded(t *testing.T) {
+	ctx := context.Background()
+	calls := 0
+	backoffCalls := 0
 
-	if success {
-		t.Errorf("expected failure after max retries, got success")
+	err := RetryWithBackoff(ctx, func() bool {
+		calls++
+		return false
+	}, 3, func(int) {
+		backoffCalls++
+	})
+
+	if !errors.Is(err, ErrMaxRetryExceeded) {
+		t.Fatalf("expected ErrMaxRetryExceeded, got %v", err)
+	}
+	if calls != 3 {
+		t.Fatalf("expected 3 calls, got %d", calls)
+	}
+	// for 3 attempts, backoff should have been called after attempt 0 and 1
+	if backoffCalls != 2 {
+		t.Fatalf("expected 2 backoff calls, got %d", backoffCalls)
 	}
 }
 
-func TestRetryWithBackoff_ZeroRetries(t *testing.T) {
-	success := RetryWithBackoff(
-		mockDoFactory(1),
-		0,
-		fixedBackoff(0),
-	)
+func TestRetryWithBackoff_ContextCanceled(t *testing.T) {
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
 
-	if success {
-		t.Errorf("expected failure with zero retries, got success")
+	calls := 0
+	backoffCalls := 0
+
+	// cancel before any attempt
+	cancel()
+
+	err := RetryWithBackoff(ctx, func() bool {
+		calls++
+		return false
+	}, 5, func(int) {
+		backoffCalls++
+	})
+
+	if !errors.Is(err, context.Canceled) {
+		t.Fatalf("expected context.Canceled, got %v", err)
+	}
+	if calls != 0 {
+		t.Fatalf("expected 0 calls, got %d", calls)
+	}
+	if backoffCalls != 0 {
+		t.Fatalf("expected 0 backoff calls, got %d", backoffCalls)
+	}
+}
+
+func TestExponentialBackoffWithJitter_RespectsContextCancel(t *testing.T) {
+	ctx, cancel := context.WithCancel(context.Background())
+	backoff := ExponentialBackoffWithJitter(ctx)
+
+	// cancel context and ensure backoff returns quickly
+	cancel()
+
+	start := time.Now()
+	backoff(5)
+	elapsed := time.Since(start)
+
+	if elapsed > 50*time.Millisecond {
+		t.Fatalf("expected backoff to return quickly after cancel, took %v", elapsed)
 	}
 }

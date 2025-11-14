@@ -32,14 +32,14 @@ func (s *sThirdParty) QueryMinecraftGenuineUser(ctx context.Context, name string
 
 	// GET 请求 mojang api
 	var resp *gclient.Response
-	utility.RetryWithBackoff(func() bool {
+	_ = utility.RetryWithBackoff(ctx, func() bool {
 		resp, err = gclient.New().SetTimeout(30*time.Second).SetAgent(consts.ProjName+"/"+consts.Version).Get(ctx, url)
 		if err != nil {
 			span.RecordError(err)
 			return false
 		}
 		return true
-	}, 3, utility.ExponentialBackoffWithJitter)
+	}, 3, utility.ExponentialBackoffWithJitter(ctx))
 	if err != nil || resp == nil {
 		return
 	}
