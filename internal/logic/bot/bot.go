@@ -2,14 +2,16 @@ package bot
 
 import (
 	"context"
-	"github.com/bytedance/sonic"
-	"github.com/bytedance/sonic/ast"
-	"github.com/gogf/gf/v2/frame/g"
-	"github.com/gorilla/websocket"
+	"errors"
 	"qq-bot-backend/internal/service"
 	"qq-bot-backend/utility"
 	"qq-bot-backend/utility/segment"
 	"sync"
+
+	"github.com/bytedance/sonic"
+	"github.com/bytedance/sonic/ast"
+	"github.com/gogf/gf/v2/frame/g"
+	"github.com/gorilla/websocket"
 )
 
 type sBot struct{}
@@ -31,6 +33,8 @@ const (
 
 	messageLengthLimit = 4500
 )
+
+var errEchoTimeout = errors.New("echo timeout")
 
 func (s *sBot) CtxWithWebSocket(parent context.Context, conn *websocket.Conn) context.Context {
 	return context.WithValue(parent, ctxKeyWebSocket, conn)

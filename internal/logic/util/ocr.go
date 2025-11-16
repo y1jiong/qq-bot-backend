@@ -3,7 +3,6 @@ package util
 import (
 	"bytes"
 	"context"
-	"crypto/tls"
 	"encoding/base64"
 	"errors"
 	"io"
@@ -14,10 +13,8 @@ import (
 
 	"github.com/bytedance/sonic"
 	"github.com/gogf/gf/v2/net/gtrace"
-	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/codes"
-	"go.opentelemetry.io/otel/propagation"
 	"go.opentelemetry.io/otel/trace"
 )
 
@@ -93,9 +90,6 @@ func (s *sUtil) ocr(ctx context.Context, url string, req *ocrReq) (respObj *ocrR
 		return nil, err
 	}
 
-	// Inject trace
-	otel.GetTextMapPropagator().Inject(ctx, propagation.HeaderCarrier(request.Header))
-
 	request.Header.Set("User-Agent", consts.ProjName+"/"+consts.Version)
 	request.Header.Set("Content-Type", "application/json")
 
@@ -132,33 +126,15 @@ func (s *sUtil) httpGetQQImage(ctx context.Context, url string) (respBody []byte
 		}
 	}()
 
-	t := http.DefaultTransport.(*http.Transport).Clone()
-	// No validation for https certification of the server in default.
-	t.TLSClientConfig = &tls.Config{
-		MinVersion: tls.VersionTLS12,
-		CipherSuites: []uint16{
-			tls.TLS_RSA_WITH_AES_256_GCM_SHA384,
-			tls.TLS_RSA_WITH_AES_256_CBC_SHA,
-			tls.TLS_RSA_WITH_AES_128_CBC_SHA256,
-			tls.TLS_RSA_WITH_AES_128_CBC_SHA,
-			tls.TLS_RSA_WITH_3DES_EDE_CBC_SHA,
-		},
-		InsecureSkipVerify: true,
-	}
-	c := http.Client{Transport: t}
-
 	req, err := http.NewRequest(http.MethodGet, url, nil)
 	if err != nil {
 		return nil, err
 	}
 
-	// Inject trace
-	otel.GetTextMapPropagator().Inject(ctx, propagation.HeaderCarrier(req.Header))
-
 	req.Header.Set("User-Agent",
-		"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36")
+		"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36")
 
-	resp, err := c.Do(req)
+	resp, err := http.DefaultClient.Do(req)
 	if err != nil || resp == nil {
 		return nil, err
 	}

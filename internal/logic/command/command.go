@@ -114,6 +114,7 @@ func (s *sCommand) tryCommand(ctx context.Context, message string) (caught catch
 	}()
 
 	cmd := strings.Replace(message, cmdPrefix, "", 1)
+outer:
 	switch {
 	case nextBranchRe.MatchString(cmd):
 		next := nextBranchRe.FindStringSubmatch(cmd)
@@ -161,9 +162,11 @@ func (s *sCommand) tryCommand(ctx context.Context, message string) (caught catch
 		case "recall":
 			// /recall
 			caught, retMsg = tryRecall(ctx)
+			break outer
 		case "plain":
 			// /plain
 			caught, retMsg = tryPlain(ctx)
+			break outer
 		}
 
 		// 权限校验

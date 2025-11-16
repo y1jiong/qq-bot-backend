@@ -3,7 +3,6 @@ package bot
 import (
 	"bytes"
 	"context"
-	"crypto/tls"
 	"io"
 	"net/http"
 	"qq-bot-backend/internal/consts"
@@ -12,7 +11,6 @@ import (
 	"qq-bot-backend/utility/codec"
 	"qq-bot-backend/utility/segment"
 	"strings"
-	"sync"
 	"time"
 	"unicode/utf8"
 
@@ -22,22 +20,6 @@ import (
 	"go.opentelemetry.io/otel/codes"
 	"go.opentelemetry.io/otel/propagation"
 )
-
-var (
-	forwarding *http.Client
-)
-
-var initForwarding = sync.OnceFunc(func() {
-	t := http.DefaultTransport.(*http.Transport).Clone()
-	// No validation for https certification of the server in default.
-	t.TLSClientConfig = &tls.Config{
-		InsecureSkipVerify: true,
-	}
-
-	forwarding = &http.Client{
-		Transport: t,
-	}
-})
 
 func (s *sBot) Forward(ctx context.Context, url, key string) (err error) {
 	ctx, span := gtrace.NewSpan(ctx, codec.GetAbsoluteURL(url))
@@ -68,8 +50,7 @@ func (s *sBot) Forward(ctx context.Context, url, key string) (err error) {
 	}
 	req.Header.Set("Content-Type", "application/json")
 
-	initForwarding()
-	resp, err := forwarding.Do(req)
+	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		return
 	}
