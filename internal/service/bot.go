@@ -82,6 +82,7 @@ type (
 		Poke(ctx context.Context, groupId int64, userId int64) (err error)
 		Okay(ctx context.Context) (err error)
 		MarkAllAsRead(ctx context.Context) (err error)
+		MarkMessageAsRead(ctx context.Context, groupId int64, userId int64) (err error)
 		MarkPrivateMsgAsRead(ctx context.Context, userId int64) (err error)
 		MarkGroupMsgAsRead(ctx context.Context, groupId int64) (err error)
 		RewriteMessage(ctx context.Context, message string)

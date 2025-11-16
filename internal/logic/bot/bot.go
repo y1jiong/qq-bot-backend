@@ -123,6 +123,23 @@ func (s *sBot) MessageToNodes(userId int64, nickname, message string) []map[stri
 	return append(nodes, s.buildMessageNode(userId, nickname, string(runes)))
 }
 
+func (s *sBot) sendRequest(ctx context.Context,
+	echoSign string,
+	callback func(ctx context.Context, asyncCtx context.Context),
+	timeout func(ctx context.Context),
+	body []byte,
+) (err error) {
+	if err = s.pushEchoCache(ctx, echoSign, callback, timeout); err != nil {
+		g.Log().Error(ctx, err)
+		return
+	}
+	if err = s.writeMessage(ctx, websocket.TextMessage, body); err != nil {
+		g.Log().Warning(ctx, err)
+		return
+	}
+	return
+}
+
 func (s *sBot) writeMessage(ctx context.Context, messageType int, data []byte) error {
 	if mu := s.webSocketMutexFromCtx(ctx); mu != nil {
 		mu.Lock()

@@ -13,7 +13,6 @@ import (
 	"github.com/gogf/gf/v2/net/gtrace"
 	"github.com/gogf/gf/v2/os/gcache"
 	"github.com/gogf/gf/v2/util/gconv"
-	"github.com/gorilla/websocket"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/codes"
 )
@@ -202,15 +201,9 @@ func (s *sBot) GetGroupMemberInfo(ctx context.Context, groupId, userId int64, no
 		defer wgDone()
 		err = errEchoTimeout
 	}
-	// echo
-	if err = s.pushEchoCache(ctx, echoSign, callback, timeout); err != nil {
-		g.Log().Error(ctx, err)
-		return
-	}
-	// 发送响应
-	if err = s.writeMessage(ctx, websocket.TextMessage, reqJSON); err != nil {
-		g.Log().Warning(ctx, err)
-		return
+
+	if err = s.sendRequest(ctx, echoSign, callback, timeout, reqJSON); err != nil {
+		wgDone()
 	}
 	return
 }
@@ -275,15 +268,9 @@ func (s *sBot) GetGroupMemberList(ctx context.Context, groupId int64, noCache ..
 		defer wgDone()
 		err = errEchoTimeout
 	}
-	// echo
-	if err = s.pushEchoCache(ctx, echoSign, callback, timeout); err != nil {
-		g.Log().Error(ctx, err)
-		return
-	}
-	// 发送响应
-	if err = s.writeMessage(ctx, websocket.TextMessage, reqJSON); err != nil {
-		g.Log().Warning(ctx, err)
-		return
+
+	if err = s.sendRequest(ctx, echoSign, callback, timeout, reqJSON); err != nil {
+		wgDone()
 	}
 	return
 }
@@ -381,15 +368,9 @@ func (s *sBot) RequestMessage(ctx context.Context, messageId int64,
 		defer wgDone()
 		err = errEchoTimeout
 	}
-	// echo
-	if err = s.pushEchoCache(ctx, echoSign, callback, timeout); err != nil {
-		g.Log().Error(ctx, err)
-		return
-	}
-	// 发送响应
-	if err = s.writeMessage(ctx, websocket.TextMessage, reqJSON); err != nil {
-		g.Log().Warning(ctx, err)
-		return
+
+	if err = s.sendRequest(ctx, echoSign, callback, timeout, reqJSON); err != nil {
+		wgDone()
 	}
 	return
 }
@@ -454,15 +435,9 @@ func (s *sBot) GetGroupInfo(ctx context.Context, groupId int64, noCache ...bool,
 		defer wgDone()
 		err = errEchoTimeout
 	}
-	// echo
-	if err = s.pushEchoCache(ctx, echoSign, callback, timeout); err != nil {
-		g.Log().Error(ctx, err)
-		return
-	}
-	// 发送响应
-	if err = s.writeMessage(ctx, websocket.TextMessage, reqJSON); err != nil {
-		g.Log().Warning(ctx, err)
-		return
+
+	if err = s.sendRequest(ctx, echoSign, callback, timeout, reqJSON); err != nil {
+		wgDone()
 	}
 	return
 }
@@ -509,15 +484,9 @@ func (s *sBot) GetLoginInfo(ctx context.Context) (botId int64, nickname string, 
 		defer wgDone()
 		err = errEchoTimeout
 	}
-	// echo
-	if err = s.pushEchoCache(ctx, echoSign, callback, timeout); err != nil {
-		g.Log().Error(ctx, err)
-		return
-	}
-	// 发送响应
-	if err = s.writeMessage(ctx, websocket.TextMessage, reqJSON); err != nil {
-		g.Log().Warning(ctx, err)
-		return
+
+	if err = s.sendRequest(ctx, echoSign, callback, timeout, reqJSON); err != nil {
+		wgDone()
 	}
 	return
 }
@@ -588,15 +557,9 @@ func (s *sBot) GetVersionInfo(ctx context.Context) (appName, appVersion, protoco
 		defer wgDone()
 		err = errEchoTimeout
 	}
-	// echo
-	if err = s.pushEchoCache(ctx, echoSign, callback, timeout); err != nil {
-		g.Log().Error(ctx, err)
-		return
-	}
-	// 发送响应
-	if err = s.writeMessage(ctx, websocket.TextMessage, reqJSON); err != nil {
-		g.Log().Warning(ctx, err)
-		return
+
+	if err = s.sendRequest(ctx, echoSign, callback, timeout, reqJSON); err != nil {
+		wgDone()
 	}
 	return
 }
