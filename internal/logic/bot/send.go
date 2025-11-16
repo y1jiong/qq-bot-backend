@@ -9,7 +9,6 @@ import (
 	"github.com/bytedance/sonic"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/net/gtrace"
-	"github.com/gorilla/websocket"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/codes"
 )
@@ -56,21 +55,17 @@ func (s *sBot) SendMessage(ctx context.Context,
 	}
 
 	// mark message as read
+	go func() {
+		if err := s.MarkMessageAsRead(ctx, groupId, userId); err != nil {
+			g.Log().Warning(ctx, err)
+		}
+	}()
+
 	if groupId != 0 {
 		userId = 0
 		span.SetAttributes(attribute.Int64("send_message.group_id", groupId))
-		go func() {
-			if err := s.MarkGroupMsgAsRead(ctx, groupId); err != nil {
-				g.Log().Warning(ctx, err)
-			}
-		}()
 	} else {
 		span.SetAttributes(attribute.Int64("send_message.user_id", userId))
-		go func() {
-			if err := s.MarkPrivateMsgAsRead(ctx, userId); err != nil {
-				g.Log().Warning(ctx, err)
-			}
-		}()
 	}
 
 	// echo sign
@@ -133,15 +128,9 @@ func (s *sBot) SendMessage(ctx context.Context,
 		defer wgDone()
 		err = errEchoTimeout
 	}
-	// echo
-	if err = s.pushEchoCache(ctx, echoSign, callback, timeout); err != nil {
-		g.Log().Error(ctx, err)
-		return
-	}
-	// 发送响应
-	if err = s.writeMessage(ctx, websocket.TextMessage, reqJSON); err != nil {
-		g.Log().Warning(ctx, err)
-		return
+
+	if err = s.sendRequest(ctx, echoSign, callback, timeout, reqJSON); err != nil {
+		wgDone()
 	}
 	return
 }
@@ -205,21 +194,17 @@ func (s *sBot) SendForwardMessage(ctx context.Context,
 	}()
 
 	// mark message as read
+	go func() {
+		if err := s.MarkMessageAsRead(ctx, groupId, userId); err != nil {
+			g.Log().Warning(ctx, err)
+		}
+	}()
+
 	if groupId != 0 {
 		userId = 0
 		span.SetAttributes(attribute.Int64("send_forward_message.group_id", groupId))
-		go func() {
-			if err := s.MarkGroupMsgAsRead(ctx, groupId); err != nil {
-				g.Log().Warning(ctx, err)
-			}
-		}()
 	} else {
 		span.SetAttributes(attribute.Int64("send_forward_message.user_id", userId))
-		go func() {
-			if err := s.MarkPrivateMsgAsRead(ctx, userId); err != nil {
-				g.Log().Warning(ctx, err)
-			}
-		}()
 	}
 
 	// echo sign
@@ -270,15 +255,9 @@ func (s *sBot) SendForwardMessage(ctx context.Context,
 		defer wgDone()
 		err = errEchoTimeout
 	}
-	// echo
-	if err = s.pushEchoCache(ctx, echoSign, callback, timeout); err != nil {
-		g.Log().Error(ctx, err)
-		return
-	}
-	// 发送响应
-	if err = s.writeMessage(ctx, websocket.TextMessage, reqJSON); err != nil {
-		g.Log().Warning(ctx, err)
-		return
+
+	if err = s.sendRequest(ctx, echoSign, callback, timeout, reqJSON); err != nil {
+		wgDone()
 	}
 	return
 }
@@ -379,14 +358,9 @@ func (s *sBot) SendFileToGroup(ctx context.Context, groupId int64, filePath, nam
 		defer wgDone()
 		err = errEchoTimeout
 	}
-	// echo
-	if err = s.pushEchoCache(ctx, echoSign, callback, timeout); err != nil {
-		g.Log().Error(ctx, err)
-		return
-	}
-	if err = s.writeMessage(ctx, websocket.TextMessage, reqJSON); err != nil {
-		g.Log().Warning(ctx, err)
-		return
+
+	if err = s.sendRequest(ctx, echoSign, callback, timeout, reqJSON); err != nil {
+		wgDone()
 	}
 	return
 }
@@ -449,14 +423,9 @@ func (s *sBot) SendFileToUser(ctx context.Context, userId int64, filePath, name 
 		defer wgDone()
 		err = errEchoTimeout
 	}
-	// echo
-	if err = s.pushEchoCache(ctx, echoSign, callback, timeout); err != nil {
-		g.Log().Error(ctx, err)
-		return
-	}
-	if err = s.writeMessage(ctx, websocket.TextMessage, reqJSON); err != nil {
-		g.Log().Warning(ctx, err)
-		return
+
+	if err = s.sendRequest(ctx, echoSign, callback, timeout, reqJSON); err != nil {
+		wgDone()
 	}
 	return
 }
@@ -517,14 +486,9 @@ func (s *sBot) UploadFile(ctx context.Context, url string) (filePath string, err
 		defer wgDone()
 		err = errEchoTimeout
 	}
-	// echo
-	if err = s.pushEchoCache(ctx, echoSign, callback, timeout); err != nil {
-		g.Log().Error(ctx, err)
-		return
-	}
-	if err = s.writeMessage(ctx, websocket.TextMessage, reqJSON); err != nil {
-		g.Log().Warning(ctx, err)
-		return
+
+	if err = s.sendRequest(ctx, echoSign, callback, timeout, reqJSON); err != nil {
+		wgDone()
 	}
 	return
 }
@@ -596,15 +560,9 @@ func (s *sBot) ApproveJoinGroup(ctx context.Context, flag, subType string, appro
 		defer wgDone()
 		err = errEchoTimeout
 	}
-	// echo
-	if err = s.pushEchoCache(ctx, echoSign, callback, timeout); err != nil {
-		g.Log().Error(ctx, err)
-		return
-	}
-	// 发送响应
-	if err = s.writeMessage(ctx, websocket.TextMessage, reqJSON); err != nil {
-		g.Log().Warning(ctx, err)
-		return
+
+	if err = s.sendRequest(ctx, echoSign, callback, timeout, reqJSON); err != nil {
+		wgDone()
 	}
 	return
 }
@@ -660,15 +618,9 @@ func (s *sBot) SetModel(ctx context.Context, model string) (err error) {
 		defer wgDone()
 		err = errEchoTimeout
 	}
-	// echo
-	if err = s.pushEchoCache(ctx, echoSign, callback, timeout); err != nil {
-		g.Log().Error(ctx, err)
-		return
-	}
-	// 发送响应
-	if err = s.writeMessage(ctx, websocket.TextMessage, reqJSON); err != nil {
-		g.Log().Warning(ctx, err)
-		return
+
+	if err = s.sendRequest(ctx, echoSign, callback, timeout, reqJSON); err != nil {
+		wgDone()
 	}
 	return
 }
@@ -725,14 +677,9 @@ func (s *sBot) RecallMessage(ctx context.Context, messageId int64) (err error) {
 		defer wgDone()
 		err = errEchoTimeout
 	}
-	// echo
-	if err = s.pushEchoCache(ctx, echoSign, callback, timeout); err != nil {
-		g.Log().Error(ctx, err)
-		return
-	}
-	if err = s.writeMessage(ctx, websocket.TextMessage, reqJSON); err != nil {
-		g.Log().Warning(ctx, err)
-		return
+
+	if err = s.sendRequest(ctx, echoSign, callback, timeout, reqJSON); err != nil {
+		wgDone()
 	}
 	return
 }
@@ -801,14 +748,9 @@ func (s *sBot) Mute(ctx context.Context, groupId, userId int64, seconds int) (er
 		defer wgDone()
 		err = errEchoTimeout
 	}
-	// echo
-	if err = s.pushEchoCache(ctx, echoSign, callback, timeout); err != nil {
-		g.Log().Error(ctx, err)
-		return
-	}
-	if err = s.writeMessage(ctx, websocket.TextMessage, reqJSON); err != nil {
-		g.Log().Warning(ctx, err)
-		return
+
+	if err = s.sendRequest(ctx, echoSign, callback, timeout, reqJSON); err != nil {
+		wgDone()
 	}
 	return
 }
@@ -871,14 +813,9 @@ func (s *sBot) SetGroupCard(ctx context.Context, groupId, userId int64, card str
 		defer wgDone()
 		err = errEchoTimeout
 	}
-	// echo
-	if err = s.pushEchoCache(ctx, echoSign, callback, timeout); err != nil {
-		g.Log().Error(ctx, err)
-		return
-	}
-	if err = s.writeMessage(ctx, websocket.TextMessage, reqJSON); err != nil {
-		g.Log().Warning(ctx, err)
-		return
+
+	if err = s.sendRequest(ctx, echoSign, callback, timeout, reqJSON); err != nil {
+		wgDone()
 	}
 	return
 }
@@ -943,14 +880,9 @@ func (s *sBot) Kick(ctx context.Context, groupId, userId int64, reject ...bool) 
 		defer wgDone()
 		err = errEchoTimeout
 	}
-	// echo
-	if err = s.pushEchoCache(ctx, echoSign, callback, timeout); err != nil {
-		g.Log().Error(ctx, err)
-		return
-	}
-	if err = s.writeMessage(ctx, websocket.TextMessage, reqJSON); err != nil {
-		g.Log().Warning(ctx, err)
-		return
+
+	if err = s.sendRequest(ctx, echoSign, callback, timeout, reqJSON); err != nil {
+		wgDone()
 	}
 	return
 }
@@ -1009,14 +941,9 @@ func (s *sBot) ProfileLike(ctx context.Context, userId int64, times int) (err er
 		defer wgDone()
 		err = errEchoTimeout
 	}
-	// echo
-	if err = s.pushEchoCache(ctx, echoSign, callback, timeout); err != nil {
-		g.Log().Error(ctx, err)
-		return
-	}
-	if err = s.writeMessage(ctx, websocket.TextMessage, reqJSON); err != nil {
-		g.Log().Warning(ctx, err)
-		return
+
+	if err = s.sendRequest(ctx, echoSign, callback, timeout, reqJSON); err != nil {
+		wgDone()
 	}
 	return
 }
@@ -1079,14 +1006,9 @@ func (s *sBot) EmojiLike(ctx context.Context, messageId int64, emojiId string) (
 		defer wgDone()
 		err = errEchoTimeout
 	}
-	// echo
-	if err = s.pushEchoCache(ctx, echoSign, callback, timeout); err != nil {
-		g.Log().Error(ctx, err)
-		return
-	}
-	if err = s.writeMessage(ctx, websocket.TextMessage, reqJSON); err != nil {
-		g.Log().Warning(ctx, err)
-		return
+
+	if err = s.sendRequest(ctx, echoSign, callback, timeout, reqJSON); err != nil {
+		wgDone()
 	}
 	return
 }
@@ -1145,14 +1067,9 @@ func (s *sBot) Poke(ctx context.Context, groupId, userId int64) (err error) {
 		defer wgDone()
 		err = errEchoTimeout
 	}
-	// echo
-	if err = s.pushEchoCache(ctx, echoSign, callback, timeout); err != nil {
-		g.Log().Error(ctx, err)
-		return
-	}
-	if err = s.writeMessage(ctx, websocket.TextMessage, reqJSON); err != nil {
-		g.Log().Warning(ctx, err)
-		return
+
+	if err = s.sendRequest(ctx, echoSign, callback, timeout, reqJSON); err != nil {
+		wgDone()
 	}
 	return
 }
@@ -1207,17 +1124,18 @@ func (s *sBot) MarkAllAsRead(ctx context.Context) (err error) {
 		defer wgDone()
 		err = errEchoTimeout
 	}
-	// echo
-	if err = s.pushEchoCache(ctx, echoSign, callback, timeout); err != nil {
-		g.Log().Error(ctx, err)
-		return
-	}
-	// 发送响应
-	if err = s.writeMessage(ctx, websocket.TextMessage, reqJSON); err != nil {
-		g.Log().Warning(ctx, err)
-		return
+
+	if err = s.sendRequest(ctx, echoSign, callback, timeout, reqJSON); err != nil {
+		wgDone()
 	}
 	return
+}
+
+func (s *sBot) MarkMessageAsRead(ctx context.Context, groupId, userId int64) (err error) {
+	if groupId != 0 {
+		return s.MarkGroupMsgAsRead(ctx, groupId)
+	}
+	return s.MarkPrivateMsgAsRead(ctx, userId)
 }
 
 func (s *sBot) MarkPrivateMsgAsRead(ctx context.Context, userId int64) (err error) {
@@ -1268,15 +1186,9 @@ func (s *sBot) MarkPrivateMsgAsRead(ctx context.Context, userId int64) (err erro
 		defer wgDone()
 		err = errEchoTimeout
 	}
-	// echo
-	if err = s.pushEchoCache(ctx, echoSign, callback, timeout); err != nil {
-		g.Log().Error(ctx, err)
-		return
-	}
-	// 发送响应
-	if err = s.writeMessage(ctx, websocket.TextMessage, reqJSON); err != nil {
-		g.Log().Warning(ctx, err)
-		return
+
+	if err = s.sendRequest(ctx, echoSign, callback, timeout, reqJSON); err != nil {
+		wgDone()
 	}
 	return
 }
@@ -1329,15 +1241,9 @@ func (s *sBot) MarkGroupMsgAsRead(ctx context.Context, groupId int64) (err error
 		defer wgDone()
 		err = errEchoTimeout
 	}
-	// echo
-	if err = s.pushEchoCache(ctx, echoSign, callback, timeout); err != nil {
-		g.Log().Error(ctx, err)
-		return
-	}
-	// 发送响应
-	if err = s.writeMessage(ctx, websocket.TextMessage, reqJSON); err != nil {
-		g.Log().Warning(ctx, err)
-		return
+
+	if err = s.sendRequest(ctx, echoSign, callback, timeout, reqJSON); err != nil {
+		wgDone()
 	}
 	return
 }

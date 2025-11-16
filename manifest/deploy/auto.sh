@@ -5,7 +5,8 @@ OS_ARCH=linux-amd64v3
 
 echo "> tar -xJvf ${BIN}.${OS_ARCH}.tar.xz"
 tar -xJvf ${BIN}.${OS_ARCH}.tar.xz
-if [ $? -ne 0 ]; then
+ret=$?
+if [[ $ret -ne 0 ]]; then
     echo "failed"
     exit 1
 fi

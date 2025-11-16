@@ -99,9 +99,8 @@ func (s *sBot) pushEchoCache(ctx context.Context, echoSign string,
 		cancel()
 	}
 
-	echoKey := getEchoCacheKey(echoSign)
 	// 放入缓存
-	if err := gcache.Set(ctx, echoKey, &echoModel{
+	if err := gcache.Set(ctx, getEchoCacheKey(echoSign), &echoModel{
 		LastContext:  ctx,
 		CallbackFunc: callbackFuncWrap,
 		TimeoutFunc:  timeoutFunc,
@@ -114,24 +113,9 @@ func (s *sBot) pushEchoCache(ctx context.Context, echoSign string,
 	go func() {
 		<-timeoutCtx.Done()
 
-		contain, err := gcache.Contains(ctx, echoKey)
+		echo, err := s.popEchoCache(ctx, echoSign)
 		if err != nil {
 			g.Log().Error(ctx, err)
-			return
-		}
-		if !contain {
-			return
-		}
-		v, err := gcache.Remove(ctx, echoKey)
-		if err != nil {
-			g.Log().Error(ctx, err)
-			return
-		}
-		if v == nil {
-			return
-		}
-		echo, ok := v.Val().(*echoModel)
-		if !ok {
 			return
 		}
 		if echo == nil || echo.TimeoutFunc == nil {
