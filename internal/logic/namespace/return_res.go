@@ -63,7 +63,8 @@ func (s *sNamespace) RemoveNamespaceReturnRes(ctx context.Context, namespace str
 		return
 	}
 	// 权限校验 owner
-	if !isNamespaceOwner(service.Bot().GetUserId(ctx), namespaceE) {
+	if !isNamespaceOwner(service.Bot().GetUserId(ctx), namespaceE) &&
+		!service.User().CanOpNamespace(ctx, service.Bot().GetUserId(ctx)) {
 		retMsg = "未找到 namespace(" + namespace + ")"
 		return
 	}
