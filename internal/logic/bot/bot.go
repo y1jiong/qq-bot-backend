@@ -2,7 +2,6 @@ package bot
 
 import (
 	"context"
-	"errors"
 	"qq-bot-backend/internal/service"
 	"qq-bot-backend/utility"
 	"qq-bot-backend/utility/segment"
@@ -33,8 +32,6 @@ const (
 
 	messageLengthLimit = 4500
 )
-
-var errEchoTimeout = errors.New("echo timeout")
 
 func (s *sBot) CtxWithWebSocket(parent context.Context, conn *websocket.Conn) context.Context {
 	return context.WithValue(parent, ctxKeyWebSocket, conn)

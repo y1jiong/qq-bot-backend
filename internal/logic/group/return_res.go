@@ -2,6 +2,8 @@ package group
 
 import (
 	"context"
+	"errors"
+	"qq-bot-backend/internal/consts/innerr"
 	"qq-bot-backend/internal/dao"
 	"qq-bot-backend/internal/model/entity"
 	"qq-bot-backend/internal/service"
@@ -405,8 +407,8 @@ func (s *sGroup) CheckExistReturnRes(ctx context.Context) (retMsg string) {
 			vGroupId := v.GroupId
 			// 判断群是否已经解散或者登录账号不在群内
 			if _, err = service.Bot().GetGroupInfo(ctx, vGroupId, true); err != nil {
-				if !strings.Contains(err.Error(), "不存在") {
-					retMsg = "获取群信息失败"
+				if errors.Is(err, innerr.BotEchoTimeout) {
+					retMsg = "获取群信息超时"
 					return
 				}
 			} else {

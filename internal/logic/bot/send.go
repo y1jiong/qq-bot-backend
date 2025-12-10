@@ -3,6 +3,7 @@ package bot
 import (
 	"context"
 	"errors"
+	"qq-bot-backend/internal/consts/innerr"
 	"qq-bot-backend/utility/segment"
 	"sync"
 
@@ -126,7 +127,7 @@ func (s *sBot) SendMessage(ctx context.Context,
 	}
 	timeout := func(ctx context.Context) {
 		defer wgDone()
-		err = errEchoTimeout
+		err = innerr.BotEchoTimeout
 	}
 
 	if err = s.sendRequest(ctx, echoSign, callback, timeout, reqJSON); err != nil {
@@ -253,7 +254,7 @@ func (s *sBot) SendForwardMessage(ctx context.Context,
 	}
 	timeout := func(ctx context.Context) {
 		defer wgDone()
-		err = errEchoTimeout
+		err = innerr.BotEchoTimeout
 	}
 
 	if err = s.sendRequest(ctx, echoSign, callback, timeout, reqJSON); err != nil {
@@ -356,7 +357,7 @@ func (s *sBot) SendFileToGroup(ctx context.Context, groupId int64, filePath, nam
 	}
 	timeout := func(ctx context.Context) {
 		defer wgDone()
-		err = errEchoTimeout
+		err = innerr.BotEchoTimeout
 	}
 
 	if err = s.sendRequest(ctx, echoSign, callback, timeout, reqJSON); err != nil {
@@ -421,7 +422,7 @@ func (s *sBot) SendFileToUser(ctx context.Context, userId int64, filePath, name 
 	}
 	timeout := func(ctx context.Context) {
 		defer wgDone()
-		err = errEchoTimeout
+		err = innerr.BotEchoTimeout
 	}
 
 	if err = s.sendRequest(ctx, echoSign, callback, timeout, reqJSON); err != nil {
@@ -484,7 +485,7 @@ func (s *sBot) UploadFile(ctx context.Context, url string) (filePath string, err
 	}
 	timeout := func(ctx context.Context) {
 		defer wgDone()
-		err = errEchoTimeout
+		err = innerr.BotEchoTimeout
 	}
 
 	if err = s.sendRequest(ctx, echoSign, callback, timeout, reqJSON); err != nil {
@@ -558,7 +559,7 @@ func (s *sBot) ApproveJoinGroup(ctx context.Context, flag, subType string, appro
 	}
 	timeout := func(ctx context.Context) {
 		defer wgDone()
-		err = errEchoTimeout
+		err = innerr.BotEchoTimeout
 	}
 
 	if err = s.sendRequest(ctx, echoSign, callback, timeout, reqJSON); err != nil {
@@ -616,7 +617,7 @@ func (s *sBot) SetModel(ctx context.Context, model string) (err error) {
 	}
 	timeout := func(ctx context.Context) {
 		defer wgDone()
-		err = errEchoTimeout
+		err = innerr.BotEchoTimeout
 	}
 
 	if err = s.sendRequest(ctx, echoSign, callback, timeout, reqJSON); err != nil {
@@ -675,7 +676,7 @@ func (s *sBot) RecallMessage(ctx context.Context, messageId int64) (err error) {
 	}
 	timeout := func(ctx context.Context) {
 		defer wgDone()
-		err = errEchoTimeout
+		err = innerr.BotEchoTimeout
 	}
 
 	if err = s.sendRequest(ctx, echoSign, callback, timeout, reqJSON); err != nil {
@@ -746,7 +747,7 @@ func (s *sBot) Mute(ctx context.Context, groupId, userId int64, seconds int) (er
 	}
 	timeout := func(ctx context.Context) {
 		defer wgDone()
-		err = errEchoTimeout
+		err = innerr.BotEchoTimeout
 	}
 
 	if err = s.sendRequest(ctx, echoSign, callback, timeout, reqJSON); err != nil {
@@ -811,7 +812,7 @@ func (s *sBot) SetGroupCard(ctx context.Context, groupId, userId int64, card str
 	}
 	timeout := func(ctx context.Context) {
 		defer wgDone()
-		err = errEchoTimeout
+		err = innerr.BotEchoTimeout
 	}
 
 	if err = s.sendRequest(ctx, echoSign, callback, timeout, reqJSON); err != nil {
@@ -878,7 +879,7 @@ func (s *sBot) Kick(ctx context.Context, groupId, userId int64, reject ...bool) 
 	}
 	timeout := func(ctx context.Context) {
 		defer wgDone()
-		err = errEchoTimeout
+		err = innerr.BotEchoTimeout
 	}
 
 	if err = s.sendRequest(ctx, echoSign, callback, timeout, reqJSON); err != nil {
@@ -939,7 +940,7 @@ func (s *sBot) ProfileLike(ctx context.Context, userId int64, times int) (err er
 	}
 	timeout := func(ctx context.Context) {
 		defer wgDone()
-		err = errEchoTimeout
+		err = innerr.BotEchoTimeout
 	}
 
 	if err = s.sendRequest(ctx, echoSign, callback, timeout, reqJSON); err != nil {
@@ -1004,7 +1005,7 @@ func (s *sBot) EmojiLike(ctx context.Context, messageId int64, emojiId string) (
 	}
 	timeout := func(ctx context.Context) {
 		defer wgDone()
-		err = errEchoTimeout
+		err = innerr.BotEchoTimeout
 	}
 
 	if err = s.sendRequest(ctx, echoSign, callback, timeout, reqJSON); err != nil {
@@ -1065,7 +1066,7 @@ func (s *sBot) Poke(ctx context.Context, groupId, userId int64) (err error) {
 	}
 	timeout := func(ctx context.Context) {
 		defer wgDone()
-		err = errEchoTimeout
+		err = innerr.BotEchoTimeout
 	}
 
 	if err = s.sendRequest(ctx, echoSign, callback, timeout, reqJSON); err != nil {
@@ -1122,7 +1123,7 @@ func (s *sBot) MarkAllAsRead(ctx context.Context) (err error) {
 	}
 	timeout := func(ctx context.Context) {
 		defer wgDone()
-		err = errEchoTimeout
+		err = innerr.BotEchoTimeout
 	}
 
 	if err = s.sendRequest(ctx, echoSign, callback, timeout, reqJSON); err != nil {
@@ -1184,7 +1185,7 @@ func (s *sBot) MarkPrivateMsgAsRead(ctx context.Context, userId int64) (err erro
 	}
 	timeout := func(ctx context.Context) {
 		defer wgDone()
-		err = errEchoTimeout
+		err = innerr.BotEchoTimeout
 	}
 
 	if err = s.sendRequest(ctx, echoSign, callback, timeout, reqJSON); err != nil {
@@ -1239,7 +1240,7 @@ func (s *sBot) MarkGroupMsgAsRead(ctx context.Context, groupId int64) (err error
 	}
 	timeout := func(ctx context.Context) {
 		defer wgDone()
-		err = errEchoTimeout
+		err = innerr.BotEchoTimeout
 	}
 
 	if err = s.sendRequest(ctx, echoSign, callback, timeout, reqJSON); err != nil {

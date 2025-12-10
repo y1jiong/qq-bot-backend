@@ -3,6 +3,7 @@ package bot
 import (
 	"context"
 	"errors"
+	"qq-bot-backend/internal/consts/innerr"
 	"qq-bot-backend/internal/service"
 	"qq-bot-backend/utility/segment"
 	"sync"
@@ -199,7 +200,7 @@ func (s *sBot) GetGroupMemberInfo(ctx context.Context, groupId, userId int64, no
 	}
 	timeout := func(ctx context.Context) {
 		defer wgDone()
-		err = errEchoTimeout
+		err = innerr.BotEchoTimeout
 	}
 
 	if err = s.sendRequest(ctx, echoSign, callback, timeout, reqJSON); err != nil {
@@ -266,7 +267,7 @@ func (s *sBot) GetGroupMemberList(ctx context.Context, groupId int64, noCache ..
 	}
 	timeout := func(ctx context.Context) {
 		defer wgDone()
-		err = errEchoTimeout
+		err = innerr.BotEchoTimeout
 	}
 
 	if err = s.sendRequest(ctx, echoSign, callback, timeout, reqJSON); err != nil {
@@ -366,7 +367,7 @@ func (s *sBot) RequestMessage(ctx context.Context, messageId int64,
 	}
 	timeout := func(ctx context.Context) {
 		defer wgDone()
-		err = errEchoTimeout
+		err = innerr.BotEchoTimeout
 	}
 
 	if err = s.sendRequest(ctx, echoSign, callback, timeout, reqJSON); err != nil {
@@ -433,7 +434,7 @@ func (s *sBot) GetGroupInfo(ctx context.Context, groupId int64, noCache ...bool,
 	}
 	timeout := func(ctx context.Context) {
 		defer wgDone()
-		err = errEchoTimeout
+		err = innerr.BotEchoTimeout
 	}
 
 	if err = s.sendRequest(ctx, echoSign, callback, timeout, reqJSON); err != nil {
@@ -482,7 +483,7 @@ func (s *sBot) GetLoginInfo(ctx context.Context) (botId int64, nickname string, 
 	}
 	timeout := func(ctx context.Context) {
 		defer wgDone()
-		err = errEchoTimeout
+		err = innerr.BotEchoTimeout
 	}
 
 	if err = s.sendRequest(ctx, echoSign, callback, timeout, reqJSON); err != nil {
@@ -555,7 +556,7 @@ func (s *sBot) GetVersionInfo(ctx context.Context) (appName, appVersion, protoco
 	}
 	timeout := func(ctx context.Context) {
 		defer wgDone()
-		err = errEchoTimeout
+		err = innerr.BotEchoTimeout
 	}
 
 	if err = s.sendRequest(ctx, echoSign, callback, timeout, reqJSON); err != nil {
