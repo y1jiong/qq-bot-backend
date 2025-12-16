@@ -188,7 +188,7 @@ func (s *sBot) GetGroupMemberInfo(ctx context.Context, groupId, userId int64, no
 	defer wg.Wait()
 	wgDone := sync.OnceFunc(wg.Done)
 	wg.Add(1)
-	callback := func(ctx context.Context, asyncCtx context.Context) {
+	callback := func(ctx, asyncCtx context.Context) {
 		defer wgDone()
 		if err = s.defaultEchoHandler(asyncCtx); err != nil {
 			if !req.Params.NoCache {
@@ -254,7 +254,7 @@ func (s *sBot) GetGroupMemberList(ctx context.Context, groupId int64, noCache ..
 	defer wg.Wait()
 	wgDone := sync.OnceFunc(wg.Done)
 	wg.Add(1)
-	callback := func(ctx context.Context, asyncCtx context.Context) {
+	callback := func(ctx, asyncCtx context.Context) {
 		defer wgDone()
 		if err = s.defaultEchoHandler(asyncCtx); err != nil {
 			if !req.Params.NoCache {
@@ -357,7 +357,7 @@ func (s *sBot) RequestMessage(ctx context.Context, messageId int64,
 	defer wg.Wait()
 	wgDone := sync.OnceFunc(wg.Done)
 	wg.Add(1)
-	callback := func(ctx context.Context, asyncCtx context.Context) {
+	callback := func(ctx, asyncCtx context.Context) {
 		defer wgDone()
 		if err = s.defaultEchoHandler(asyncCtx); err != nil {
 			return
@@ -421,7 +421,7 @@ func (s *sBot) GetGroupInfo(ctx context.Context, groupId int64, noCache ...bool,
 	defer wg.Wait()
 	wgDone := sync.OnceFunc(wg.Done)
 	wg.Add(1)
-	callback := func(ctx context.Context, asyncCtx context.Context) {
+	callback := func(ctx, asyncCtx context.Context) {
 		defer wgDone()
 		if err = s.defaultEchoHandler(asyncCtx); err != nil {
 			if !req.Params.NoCache {
@@ -472,7 +472,7 @@ func (s *sBot) GetLoginInfo(ctx context.Context) (botId int64, nickname string, 
 	defer wg.Wait()
 	wgDone := sync.OnceFunc(wg.Done)
 	wg.Add(1)
-	callback := func(ctx context.Context, asyncCtx context.Context) {
+	callback := func(ctx, asyncCtx context.Context) {
 		defer wgDone()
 		if err = s.defaultEchoHandler(asyncCtx); err != nil {
 			return
@@ -544,7 +544,7 @@ func (s *sBot) GetVersionInfo(ctx context.Context) (appName, appVersion, protoco
 	defer wg.Wait()
 	wgDone := sync.OnceFunc(wg.Done)
 	wg.Add(1)
-	callback := func(ctx context.Context, asyncCtx context.Context) {
+	callback := func(ctx, asyncCtx context.Context) {
 		defer wgDone()
 		if err = s.defaultEchoHandler(asyncCtx); err != nil {
 			return

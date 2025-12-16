@@ -43,6 +43,7 @@ func (s *sCrontab) Run(ctx context.Context) {
 		}
 		return true
 	}, 4, utility.ExponentialBackoffWithJitter(ctx)); err != nil {
+		g.Log().Error(ctx, err)
 		return
 	}
 

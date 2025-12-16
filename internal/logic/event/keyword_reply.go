@@ -393,7 +393,7 @@ func (s *sEvent) keywordReplyRewrite(ctx context.Context,
 	// 防止循环递归
 	if err := service.Bot().SetHistory(ctx, hit); err != nil {
 		// rewrite loop detected
-		g.Log().Notice(ctx, "rewrite loop detected:", hit)
+		g.Log().Notice(ctx, "rewrite loop detected:", hit, err)
 		return
 	}
 	// 解码提取

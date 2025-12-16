@@ -122,7 +122,7 @@ func (s *sBot) MessageToNodes(userId int64, nickname, message string) []map[stri
 
 func (s *sBot) sendRequest(ctx context.Context,
 	echoSign string,
-	callback func(ctx context.Context, asyncCtx context.Context),
+	callback func(ctx, asyncCtx context.Context),
 	timeout func(ctx context.Context),
 	body []byte,
 ) (err error) {

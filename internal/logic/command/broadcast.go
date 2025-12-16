@@ -4,6 +4,7 @@ import (
 	"context"
 	"qq-bot-backend/internal/service"
 
+	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/net/gtrace"
 )
 
@@ -22,6 +23,7 @@ func tryBroadcast(ctx context.Context, cmd string) (caught catch, retMsg string)
 
 	// /broadcast <message>
 	if err := service.Namespace().Broadcast(ctx, namespace, cmd, groupId); err != nil {
+		g.Log().Error(ctx, err)
 		retMsg = "广播失败"
 	}
 	return

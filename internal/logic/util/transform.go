@@ -18,7 +18,7 @@ func (s *sUtil) ToPlainText(ctx context.Context, message string) string {
 			segments[idx] = nil
 
 		case segment.TypeImage:
-			if url := service.Cfg().GetOcrURL(ctx); url != "" {
+			if service.Cfg().GetOcrURL(ctx) != "" {
 				image, err := s.httpGetQQImage(ctx, seg.Data["url"])
 				if err != nil {
 					g.Log().Warning(ctx, err)

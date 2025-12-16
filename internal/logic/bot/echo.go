@@ -35,6 +35,7 @@ func (s *sBot) generateEchoSignWithTrace(ctx context.Context) string {
 func (s *sBot) extractEchoSign(ctx context.Context, echoSign string) context.Context {
 	header := make(map[string]string)
 	if err := sonic.UnmarshalString(echoSign, &header); err != nil {
+		g.Log().Error(ctx, err)
 		return ctx
 	}
 	return otel.GetTextMapPropagator().Extract(ctx, propagation.MapCarrier(header))
@@ -42,7 +43,7 @@ func (s *sBot) extractEchoSign(ctx context.Context, echoSign string) context.Con
 
 type echoModel struct {
 	LastContext  context.Context
-	CallbackFunc func(ctx context.Context, asyncCtx context.Context)
+	CallbackFunc func(ctx, asyncCtx context.Context)
 	TimeoutFunc  func(ctx context.Context)
 }
 
@@ -86,7 +87,7 @@ func (s *sBot) defaultEchoHandler(asyncCtx context.Context) error {
 }
 
 func (s *sBot) pushEchoCache(ctx context.Context, echoSign string,
-	callbackFunc func(ctx context.Context, asyncCtx context.Context),
+	callbackFunc func(ctx, asyncCtx context.Context),
 	timeoutFunc func(ctx context.Context),
 ) error {
 	if callbackFunc == nil || timeoutFunc == nil {
@@ -94,7 +95,7 @@ func (s *sBot) pushEchoCache(ctx context.Context, echoSign string,
 	}
 
 	timeoutCtx, cancel := context.WithTimeout(ctx, echoTimeout)
-	callbackFuncWrap := func(ctx context.Context, asyncCtx context.Context) {
+	callbackFuncWrap := func(ctx, asyncCtx context.Context) {
 		callbackFunc(ctx, asyncCtx)
 		cancel()
 	}

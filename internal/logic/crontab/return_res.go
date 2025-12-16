@@ -2,11 +2,12 @@ package crontab
 
 import (
 	"context"
-	"github.com/gogf/gf/v2/frame/g"
-	"github.com/gogf/gf/v2/util/gconv"
 	"qq-bot-backend/internal/dao"
 	"qq-bot-backend/internal/model/entity"
 	"strings"
+
+	"github.com/gogf/gf/v2/frame/g"
+	"github.com/gogf/gf/v2/util/gconv"
 )
 
 func (s *sCrontab) ShowReturnRes(ctx context.Context, creatorId int64) (retMsg string) {
@@ -21,6 +22,7 @@ func (s *sCrontab) ShowReturnRes(ctx context.Context, creatorId int64) (retMsg s
 		q = q.Where(dao.Crontab.Columns().CreatorId, creatorId)
 	}
 	if err := q.Scan(&tasks); err != nil {
+		g.Log().Error(ctx, err)
 		return
 	}
 

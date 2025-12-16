@@ -30,7 +30,7 @@ func (s *sNamespace) Broadcast(ctx context.Context, namespace, message string, o
 			continue
 		}
 
-		if _, err = service.Bot().SendMessage(ctx, 0, group.GroupId, message, false); err != nil {
+		if _, err := service.Bot().SendMessage(ctx, 0, group.GroupId, message, false); err != nil {
 			g.Log().Warning(ctx, err)
 		}
 

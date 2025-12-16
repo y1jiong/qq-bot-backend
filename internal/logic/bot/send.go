@@ -118,7 +118,7 @@ func (s *sBot) SendMessage(ctx context.Context,
 	defer wg.Wait()
 	wgDone := sync.OnceFunc(wg.Done)
 	wg.Add(1)
-	callback := func(ctx context.Context, asyncCtx context.Context) {
+	callback := func(ctx, asyncCtx context.Context) {
 		defer wgDone()
 		if err = s.defaultEchoHandler(asyncCtx); err != nil {
 			return
@@ -245,7 +245,7 @@ func (s *sBot) SendForwardMessage(ctx context.Context,
 	defer wg.Wait()
 	wgDone := sync.OnceFunc(wg.Done)
 	wg.Add(1)
-	callback := func(ctx context.Context, asyncCtx context.Context) {
+	callback := func(ctx, asyncCtx context.Context) {
 		defer wgDone()
 		if err = s.defaultEchoHandler(asyncCtx); err != nil {
 			return
@@ -349,7 +349,7 @@ func (s *sBot) SendFileToGroup(ctx context.Context, groupId int64, filePath, nam
 	defer wg.Wait()
 	wgDone := sync.OnceFunc(wg.Done)
 	wg.Add(1)
-	callback := func(ctx context.Context, asyncCtx context.Context) {
+	callback := func(ctx, asyncCtx context.Context) {
 		defer wgDone()
 		if err = s.defaultEchoHandler(asyncCtx); err != nil {
 			return
@@ -414,7 +414,7 @@ func (s *sBot) SendFileToUser(ctx context.Context, userId int64, filePath, name 
 	defer wg.Wait()
 	wgDone := sync.OnceFunc(wg.Done)
 	wg.Add(1)
-	callback := func(ctx context.Context, asyncCtx context.Context) {
+	callback := func(ctx, asyncCtx context.Context) {
 		defer wgDone()
 		if err = s.defaultEchoHandler(asyncCtx); err != nil {
 			return
@@ -476,7 +476,7 @@ func (s *sBot) UploadFile(ctx context.Context, url string) (filePath string, err
 	defer wg.Wait()
 	wgDone := sync.OnceFunc(wg.Done)
 	wg.Add(1)
-	callback := func(ctx context.Context, asyncCtx context.Context) {
+	callback := func(ctx, asyncCtx context.Context) {
 		defer wgDone()
 		if err = s.defaultEchoHandler(asyncCtx); err != nil {
 			return
@@ -551,7 +551,7 @@ func (s *sBot) ApproveJoinGroup(ctx context.Context, flag, subType string, appro
 	defer wg.Wait()
 	wgDone := sync.OnceFunc(wg.Done)
 	wg.Add(1)
-	callback := func(ctx context.Context, asyncCtx context.Context) {
+	callback := func(ctx, asyncCtx context.Context) {
 		defer wgDone()
 		if err = s.defaultEchoHandler(asyncCtx); err != nil {
 			return
@@ -609,7 +609,7 @@ func (s *sBot) SetModel(ctx context.Context, model string) (err error) {
 	defer wg.Wait()
 	wgDone := sync.OnceFunc(wg.Done)
 	wg.Add(1)
-	callback := func(ctx context.Context, asyncCtx context.Context) {
+	callback := func(ctx, asyncCtx context.Context) {
 		defer wgDone()
 		if err = s.defaultEchoHandler(asyncCtx); err != nil {
 			return
@@ -668,7 +668,7 @@ func (s *sBot) RecallMessage(ctx context.Context, messageId int64) (err error) {
 	defer wg.Wait()
 	wgDone := sync.OnceFunc(wg.Done)
 	wg.Add(1)
-	callback := func(ctx context.Context, asyncCtx context.Context) {
+	callback := func(ctx, asyncCtx context.Context) {
 		defer wgDone()
 		if err = s.defaultEchoHandler(asyncCtx); err != nil {
 			return
@@ -739,7 +739,7 @@ func (s *sBot) Mute(ctx context.Context, groupId, userId int64, seconds int) (er
 	defer wg.Wait()
 	wgDone := sync.OnceFunc(wg.Done)
 	wg.Add(1)
-	callback := func(ctx context.Context, asyncCtx context.Context) {
+	callback := func(ctx, asyncCtx context.Context) {
 		defer wgDone()
 		if err = s.defaultEchoHandler(asyncCtx); err != nil {
 			return
@@ -804,7 +804,7 @@ func (s *sBot) SetGroupCard(ctx context.Context, groupId, userId int64, card str
 	defer wg.Wait()
 	wgDone := sync.OnceFunc(wg.Done)
 	wg.Add(1)
-	callback := func(ctx context.Context, asyncCtx context.Context) {
+	callback := func(ctx, asyncCtx context.Context) {
 		defer wgDone()
 		if err = s.defaultEchoHandler(asyncCtx); err != nil {
 			return
@@ -871,7 +871,7 @@ func (s *sBot) Kick(ctx context.Context, groupId, userId int64, reject ...bool) 
 	defer wg.Wait()
 	wgDone := sync.OnceFunc(wg.Done)
 	wg.Add(1)
-	callback := func(ctx context.Context, asyncCtx context.Context) {
+	callback := func(ctx, asyncCtx context.Context) {
 		defer wgDone()
 		if err = s.defaultEchoHandler(asyncCtx); err != nil {
 			return
@@ -932,7 +932,7 @@ func (s *sBot) ProfileLike(ctx context.Context, userId int64, times int) (err er
 	defer wg.Wait()
 	wgDone := sync.OnceFunc(wg.Done)
 	wg.Add(1)
-	callback := func(ctx context.Context, asyncCtx context.Context) {
+	callback := func(ctx, asyncCtx context.Context) {
 		defer wgDone()
 		if err = s.defaultEchoHandler(asyncCtx); err != nil {
 			return
@@ -997,7 +997,7 @@ func (s *sBot) EmojiLike(ctx context.Context, messageId int64, emojiId string) (
 	defer wg.Wait()
 	wgDone := sync.OnceFunc(wg.Done)
 	wg.Add(1)
-	callback := func(ctx context.Context, asyncCtx context.Context) {
+	callback := func(ctx, asyncCtx context.Context) {
 		defer wgDone()
 		if err = s.defaultEchoHandler(asyncCtx); err != nil {
 			return
@@ -1058,7 +1058,7 @@ func (s *sBot) Poke(ctx context.Context, groupId, userId int64) (err error) {
 	defer wg.Wait()
 	wgDone := sync.OnceFunc(wg.Done)
 	wg.Add(1)
-	callback := func(ctx context.Context, asyncCtx context.Context) {
+	callback := func(ctx, asyncCtx context.Context) {
 		defer wgDone()
 		if err = s.defaultEchoHandler(asyncCtx); err != nil {
 			return
@@ -1115,7 +1115,7 @@ func (s *sBot) MarkAllAsRead(ctx context.Context) (err error) {
 	defer wg.Wait()
 	wgDone := sync.OnceFunc(wg.Done)
 	wg.Add(1)
-	callback := func(ctx context.Context, asyncCtx context.Context) {
+	callback := func(ctx, asyncCtx context.Context) {
 		defer wgDone()
 		if err = s.defaultEchoHandler(asyncCtx); err != nil {
 			return
@@ -1177,7 +1177,7 @@ func (s *sBot) MarkPrivateMsgAsRead(ctx context.Context, userId int64) (err erro
 	defer wg.Wait()
 	wgDone := sync.OnceFunc(wg.Done)
 	wg.Add(1)
-	callback := func(ctx context.Context, asyncCtx context.Context) {
+	callback := func(ctx, asyncCtx context.Context) {
 		defer wgDone()
 		if err = s.defaultEchoHandler(asyncCtx); err != nil {
 			return
@@ -1232,7 +1232,7 @@ func (s *sBot) MarkGroupMsgAsRead(ctx context.Context, groupId int64) (err error
 	defer wg.Wait()
 	wgDone := sync.OnceFunc(wg.Done)
 	wg.Add(1)
-	callback := func(ctx context.Context, asyncCtx context.Context) {
+	callback := func(ctx, asyncCtx context.Context) {
 		defer wgDone()
 		if err = s.defaultEchoHandler(asyncCtx); err != nil {
 			return
