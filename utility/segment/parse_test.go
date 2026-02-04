@@ -33,9 +33,9 @@ func TestParseMessage(t *testing.T) {
 			},
 			want: messageSegments{
 				{
-					Type: "text",
+					Type: TypeText,
 					Data: map[string]string{
-						"text": "1",
+						KeyText: "1",
 					},
 				},
 				{
@@ -47,9 +47,9 @@ func TestParseMessage(t *testing.T) {
 					},
 				},
 				{
-					Type: "text",
+					Type: TypeText,
 					Data: map[string]string{
-						"text": "2",
+						KeyText: "2",
 					},
 				},
 				{
@@ -64,9 +64,9 @@ func TestParseMessage(t *testing.T) {
 					},
 				},
 				{
-					Type: "text",
+					Type: TypeText,
 					Data: map[string]string{
-						"text": "3",
+						KeyText: "3",
 					},
 				},
 			},

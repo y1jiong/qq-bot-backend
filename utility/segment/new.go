@@ -13,7 +13,7 @@ func NewAtSegments(qq string) messageSegments {
 	return messageSegments{
 		&messageSegment{
 			Type: TypeAt,
-			Data: map[string]string{"qq": qq},
+			Data: map[string]string{KeyQQ: qq},
 		},
 	}
 }
@@ -22,7 +22,7 @@ func NewReplySegments(messageId string) messageSegments {
 	return messageSegments{
 		&messageSegment{
 			Type: TypeReply,
-			Data: map[string]string{"id": messageId},
+			Data: map[string]string{KeyId: messageId},
 		},
 	}
 }
@@ -30,7 +30,7 @@ func NewReplySegments(messageId string) messageSegments {
 func newTextSegment(text string) *messageSegment {
 	return &messageSegment{
 		Type: TypeText,
-		Data: map[string]string{TypeText: text},
+		Data: map[string]string{KeyText: text},
 	}
 }
 

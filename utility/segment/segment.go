@@ -11,6 +11,10 @@ const (
 	TypeText  = "text"
 	TypeImage = "image"
 	TypeReply = "reply"
+
+	KeyText = "text"
+	KeyQQ   = "qq"
+	KeyId   = "id"
 )
 
 var (
@@ -47,7 +51,7 @@ func (segment *messageSegment) String() string {
 	}
 
 	if segment.Type == TypeText {
-		if text, ok := segment.Data[TypeText]; ok {
+		if text, ok := segment.Data[KeyText]; ok {
 			return text
 		}
 		return ""

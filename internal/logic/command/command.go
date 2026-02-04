@@ -49,11 +49,11 @@ func (s *sCommand) TryCommand(ctx context.Context, message string) (caught bool,
 		for idx, seg := range segments {
 			switch seg.Type {
 			case segment.TypeAt:
-				if seg.Data["qq"] != gconv.String(service.Bot().GetSelfId(ctx)) {
+				if seg.Data[segment.KeyQQ] != gconv.String(service.Bot().GetSelfId(ctx)) {
 					return
 				}
 			case segment.TypeText:
-				text := seg.Data["text"]
+				text := seg.Data[segment.KeyText]
 				if trimmed := strings.TrimSpace(text); !strings.HasPrefix(trimmed, cmdPrefix) {
 					if trimmed == "" {
 						continue
