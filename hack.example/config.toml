@@ -1,7 +1,7 @@
 # CLI tool, only in development environment.
 # https://goframe.org/pages/viewpage.action?pageId=3673173
 [[gfcli.gen.dao]]
-link = "pgsql:user:password@tcp(domain:5432)/qq_bot"
+link = "pgsql:user:password@tcp(host:5432)/qq_bot"
 #group = "default"
 jsonCase = "Snake"
 
