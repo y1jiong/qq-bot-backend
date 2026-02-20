@@ -16,6 +16,7 @@ const (
 	AutoPassCmd     = "auto-pass"
 	AutoRejectCmd   = "auto-reject"
 	NotificationCmd = "notification"
+	LevelCmd        = "level"
 )
 
 // namespace property cmd

@@ -2,11 +2,12 @@ package event
 
 import (
 	"context"
+	"qq-bot-backend/internal/service"
+
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/net/gtrace"
 	"github.com/gogf/gf/v2/os/gtime"
 	"github.com/gogf/gf/v2/util/gconv"
-	"qq-bot-backend/internal/service"
 )
 
 func (s *sEvent) TryLogLeave(ctx context.Context) (caught bool) {
@@ -47,7 +48,7 @@ func (s *sEvent) TryLogLeave(ctx context.Context) (caught bool) {
 		return
 	}
 	// 打印离群日志
-	g.Log().Infof(ctx, "%v user(%v) from group(%v) by user(%v)",
+	g.Log().Infof(ctx, "%s user(%d) from group(%d) by user(%d)",
 		action,
 		userId,
 		groupId,

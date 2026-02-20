@@ -53,41 +53,45 @@ v1.9
 | Command                                      | Description                                        | Comment                                |
 |----------------------------------------------|----------------------------------------------------|----------------------------------------|
 | /group approval enable mc                    | 入群审核启用 mc 正版用户名验证（将使用正版 UUID 作为双因子认证的输入）           | 需要 group admin 和 namespace admin 或更高权限 |
-| /group approval enable regexp                | 入群审核启用正则表达式（将使用匹配结果作为双因子认证的输入）                     | 同上                                     |
-| /group approval enable whitelist             | 入群审核启用白名单                                          | 同上                                     |
-| /group approval enable blacklist             | 入群审核启用黑名单                                          | 同上                                     |
-| /group approval enable notify-only           | 入群审核启用仅通知                                          | 同上                                     |
-| /group approval enable auto-pass             | 入群审核启用自动通过（默认启用）                                   | 同上                                     |
-| /group approval enable auto-reject           | 入群审核启用自动拒绝（默认启用）                                   | 同上                                     |
-| /group approval set regexp \<regexp>         | 指定入群审核的正则表达式（若有子表达式，则会使用第一个子表达式的匹配结果）              | 同上                                     |
-| /group approval set notification \<group_id> | 指定入群审核通知群                                          | 同上                                     |
-| /group approval add whitelist \<list_name>   | 新增入群审核白名单 list_name（可以多次指定不同的 list_name 最终采用并集查找）  | 同上                                     |
-| /group approval add blacklist \<list_name>   | 新增入群审核黑名单 list_name（可以多次指定不同的 list_name 最终采用并集查找）  | 同上                                     |
-| /group approval rm whitelist \<list_name>    | 移除入群审核白名单 list_name                                | 同上                                     |
-| /group approval rm blacklist \<list_name>    | 移除入群审核黑名单 list_name                                | 同上                                     |
-| /group approval rm notification              | 移除入群审核通知群                                          | 同上                                     |
 | /group approval disable mc                   | 入群审核禁用 mc 正版用户名验证                                  | 同上                                     |
+| /group approval enable regexp                | 入群审核启用正则表达式（将使用匹配结果作为双因子认证的输入）                     | 同上                                     |
+| /group approval set regexp \<regexp>         | 指定入群审核的正则表达式（若有子表达式，则会使用第一个子表达式的匹配结果）              | 同上                                     |
 | /group approval disable regexp               | 入群审核禁用正则表达式                                        | 同上                                     |
+| /group approval set notification \<group_id> | 指定入群审核通知群                                          | 同上                                     |
+| /group approval rm notification              | 移除入群审核通知群                                          | 同上                                     |
+| /group approval enable whitelist             | 入群审核启用白名单                                          | 同上                                     |
+| /group approval add whitelist \<list_name>   | 新增入群审核白名单 list_name（可以多次指定不同的 list_name 最终采用并集查找）  | 同上                                     |
+| /group approval rm whitelist \<list_name>    | 移除入群审核白名单 list_name                                | 同上                                     |
 | /group approval disable whitelist            | 入群审核禁用白名单                                          | 同上                                     |
+| /group approval enable blacklist             | 入群审核启用黑名单                                          | 同上                                     |
+| /group approval add blacklist \<list_name>   | 新增入群审核黑名单 list_name（可以多次指定不同的 list_name 最终采用并集查找）  | 同上                                     |
+| /group approval rm blacklist \<list_name>    | 移除入群审核黑名单 list_name                                | 同上                                     |
 | /group approval disable blacklist            | 入群审核禁用黑名单                                          | 同上                                     |
+| /group approval enable notify-only           | 入群审核启用仅通知                                          | 同上                                     |
 | /group approval disable notify-only          | 入群审核禁用仅通知                                          | 同上                                     |
+| /group approval enable auto-pass             | 入群审核启用自动通过（默认启用）                                   | 同上                                     |
 | /group approval disable auto-pass            | 入群审核禁用自动通过（言下之意，符合通过条件的申请不自动处理，需要手动处理）             | 同上                                     |
+| /group approval enable auto-reject           | 入群审核启用自动拒绝（默认启用）                                   | 同上                                     |
 | /group approval disable auto-reject          | 入群审核禁用自动拒绝（言下之意，不符合通过条件的申请不自动处理，需要手动处理）（黑名单依然自动拒绝） | 同上                                     |
+| /group approval enable level                 | 启用基于等级的入群审核（会在审核策略中启用等级检测）                         | 同上                                     |
+| /group approval set level \<level>           | 设置入群审核的等级门槛（正整数），只有等级 >= level 的用户会通过此项检查          | 同上                                     |
+| /group approval rm level                     | 移除入群审核的等级门槛                                        | 同上                                     |
+| /group approval disable level                | 禁用基于等级的入群审核                                        | 同上                                     |
 
 ## Group Keyword
 
 | Command                                   | Description                                        | Comment                                |
 |-------------------------------------------|----------------------------------------------------|----------------------------------------|
 | /group keyword enable blacklist           | 关键词检查启用黑名单                                         | 需要 group admin 和 namespace admin 或更高权限 |
-| /group keyword enable whitelist           | 关键词检查启用白名单                                         | 同上                                     |
 | /group keyword add blacklist \<list_name> | 新增关键词检查黑名单 list_name（可以多次指定不同的 list_name 最终采用并集查找） | 同上                                     |
-| /group keyword add whitelist \<list_name> | 新增关键词检查白名单 list_name（可以多次指定不同的 list_name 最终采用并集查找） | 同上                                     |
-| /group keyword add reply \<list_name>     | 新增关键词回复列表 list_name（可以多次指定不同的 list_name 最终采用并集查找）  | 同上                                     |
 | /group keyword rm blacklist \<list_name>  | 移除关键词检查黑名单 list_name                               | 同上                                     |
-| /group keyword rm whitelist \<list_name>  | 移除关键词检查白名单 list_name                               | 同上                                     |
-| /group keyword rm reply \<list_name>      | 移除关键词回复列表 list_name                                | 同上                                     |
 | /group keyword disable blacklist          | 关键词检查禁用黑名单                                         | 同上                                     |
+| /group keyword enable whitelist           | 关键词检查启用白名单                                         | 同上                                     |
+| /group keyword add whitelist \<list_name> | 新增关键词检查白名单 list_name（可以多次指定不同的 list_name 最终采用并集查找） | 同上                                     |
+| /group keyword rm whitelist \<list_name>  | 移除关键词检查白名单 list_name                               | 同上                                     |
 | /group keyword disable whitelist          | 关键词检查禁用白名单                                         | 同上                                     |
+| /group keyword add reply \<list_name>     | 新增关键词回复列表 list_name（可以多次指定不同的 list_name 最终采用并集查找）  | 同上                                     |
+| /group keyword rm reply \<list_name>      | 移除关键词回复列表 list_name                                | 同上                                     |
 
 ## Group Card
 

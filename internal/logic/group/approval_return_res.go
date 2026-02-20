@@ -94,6 +94,14 @@ func (s *sGroup) AddApprovalPolicyReturnRes(ctx context.Context,
 			}
 			// 继续处理
 			settingJson.Set(approvalNotificationGroupIdKey, gconv.Int64(args[0]))
+		case consts.LevelCmd:
+			// 处理审核等级
+			level := gconv.Int64(args[0])
+			if level <= 0 {
+				retMsg = "等级门槛必须为正整数"
+				return
+			}
+			settingJson.Set(approvalLevelKey, level)
 		}
 	} else {
 		switch policyName {
@@ -202,6 +210,13 @@ func (s *sGroup) RemoveApprovalPolicyReturnRes(ctx context.Context,
 			} else {
 				settingJson.Del(approvalBlacklistsMapKey)
 			}
+		case consts.LevelCmd:
+			// 处理审核等级
+			if _, ok := settingJson.CheckGet(approvalLevelKey); !ok {
+				retMsg = "并未设置审核等级门槛"
+				return
+			}
+			settingJson.Del(approvalLevelKey)
 		}
 	} else {
 		switch policyName {

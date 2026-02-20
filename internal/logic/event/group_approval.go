@@ -3,13 +3,14 @@ package event
 import (
 	"context"
 	"fmt"
-	"github.com/gogf/gf/v2/frame/g"
-	"github.com/gogf/gf/v2/net/gtrace"
-	"github.com/gogf/gf/v2/util/gconv"
 	"qq-bot-backend/internal/consts"
 	"qq-bot-backend/internal/service"
 	"regexp"
 	"strings"
+
+	"github.com/gogf/gf/v2/frame/g"
+	"github.com/gogf/gf/v2/net/gtrace"
+	"github.com/gogf/gf/v2/util/gconv"
 )
 
 func (s *sEvent) TryApproveAddGroup(ctx context.Context) (caught bool) {
@@ -28,26 +29,37 @@ func (s *sEvent) TryApproveAddGroup(ctx context.Context) (caught bool) {
 	// 局部变量
 	comment := service.Bot().GetComment(ctx)
 	userId := service.Bot().GetUserId(ctx)
-	var extra, blackReason string
+	var extra, blackReason, by string
 	isOnBlacklist := false
+
 	// 处理
-	if _, ok := policy[consts.McCmd]; ok {
-		// mc 正版验证
-		pass, extra = verifyMinecraftGenuine(ctx, comment)
-	}
-	if _, ok := policy[consts.RegexpCmd]; ok && pass {
+	if _, ok := policy[consts.RegexpCmd]; ok {
 		// 正则表达式
 		pass, extra = isMatchRegexp(ctx, groupId, comment)
+		by = consts.RegexpCmd
 	}
 	if _, ok := policy[consts.WhitelistCmd]; ok && pass {
 		// 白名单
 		pass = isOnApprovalWhitelist(ctx, groupId, userId, extra)
+		by = consts.WhitelistCmd
 	}
 	if _, ok := policy[consts.BlacklistCmd]; ok && pass {
 		// 黑名单
 		pass, blackReason = isNotOnApprovalBlacklist(ctx, groupId, userId)
 		isOnBlacklist = !pass
+		by = consts.BlacklistCmd
 	}
+	if _, ok := policy[consts.LevelCmd]; ok && pass {
+		// 群等级
+		pass = isGELevel(ctx, groupId, userId)
+		by = consts.LevelCmd
+	}
+	if _, ok := policy[consts.McCmd]; ok && pass {
+		// mc 正版验证
+		pass, extra = verifyMinecraftGenuine(ctx, comment)
+		by = consts.McCmd
+	}
+
 	// 回执与日志
 	var logMsg string
 	if !service.Group().IsApprovalNotifyOnlyEnabled(ctx, groupId) &&
@@ -70,13 +82,14 @@ func (s *sEvent) TryApproveAddGroup(ctx context.Context) (caught bool) {
 		}
 		// 打印审核日志
 		if pass {
-			logMsg = fmt.Sprintf("approve user(%v) join group(%v) with %v",
+			logMsg = fmt.Sprintf("approve user(%d) join group(%d) with %s",
 				userId,
 				groupId,
 				comment,
 			)
 		} else {
-			logMsg = fmt.Sprintf("REJECT user(%v) join group(%v) with %v",
+			logMsg = fmt.Sprintf("REJECT(%s) user(%d) join group(%d) with %s",
+				by,
 				userId,
 				groupId,
 				comment,
@@ -84,14 +97,15 @@ func (s *sEvent) TryApproveAddGroup(ctx context.Context) (caught bool) {
 		}
 	} else if pass {
 		// 打印跳过同意日志
-		logMsg = fmt.Sprintf("skip processing approve user(%v) join group(%v) with %v",
+		logMsg = fmt.Sprintf("skip processing approve user(%d) join group(%d) with %s",
 			userId,
 			groupId,
 			comment,
 		)
 	} else if !pass {
 		// 打印跳过拒绝日志
-		logMsg = fmt.Sprintf("skip processing REJECT user(%v) join group(%v) with %v",
+		logMsg = fmt.Sprintf("skip processing REJECT(%s) user(%d) join group(%d) with %s",
+			by,
 			userId,
 			groupId,
 			comment,
@@ -201,4 +215,27 @@ func isNotOnApprovalBlacklist(ctx context.Context, groupId, userId int64) (bool,
 		}
 	}
 	return true, ""
+}
+
+func isGELevel(ctx context.Context, groupId, userId int64) bool {
+	// 获取群等级要求
+	levelRequired := service.Group().GetApprovalLevel(ctx, groupId)
+	if levelRequired == 0 {
+		return true
+	}
+	// 获取用户等级
+	info, err := service.Bot().GetStrangerInfo(ctx, userId)
+	if err != nil {
+		g.Log().Warning(ctx, err)
+		return false
+	}
+	const qqLevel = "qqLevel"
+	level, ok := info[qqLevel]
+	if !ok {
+		g.Log().Warningf(ctx, "%s not found in stranger info: %v", qqLevel, info)
+		return false
+	}
+	lv := gconv.Int64(level)
+
+	return lv >= levelRequired
 }

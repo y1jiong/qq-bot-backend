@@ -3,10 +3,11 @@ package namespace
 import (
 	"context"
 	"fmt"
-	"github.com/bytedance/sonic"
-	"github.com/gogf/gf/v2/frame/g"
 	"qq-bot-backend/internal/dao"
 	"qq-bot-backend/internal/model/entity"
+
+	"github.com/bytedance/sonic"
+	"github.com/gogf/gf/v2/frame/g"
 )
 
 const (
@@ -63,10 +64,10 @@ func (s *sNamespace) GetForwardingTo(ctx context.Context, alias string) (url, ke
 	}{}
 	// 数据库查询 json
 	err := dao.Namespace.Ctx(ctx).
-		Fields(fmt.Sprintf(`%v#>>'{%v,%v,%v,%v}' as "url"`,
+		Fields(fmt.Sprintf(`%s#>>'{%s,%s,%s,%s}' as "url"`,
 			dao.Namespace.Columns().SettingJson, forwardingMapKey, toMapKey, alias, urlKey),
 		).
-		Fields(fmt.Sprintf(`%v#>>'{%v,%v,%v,%v}' as "key"`,
+		Fields(fmt.Sprintf(`%s#>>'{%s,%s,%s,%s}' as "key"`,
 			dao.Namespace.Columns().SettingJson, forwardingMapKey, toMapKey, alias, keyKey),
 		).
 		Where(dao.Namespace.Columns().Namespace, globalNamespace).
@@ -84,7 +85,7 @@ func (s *sNamespace) IsForwardingMatchUserId(ctx context.Context, userId string)
 	err := dao.Namespace.Ctx(ctx).
 		Fields(dao.Namespace.Columns().Namespace).
 		Where(dao.Namespace.Columns().Namespace, globalNamespace).
-		Where(fmt.Sprintf(`jsonb_path_exists(%v, '$."%v"."%v"."%v"."%v"')`,
+		Where(fmt.Sprintf(`jsonb_path_exists(%s, '$."%s"."%s"."%s"."%s"')`,
 			dao.Namespace.Columns().SettingJson, forwardingMapKey, matchMapKey, userMapKey, all),
 		).
 		Scan(&namespaceE)
@@ -99,7 +100,7 @@ func (s *sNamespace) IsForwardingMatchUserId(ctx context.Context, userId string)
 	err = dao.Namespace.Ctx(ctx).
 		Fields(dao.Namespace.Columns().Namespace).
 		Where(dao.Namespace.Columns().Namespace, globalNamespace).
-		Where(fmt.Sprintf(`jsonb_path_exists(%v, '$."%v"."%v"."%v"."%v"')`,
+		Where(fmt.Sprintf(`jsonb_path_exists(%s, '$."%s"."%s"."%s"."%s"')`,
 			dao.Namespace.Columns().SettingJson, forwardingMapKey, matchMapKey, userMapKey, userId),
 		).
 		Scan(&namespaceE)
@@ -119,7 +120,7 @@ func (s *sNamespace) IsForwardingMatchGroupId(ctx context.Context, groupId strin
 	err := dao.Namespace.Ctx(ctx).
 		Fields(dao.Namespace.Columns().Namespace).
 		Where(dao.Namespace.Columns().Namespace, globalNamespace).
-		Where(fmt.Sprintf(`jsonb_path_exists(%v, '$."%v"."%v"."%v"."%v"')`,
+		Where(fmt.Sprintf(`jsonb_path_exists(%s, '$."%s"."%s"."%s"."%s"')`,
 			dao.Namespace.Columns().SettingJson, forwardingMapKey, matchMapKey, groupMapKey, all),
 		).
 		Scan(&namespaceE)
@@ -134,7 +135,7 @@ func (s *sNamespace) IsForwardingMatchGroupId(ctx context.Context, groupId strin
 	err = dao.Namespace.Ctx(ctx).
 		Fields(dao.Namespace.Columns().Namespace).
 		Where(dao.Namespace.Columns().Namespace, globalNamespace).
-		Where(fmt.Sprintf(`jsonb_path_exists(%v, '$."%v"."%v"."%v"."%v"')`,
+		Where(fmt.Sprintf(`jsonb_path_exists(%s, '$."%s"."%s"."%s"."%s"')`,
 			dao.Namespace.Columns().SettingJson, forwardingMapKey, matchMapKey, groupMapKey, groupId),
 		).
 		Scan(&namespaceE)

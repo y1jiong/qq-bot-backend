@@ -36,9 +36,10 @@ func tryGroupApprovalSet(ctx context.Context, cmd string) (caught catch, retMsg 
 	case nextBranchRe.MatchString(cmd):
 		next := nextBranchRe.FindStringSubmatch(cmd)
 		switch next[1] {
-		case consts.RegexpCmd, consts.NotificationCmd:
+		case consts.RegexpCmd, consts.NotificationCmd, consts.LevelCmd:
 			// /group approval set regexp <regexp>
 			// /group approval set notification <group_id>
+			// /group approval set level <level>
 			retMsg = service.Group().AddApprovalPolicyReturnRes(ctx, service.Bot().GetGroupId(ctx), next[1], next[2])
 			caught = caughtOkay
 		}
@@ -65,12 +66,14 @@ func tryGroupApprovalEnable(ctx context.Context, cmd string) (caught catch, retM
 	switch {
 	case endBranchRe.MatchString(cmd):
 		switch cmd {
-		case consts.WhitelistCmd, consts.BlacklistCmd, consts.RegexpCmd, consts.McCmd,
-			consts.NotifyOnlyCmd, consts.AutoPassCmd, consts.AutoRejectCmd:
+		case consts.WhitelistCmd, consts.BlacklistCmd, consts.RegexpCmd, consts.McCmd, consts.LevelCmd, // policy name
+			consts.NotifyOnlyCmd, consts.AutoPassCmd, consts.AutoRejectCmd: // special policy
 			// /group approval enable whitelist
 			// /group approval enable blacklist
 			// /group approval enable regexp
 			// /group approval enable mc
+			// /group approval enable level
+			//
 			// /group approval enable notify-only
 			// /group approval enable auto-pass
 			// /group approval enable auto-reject
@@ -98,6 +101,10 @@ func tryGroupApprovalRemove(ctx context.Context, cmd string) (caught catch, retM
 			// /group approval rm notification
 			retMsg = service.Group().RemoveApprovalPolicyReturnRes(ctx, service.Bot().GetGroupId(ctx), cmd)
 			caught = caughtOkay
+		case consts.LevelCmd:
+			// /group approval rm level
+			retMsg = service.Group().RemoveApprovalPolicyReturnRes(ctx, service.Bot().GetGroupId(ctx), cmd, "")
+			caught = caughtOkay
 		}
 	}
 	return
@@ -107,12 +114,14 @@ func tryGroupApprovalDisable(ctx context.Context, cmd string) (caught catch, ret
 	switch {
 	case endBranchRe.MatchString(cmd):
 		switch cmd {
-		case consts.WhitelistCmd, consts.BlacklistCmd, consts.RegexpCmd, consts.McCmd,
-			consts.NotifyOnlyCmd, consts.AutoPassCmd, consts.AutoRejectCmd:
+		case consts.WhitelistCmd, consts.BlacklistCmd, consts.RegexpCmd, consts.McCmd, consts.LevelCmd, // policy name
+			consts.NotifyOnlyCmd, consts.AutoPassCmd, consts.AutoRejectCmd: // special policy
 			// /group approval disable whitelist
 			// /group approval disable blacklist
 			// /group approval disable regexp
 			// /group approval disable mc
+			// /group approval disable level
+			//
 			// /group approval disable notify-only
 			// /group approval disable auto-pass
 			// /group approval disable auto-reject

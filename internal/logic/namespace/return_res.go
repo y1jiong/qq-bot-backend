@@ -133,7 +133,7 @@ func (s *sNamespace) QueryOwnNamespaceReturnRes(ctx context.Context) (retMsg str
 		)
 	if !service.User().CanOpNamespace(ctx, userId) {
 		query = query.Where(dao.Namespace.Columns().OwnerId, userId)
-		query = query.WhereOr(fmt.Sprintf(`%v#>>'{%v,%v}'='%v'`,
+		query = query.WhereOr(fmt.Sprintf(`%s#>>'{%s,%s}'='%t'`,
 			dao.Namespace.Columns().SettingJson, propertiesMapKey, propertyPublic, true),
 		)
 	}

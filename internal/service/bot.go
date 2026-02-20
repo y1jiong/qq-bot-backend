@@ -57,6 +57,7 @@ type (
 		GetLikes(ctx context.Context) []map[string]any
 		GetReplyMsgId(ctx context.Context) int64
 		GetReplyMessage(ctx context.Context) (string, error)
+		GetStrangerInfo(ctx context.Context, userId int64, noCache ...bool) (infoMap map[string]any, err error)
 		SendMessage(ctx context.Context, userId int64, groupId int64, msg string, plain bool) (messageId int64, err error)
 		// SendMsg 适用于**不需要**级联撤回的场景
 		SendMsg(ctx context.Context, msg string, plain ...bool)

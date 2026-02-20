@@ -602,3 +602,70 @@ func (s *sBot) GetReplyMessage(ctx context.Context) (string, error) {
 	}
 	return "", errors.New("no reply segment found")
 }
+
+func (s *sBot) GetStrangerInfo(ctx context.Context, userId int64, noCache ...bool,
+) (infoMap map[string]any, err error) {
+	ctx, span := gtrace.NewSpan(ctx, "bot.GetStrangerInfo")
+	defer span.End()
+	span.SetAttributes(attribute.Int64("get_stranger_info.user_id", userId))
+	defer func() {
+		if err != nil {
+			span.SetStatus(codes.Error, err.Error())
+		}
+	}()
+
+	// echo sign
+	echoSign := s.generateEchoSignWithTrace(ctx)
+	// 参数
+	req := struct {
+		Action string `json:"action"`
+		Echo   string `json:"echo"`
+		Params struct {
+			UserId  int64 `json:"user_id"`
+			NoCache bool  `json:"no_cache"`
+		} `json:"params"`
+	}{
+		Action: "get_stranger_info",
+		Echo:   echoSign,
+		Params: struct {
+			UserId  int64 `json:"user_id"`
+			NoCache bool  `json:"no_cache"`
+		}{
+			UserId:  userId,
+			NoCache: false,
+		},
+	}
+	if len(noCache) > 0 && noCache[0] {
+		req.Params.NoCache = true
+	}
+	reqJSON, err := sonic.Marshal(req)
+	if err != nil {
+		g.Log().Error(ctx, err)
+		return
+	}
+	// callback
+	wg := sync.WaitGroup{}
+	defer wg.Wait()
+	wgDone := sync.OnceFunc(wg.Done)
+	wg.Add(1)
+	callback := func(ctx, asyncCtx context.Context) {
+		defer wgDone()
+		if err = s.defaultEchoHandler(asyncCtx); err != nil {
+			if !req.Params.NoCache {
+				infoMap, err = s.GetStrangerInfo(ctx, userId, true)
+			}
+			return
+		}
+		received := s.getData(asyncCtx)
+		infoMap, _ = received.Map()
+	}
+	timeout := func(ctx context.Context) {
+		defer wgDone()
+		err = innerr.BotEchoTimeout
+	}
+
+	if err = s.sendRequest(ctx, echoSign, callback, timeout, reqJSON); err != nil {
+		wgDone()
+	}
+	return
+}

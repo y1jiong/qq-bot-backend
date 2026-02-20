@@ -2,6 +2,7 @@ package group
 
 import (
 	"context"
+
 	"github.com/bytedance/sonic"
 	"github.com/gogf/gf/v2/frame/g"
 )
@@ -9,6 +10,7 @@ import (
 const (
 	approvalPolicyMapKey           = "approvalPolicy"
 	approvalRegexpKey              = "approvalRegexp"
+	approvalLevelKey               = "approvalLevel"
 	approvalWhitelistsMapKey       = "approvalWhitelists"
 	approvalBlacklistsMapKey       = "approvalBlacklists"
 	approvalNotifyOnlyEnabledKey   = "approvalNotifyOnlyEnabled"
@@ -123,6 +125,26 @@ func (s *sGroup) GetApprovalNotificationGroupId(ctx context.Context, groupId int
 		return
 	}
 	notificationGroupId, _ = settingJson.Get(approvalNotificationGroupIdKey).StrictInt64()
+	return
+}
+
+func (s *sGroup) GetApprovalLevel(ctx context.Context, groupId int64) (level int64) {
+	// 参数合法性校验
+	if groupId == 0 {
+		return
+	}
+	// 获取 group
+	groupE := getGroup(ctx, groupId)
+	if groupE == nil || groupE.Namespace == "" {
+		return
+	}
+	// 数据处理
+	settingJson, err := sonic.GetFromString(groupE.SettingJson)
+	if err != nil {
+		g.Log().Error(ctx, err)
+		return
+	}
+	level, _ = settingJson.Get(approvalLevelKey).StrictInt64()
 	return
 }
 
