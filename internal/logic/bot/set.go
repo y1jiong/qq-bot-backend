@@ -3,14 +3,19 @@ package bot
 import (
 	"context"
 	"errors"
+	"qq-bot-backend/utility/segment"
+
 	"github.com/bytedance/sonic/ast"
 	"github.com/gogf/gf/v2/os/gcache"
 	"github.com/gogf/gf/v2/util/gconv"
-	"qq-bot-backend/utility/segment"
 )
 
 func (s *sBot) RewriteMessage(ctx context.Context, message string) {
 	_, _ = s.reqNodeFromCtx(ctx).Set("raw_message", ast.NewString(message))
+}
+
+func (s *sBot) RewriteGroupId(ctx context.Context, groupId int64) {
+	_, _ = s.reqNodeFromCtx(ctx).Set("group_id", ast.NewNumber(gconv.String(groupId)))
 }
 
 func (s *sBot) SetHistory(ctx context.Context, history string) error {

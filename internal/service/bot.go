@@ -87,6 +87,7 @@ type (
 		MarkPrivateMsgAsRead(ctx context.Context, userId int64) (err error)
 		MarkGroupMsgAsRead(ctx context.Context, groupId int64) (err error)
 		RewriteMessage(ctx context.Context, message string)
+		RewriteGroupId(ctx context.Context, groupId int64)
 		SetHistory(ctx context.Context, history string) error
 		CacheMessageAstNode(ctx context.Context) error
 	}

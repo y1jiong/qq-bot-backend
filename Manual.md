@@ -6,21 +6,21 @@ v1.9
 
 ## List
 
-| Command                                           | Description                                                                                     | Comment                                                        |
-|---------------------------------------------------|-------------------------------------------------------------------------------------------------|----------------------------------------------------------------|
-| /list add \<list_name> \<namespace>               | 在 namespace 下新增 list_name                                                                       | 需要 list_name 对应的 namespace admin 或更高权限或者 namespace 有 public 属性 |
-| /list join \<list_name> \<key> [value]            | 将 key[:value] 添加到 list_name 中（key value 可作为双因子认证使用）（key 包含**空格**请用`%20`转义替换，包含**%**请用`%25`转义替换） | 同上                                                             |
-| /list copy-key \<list_name> \<src_key> \<dst_key> | 将 list_name 中的 src_key 复制到 dst_key 中（src_key dst_key 包含**空格**请用`%20`转义替换，包含**%**请用`%25`转义替换）    | 同上                                                             |
-| /list leave \<list_name> \<key>                   | 将 key 从 list_name 中移除（key 包含**空格**请用`%20`转义替换，包含**%**请用`%25`转义替换）                               | 同上                                                             |
-| /list len \<list_name>                            | 查询 list_name 里共有多少条数据                                                                           | 同上                                                             |
-| /list query \<list_name> [key]                    | 查询 list_name 或者 list_name 内的 key（key 包含**空格**请用`%20`转义替换，包含**%**请用`%25`转义替换）                    | 同上                                                             |
-| /list export \<list_name>                         | 将 list_name 以文件的方式导出                                                                            | 同上                                                             |
-| /list append \<list_name> \<json>                 | 用 json 追加 list_name 的数据                                                                         | 同上                                                             |
-| /list set \<list_name> \<json>                    | 用 json 覆盖 list_name 的数据                                                                         | 同上                                                             |
-| /list reset \<list_name>                          | 重置 list_name 的数据                                                                                | 同上                                                             |
-| /list rm \<list_name>                             | 删除 list_name（删除后原 list_name 不可使用，只能恢复）                                                          | 同上                                                             |
-| /list recover \<list_name>                        | 恢复 list_name                                                                                    | 同上                                                             |
-| /list show \<list_name>                           | 快速查询 list_name 里的所有 key                                                                         | 同上或者 list_name 处于 global namespace 中                           |
+| Command                                           | Description                                                                                   | Comment                                                        |
+|---------------------------------------------------|-----------------------------------------------------------------------------------------------|----------------------------------------------------------------|
+| /list add \<list_name> \<namespace>               | 在 namespace 下新增 list_name                                                                     | 需要 list_name 对应的 namespace admin 或更高权限或者 namespace 有 public 属性 |
+| /list join \<list_name> \<key> [value]            | 将 key[:value] 添加到 list_name 中（key value 可作为双因子认证使用）（key 包含**空格**请用`%20`转义替换，包含`%`请用`%25`转义替换） | 同上                                                             |
+| /list copy-key \<list_name> \<src_key> \<dst_key> | 将 list_name 中的 src_key 复制到 dst_key 中（src_key dst_key 包含**空格**请用`%20`转义替换，包含`%`请用`%25`转义替换）    | 同上                                                             |
+| /list leave \<list_name> \<key>                   | 将 key 从 list_name 中移除（key 包含**空格**请用`%20`转义替换，包含`%`请用`%25`转义替换）                               | 同上                                                             |
+| /list len \<list_name>                            | 查询 list_name 里共有多少条数据                                                                         | 同上                                                             |
+| /list query \<list_name> [key]                    | 查询 list_name 或者 list_name 内的 key（key 包含**空格**请用`%20`转义替换，包含`%`请用`%25`转义替换）                    | 同上                                                             |
+| /list export \<list_name>                         | 将 list_name 以文件的方式导出                                                                          | 同上                                                             |
+| /list append \<list_name> \<json>                 | 用 json 追加 list_name 的数据                                                                       | 同上                                                             |
+| /list set \<list_name> \<json>                    | 用 json 覆盖 list_name 的数据                                                                       | 同上                                                             |
+| /list reset \<list_name>                          | 重置 list_name 的数据                                                                              | 同上                                                             |
+| /list rm \<list_name>                             | 删除 list_name（删除后原 list_name 不可使用，只能恢复）                                                        | 同上                                                             |
+| /list recover \<list_name>                        | 恢复 list_name                                                                                  | 同上                                                             |
+| /list show \<list_name>                           | 快速查询 list_name 里的所有 key                                                                       | 同上或者 list_name 处于 global namespace 中                           |
 
 ## List Operation
 
@@ -32,12 +32,19 @@ v1.9
 
 ## Group
 
+现在 `/group` 等默认针对当前群生效的命令，支持通过在命令中增加 `[group_id]`
+参数，临时指定目标群执行操作，而无需切换当前会话上下文；该指定仅对本次命令生效，不会改变当前群环境。
+
+`/group [group_id] command...`
+
+示例：`/group 123456 query` 将查询 group_id 为 123456 的群的配置，而不管当前会话上下文是哪个群。
+
 | Command                  | Description                                  | Comment                                                           |
 |--------------------------|----------------------------------------------|-------------------------------------------------------------------|
 | /group bind \<namespace> | 将当前 group 绑定到 namespace 中（会重置当前 group 的所有配置） | 需要 group admin 和 namespace admin 或更高权限或者 namespace 具有 public 属性   |
 | /group unbind            | 解除当前 group 的绑定                               | 同上                                                                |
 | /group clone \<group_id> | 从 group_id 克隆配置到当前 group（需要先绑定 namespace）    | 同上                                                                |
-| /group query [group_id]  | 查询当前或指定 group 的配置                            | 需要 namespace admin 或更高权限或者对应 namespace 具有 public 属性               |
+| /group query             | 查询当前 group 的配置                               | 需要 namespace admin 或更高权限或者对应 namespace 具有 public 属性               |
 | /group kick \<list_name> | 把当前 group 在 list_name 中的成员踢出                 | 需要 group admin 和 namespace admin 或更高权限或者对应 namespace 具有 public 属性 |
 | /group keep \<list_name> | 把当前 group 不在 list_name 中的成员踢出                | 同上                                                                |
 

@@ -16,10 +16,6 @@ func tryGroup(ctx context.Context, cmd string) (caught catch, retMsg string) {
 	case nextBranchRe.MatchString(cmd):
 		next := nextBranchRe.FindStringSubmatch(cmd)
 		switch next[1] {
-		case "query":
-			// /group query <group_id>
-			retMsg = service.Group().QueryGroupReturnRes(ctx, gconv.Int64(next[2]))
-			caught = caughtOkay
 		case "broadcast":
 			// /group broadcast <>
 			caught, retMsg = tryGroupBroadcast(ctx, next[2])
@@ -57,6 +53,8 @@ func tryGroup(ctx context.Context, cmd string) (caught catch, retMsg string) {
 			// /group bind <namespace>
 			retMsg = service.Group().BindNamespaceReturnRes(ctx, service.Bot().GetGroupId(ctx), next[2])
 			caught = caughtOkay
+		default:
+			caught, retMsg = tryGroupSpec(ctx, next[1], next[2])
 		}
 	case endBranchRe.MatchString(cmd):
 		switch cmd {
@@ -71,4 +69,19 @@ func tryGroup(ctx context.Context, cmd string) (caught catch, retMsg string) {
 		}
 	}
 	return
+}
+
+func tryGroupSpec(ctx context.Context, groupId, cmd string) (caught catch, retMsg string) {
+	ctx, span := gtrace.NewSpan(ctx, "command.groupSpec")
+	defer span.End()
+
+	gid := gconv.Int64(groupId)
+	if gid <= 0 {
+		return
+	}
+
+	defer service.Bot().RewriteGroupId(ctx, service.Bot().GetGroupId(ctx))
+	service.Bot().RewriteGroupId(ctx, gid)
+
+	return tryGroup(ctx, cmd)
 }
