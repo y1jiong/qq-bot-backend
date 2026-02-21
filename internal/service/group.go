@@ -17,6 +17,7 @@ type (
 		GetApprovalRegexp(ctx context.Context, groupId int64) (exp string)
 		GetApprovalNotificationGroupId(ctx context.Context, groupId int64) (notificationGroupId int64)
 		GetApprovalLevel(ctx context.Context, groupId int64) (level int64)
+		GetApprovalReason(ctx context.Context, groupId int64) (reason string)
 		IsApprovalNotifyOnlyEnabled(ctx context.Context, groupId int64) bool
 		IsApprovalAutoPassEnabled(ctx context.Context, groupId int64) bool
 		IsApprovalAutoRejectEnabled(ctx context.Context, groupId int64) bool

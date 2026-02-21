@@ -11,6 +11,7 @@ const (
 	approvalPolicyMapKey           = "approvalPolicy"
 	approvalRegexpKey              = "approvalRegexp"
 	approvalLevelKey               = "approvalLevel"
+	approvalReasonKey              = "approvalReason"
 	approvalWhitelistsMapKey       = "approvalWhitelists"
 	approvalBlacklistsMapKey       = "approvalBlacklists"
 	approvalNotifyOnlyEnabledKey   = "approvalNotifyOnlyEnabled"
@@ -145,6 +146,26 @@ func (s *sGroup) GetApprovalLevel(ctx context.Context, groupId int64) (level int
 		return
 	}
 	level, _ = settingJson.Get(approvalLevelKey).StrictInt64()
+	return
+}
+
+func (s *sGroup) GetApprovalReason(ctx context.Context, groupId int64) (reason string) {
+	// 参数合法性校验
+	if groupId == 0 {
+		return
+	}
+	// 获取 group
+	groupE := getGroup(ctx, groupId)
+	if groupE == nil || groupE.Namespace == "" {
+		return
+	}
+	// 数据处理
+	settingJson, err := sonic.GetFromString(groupE.SettingJson)
+	if err != nil {
+		g.Log().Error(ctx, err)
+		return
+	}
+	reason, _ = settingJson.Get(approvalReasonKey).StrictString()
 	return
 }
 

@@ -76,7 +76,7 @@ func (s *sEvent) TryApproveAddGroup(ctx context.Context) (caught bool) {
 			service.Bot().GetFlag(ctx),
 			service.Bot().GetSubType(ctx),
 			pass,
-			"",
+			service.Group().GetApprovalReason(ctx, groupId),
 		); err != nil {
 			g.Log().Warning(ctx, err)
 		}

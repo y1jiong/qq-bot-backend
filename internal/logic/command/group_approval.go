@@ -36,10 +36,11 @@ func tryGroupApprovalSet(ctx context.Context, cmd string) (caught catch, retMsg 
 	case nextBranchRe.MatchString(cmd):
 		next := nextBranchRe.FindStringSubmatch(cmd)
 		switch next[1] {
-		case consts.RegexpCmd, consts.NotificationCmd, consts.LevelCmd:
+		case consts.RegexpCmd, consts.NotificationCmd, consts.LevelCmd, consts.ReasonCmd:
 			// /group approval set regexp <regexp>
 			// /group approval set notification <group_id>
 			// /group approval set level <level>
+			// /group approval set reason <reason>
 			retMsg = service.Group().AddApprovalPolicyReturnRes(ctx, service.Bot().GetGroupId(ctx), next[1], next[2])
 			caught = caughtOkay
 		}
@@ -101,8 +102,9 @@ func tryGroupApprovalRemove(ctx context.Context, cmd string) (caught catch, retM
 			// /group approval rm notification
 			retMsg = service.Group().RemoveApprovalPolicyReturnRes(ctx, service.Bot().GetGroupId(ctx), cmd)
 			caught = caughtOkay
-		case consts.LevelCmd:
+		case consts.LevelCmd, consts.ReasonCmd:
 			// /group approval rm level
+			// /group approval rm reason
 			retMsg = service.Group().RemoveApprovalPolicyReturnRes(ctx, service.Bot().GetGroupId(ctx), cmd, "")
 			caught = caughtOkay
 		}

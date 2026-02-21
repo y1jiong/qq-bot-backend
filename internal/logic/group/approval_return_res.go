@@ -102,6 +102,9 @@ func (s *sGroup) AddApprovalPolicyReturnRes(ctx context.Context,
 				return
 			}
 			settingJson.Set(approvalLevelKey, level)
+		case consts.ReasonCmd:
+			// 处理拒绝理由
+			settingJson.Set(approvalReasonKey, gconv.String(args[0]))
 		}
 	} else {
 		switch policyName {
@@ -217,6 +220,13 @@ func (s *sGroup) RemoveApprovalPolicyReturnRes(ctx context.Context,
 				return
 			}
 			settingJson.Del(approvalLevelKey)
+		case consts.ReasonCmd:
+			// 处理拒绝理由
+			if _, ok := settingJson.CheckGet(approvalReasonKey); !ok {
+				retMsg = "并未设置拒绝理由"
+				return
+			}
+			settingJson.Del(approvalReasonKey)
 		}
 	} else {
 		switch policyName {

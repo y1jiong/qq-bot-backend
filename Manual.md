@@ -84,6 +84,8 @@ v1.9
 | /group approval set level \<level>           | 设置入群审核的等级门槛（正整数），只有等级 >= level 的用户会通过此项检查          | 同上                                     |
 | /group approval rm level                     | 移除入群审核的等级门槛                                        | 同上                                     |
 | /group approval disable level                | 禁用基于等级的入群审核                                        | 同上                                     |
+| /group approval set reason \<reason>         | 设置入群审核拒绝理由                                         | 同上                                     |
+| /group approval rm reason                    | 移除入群审核拒绝理由                                         | 同上                                     |
 
 ## Group Keyword
 
