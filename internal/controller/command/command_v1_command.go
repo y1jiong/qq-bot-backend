@@ -82,11 +82,9 @@ func (c *ControllerV1) Command(ctx context.Context, req *v1.CommandReq) (res *v1
 	}
 	// 初始化内部请求
 	innerReq := struct {
-		ApiReq  struct{} `json:"api_req"`
-		UserId  int64    `json:"user_id"`
-		GroupId int64    `json:"group_id"`
+		UserId  int64 `json:"user_id"`
+		GroupId int64 `json:"group_id"`
 	}{
-		ApiReq:  struct{}{},
 		UserId:  ownerId,
 		GroupId: req.GroupId,
 	}
@@ -96,6 +94,7 @@ func (c *ControllerV1) Command(ctx context.Context, req *v1.CommandReq) (res *v1
 	}
 	reqNode, _ := sonic.GetFromString(reqJSON)
 	botCtx = service.Bot().CtxWithReqNode(botCtx, &reqNode)
+	service.Bot().SetApiReqSign(botCtx)
 	g.Log().Info(ctx, tokenName+" access successfully with "+reqJSON)
 	var retMsg string
 	// 异步执行

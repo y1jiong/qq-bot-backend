@@ -19,11 +19,11 @@ import (
 )
 
 func (s *sBot) isApiReq(ctx context.Context) bool {
-	return s.reqNodeFromCtx(ctx).Get("api_req").Exists()
+	return s.reqNodeFromCtx(ctx).Get(fieldApiReq).Exists()
 }
 
 func (s *sBot) isMessageSegment(ctx context.Context) bool {
-	return s.reqNodeFromCtx(ctx).Get("_is_message_segment").Exists()
+	return s.reqNodeFromCtx(ctx).Get(fieldMessageSegment).Exists()
 }
 
 func (s *sBot) getEcho(ctx context.Context) string {

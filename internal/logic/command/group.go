@@ -82,6 +82,8 @@ func tryGroupSpec(ctx context.Context, groupId, cmd string) (caught catch, retMs
 
 	defer service.Bot().RewriteGroupId(ctx, service.Bot().GetGroupId(ctx))
 	service.Bot().RewriteGroupId(ctx, gid)
+	defer service.Bot().UnsetApiReqSign(ctx)
+	service.Bot().SetApiReqSign(ctx)
 
 	return tryGroup(ctx, cmd)
 }

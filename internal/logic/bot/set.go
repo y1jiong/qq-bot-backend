@@ -18,6 +18,14 @@ func (s *sBot) RewriteGroupId(ctx context.Context, groupId int64) {
 	_, _ = s.reqNodeFromCtx(ctx).Set("group_id", ast.NewNumber(gconv.String(groupId)))
 }
 
+func (s *sBot) SetApiReqSign(ctx context.Context) {
+	_, _ = s.reqNodeFromCtx(ctx).Set(fieldApiReq, ast.NewObject([]ast.Pair{}))
+}
+
+func (s *sBot) UnsetApiReqSign(ctx context.Context) {
+	_, _ = s.reqNodeFromCtx(ctx).Unset(fieldApiReq)
+}
+
 func (s *sBot) SetHistory(ctx context.Context, history string) error {
 	const historyKey = "_history"
 	node := s.reqNodeFromCtx(ctx)
@@ -51,7 +59,7 @@ func (s *sBot) tryMessageSegmentToString(ctx context.Context) {
 	if !messageNode.Exists() || messageNode.TypeSafe() != ast.V_ARRAY {
 		return
 	}
-	_, _ = node.Set("_is_message_segment", ast.NewObject([]ast.Pair{}))
+	_, _ = node.Set(fieldMessageSegment, ast.NewObject([]ast.Pair{}))
 
 	if rawMsgNode := node.Get("raw_message"); rawMsgNode.Exists() && rawMsgNode.TypeSafe() == ast.V_STRING {
 		_, _ = node.Set("message", *rawMsgNode)

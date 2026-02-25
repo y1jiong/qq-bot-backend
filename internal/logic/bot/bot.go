@@ -31,6 +31,9 @@ const (
 	cacheKeyMsgIdPrefix = "bot_msg_id_"
 
 	messageLengthLimit = 4500
+
+	fieldApiReq         = "_is_api_req"
+	fieldMessageSegment = "_is_message_segment"
 )
 
 func (s *sBot) CtxWithWebSocket(parent context.Context, conn *websocket.Conn) context.Context {

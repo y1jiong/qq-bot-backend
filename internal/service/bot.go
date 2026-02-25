@@ -88,6 +88,8 @@ type (
 		MarkGroupMsgAsRead(ctx context.Context, groupId int64) (err error)
 		RewriteMessage(ctx context.Context, message string)
 		RewriteGroupId(ctx context.Context, groupId int64)
+		SetApiReqSign(ctx context.Context)
+		UnsetApiReqSign(ctx context.Context)
 		SetHistory(ctx context.Context, history string) error
 		CacheMessageAstNode(ctx context.Context) error
 	}
