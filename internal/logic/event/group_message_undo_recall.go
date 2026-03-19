@@ -28,6 +28,28 @@ func (s *sEvent) TryUndoMessageRecall(ctx context.Context) (caught bool) {
 		}
 	}()
 
+	// 校验是否需要反撤回
+	{
+		userId := service.Bot().GetUserId(ctx)
+		// 不处理自己的消息
+		if service.Bot().GetSelfId(ctx) == userId {
+			return
+		}
+		// 仅处理发送者自己撤回的消息
+		if service.Bot().GetOperatorId(ctx) != userId {
+			return
+		}
+		groupId := service.Bot().GetGroupId(ctx)
+		// owner or admin 在 only-anti-recall-member 情况下不需要反撤回
+		if service.Group().IsOnlyAntiRecallMemberSet(ctx, groupId) && service.Bot().IsGroupOwnerOrAdmin(ctx) {
+			return
+		}
+		// 获取当前 group message anti-recall 策略
+		if !service.Group().IsAntiRecallEnabled(ctx, groupId) {
+			return
+		}
+	}
+
 	// 获取撤回消息的 id
 	messageId := service.Bot().GetMsgId(ctx)
 	// 获取消息
@@ -60,29 +82,7 @@ func (s *sEvent) TryUndoMessageRecall(ctx context.Context) (caught bool) {
 	message = cqReplyRe.ReplaceAllString(message, "")
 	msg := nickname + "(" + gconv.String(userId) + ") 在 group(" + gconv.String(groupId) + ") 撤回了：\n" + message
 	// log
-	g.Log().Info(ctx, msg)
-
-	// 校验是否需要反撤回
-	{
-		userId := service.Bot().GetUserId(ctx)
-		// 不处理自己的消息
-		if service.Bot().GetSelfId(ctx) == userId {
-			return
-		}
-		// 仅处理发送者自己撤回的消息
-		if service.Bot().GetOperatorId(ctx) != userId {
-			return
-		}
-		groupId := service.Bot().GetGroupId(ctx)
-		// owner or admin 在 only-anti-recall-member 情况下不需要反撤回
-		if service.Group().IsOnlyAntiRecallMemberSet(ctx, groupId) && service.Bot().IsGroupOwnerOrAdmin(ctx) {
-			return
-		}
-		// 获取当前 group message anti-recall 策略
-		if !service.Group().IsAntiRecallEnabled(ctx, groupId) {
-			return
-		}
-	}
+	//g.Log().Info(ctx, msg)
 
 	// 防止过度触发反撤回
 	service.Util().AutoMute(ctx, "recall", groupId, userId,

@@ -10,7 +10,7 @@ func processNotice(ctx context.Context) {
 	case "group_recall":
 		// 群消息撤回
 		go service.Event().TryCascadingRecall(ctx)
-		go service.Event().TryUndoMessageRecall(ctx)
+		//go service.Event().TryUndoMessageRecall(ctx) // disabled
 	case "group_increase":
 		// 群成员增加
 		go service.Event().TryAutoSetCard(ctx)
