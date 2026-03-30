@@ -38,6 +38,11 @@ func (s *sEvent) TryApproveAddGroup(ctx context.Context) (caught bool) {
 		pass, extra = isMatchRegexp(ctx, groupId, comment)
 		by = consts.RegexpCmd
 	}
+	if _, ok := policy[consts.McCmd]; ok && pass {
+		// mc 正版验证
+		pass, extra = verifyMinecraftGenuine(ctx, comment)
+		by = consts.McCmd
+	}
 	if _, ok := policy[consts.WhitelistCmd]; ok && pass {
 		// 白名单
 		pass = isOnApprovalWhitelist(ctx, groupId, userId, extra)
@@ -51,13 +56,9 @@ func (s *sEvent) TryApproveAddGroup(ctx context.Context) (caught bool) {
 	}
 	if _, ok := policy[consts.LevelCmd]; ok && pass {
 		// 群等级
-		pass = isGELevel(ctx, groupId, userId)
-		by = consts.LevelCmd
-	}
-	if _, ok := policy[consts.McCmd]; ok && pass {
-		// mc 正版验证
-		pass, extra = verifyMinecraftGenuine(ctx, comment)
-		by = consts.McCmd
+		var lv int64
+		pass, lv = isGELevel(ctx, groupId, userId)
+		by = consts.LevelCmd + "=" + gconv.String(lv)
 	}
 
 	// 回执与日志
@@ -133,7 +134,7 @@ func isMatchRegexp(ctx context.Context, groupId int64, comment string) (match bo
 	re, err := regexp.Compile(exp)
 	if err != nil {
 		g.Log().Error(ctx, err)
-		return
+		return true, comment
 	}
 	ans := re.FindStringSubmatch(comment)
 	switch len(ans) {
@@ -158,6 +159,7 @@ func verifyMinecraftGenuine(ctx context.Context, comment string) (genuine bool, 
 	genuine, _, uuid, err := service.ThirdParty().QueryMinecraftGenuineUser(ctx, comment)
 	if err != nil {
 		g.Log().Warning(ctx, err)
+		return true, uuid
 	}
 	return
 }
@@ -217,25 +219,25 @@ func isNotOnApprovalBlacklist(ctx context.Context, groupId, userId int64) (bool,
 	return true, ""
 }
 
-func isGELevel(ctx context.Context, groupId, userId int64) bool {
+func isGELevel(ctx context.Context, groupId, userId int64) (bool, int64) {
 	// 获取群等级要求
 	levelRequired := service.Group().GetApprovalLevel(ctx, groupId)
 	if levelRequired == 0 {
-		return true
+		return true, -1
 	}
 	// 获取用户等级
 	info, err := service.Bot().GetStrangerInfo(ctx, userId)
 	if err != nil {
 		g.Log().Warning(ctx, err)
-		return false
+		return true, -1
 	}
 	const qqLevel = "qqLevel"
 	level, ok := info[qqLevel]
 	if !ok {
 		g.Log().Warningf(ctx, "%s not found in stranger info: %v", qqLevel, info)
-		return false
+		return true, -1
 	}
 	lv := gconv.Int64(level)
 
-	return lv >= levelRequired
+	return lv >= levelRequired, lv
 }
