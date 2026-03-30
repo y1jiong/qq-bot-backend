@@ -21,6 +21,7 @@ import (
 	"github.com/gogf/gf/v2/net/gtrace"
 	"github.com/gogf/gf/v2/util/gconv"
 	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/trace"
 )
 
 const (
@@ -122,16 +123,15 @@ func (s *sEvent) keywordReplyWebhook(ctx context.Context,
 		return
 	}
 
-	ctx, span := gtrace.NewSpan(ctx, "event.keywordReplyWebhook")
-	defer span.End()
-	span.SetAttributes(
+	ctx, span := gtrace.NewSpan(ctx, "event.keywordReplyWebhook", trace.WithAttributes(
 		attribute.Int64("keyword_reply_webhook.user_id", userId),
 		attribute.Int64("keyword_reply_webhook.group_id", groupId),
 		attribute.String("keyword_reply_webhook.nickname", nickname),
 		attribute.String("keyword_reply_webhook.message", message),
 		attribute.String("keyword_reply_webhook.hit", hit),
 		attribute.String("keyword_reply_webhook.value", value),
-	)
+	))
+	defer span.End()
 
 	// URL
 	subMatch := webhookPrefixRe.FindStringSubmatch(codec.DecodeCQCode(value))
@@ -335,13 +335,12 @@ func (s *sEvent) keywordReplyCommand(ctx context.Context, message, hit, text str
 		return
 	}
 
-	ctx, span := gtrace.NewSpan(ctx, "event.keywordReplyCommand")
-	defer span.End()
-	span.SetAttributes(
+	ctx, span := gtrace.NewSpan(ctx, "event.keywordReplyCommand", trace.WithAttributes(
 		attribute.String("keyword_reply_command.message", message),
 		attribute.String("keyword_reply_command.hit", hit),
 		attribute.String("keyword_reply_command.text", text),
-	)
+	))
+	defer span.End()
 
 	// 解码提取
 	subMatch := commandPrefixRe.FindStringSubmatch(codec.DecodeCQCode(text))
@@ -382,13 +381,12 @@ func (s *sEvent) keywordReplyRewrite(ctx context.Context,
 		return
 	}
 
-	ctx, span := gtrace.NewSpan(ctx, "event.keywordReplyRewrite")
-	defer span.End()
-	span.SetAttributes(
+	ctx, span := gtrace.NewSpan(ctx, "event.keywordReplyRewrite", trace.WithAttributes(
 		attribute.String("keyword_reply_rewrite.message", message),
 		attribute.String("keyword_reply_rewrite.hit", hit),
 		attribute.String("keyword_reply_rewrite.text", text),
-	)
+	))
+	defer span.End()
 
 	// 防止循环递归
 	if err := service.Bot().SetHistory(ctx, hit); err != nil {

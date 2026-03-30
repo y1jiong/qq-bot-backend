@@ -71,9 +71,10 @@ func (s *sUtil) OCR(ctx context.Context, image []byte) (string, error) {
 }
 
 func (s *sUtil) ocr(ctx context.Context, url string, req *ocrReq) (respObj *ocrResp, err error) {
-	ctx, span := gtrace.NewSpan(ctx, codec.GetAbsoluteURL(url))
+	ctx, span := gtrace.NewSpan(ctx, codec.GetAbsoluteURL(url), trace.WithAttributes(
+		attribute.String("http.url", url),
+	))
 	defer span.End()
-	span.SetAttributes(attribute.String("http.url", url))
 	defer func() {
 		if err != nil {
 			span.SetStatus(codes.Error, err.Error())
@@ -117,9 +118,10 @@ func (s *sUtil) ocr(ctx context.Context, url string, req *ocrReq) (respObj *ocrR
 }
 
 func (s *sUtil) httpGetQQImage(ctx context.Context, url string) (respBody []byte, err error) {
-	ctx, span := gtrace.NewSpan(ctx, codec.GetAbsoluteURL(url))
+	ctx, span := gtrace.NewSpan(ctx, codec.GetAbsoluteURL(url), trace.WithAttributes(
+		attribute.String("http.url", url),
+	))
 	defer span.End()
-	span.SetAttributes(attribute.String("http.url", url))
 	defer func() {
 		if err != nil {
 			span.SetStatus(codes.Error, err.Error())

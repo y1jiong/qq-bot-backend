@@ -12,6 +12,7 @@ import (
 	"github.com/gogf/gf/v2/net/gtrace"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/codes"
+	"go.opentelemetry.io/otel/trace"
 )
 
 func (s *sBot) SendMessage(ctx context.Context,
@@ -27,9 +28,17 @@ func (s *sBot) SendMessage(ctx context.Context,
 		return
 	}
 
-	ctx, span := gtrace.NewSpan(ctx, "bot.SendMessage")
+	spanAttrs := make([]attribute.KeyValue, 0, 2)
+	spanAttrs = append(spanAttrs, attribute.String("send_message.message", msg))
+	if groupId != 0 {
+		userId = 0
+		spanAttrs = append(spanAttrs, attribute.Int64("send_message.group_id", groupId))
+	} else {
+		spanAttrs = append(spanAttrs, attribute.Int64("send_message.user_id", userId))
+	}
+
+	ctx, span := gtrace.NewSpan(ctx, "bot.SendMessage", trace.WithAttributes(spanAttrs...))
 	defer span.End()
-	span.SetAttributes(attribute.String("send_message.message", msg))
 	defer func() {
 		if err != nil {
 			span.SetStatus(codes.Error, err.Error())
@@ -61,13 +70,6 @@ func (s *sBot) SendMessage(ctx context.Context,
 			g.Log().Warning(ctx, err)
 		}
 	}()
-
-	if groupId != 0 {
-		userId = 0
-		span.SetAttributes(attribute.Int64("send_message.group_id", groupId))
-	} else {
-		span.SetAttributes(attribute.Int64("send_message.user_id", userId))
-	}
 
 	// echo sign
 	echoSign := s.generateEchoSignWithTrace(ctx)
@@ -182,12 +184,18 @@ func (s *sBot) SendForwardMessage(ctx context.Context,
 		return
 	}
 
-	ctx, span := gtrace.NewSpan(ctx, "bot.SendForwardMessage")
-	defer span.End()
-	{
-		messagesJSON, _ := sonic.MarshalString(nodes)
-		span.SetAttributes(attribute.String("send_forward_message.messages", messagesJSON))
+	messagesJSON, _ := sonic.MarshalString(nodes)
+	spanAttrs := make([]attribute.KeyValue, 0, 2)
+	spanAttrs = append(spanAttrs, attribute.String("send_forward_message.messages", messagesJSON))
+	if groupId != 0 {
+		userId = 0
+		spanAttrs = append(spanAttrs, attribute.Int64("send_forward_message.group_id", groupId))
+	} else {
+		spanAttrs = append(spanAttrs, attribute.Int64("send_forward_message.user_id", userId))
 	}
+
+	ctx, span := gtrace.NewSpan(ctx, "bot.SendForwardMessage", trace.WithAttributes(spanAttrs...))
+	defer span.End()
 	defer func() {
 		if err != nil {
 			span.SetStatus(codes.Error, err.Error())
@@ -200,13 +208,6 @@ func (s *sBot) SendForwardMessage(ctx context.Context,
 			g.Log().Warning(ctx, err)
 		}
 	}()
-
-	if groupId != 0 {
-		userId = 0
-		span.SetAttributes(attribute.Int64("send_forward_message.group_id", groupId))
-	} else {
-		span.SetAttributes(attribute.Int64("send_forward_message.user_id", userId))
-	}
 
 	// echo sign
 	echoSign := s.generateEchoSignWithTrace(ctx)
@@ -298,14 +299,13 @@ func (s *sBot) SendForwardMsgCacheContext(ctx context.Context, msg string) {
 }
 
 func (s *sBot) SendFileToGroup(ctx context.Context, groupId int64, filePath, name, folder string) (err error) {
-	ctx, span := gtrace.NewSpan(ctx, "bot.SendFileToGroup")
-	defer span.End()
-	span.SetAttributes(
+	ctx, span := gtrace.NewSpan(ctx, "bot.SendFileToGroup", trace.WithAttributes(
 		attribute.Int64("send_file_to_group.group_id", groupId),
 		attribute.String("send_file_to_group.file_path", filePath),
 		attribute.String("send_file_to_group.name", name),
 		attribute.String("send_file_to_group.folder", folder),
-	)
+	))
+	defer span.End()
 	defer func() {
 		if err != nil {
 			span.SetStatus(codes.Error, err.Error())
@@ -367,13 +367,12 @@ func (s *sBot) SendFileToGroup(ctx context.Context, groupId int64, filePath, nam
 }
 
 func (s *sBot) SendFileToUser(ctx context.Context, userId int64, filePath, name string) (err error) {
-	ctx, span := gtrace.NewSpan(ctx, "bot.SendFileToUser")
-	defer span.End()
-	span.SetAttributes(
+	ctx, span := gtrace.NewSpan(ctx, "bot.SendFileToUser", trace.WithAttributes(
 		attribute.Int64("send_file_to_user.user_id", userId),
 		attribute.String("send_file_to_user.file_path", filePath),
 		attribute.String("send_file_to_user.name", name),
-	)
+	))
+	defer span.End()
 	defer func() {
 		if err != nil {
 			span.SetStatus(codes.Error, err.Error())
@@ -439,9 +438,10 @@ func (s *sBot) SendFile(ctx context.Context, filePath, name string) (err error) 
 }
 
 func (s *sBot) UploadFile(ctx context.Context, url string) (filePath string, err error) {
-	ctx, span := gtrace.NewSpan(ctx, "bot.UploadFile")
+	ctx, span := gtrace.NewSpan(ctx, "bot.UploadFile", trace.WithAttributes(
+		attribute.String("upload_file.url", url),
+	))
 	defer span.End()
-	span.SetAttributes(attribute.String("upload_file.url", url))
 	defer func() {
 		if err != nil {
 			span.SetStatus(codes.Error, err.Error())
@@ -496,14 +496,13 @@ func (s *sBot) UploadFile(ctx context.Context, url string) (filePath string, err
 
 func (s *sBot) ApproveJoinGroup(ctx context.Context, flag, subType string, approve bool, reason string,
 ) (err error) {
-	ctx, span := gtrace.NewSpan(ctx, "bot.ApproveJoinGroup")
-	defer span.End()
-	span.SetAttributes(
+	ctx, span := gtrace.NewSpan(ctx, "bot.ApproveJoinGroup", trace.WithAttributes(
 		attribute.String("approve_join_group.flag", flag),
 		attribute.String("approve_join_group.sub_type", subType),
 		attribute.Bool("approve_join_group.approve", approve),
 		attribute.String("approve_join_group.reason", reason),
-	)
+	))
+	defer span.End()
 	defer func() {
 		if err != nil {
 			span.SetStatus(codes.Error, err.Error())
@@ -569,9 +568,10 @@ func (s *sBot) ApproveJoinGroup(ctx context.Context, flag, subType string, appro
 }
 
 func (s *sBot) SetModel(ctx context.Context, model string) (err error) {
-	ctx, span := gtrace.NewSpan(ctx, "bot.SetModel")
+	ctx, span := gtrace.NewSpan(ctx, "bot.SetModel", trace.WithAttributes(
+		attribute.String("set_model.model", model),
+	))
 	defer span.End()
-	span.SetAttributes(attribute.String("set_model.model", model))
 	defer func() {
 		if err != nil {
 			span.SetStatus(codes.Error, err.Error())
@@ -631,9 +631,10 @@ func (s *sBot) RecallMessage(ctx context.Context, messageId int64) (err error) {
 		return
 	}
 
-	ctx, span := gtrace.NewSpan(ctx, "bot.RecallMessage")
+	ctx, span := gtrace.NewSpan(ctx, "bot.RecallMessage", trace.WithAttributes(
+		attribute.Int64("recall_message.message_id", messageId),
+	))
 	defer span.End()
-	span.SetAttributes(attribute.Int64("recall_message.message_id", messageId))
 	defer func() {
 		if err != nil {
 			span.SetStatus(codes.Error, err.Error())
@@ -686,13 +687,12 @@ func (s *sBot) RecallMessage(ctx context.Context, messageId int64) (err error) {
 }
 
 func (s *sBot) Mute(ctx context.Context, groupId, userId int64, seconds int) (err error) {
-	ctx, span := gtrace.NewSpan(ctx, "bot.Mute")
-	defer span.End()
-	span.SetAttributes(
+	ctx, span := gtrace.NewSpan(ctx, "bot.Mute", trace.WithAttributes(
 		attribute.Int64("mute.group_id", groupId),
 		attribute.Int64("mute.user_id", userId),
 		attribute.Int("mute.seconds", seconds),
-	)
+	))
+	defer span.End()
 	defer func() {
 		if err != nil {
 			span.SetStatus(codes.Error, err.Error())
@@ -757,13 +757,12 @@ func (s *sBot) Mute(ctx context.Context, groupId, userId int64, seconds int) (er
 }
 
 func (s *sBot) SetGroupCard(ctx context.Context, groupId, userId int64, card string) (err error) {
-	ctx, span := gtrace.NewSpan(ctx, "bot.SetGroupCard")
-	defer span.End()
-	span.SetAttributes(
+	ctx, span := gtrace.NewSpan(ctx, "bot.SetGroupCard", trace.WithAttributes(
 		attribute.Int64("set_group_card.group_id", groupId),
 		attribute.Int64("set_group_card.user_id", userId),
 		attribute.String("set_group_card.card", card),
-	)
+	))
+	defer span.End()
 	defer func() {
 		if err != nil {
 			span.SetStatus(codes.Error, err.Error())
@@ -822,12 +821,11 @@ func (s *sBot) SetGroupCard(ctx context.Context, groupId, userId int64, card str
 }
 
 func (s *sBot) Kick(ctx context.Context, groupId, userId int64, reject ...bool) (err error) {
-	ctx, span := gtrace.NewSpan(ctx, "bot.Kick")
-	defer span.End()
-	span.SetAttributes(
+	ctx, span := gtrace.NewSpan(ctx, "bot.Kick", trace.WithAttributes(
 		attribute.Int64("kick.group_id", groupId),
 		attribute.Int64("kick.user_id", userId),
-	)
+	))
+	defer span.End()
 	defer func() {
 		if err != nil {
 			span.SetStatus(codes.Error, err.Error())
@@ -889,12 +887,11 @@ func (s *sBot) Kick(ctx context.Context, groupId, userId int64, reject ...bool) 
 }
 
 func (s *sBot) ProfileLike(ctx context.Context, userId int64, times int) (err error) {
-	ctx, span := gtrace.NewSpan(ctx, "bot.ProfileLike")
-	defer span.End()
-	span.SetAttributes(
+	ctx, span := gtrace.NewSpan(ctx, "bot.ProfileLike", trace.WithAttributes(
 		attribute.Int64("profile_like.user_id", userId),
 		attribute.Int("profile_like.times", times),
-	)
+	))
+	defer span.End()
 	defer func() {
 		if err != nil {
 			span.SetStatus(codes.Error, err.Error())
@@ -954,12 +951,11 @@ func (s *sBot) EmojiLike(ctx context.Context, messageId int64, emojiId string) (
 		return
 	}
 
-	ctx, span := gtrace.NewSpan(ctx, "bot.EmojiLike")
-	defer span.End()
-	span.SetAttributes(
+	ctx, span := gtrace.NewSpan(ctx, "bot.EmojiLike", trace.WithAttributes(
 		attribute.Int64("emoji_like.message_id", messageId),
 		attribute.String("emoji_like.emoji_id", emojiId),
-	)
+	))
+	defer span.End()
 	defer func() {
 		if err != nil {
 			span.SetStatus(codes.Error, err.Error())
@@ -1015,12 +1011,11 @@ func (s *sBot) EmojiLike(ctx context.Context, messageId int64, emojiId string) (
 }
 
 func (s *sBot) Poke(ctx context.Context, groupId, userId int64) (err error) {
-	ctx, span := gtrace.NewSpan(ctx, "bot.Poke")
-	defer span.End()
-	span.SetAttributes(
+	ctx, span := gtrace.NewSpan(ctx, "bot.Poke", trace.WithAttributes(
 		attribute.Int64("poke.group_id", groupId),
 		attribute.Int64("poke.user_id", userId),
-	)
+	))
+	defer span.End()
 	defer func() {
 		if err != nil {
 			span.SetStatus(codes.Error, err.Error())
@@ -1140,9 +1135,10 @@ func (s *sBot) MarkMessageAsRead(ctx context.Context, groupId, userId int64) (er
 }
 
 func (s *sBot) MarkPrivateMsgAsRead(ctx context.Context, userId int64) (err error) {
-	ctx, span := gtrace.NewSpan(ctx, "bot.MarkPrivateMsgAsRead")
+	ctx, span := gtrace.NewSpan(ctx, "bot.MarkPrivateMsgAsRead", trace.WithAttributes(
+		attribute.Int64("mark_private_msg_as_read.user_id", userId),
+	))
 	defer span.End()
-	span.SetAttributes(attribute.Int64("mark_private_msg_as_read.user_id", userId))
 	defer func() {
 		if err != nil {
 			span.SetStatus(codes.Error, err.Error())
@@ -1195,9 +1191,10 @@ func (s *sBot) MarkPrivateMsgAsRead(ctx context.Context, userId int64) (err erro
 }
 
 func (s *sBot) MarkGroupMsgAsRead(ctx context.Context, groupId int64) (err error) {
-	ctx, span := gtrace.NewSpan(ctx, "bot.MarkGroupMsgAsRead")
+	ctx, span := gtrace.NewSpan(ctx, "bot.MarkGroupMsgAsRead", trace.WithAttributes(
+		attribute.Int64("mark_group_msg_as_read.group_id", groupId),
+	))
 	defer span.End()
-	span.SetAttributes(attribute.Int64("mark_group_msg_as_read.group_id", groupId))
 	defer func() {
 		if err != nil {
 			span.SetStatus(codes.Error, err.Error())

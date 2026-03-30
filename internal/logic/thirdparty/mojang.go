@@ -14,16 +14,18 @@ import (
 	"github.com/gogf/gf/v2/net/gtrace"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/codes"
+	"go.opentelemetry.io/otel/trace"
 )
 
 func (s *sThirdParty) QueryMinecraftGenuineUser(ctx context.Context, name string,
 ) (genuine bool, realName, uuid string, err error) {
 	url := "https://api.mojang.com/users/profiles/minecraft/" + name
 
-	ctx, span := gtrace.NewSpan(ctx, codec.GetAbsoluteURL(url))
+	ctx, span := gtrace.NewSpan(ctx, codec.GetAbsoluteURL(url), trace.WithAttributes(
+		attribute.String("http.url", url),
+		attribute.String("minecraft.name", name),
+	))
 	defer span.End()
-	span.SetAttributes(attribute.String("http.url", url))
-	span.SetAttributes(attribute.String("minecraft.name", name))
 	defer func() {
 		if err != nil {
 			span.SetStatus(codes.Error, err.Error())

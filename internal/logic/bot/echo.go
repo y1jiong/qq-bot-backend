@@ -24,10 +24,9 @@ const (
 func (s *sBot) generateEchoSignWithTrace(ctx context.Context) string {
 	header := make(map[string]string)
 	otel.GetTextMapPropagator().Inject(ctx, propagation.MapCarrier(header))
-	header["uid"] = guid.S()
 	echoSign, err := sonic.MarshalString(header)
 	if err != nil {
-		return header["uid"]
+		return guid.S()
 	}
 	return echoSign
 }

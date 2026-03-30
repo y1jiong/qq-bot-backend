@@ -19,12 +19,14 @@ import (
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/codes"
 	"go.opentelemetry.io/otel/propagation"
+	"go.opentelemetry.io/otel/trace"
 )
 
 func (s *sBot) Forward(ctx context.Context, url, key string) (err error) {
-	ctx, span := gtrace.NewSpan(ctx, codec.GetAbsoluteURL(url))
+	ctx, span := gtrace.NewSpan(ctx, codec.GetAbsoluteURL(url), trace.WithAttributes(
+		attribute.String("http.url", url),
+	))
 	defer span.End()
-	span.SetAttributes(attribute.String("http.url", url))
 	defer func() {
 		if err != nil {
 			span.SetStatus(codes.Error, err.Error())
