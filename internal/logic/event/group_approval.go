@@ -239,5 +239,6 @@ func isGELevel(ctx context.Context, groupId, userId int64) (bool, int64) {
 	}
 	lv := gconv.Int64(level)
 
-	return lv >= levelRequired, lv
+	// lv will be 0 if qq level and vip is not public
+	return lv >= levelRequired || lv == 0, lv
 }

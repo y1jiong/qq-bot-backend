@@ -12,6 +12,7 @@ require (
 	github.com/lukesampson/figlet v0.0.0-20190211215653-8a3ef4a6ac42
 	go.opentelemetry.io/otel v1.43.0
 	go.opentelemetry.io/otel/trace v1.43.0
+	golang.org/x/sync v0.20.0
 	golang.org/x/term v0.41.0
 )
 
