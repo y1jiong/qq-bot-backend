@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"qq-bot-backend/internal/consts"
 	"qq-bot-backend/internal/service"
+	"qq-bot-backend/utility"
 	"qq-bot-backend/utility/codec"
 
 	"github.com/bytedance/sonic"
@@ -71,9 +72,12 @@ func (s *sUtil) OCR(ctx context.Context, image []byte) (string, error) {
 }
 
 func (s *sUtil) ocr(ctx context.Context, url string, req *ocrReq) (respObj *ocrResp, err error) {
-	ctx, span := gtrace.NewSpan(ctx, codec.GetAbsoluteURL(url), trace.WithAttributes(
-		attribute.String("http.url", url),
-	))
+	ctx, span := gtrace.NewSpan(ctx, codec.GetAbsoluteURL(url),
+		trace.WithSpanKind(trace.SpanKindClient),
+		trace.WithAttributes(
+			attribute.String("http.url", url),
+		),
+	)
 	defer span.End()
 	defer func() {
 		if err != nil {
@@ -118,9 +122,12 @@ func (s *sUtil) ocr(ctx context.Context, url string, req *ocrReq) (respObj *ocrR
 }
 
 func (s *sUtil) httpGetQQImage(ctx context.Context, url string) (respBody []byte, err error) {
-	ctx, span := gtrace.NewSpan(ctx, codec.GetAbsoluteURL(url), trace.WithAttributes(
-		attribute.String("http.url", url),
-	))
+	ctx, span := gtrace.NewSpan(ctx, codec.GetAbsoluteURL(url),
+		trace.WithSpanKind(trace.SpanKindClient),
+		trace.WithAttributes(
+			attribute.String("http.url", url),
+		),
+	)
 	defer span.End()
 	defer func() {
 		if err != nil {
@@ -133,8 +140,7 @@ func (s *sUtil) httpGetQQImage(ctx context.Context, url string) (respBody []byte
 		return nil, err
 	}
 
-	req.Header.Set("User-Agent",
-		"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36")
+	utility.WithBrowserUA(req.Header)
 
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil || resp == nil {

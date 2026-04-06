@@ -2,9 +2,11 @@ package process
 
 import (
 	"context"
-	"github.com/gogf/gf/v2/net/gtrace"
 	"qq-bot-backend/internal/service"
 	"sync/atomic"
+
+	"github.com/gogf/gf/v2/net/gtrace"
+	"go.opentelemetry.io/otel/trace"
 )
 
 type sProcess struct{}
@@ -45,7 +47,7 @@ func (s *sProcess) Process(ctx context.Context) {
 		return
 	}
 
-	ctx, span := gtrace.NewSpan(ctx, "process.Process")
+	ctx, span := gtrace.NewSpan(ctx, "process.Process", trace.WithSpanKind(trace.SpanKindConsumer))
 	defer span.End()
 
 	// 优先处理命令

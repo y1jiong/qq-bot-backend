@@ -140,10 +140,13 @@ func (s *sBot) GetCardOldNew(ctx context.Context) (oldCard, newCard string) {
 
 func (s *sBot) GetGroupMemberInfo(ctx context.Context, groupId, userId int64, noCache ...bool,
 ) (member *ast.Node, err error) {
-	ctx, span := gtrace.NewSpan(ctx, "bot.GetGroupMemberInfo", trace.WithAttributes(
-		attribute.Int64("get_group_member_info.group_id", groupId),
-		attribute.Int64("get_group_member_info.user_id", userId),
-	))
+	ctx, span := gtrace.NewSpan(ctx, "bot.GetGroupMemberInfo",
+		trace.WithSpanKind(defaultSpanKind),
+		trace.WithAttributes(
+			attribute.Int64("get_group_member_info.group_id", groupId),
+			attribute.Int64("get_group_member_info.user_id", userId),
+		),
+	)
 	defer span.End()
 	defer func() {
 		if err != nil {
@@ -211,9 +214,12 @@ func (s *sBot) GetGroupMemberInfo(ctx context.Context, groupId, userId int64, no
 
 func (s *sBot) GetGroupMemberList(ctx context.Context, groupId int64, noCache ...bool,
 ) (members []any, err error) {
-	ctx, span := gtrace.NewSpan(ctx, "bot.GetGroupMemberList", trace.WithAttributes(
-		attribute.Int64("get_group_member_list.group_id", groupId),
-	))
+	ctx, span := gtrace.NewSpan(ctx, "bot.GetGroupMemberList",
+		trace.WithSpanKind(defaultSpanKind),
+		trace.WithAttributes(
+			attribute.Int64("get_group_member_list.group_id", groupId),
+		),
+	)
 	defer span.End()
 	defer func() {
 		if err != nil {
@@ -291,9 +297,12 @@ func (s *sBot) RequestMsg(ctx context.Context, messageId int64,
 
 func (s *sBot) RequestMessageFromCache(ctx context.Context, messageId int64,
 ) (messageMap map[string]any, err error) {
-	ctx, span := gtrace.NewSpan(ctx, "bot.RequestMessageFromCache", trace.WithAttributes(
-		attribute.Int64("request_message_from_cache.message_id", messageId),
-	))
+	ctx, span := gtrace.NewSpan(ctx, "bot.RequestMessageFromCache",
+		trace.WithSpanKind(defaultSpanKind),
+		trace.WithAttributes(
+			attribute.Int64("request_message_from_cache.message_id", messageId),
+		),
+	)
 	defer span.End()
 	defer func() {
 		if err != nil {
@@ -322,9 +331,12 @@ func (s *sBot) RequestMessageFromCache(ctx context.Context, messageId int64,
 
 func (s *sBot) RequestMessage(ctx context.Context, messageId int64,
 ) (messageMap map[string]any, err error) {
-	ctx, span := gtrace.NewSpan(ctx, "bot.RequestMessage", trace.WithAttributes(
-		attribute.Int64("request_message.message_id", messageId),
-	))
+	ctx, span := gtrace.NewSpan(ctx, "bot.RequestMessage",
+		trace.WithSpanKind(defaultSpanKind),
+		trace.WithAttributes(
+			attribute.Int64("request_message.message_id", messageId),
+		),
+	)
 	defer span.End()
 	defer func() {
 		if err != nil {
@@ -381,9 +393,12 @@ func (s *sBot) RequestMessage(ctx context.Context, messageId int64,
 
 func (s *sBot) GetGroupInfo(ctx context.Context, groupId int64, noCache ...bool,
 ) (infoMap map[string]any, err error) {
-	ctx, span := gtrace.NewSpan(ctx, "bot.GetGroupInfo", trace.WithAttributes(
-		attribute.Int64("get_group_info.group_id", groupId),
-	))
+	ctx, span := gtrace.NewSpan(ctx, "bot.GetGroupInfo",
+		trace.WithSpanKind(defaultSpanKind),
+		trace.WithAttributes(
+			attribute.Int64("get_group_info.group_id", groupId),
+		),
+	)
 	defer span.End()
 	defer func() {
 		if err != nil {
@@ -448,7 +463,9 @@ func (s *sBot) GetGroupInfo(ctx context.Context, groupId int64, noCache ...bool,
 }
 
 func (s *sBot) GetLoginInfo(ctx context.Context) (botId int64, nickname string, err error) {
-	ctx, span := gtrace.NewSpan(ctx, "bot.GetLoginInfo")
+	ctx, span := gtrace.NewSpan(ctx, "bot.GetLoginInfo",
+		trace.WithSpanKind(defaultSpanKind),
+	)
 	defer span.End()
 	defer func() {
 		if err != nil {
@@ -520,7 +537,9 @@ func (s *sBot) IsGroupOwnerOrAdminOrSysTrusted(ctx context.Context) bool {
 }
 
 func (s *sBot) GetVersionInfo(ctx context.Context) (appName, appVersion, protocolVersion string, err error) {
-	ctx, span := gtrace.NewSpan(ctx, "bot.GetVersionInfo")
+	ctx, span := gtrace.NewSpan(ctx, "bot.GetVersionInfo",
+		trace.WithSpanKind(defaultSpanKind),
+	)
 	defer span.End()
 	defer func() {
 		if err != nil {
@@ -609,9 +628,12 @@ func (s *sBot) GetReplyMessage(ctx context.Context) (string, error) {
 
 func (s *sBot) GetStrangerInfo(ctx context.Context, userId int64, noCache ...bool,
 ) (infoMap map[string]any, err error) {
-	ctx, span := gtrace.NewSpan(ctx, "bot.GetStrangerInfo", trace.WithAttributes(
-		attribute.Int64("get_stranger_info.user_id", userId),
-	))
+	ctx, span := gtrace.NewSpan(ctx, "bot.GetStrangerInfo",
+		trace.WithSpanKind(defaultSpanKind),
+		trace.WithAttributes(
+			attribute.Int64("get_stranger_info.user_id", userId),
+		),
+	)
 	defer span.End()
 	defer func() {
 		if err != nil {

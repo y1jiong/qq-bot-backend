@@ -11,6 +11,7 @@ import (
 	"github.com/bytedance/sonic/ast"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gorilla/websocket"
+	"go.opentelemetry.io/otel/trace"
 )
 
 type sBot struct{}
@@ -34,6 +35,8 @@ const (
 
 	fieldApiReq         = "_is_api_req"
 	fieldMessageSegment = "_is_message_segment"
+
+	defaultSpanKind = trace.SpanKindClient
 )
 
 func (s *sBot) CtxWithWebSocket(parent context.Context, conn *websocket.Conn) context.Context {

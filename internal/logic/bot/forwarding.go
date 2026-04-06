@@ -23,9 +23,12 @@ import (
 )
 
 func (s *sBot) Forward(ctx context.Context, url, key string) (err error) {
-	ctx, span := gtrace.NewSpan(ctx, codec.GetAbsoluteURL(url), trace.WithAttributes(
-		attribute.String("http.url", url),
-	))
+	ctx, span := gtrace.NewSpan(ctx, codec.GetAbsoluteURL(url),
+		trace.WithSpanKind(defaultSpanKind),
+		trace.WithAttributes(
+			attribute.String("http.url", url),
+		),
+	)
 	defer span.End()
 	defer func() {
 		if err != nil {
