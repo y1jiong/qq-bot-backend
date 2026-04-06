@@ -22,6 +22,10 @@ func (s *sGroup) BindNamespaceReturnRes(ctx context.Context,
 	if groupId == 0 {
 		return
 	}
+	// namespace 有效
+	if !service.Namespace().IsValid(ctx, namespace) {
+		return
+	}
 	// 权限校验
 	if !service.Bot().IsGroupOwnerOrAdminOrSysTrusted(ctx) ||
 		(!service.Namespace().IsNamespaceOwnerOrAdminOrOperator(ctx, namespace, service.Bot().GetUserId(ctx)) &&

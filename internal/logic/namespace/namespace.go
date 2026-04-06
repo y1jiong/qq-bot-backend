@@ -44,6 +44,13 @@ func getNamespace(ctx context.Context, namespace string) (namespaceE *entity.Nam
 	return
 }
 
+func (s *sNamespace) IsValid(ctx context.Context, namespace string) bool {
+	if getNamespace(ctx, namespace) != nil {
+		return true
+	}
+	return false
+}
+
 func isNamespaceOwner(userId int64, namespaceE *entity.Namespace) bool {
 	return userId == namespaceE.OwnerId
 }

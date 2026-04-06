@@ -31,6 +31,7 @@ type (
 		GetGlobalNamespaceLists(ctx context.Context) (lists map[string]any)
 		LoadNamespaceListReturnRes(ctx context.Context, namespace string, listName string) (retMsg string)
 		UnloadNamespaceListReturnRes(ctx context.Context, namespace string, listName string) (retMsg string)
+		IsValid(ctx context.Context, namespace string) bool
 		IsNamespaceOwnerOrAdmin(ctx context.Context, namespace string, userId int64) bool
 		IsNamespaceOwnerOrAdminOrOperator(ctx context.Context, namespace string, userId int64) bool
 		IsGlobalNamespace(namespace string) bool
