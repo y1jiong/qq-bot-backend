@@ -91,10 +91,7 @@ func (c *cBot) Websocket(r *ghttp.Request) {
 	// 并发 ws 写锁
 	ctx = service.Bot().CtxNewWebSocketMutex(ctx)
 
-	var (
-		waitJoin       = make(chan struct{})
-		joinConnection = sync.OnceFunc(func() { close(waitJoin) })
-	)
+	waitJoin := make(chan struct{})
 	go func() {
 		<-waitJoin
 
@@ -113,11 +110,10 @@ func (c *cBot) Websocket(r *ghttp.Request) {
 	}()
 
 	spanEnd()
+	close(waitJoin)
 
 	// 消息循环
 	for {
-		joinConnection()
-
 		var bytes []byte
 		_, bytes, err = conn.ReadMessage()
 		if err != nil {

@@ -189,11 +189,11 @@ func (s *sEvent) keywordReplyWebhook(ctx context.Context,
 			}
 
 			whs := webhookHolderRe.FindAllString(payload, -1)
-			seen := make(map[string]struct{})
 			results := make(chan webhookResult, len(whs))
 
 			go func() {
 				wg := sync.WaitGroup{}
+				seen := make(map[string]struct{})
 				for _, wh := range whs {
 					if _, saw := seen[wh]; saw {
 						continue
