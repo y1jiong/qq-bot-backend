@@ -24,42 +24,11 @@ func (s *sEvent) TryApproveAddGroup(ctx context.Context) (caught bool) {
 	if len(policy) == 0 {
 		return
 	}
-	// 默认通过审核
-	pass := true
 	// 局部变量
 	comment := service.Bot().GetComment(ctx)
 	userId := service.Bot().GetUserId(ctx)
-	var extra, blackReason, by string
-	isOnBlacklist := false
 
-	// 处理
-	if _, ok := policy[consts.RegexpCmd]; ok {
-		// 正则表达式
-		pass, extra = isMatchRegexp(ctx, groupId, comment)
-		by = consts.RegexpCmd
-	}
-	if _, ok := policy[consts.McCmd]; ok && pass {
-		// mc 正版验证
-		pass, extra = verifyMinecraftGenuine(ctx, comment)
-		by = consts.McCmd
-	}
-	if _, ok := policy[consts.WhitelistCmd]; ok && pass {
-		// 白名单
-		pass = isOnApprovalWhitelist(ctx, groupId, userId, extra)
-		by = consts.WhitelistCmd
-	}
-	if _, ok := policy[consts.BlacklistCmd]; ok && pass {
-		// 黑名单
-		pass, blackReason = isNotOnApprovalBlacklist(ctx, groupId, userId)
-		isOnBlacklist = !pass
-		by = consts.BlacklistCmd
-	}
-	if _, ok := policy[consts.LevelCmd]; ok && pass {
-		// 群等级
-		var lv int64
-		pass, lv = isGELevel(ctx, groupId, userId)
-		by = consts.LevelCmd + "=" + gconv.String(lv)
-	}
+	pass, blackReason, by, isOnBlacklist := resolveApprovalPass(ctx, groupId, userId, comment, policy)
 
 	// 回执与日志
 	var logMsg string
@@ -125,6 +94,44 @@ func (s *sEvent) TryApproveAddGroup(ctx context.Context) (caught bool) {
 	}
 
 	caught = true
+	return
+}
+
+func resolveApprovalPass(ctx context.Context, groupId, userId int64, comment string, policy map[string]any) (pass bool, blackReason, by string, isOnBlacklist bool) {
+	pass = true
+	extra := ""
+
+	// 黑名单优先级最高，白名单次之，其余规则最低；白名单校验会用到 regexp 产出的 extra。
+	if _, ok := policy[consts.BlacklistCmd]; ok {
+		pass, blackReason = isNotOnApprovalBlacklist(ctx, groupId, userId)
+		isOnBlacklist = !pass
+		by = consts.BlacklistCmd
+		if isOnBlacklist {
+			return
+		}
+	}
+	if _, ok := policy[consts.RegexpCmd]; ok {
+		// 正则表达式
+		pass, extra = isMatchRegexp(ctx, groupId, comment)
+		by = consts.RegexpCmd
+	}
+	if _, ok := policy[consts.WhitelistCmd]; ok && isOnApprovalWhitelist(ctx, groupId, userId, extra) {
+		// 白名单：命中后直接放行，覆盖后续普通校验
+		pass = true
+		by = consts.WhitelistCmd
+		return
+	}
+	if _, ok := policy[consts.McCmd]; ok && pass {
+		// mc 正版验证
+		pass, extra = verifyMinecraftGenuine(ctx, comment)
+		by = consts.McCmd
+	}
+	if _, ok := policy[consts.LevelCmd]; ok && pass {
+		// 群等级
+		var lv int64
+		pass, lv = isGELevel(ctx, groupId, userId)
+		by = consts.LevelCmd + "=" + gconv.String(lv)
+	}
 	return
 }
 
