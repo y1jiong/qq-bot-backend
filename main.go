@@ -13,6 +13,7 @@ func main() {
 		&cmd.Version,
 		&cmd.Install,
 		&cmd.Uninstall,
+		&cmd.Run,
 	); err != nil {
 		panic(err)
 	}
