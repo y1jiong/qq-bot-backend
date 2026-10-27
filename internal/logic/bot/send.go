@@ -69,7 +69,7 @@ func (s *sBot) SendMessage(ctx context.Context,
 
 	// mark message as read
 	go func() {
-		if err := s.MarkMessageAsRead(ctx, groupId, userId); err != nil {
+		if err := s.MarkMessageAsRead(ctx); err != nil {
 			g.Log().Warning(ctx, err)
 		}
 	}()
@@ -210,7 +210,7 @@ func (s *sBot) SendForwardMessage(ctx context.Context,
 
 	// mark message as read
 	go func() {
-		if err := s.MarkMessageAsRead(ctx, groupId, userId); err != nil {
+		if err := s.MarkMessageAsRead(ctx); err != nil {
 			g.Log().Warning(ctx, err)
 		}
 	}()
@@ -1171,17 +1171,22 @@ func (s *sBot) MarkAllAsRead(ctx context.Context) (err error) {
 	return
 }
 
-func (s *sBot) MarkMessageAsRead(ctx context.Context, groupId, userId int64) (err error) {
-	if groupId != 0 {
-		return s.MarkGroupMsgAsRead(ctx, groupId)
+func (s *sBot) MarkMessageAsRead(ctx context.Context) (err error) {
+	messageId := s.GetMsgId(ctx)
+	if messageId == 0 {
+		return
 	}
-	return s.MarkPrivateMsgAsRead(ctx, userId)
+	if groupId := s.GetGroupId(ctx); groupId != 0 {
+		return s.markGroupMsgAsRead(ctx, messageId, groupId)
+	}
+	return s.markPrivateMsgAsRead(ctx, messageId, s.GetUserId(ctx))
 }
 
-func (s *sBot) MarkPrivateMsgAsRead(ctx context.Context, userId int64) (err error) {
+func (s *sBot) markPrivateMsgAsRead(ctx context.Context, messageId, userId int64) (err error) {
 	ctx, span := gtrace.NewSpan(ctx, "bot.MarkPrivateMsgAsRead",
 		trace.WithSpanKind(defaultSpanKind),
 		trace.WithAttributes(
+			attribute.Int64("mark_private_msg_as_read.message_id", messageId),
 			attribute.Int64("mark_private_msg_as_read.user_id", userId),
 		),
 	)
@@ -1199,15 +1204,18 @@ func (s *sBot) MarkPrivateMsgAsRead(ctx context.Context, userId int64) (err erro
 		Action string `json:"action"`
 		Echo   string `json:"echo"`
 		Params struct {
-			UserId int64 `json:"user_id"`
+			MessageId int64 `json:"message_id"`
+			UserId    int64 `json:"user_id,omitempty"`
 		} `json:"params"`
 	}{
 		Action: "mark_private_msg_as_read",
 		Echo:   echoSign,
 		Params: struct {
-			UserId int64 `json:"user_id"`
+			MessageId int64 `json:"message_id"`
+			UserId    int64 `json:"user_id,omitempty"`
 		}{
-			UserId: userId,
+			MessageId: messageId,
+			UserId:    userId,
 		},
 	}
 	reqJSON, err := sonic.Marshal(req)
@@ -1237,10 +1245,11 @@ func (s *sBot) MarkPrivateMsgAsRead(ctx context.Context, userId int64) (err erro
 	return
 }
 
-func (s *sBot) MarkGroupMsgAsRead(ctx context.Context, groupId int64) (err error) {
+func (s *sBot) markGroupMsgAsRead(ctx context.Context, messageId, groupId int64) (err error) {
 	ctx, span := gtrace.NewSpan(ctx, "bot.MarkGroupMsgAsRead",
 		trace.WithSpanKind(defaultSpanKind),
 		trace.WithAttributes(
+			attribute.Int64("mark_group_msg_as_read.message_id", messageId),
 			attribute.Int64("mark_group_msg_as_read.group_id", groupId),
 		),
 	)
@@ -1258,15 +1267,18 @@ func (s *sBot) MarkGroupMsgAsRead(ctx context.Context, groupId int64) (err error
 		Action string `json:"action"`
 		Echo   string `json:"echo"`
 		Params struct {
-			GroupId int64 `json:"group_id"`
+			MessageId int64 `json:"message_id"`
+			GroupId   int64 `json:"group_id,omitempty"`
 		} `json:"params"`
 	}{
 		Action: "mark_group_msg_as_read",
 		Echo:   echoSign,
 		Params: struct {
-			GroupId int64 `json:"group_id"`
+			MessageId int64 `json:"message_id"`
+			GroupId   int64 `json:"group_id,omitempty"`
 		}{
-			GroupId: groupId,
+			MessageId: messageId,
+			GroupId:   groupId,
 		},
 	}
 	reqJSON, err := sonic.Marshal(req)
