@@ -5,6 +5,7 @@ import (
 	"github.com/bytedance/sonic"
 	"github.com/bytedance/sonic/ast"
 	"github.com/gogf/gf/v2/frame/g"
+	"maps"
 	"qq-bot-backend/internal/dao"
 )
 
@@ -124,9 +125,7 @@ func (s *sNamespace) GetNamespaceListsIncludingGlobal(ctx context.Context, names
 	if globalLists == nil {
 		return
 	}
-	for k, v := range globalLists {
-		lists[k] = v
-	}
+	maps.Copy(lists, globalLists)
 	return
 }
 

@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/bytedance/sonic"
 	"github.com/gogf/gf/v2/frame/g"
+	"maps"
 	"qq-bot-backend/internal/dao"
 	"qq-bot-backend/internal/model/entity"
 	"qq-bot-backend/internal/service"
@@ -66,9 +67,7 @@ func (s *sList) AppendListData(ctx context.Context, listName string, newMap map[
 		return
 	}
 	// 追加数据
-	for k, v := range newMap {
-		listMap[k] = v
-	}
+	maps.Copy(listMap, newMap)
 	n = len(listMap)
 	// 保存数据
 	listBytes, err := sonic.Marshal(listMap)

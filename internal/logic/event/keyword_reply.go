@@ -406,8 +406,8 @@ func (s *sEvent) keywordReplyRewrite(ctx context.Context,
 		" &\n", " & ",
 	).Replace(subMatch[1])
 	// 切分
-	rewrites := strings.Split(subMatch[1], " & ")
-	for _, rewrite := range rewrites {
+	rewrites := strings.SplitSeq(subMatch[1], " & ")
+	for rewrite := range rewrites {
 		service.Bot().RewriteMessage(ctx, strings.TrimSpace(rewrite))
 		// callback
 		caught = try(ctx)

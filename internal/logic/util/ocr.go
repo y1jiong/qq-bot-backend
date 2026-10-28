@@ -22,7 +22,7 @@ import (
 type (
 	ocrReq struct {
 		Base64  string    `json:"base64"`
-		Options ocrOption `json:"options,omitempty"`
+		Options ocrOption `json:"options"`
 	}
 	ocrResp struct {
 		Code      int     `json:"code"`

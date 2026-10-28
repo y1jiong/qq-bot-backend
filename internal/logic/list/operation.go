@@ -2,6 +2,7 @@ package list
 
 import (
 	"context"
+	"maps"
 )
 
 func (s *sList) UnionOp(ctx context.Context, A, B, C string) (n int, err error) {
@@ -10,12 +11,8 @@ func (s *sList) UnionOp(ctx context.Context, A, B, C string) (n int, err error) 
 	listB := s.GetListData(ctx, B)
 	// 数据处理 并集运算
 	listC := make(map[string]any)
-	for k, v := range listA {
-		listC[k] = v
-	}
-	for k, v := range listB {
-		listC[k] = v
-	}
+	maps.Copy(listC, listA)
+	maps.Copy(listC, listB)
 	// 保存数据
 	return s.AppendListData(ctx, C, listC)
 }
