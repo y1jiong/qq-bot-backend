@@ -5,9 +5,9 @@ go 1.27
 require (
 	github.com/bitly/go-simplejson v0.5.1
 	github.com/bytedance/sonic v1.15.5
-	github.com/gogf/gf/contrib/drivers/pgsql/v2 v2.10.3
-	github.com/gogf/gf/contrib/trace/otlpgrpc/v2 v2.10.3
-	github.com/gogf/gf/v2 v2.10.3
+	github.com/gogf/gf/contrib/drivers/pgsql/v2 v2.10.4
+	github.com/gogf/gf/contrib/trace/otlpgrpc/v2 v2.10.4
+	github.com/gogf/gf/v2 v2.10.4
 	github.com/gorilla/websocket v1.5.3
 	github.com/kardianos/service v1.3.0
 	github.com/lukesampson/figlet v0.0.0-20190211215653-8a3ef4a6ac42
@@ -56,7 +56,7 @@ require (
 	go.opentelemetry.io/otel/sdk v1.47.0 // indirect
 	go.opentelemetry.io/proto/otlp v1.11.1 // indirect
 	golang.org/x/arch v0.32.0 // indirect
-	golang.org/x/net v0.61.0 // indirect
+	golang.org/x/net v0.62.0 // indirect
 	golang.org/x/sys v0.49.0 // indirect
 	golang.org/x/text v0.43.0 // indirect
 	google.golang.org/genproto/googleapis/api v0.0.0-20261026165753-2ffab32bce7e // indirect
